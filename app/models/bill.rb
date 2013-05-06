@@ -99,9 +99,9 @@ class Bill < ActiveRecord::Base
     end
   end
   
-  def before_save
-    # update the bill fulltext search table
-    
+  before_save :update_bill_fulltext_search_table
+
+  def update_bill_fulltext_search_table
     if self.id
       # when the bill is new, the bill titles will have just been added to the DB.
       # using raw sql is the only way i've found to get them (the 'force_reload'

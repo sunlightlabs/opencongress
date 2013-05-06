@@ -54,11 +54,4 @@ class NotebookLink < NotebookItem
     end
   end
 
-
-  def before_create
-#    doc = Hpricot(open(self.url))
-#    title = (doc/"title").inner_html
-#    self.title = title unless title.blank?
-  end
-
 end

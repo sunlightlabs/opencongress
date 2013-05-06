@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-rvm use --create ree-1.8.7@oc

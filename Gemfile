@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.19'
-gem 'rake', '0.8.7'
+gem 'rails', '~> 3.0.19'
+gem 'rake', '~> 0.9.1'
 
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
@@ -43,7 +43,7 @@ gem 'paperclip'
 gem "airbrake"
 gem "xray", :require => "xray/thread_dump_signal_handler"
 
-# OpenID 
+# OpenID
 gem 'ruby-openid'
 gem 'rack-openid'
 

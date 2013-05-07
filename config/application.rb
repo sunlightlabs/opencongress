@@ -24,7 +24,7 @@ module OpenCongress
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.
     # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
-    
+
     config.active_record.observers = :user_observer, :friend_observer, :mailing_list_observer
 
     # Disable delivery errors if you bad email addresses should just be ignored
@@ -34,7 +34,7 @@ module OpenCongress
     #   :location       => '/usr/sbin/sendmail',
     #   :arguments      => '-i'
     # }
-    
+
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
     config.time_zone = 'Eastern Time (US & Canada)'
@@ -53,16 +53,16 @@ module OpenCongress
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password, :gpasswd]
-    
-    
+
+
     # TODO: Use wiki-internal to get wiki content on production rather
     # than going through the proxy server (twice)
 
     ENV['FACEBOOKER_CALLBACK_PATH'] = '/facebook'
-  
+
     # we'll use this just to help debug live servers
     ENV['APP_SERVER'] = %x{hostname}.rstrip
-    
+
     # following should go in application_settings.yml, but it appears settingslogic
     # does not support hashes
     CONGRESS_START_DATES = {
@@ -74,7 +74,7 @@ module OpenCongress
       108 => '2003-01-01',
       107 => '2001-01-01'
     }
-    
-    require 'ostruct'  
+
+    require 'ostruct'
   end
 end

@@ -23,16 +23,16 @@ defaults: &defaults
   formageddon_get_replies_key: xxx
   bing: xxx
   defensio: xxx
-  
+
 development:
   <<: *defaults
-  
+
 test:
   <<: *defaults
 
 staging:
   <<: *defaults
-  
+
 production:
   <<: *defaults
 

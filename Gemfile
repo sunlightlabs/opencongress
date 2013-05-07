@@ -10,8 +10,9 @@ gem 'mysql'
 gem "settingslogic"
 
 # HAML support
-gem "haml"
+gem "haml", "~> 3.1.8"
 gem "haml-rails"
+# gem "sass-rails"  #<= after upgrading past rails 3.1
 
 # RABL for API / JSON
 gem 'rabl'
@@ -95,16 +96,18 @@ group :test, :development do
   gem 'silent-postgres'	# Quieter postgres log messages
 
   gem 'rspec-rails', '~> 2.4'
+  gem 'fuubar'
   gem 'cucumber'
-  gem 'cucumber-rails'
+  gem 'cucumber-rails',         :require => false
   gem 'webrat'
   gem 'selenium-client'
 
   gem 'capybara'
 
-  gem 'autotest'
-
   gem 'guard'
   gem 'guard-livereload'
+
+  gem 'rails_best_practices'
+  gem 'simplecov', :require => false
 end
 

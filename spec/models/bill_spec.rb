@@ -12,6 +12,9 @@ describe Bill do
   end
 
   describe "related_articles" do
+    # FIXME: These tests are on the wrong model. finds related articles
+    # Should test the model method, not Article's acts_as_taggable finders.
+    # Leaving because they're useful currently, but this should be revisited.
     let(:bill) { Bill.new }
 
     before(:each) do

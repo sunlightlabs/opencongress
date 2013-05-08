@@ -22,7 +22,7 @@ gem 'delayed_job', '~> 2.1'
 
 # RMagick
 gem 'rmagick', '2.13.1'
-gem "galetahub-simple_captcha", :require => "simple_captcha"
+gem "galetahub-simple_captcha", '0.1.3', :require => "simple_captcha"
 #gem 'simple_captcha'# , :git => 'git://github.com/galetahub/simple-captcha.git'
 
 # Image uploads
@@ -84,7 +84,8 @@ gem 'will_paginate', '~> 3.0.pre2'
 gem "validates_captcha"
 gem "okkez-open_id_authentication"
 
-gem "acts-as-taggable-on", :git => 'git://github.com/mbleigh/acts-as-taggable-on.git'
+# gem "acts-as-taggable-on", :git => 'git://github.com/mbleigh/acts-as-taggable-on.git'
+gem 'acts-as-taggable-on', '~> 2.4.0'
 
 gem 'mechanize'
 #gem 'formageddon', '0.0.0', :require => 'formageddon', :path => '/Users/aross/Sites/formageddon'
@@ -94,6 +95,7 @@ gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'
 group :test, :development do
   gem 'autotest'
   gem 'silent-postgres'	# Quieter postgres log messages
+  gem 'database_cleaner'
 
   gem 'rspec-rails', '~> 2.4'
   gem 'fuubar'
@@ -106,6 +108,9 @@ group :test, :development do
 
   gem 'guard'
   gem 'guard-livereload'
+
+  gem 'pry-rescue'
+  gem 'pry-stack_explorer'
 
   gem 'rails_best_practices'
   gem 'simplecov', :require => false

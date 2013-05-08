@@ -28,6 +28,8 @@ gem "galetahub-simple_captcha", '0.1.3', :require => "simple_captcha"
 gem 'carrierwave'
 gem 'fog'
 
+gem "awesome_nested_set", ">= 2.0"
+
 # GovKit
 gem "govkit", :git => "git://github.com/opengovernment/govkit.git"
 

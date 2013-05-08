@@ -23,14 +23,13 @@ gem 'delayed_job', '~> 2.1'
 # RMagick
 gem 'rmagick', '2.13.1'
 gem "galetahub-simple_captcha", '0.1.3', :require => "simple_captcha"
-#gem 'simple_captcha'# , :git => 'git://github.com/galetahub/simple-captcha.git'
 
 # Image uploads
 gem 'carrierwave'
 gem 'fog'
 
 # GovKit
-gem "govkit"
+gem "govkit", :git => "git://github.com/opengovernment/govkit.git"
 
 # jammit support
 gem "jammit"
@@ -65,6 +64,7 @@ gem "json"
 gem "nokogiri"
 
 # spam protection
+gem "defensio", :git => 'git://github.com/drinks/defensio-ruby.git'  # this forces :json api format
 gem "defender"
 
 group :deployment do
@@ -84,11 +84,9 @@ gem 'will_paginate', '~> 3.0.pre2'
 gem "validates_captcha"
 gem "okkez-open_id_authentication"
 
-# gem "acts-as-taggable-on", :git => 'git://github.com/mbleigh/acts-as-taggable-on.git'
-gem 'acts-as-taggable-on', '~> 2.4.0'
+gem 'acts-as-taggable-on', '~> 2.3.3'
 
 gem 'mechanize'
-#gem 'formageddon', '0.0.0', :require => 'formageddon', :path => '/Users/aross/Sites/formageddon'
 gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'
 
 

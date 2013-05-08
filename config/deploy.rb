@@ -47,12 +47,11 @@ namespace :deploy do
     run "ln -s /data/govtrack/109/repstats/images/people #{current_release}/public/images/people"
     run "ln -s /data/govtrack/photos #{current_release}/public/images/photos"
     run "ln -s #{deploy_to}/#{shared_dir}/notebook_items #{current_release}/public/"
-  	run "ln -s #{deploy_to}/#{shared_dir}/images #{current_release}/public/images/" 
+  	run "ln -s #{deploy_to}/#{shared_dir}/images #{current_release}/public/images/"
     run "ln -s #{deploy_to}/#{shared_dir}/files/oc_whats.flv #{current_release}/public/oc_whats.flv"
     run "ln -s #{deploy_to}/#{shared_dir}/files/screencast.mp4 #{current_release}/public/screencast.mp4"
     run "ln -s #{deploy_to}/#{shared_dir}/files/facebook.yml #{current_release}/config/"
-    #    sudo "chown -R mongrel:admins #{current_release}"
-    
+
     # setting the global RELEASE_NUMBER was not working on app1 so we're going to replace the value here
     run "perl -pi -e 's/RELEASE_NUMBER/#{current_revision[0..6]}/g' #{current_release}/config/environments/production.rb"
   end

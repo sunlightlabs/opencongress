@@ -7,7 +7,6 @@ config/api_keys.yml
 config/application_settings.yml
 config/database.yml
 config/facebooker.yml
-config/mongrel_cluster.yml
 config/solr.yml
 db/cucumber_structure.sql
 db/development_structure.sql

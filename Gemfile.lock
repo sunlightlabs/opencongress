@@ -16,8 +16,8 @@ GIT
       mechanize
 
 GIT
-  remote: git://github.com/opengovernment/govkit.git
-  revision: 0ea1085ba212e03f3551d695941fc6a4b29976b9
+  remote: git@github.com:sunlightlabs/govkit.git
+  revision: 9cc1e6e0ea2cc0f13abd35efdcdb60dd8e0a914a
   specs:
     govkit (0.7.4)
       activesupport
@@ -68,6 +68,8 @@ GEM
     arel (2.0.10)
     autotest (4.4.6)
       ZenTest (>= 4.4.1)
+    awesome_nested_set (2.1.6)
+      activerecord (>= 3.0.0)
     awesome_print (1.1.0)
     binding_of_caller (0.7.1)
       debug_inspector (>= 0.0.1)
@@ -350,6 +352,7 @@ DEPENDENCIES
   acts-as-taggable-on (~> 2.3.3)
   airbrake
   autotest
+  awesome_nested_set (>= 2.0)
   bluecloth
   capistrano
   capistrano-ext

@@ -31,7 +31,7 @@ gem 'fog'
 gem "awesome_nested_set", ">= 2.0"
 
 # GovKit
-gem "govkit", :git => "git://github.com/opengovernment/govkit.git"
+gem "govkit", :git => "git@github.com:sunlightlabs/govkit.git"
 
 # jammit support
 gem "jammit"

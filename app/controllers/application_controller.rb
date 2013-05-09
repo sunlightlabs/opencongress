@@ -16,19 +16,19 @@ class ApplicationController < ActionController::Base
   before_filter :get_site_text_page
   before_filter :is_banned?
   before_filter :set_simple_comments
-  
+
   def facebook_check
     return unless session[:nofacebook].nil?
-    
-    unless params[:fbcancel].nil? 
+
+    unless params[:fbcancel].nil?
       force_fb_cookie_delete
       @facebook_user = nil
       session[:nofacebook] = true
-      
+
       flash.now[:notice] = "Facebook Connect has been cancelled."
       return
     end
-    
+
     # check to see if the user is logged into and has connected to OC
     begin
       if current_facebook_user and current_facebook_client
@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
       force_fb_cookie_delete
       @facebook_user = nil
     end
-    
+
     if @facebook_user
       # the user isn't logged in, try to find the account based on email
       if current_user == :false
@@ -64,24 +64,24 @@ class ApplicationController < ActionController::Base
           return
         end
       end
-        
+
       if oc_user
         # if, for some reason, we don't have these fields, require them
         if oc_user.login.blank? or oc_user.zipcode.blank? or !oc_user.accepted_tos
           redirect_to :controller => 'account', :action => 'facebook_complete' unless params[:action] == 'facebook_complete'
           return
-        end 
-      
+        end
+
         # make sure we have facebook uid
         if oc_user.facebook_uid.blank?
           oc_user.facebook_uid = @facebook_user.id
           oc_user.save
-          
+
           flash.now[:notice] = 'Your Facebook account has now been linked to this OpenCongress account!'
         else
           flash.now[:notice] = "Welcome, #{oc_user.login}."
         end
-      
+
         # log the user in
         self.current_user = oc_user
       else
@@ -91,7 +91,7 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-  
+
   def is_valid_email?(e, with_headers = false)
     if with_headers == false
       email_check = Regexp.new('^[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]$')
@@ -103,7 +103,7 @@ class ApplicationController < ActionController::Base
       false
     else
       true
-    end		
+    end
   end
 
   def days_from_params(days)
@@ -135,11 +135,11 @@ class ApplicationController < ActionController::Base
     if logged_in?
       if current_user.state.nil? or current_user.my_district.size != 1
         redirect_to :controller => 'account', :action => 'determine_district' unless (params[:action] == 'determine_district' or params[:action] == 'accept_tos')
-        
+
       end
     end
   end
-  
+
   def is_banned?
     if logged_in?
       if current_user.is_banned == true
@@ -186,19 +186,19 @@ class ApplicationController < ActionController::Base
   def admin_logged_in?
     return (logged_in? && current_user.user_role.can_administer_users)
   end
-  
+
   def prepare_tsearch_query(text)
     text = text.strip
-    
-    # remove non alphanumeric 
+
+    # remove non alphanumeric
     text = text.gsub(/[^\w\.\s\-_]+/, "")
-    
-    # replace multiple spaces with one space 
+
+    # replace multiple spaces with one space
     text = text.gsub(/\s+/, " ")
-    
+
     # replace spaces with '&'
     text = text.gsub(/ /, "&")
-    
+
     text
   end
 
@@ -208,18 +208,18 @@ class ApplicationController < ActionController::Base
 
   def get_site_text_page
     page_params = site_text_params_string(params)
-    
+
     @site_text_page = SiteTextPage.find_by_page_params(page_params)
     @site_text_page = OpenStruct.new if @site_text_page.nil?
   end
-  
+
   def store_location
     unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
       session[:return_to] = request.fullpath
     end
   end
-  
-  
+
+
   def render_404(exception = nil)
     if exception
       logger.info "Rendering 404 with exception: #{exception.message}"
@@ -235,7 +235,7 @@ class ApplicationController < ActionController::Base
   def set_simple_comments
     @simple_comments = false
   end
-  
+
   def news_blog_count(count)
     return nil if count.blank?
     if count >= 1000
@@ -244,16 +244,16 @@ class ApplicationController < ActionController::Base
       count
     end
   end
-  
+
 
   def random_key
     Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
   end
-  
+
   def force_fb_cookie_delete
     cookies.delete fb_cookie_name
   end
-  
+
   protected
   def dump_session
     logger.info session.to_yaml
@@ -264,8 +264,8 @@ class ApplicationController < ActionController::Base
       logger.fatal(exception.to_s)
     else
       logger.fatal(
-        "\n\n[#{Time.now.to_s}] #{exception.class} (#{exception.message}):\n    " + 
-        clean_backtrace(exception).join("\n    ") + 
+        "\n\n[#{Time.now.to_s}] #{exception.class} (#{exception.message}):\n    " +
+        clean_backtrace(exception).join("\n    ") +
         "\n\n"
       )
     end

@@ -245,6 +245,8 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
+    pry-nav (0.2.3)
+      pry (~> 0.9.10)
     pry-rescue (1.1.0)
       interception (>= 0.3)
       pry
@@ -389,6 +391,8 @@ DEPENDENCIES
   okkez-open_id_authentication
   paperclip
   pg
+  pry
+  pry-nav
   pry-rescue
   pry-stack_explorer
   rabl

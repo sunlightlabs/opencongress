@@ -54,7 +54,6 @@ module OpenCongress
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password, :gpasswd]
 
-
     # TODO: Use wiki-internal to get wiki content on production rather
     # than going through the proxy server (twice)
 

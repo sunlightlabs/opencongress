@@ -1,4 +1,6 @@
 When /^I enter a comment with content "([^"]*)"$/ do |content|
-  fill_in("comment[comment]", :with => content)
-  click_button("Add Comment")
+  within("#add_comment_form") do
+    fill_in "Comment", :with => content
+    click_button "Add Comment"
+  end
 end

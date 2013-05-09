@@ -1,6 +1,6 @@
 #heading
   %h2 Determine Your Congressional District
-  
+
 .padding
   .registration_complete
     %p.behave
@@ -10,11 +10,11 @@
       Due to recent changes to OpenCongress, we now require all users to link their account to their Congressional District.
     %p.behave
       Please enter your street address in field below and we'll determine your district.  We will NOT store this info -- it will only be used now.
-  
+
     - if @error_msg
       .errorExplanation
         %p= @error_msg
-    
+
     .margin-top
       = form_tag '/account/determine_district' do
         %p
@@ -25,14 +25,13 @@
           %p
             = label_tag 'Zip+4'
             = text_field_tag 'zip4', nil, :maxlength => 4, :size => 4, :class => 'field'
-            &nbsp;&nbsp;
             = link_to "USPS Zip Lookup", 'https://tools.usps.com/go/ZipLookupAction!input.action', :target => '_new'
 
         - unless @error_msg
           %p
             = label_tag 'Street Address'
             = text_field_tag 'address', nil, :class => 'field'
-  
+
         %p
-          = label_tag '&nbsp;'.html_safe
+          = label_tag "&nbsp;".html_safe
           = submit_tag 'Submit', :class => 'button silver medium'

@@ -109,6 +109,8 @@ group :test, :development do
   gem 'guard'
   gem 'guard-livereload'
 
+  gem 'pry'
+  gem 'pry-nav'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
 

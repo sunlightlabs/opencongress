@@ -3,7 +3,7 @@ module ApplicationHelper
     item_limit = list.size if item_limit > list.size
     list.empty? ? [] :
       [
-      list[0...item_limit].map {|l| 
+      list[0...item_limit].map {|l|
         "<li>".html_safe + link_to_item(l, attribute, action,
         controller, show_views, trunc) + "</li>".html_safe }.join,
       list[item_limit...list.size].map {|l| "<li>".html_safe + link_to_item(l, attribute, action,
@@ -19,7 +19,7 @@ module ApplicationHelper
     (parts[0] +
       %Q{<span id="#{more_id}" class="partial_list_more"><a href="javascript:replace('#{extra_id}','#{more_id}')" class="more_link">#{text_for_more}</a></span><span style="display: none" id="#{extra_id}">#{parts[1]}</span>}).html_safe
   end
-	                 
+
   def pagination_nav(pages, options = {})
     out = ""
     out += link_to "Previous Page", { :page => pages.current.previous }.merge(options), :class => 'arrow-left' if pages.current.previous
@@ -27,38 +27,38 @@ module ApplicationHelper
     out += link_to "Next page", { :page => pages.current.next }.merge(options), :class => 'arrow' if pages.current.next
     return out
   end
-  
+
   unless const_defined?(:DEFAULT_OPTIONS)
-    DEFAULT_OPTIONS	=	{ 
-      :name => :page, 
-      :window_size => 2, 
-      :always_show_anchors => true, 
-      :link_to_current_page => false, 
+    DEFAULT_OPTIONS = {
+      :name => :page,
+      :window_size => 2,
+      :always_show_anchors => true,
+      :link_to_current_page => false,
       :params => {}
     }
   end
-  
+
   def oc_pagination_links(paginator, options={}, html_options={})
     name = options[:name] || DEFAULT_OPTIONS[:name]
     params = (options[:params] || DEFAULT_OPTIONS[:params]).clone
-        
+
     oc_pagination_links_each(paginator, options) do |n, first, last|
       params[name] = n
       link_to("[#{first.to_s}-#{last.to_s}]", params, html_options)
     end
   end
-  
+
   def blog_excerpt_with_more(article)
     content = article.content_rendered
-    
+
     if content.length <= 400
       content
     else
       text_no_html = content.gsub(/<\/?[^>]*>/, "")
 
       space = text_no_html.index(' ', 400)
-            
-      "#{text_no_html[0..space]} " + 
+
+      "#{text_no_html[0..space]} " +
       link_to('More...', article_url(article), :class => 'arrow biglinks')
     end
   end
@@ -69,7 +69,7 @@ module ApplicationHelper
       "#{str[0..length]}..."
     end
   end
-  
+
   def truncate_more(str, length)
     if str.length <= length
       str
@@ -80,7 +80,7 @@ module ApplicationHelper
       return first_half + second_half
     end
   end
-  
+
   def oc_pagination_links_each(paginator, options)
     options = DEFAULT_OPTIONS.merge(options)
     link_to_current_page = options[:link_to_current_page]
@@ -89,16 +89,16 @@ module ApplicationHelper
     current_page = paginator.current_page
     window_pages = current_page.window(options[:window_size]).pages
     return if window_pages.length <= 1 unless link_to_current_page
-         
+
     first, last = paginator.first, paginator.last
-         
+
     html = ''
     if always_show_anchors and not (wp_first = window_pages[0]).first?
       html << yield(first.number, first.first_item, first.last_item)
       html << ' ... ' if wp_first.number - first.number > 1
       html << ' '
     end
-           
+
     window_pages.each do |page|
       if current_page == page && !link_to_current_page
         html << "[#{page.first_item.to_s}-#{page.last_item.to_s}]"
@@ -107,15 +107,15 @@ module ApplicationHelper
       end
         html << ' '
       end
-         
-    if always_show_anchors and not (wp_last = window_pages[-1]).last? 
+
+    if always_show_anchors and not (wp_last = window_pages[-1]).last?
       html << ' ... ' if last.number - wp_last.number > 1
       html << yield(last.number, last.first_item, last.last_item)
     end
-         
+
     html
   end
-  
+
   def controller_name
     controller.class.controller_name
   end
@@ -127,7 +127,7 @@ module ApplicationHelper
   def learn_more
     #this is quite possibly a very bad idea
     text = controller.send :render_to_string, :partial => 'learn'
-    #spec says we want to break things up by sentence. 
+    #spec says we want to break things up by sentence.
     first, second, *rest = text.split(/\./).map { |s| s.chomp + "." }
     beginning = [first, second].join
     rest = rest.reject { |s| s == "." }.join
@@ -151,9 +151,9 @@ EOT
       "<p>#{beginning}</p>"
     end
   end
-  
+
   def contact_button(type = 'all')
-    case type 
+    case type
     when 'all'
       image_path "btn-contact-all-sponsors.gif"
     when 'senator'
@@ -162,7 +162,7 @@ EOT
       image_path "btn-contact-representative.gif"
     end
   end
-  
+
   def opensecrets_button(person = nil)
     if person
       %Q{<h3>See more campaign contribution data by visiting #{person.full_name}'s profile on <a class="arrow" target="_blank" href="http://www.opensecrets.org/politicians/summary.asp?cid=#{person.osid}">OpenSecrets</a></h3>}.html_safe
@@ -178,7 +178,7 @@ EOT
       '<h3>For more info about the campaign contributions behind the bills in Congress, visit <a class="arrow" target="_blank" href="http://maplight.org"><img class="noborder maplight" src="/images/maplight-trans.png" alt="Maplight.org" /></a>.</h3>'.html_safe
     end
   end
-  
+
   def govtrack_button
     '<div class="credit_button govtrack"><table cellspacing="0" cellpadding="0"><tr><td class="left" /><td class="center"><h3>Data made available by</h3> <a class="i" target="_blank" href="http://www.govtrack.us"><img src="/images/govtrack_button.gif" alt="Govtrack.US" /></a></td><td class="right" /></tr></table></div>'.html_safe
   end
@@ -186,7 +186,7 @@ EOT
   def openhouse_button
     '<div class="credit_button openhouse"><table cellspacing="0" cellpadding="0"><tr><td class="left" /><td class="center"><h3>Help Open Congress</h3> <a class="i" target="_blank" href="http://www.theopenhouseproject.com/"><img src="/images/openhouse_button.gif" alt="The OpenHouse Project" /></a></td><td class="right" /></tr></table></div>'.html_safe
   end
-  
+
   def technorati_button
     '<a class="technorati" target="_blank" href="http://www.technorati.com">Information made available by <strong>Technorati</strong></a>'.html_safe
   end
@@ -198,7 +198,7 @@ EOT
   def short_date(date)
     date.strftime("%b %e")
   end
-  
+
   def long_date(date)
     date.strftime("%B %e, %Y %I:%m %p")
   end
@@ -206,11 +206,11 @@ EOT
   def tiny_date(date)
     date.strftime("%b %e")
   end
-    
+
   def pluralize_nn(count, singular, plural = nil)
         ((count == 1 || count == '1') ? singular : (plural || singular.pluralize))
   end
-  
+
   def underscore_spaces(text)
     text.sub(/ /, '_')
   end
@@ -218,32 +218,32 @@ EOT
   def dropdown_trigger(text_name, trigger_text)
     "<span class=\"dropdown_trigger\"><a href=\"javascript:dropdown_open('#{text_name}_dropdown')\">#{trigger_text}</a></span>"
   end
-  
+
   def dropdown_content(text_name)
     st = SiteText.find_dropdown_text(text_name)
     text = st ? st : ""
-    
+
     %Q{<div class="dropdown_content" id="#{text_name}_dropdown" style="display: none"><div class="dropdown_close"><a href="javascript:dropdown_close('#{text_name}_dropdown')">close</a></div>#{text}</div>}
   end
-  
+
   def toggler(div_name, show_link_text, hide_link_text, show_link_class = "", hide_link_class = "")
     out = %Q{<span class="" id="show_#{div_name}">} + link_to_function(show_link_text, "Element.show('hide_#{div_name}');Element.hide('show_#{div_name}');new Effect.BlindDown('#{div_name}');", :class => show_link_class) + "</span>"
     out += %Q{<span class="" id="hide_#{div_name}" style="display:none;">} + link_to_function(hide_link_text, "Element.show('show_#{div_name}');Element.hide('hide_#{div_name}');new Effect.BlindUp('#{div_name}');", :class => hide_link_class) + "</span>"
 
     out.html_safe
   end
-  
+
 	def toggler_with_span_class(div_name, show_link_text, hide_link_text, show_link_class = "", hide_link_class = "")
     %Q{<span class="#{show_link_class}" id="show_#{div_name}"><a href="javascript:toggle('#{div_name}')" class="#{show_link_class}">#{show_link_text}</a></span>
     <span class="#{hide_link_class}" id="hide_#{div_name}" style="display: none;"><a href="javascript:toggle('#{div_name}')" class="#{hide_link_class}">#{hide_link_text}</a></span>}.html_safe
   end
 
   def ajax_toggler(div_name, show_link_text, hide_link_text, field_two, show_link_class = "", hide_link_class = "")
-    out = "<span class=\"\" id=\"show_#{div_name}\">" + link_to_remote(show_link_text, {:update => div_name, :url => field_two, :complete => "Element.show('hide_#{div_name}');Element.hide('show_#{div_name}');new Effect.BlindDown('#{div_name}');"}, :class => show_link_class) + "</span>" + 
+    out = "<span class=\"\" id=\"show_#{div_name}\">" + link_to_remote(show_link_text, {:update => div_name, :url => field_two, :complete => "Element.show('hide_#{div_name}');Element.hide('show_#{div_name}');new Effect.BlindDown('#{div_name}');"}, :class => show_link_class) + "</span>" +
           " <span class='' id='hide_#{div_name}' style=\"display:none;\">" + link_to_function(hide_link_text, "Element.show('show_#{div_name}');Element.hide('hide_#{div_name}');new Effect.BlindUp('#{div_name}');", :class => hide_link_class) + "</span>"
     out.html_safe
   end
-	
+
 	def im_here(ctl,act)
 		if request.path_parameters['controller'] == ctl
 			if request.path_parameters['action'] == act
@@ -257,21 +257,21 @@ EOT
 	def class_class
 	  "class=\"#{controller.controller_name} #{params[:person_type]? params[:person_type] : controller.action_name}\""
 	end
-	
+
 	def site_text_explain(tag)
     st = SiteText.find_explain(tag)
     text = st ? st : ""
-    
+
     "<div class=\"explain_box\">#{text}</div>".html_safe
   end
-  
+
   def site_text_plaintext(tag)
     st = SiteText.find_plaintext(tag)
     text = st ? st : ""
-    
+
     text
   end
-  
+
   # this is a temporary method to removed some weird data we are getting from govtrack
   def temp_url_strip(str)
     if ind = str.index(/&lt;a href/)
@@ -280,8 +280,8 @@ EOT
       str
     end
   end
-  
-  # this method should be run on tag-stripped strings 
+
+  # this method should be run on tag-stripped strings
   def strip_unclosed_tag(str)
     if ind = str.index(/</)
       return str[0..(ind-1)]
@@ -291,13 +291,13 @@ EOT
   end
 
   def admin_logged_in?
-    return (logged_in? && current_user.user_role.can_blog) ? true : false
+    return (logged_in? && current_user.user_role.can_blog) ? true : false rescue false
   end
-  
+
   def can_blog?
-    return (logged_in? && current_user.user_role.can_blog) ? true : false
+    return (logged_in? && current_user.user_role.can_blog) ? true : false rescue false
   end
-  
+
   def search_link(text)
     capitalized_words = []
     text.split.each { |w| capitalized_words << w.capitalize }
@@ -307,7 +307,7 @@ EOT
   def search_url(text)
       "/search/result?q=#{text}&amp;search_congress%5B#{Settings.default_congress}%5D=#{Settings.default_congress}&amp;search_bills=1&amp;search_people=1&amp;search_committees=1&amp;search_industries=1&amp;search_issues=1&amp;search_commentary=1"
   end
-  
+
   ### XML/ATOM helpers
   def commentary_atom_entry(xml, commentary)
     xml.entry do
@@ -321,25 +321,25 @@ EOT
       end
     end
   end
-  
+
   def bill_basic_atom_entry(xml, b, updated_method)
     xml.entry do
       xml.title   b.title_full_common
       xml.link    "rel" => "alternate", "href" => bill_url(b)
       xml.id      b.atom_id_as_entry
-      
+
       if updated_method
         xml.updated b.stats.send(updated_method).strftime("%Y-%m-%dT%H:%M:%SZ")
       else
         xml.updated b.last_action.datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
       end
-      
+
       xml.content "type" => "html" do
         xml.text! b.title_official
       end
     end
   end
-  
+
   def bill_action_atom_entry(xml, a)
     title_preface = ""
     case a.action_type
@@ -354,7 +354,7 @@ EOT
     when 'vetoed'
       title_preface = 'Bill Vetoed: '
     end
-    
+
     xml.entry do
       xml.title   title_preface + a.bill.title_full_common
       xml.link    "rel" => "alternate", "href" => bill_url(a.bill)
@@ -367,7 +367,7 @@ EOT
     end
   end
 
-  
+
   def person_basic_atom_entry(xml, p, updated_method = :entered_top_viewed)
     xml.entry do
       xml.title   p.name
@@ -380,18 +380,18 @@ EOT
     end
   end
   def add_friend_link_ajax(friend, update_div = "fdiv")
-     if logged_in? 
+     if logged_in?
        friend_login = CGI::escapeHTML(friend.login)
        f = current_user.friends.find_by_friend_id(friend.id)
        if f.nil? && friend != current_user
-         link_to_remote("Add #{friend_login} to Friends", { :update => update_div, 
-                             :url => {:controller => 'friends', 
-                             :action => 'add', 
-                             :login => current_user.login, 
+         link_to_remote("Add #{friend_login} to Friends", { :update => update_div,
+                             :url => {:controller => 'friends',
+                             :action => 'add',
+                             :login => current_user.login,
                              :id => friend.id}})
        elsif f.nil? && friend == current_user
           ""
-       elsif f.confirmed == true 
+       elsif f.confirmed == true
           "#{friend_login} is my friend"
        else
           "#{friend_login} has yet to approve me"
@@ -416,7 +416,7 @@ EOT
     ret += "</ul>\n"
     ret.html_safe
   end
-  
+
 
   def display_nested_set_rows(rows)
     ret = "<ul style=\"float:none;clear:both;\">"
@@ -428,11 +428,11 @@ EOT
     ret += "</ul>\n"
     ret.html_safe
   end
-  
+
   def percent_to_color(result) #where result is whole number percentage,
     color=[]
     if result.nil?
-      color << "b2b2b2" 
+      color << "b2b2b2"
     elsif result > 50
       color << ((100 - result) * 2.74).round.to_s(base=16)
       color << "ab"
@@ -481,7 +481,7 @@ EOT
     end
     return bill_vote_images.html_safe
   end
-  
+
 	def inline_determine_support(bill, support = 10)
 		yah = String.new
 		nah = String.new
@@ -525,7 +525,7 @@ EOT
   			      {:url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => 0}},
   			      :class => "yes #{yah}") +
         "
-                                            
+
         " +
           link_to_remote(image_tag('no.png') + "<span>I Oppose this Bill</span>".html_safe,
   			      {:url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => 1}},
@@ -538,9 +538,9 @@ EOT
       else
         '<div class="voting_buttons">' +
           link_to(image_tag('yes.png') + "<span>I Support this Bill</span>".html_safe,
-              login_url(:modal => true, :login_action => 0), :class => "vote_trigger yes") + 
+              login_url(:modal => true, :login_action => 0), :class => "vote_trigger yes") +
         "
-          
+
         " +
           link_to(image_tag('no.png') + "<span>I Oppose this Bill</span>".html_safe,
               login_url(:modal => true, :login_action => 1), :class => "vote_trigger no") +
@@ -548,12 +548,12 @@ EOT
         </div>
           <!-- <a href=\"\" class=\"more learn_trigger\"><span>I Want to Learn More</span></a> -->
           <a href=\"\" class=\"more learn_trigger\"><span></span></a>
-        "        
+        "
       end
 		end
 	end
-  
-  def user_bill_result(bill)                   
+
+  def user_bill_result(bill)
     color = percent_to_color(bill.users_percentage_at_position('support'))
     %Q{<div id="users_result">
     <h3 style="color:#{color};" id="support_#{bill.id.to_s}">
@@ -562,42 +562,42 @@ EOT
     <span>#{bill.users_at_position('support')} in favor / #{bill.users_at_position('oppose')} opposed</span>
     </div>}.html_safe
   end
-  
+
   def my_congresspeople_votes(bill)
     out = ""
     unless bill.roll_calls.empty?
-      bill.roll_calls.each do |rc| 
-        if current_user.my_sens 
+      bill.roll_calls.each do |rc|
+        if current_user.my_sens
           unless rc.action.nil?
             if rc.action.vote_type == 'vote' || rc.action.vote_type == 'vote2'
               if rc.action.where == 's'
                 current_user.my_sens.each do |sen|
-                  voted = rc.vote_for_person(sen).to_s 
+                  voted = rc.vote_for_person(sen).to_s
                   out += "<p>#{sen.title_full_name}<font class='#{voted}'> #{voted} </font></p><font>[#{sen.party_and_state}]</font>"
                 end
               end
             end
-          end 
+          end
         end
         if current_user.my_reps
           unless rc.action.nil?
             if rc.action.vote_type == 'vote' || rc.action.vote_type == 'vote2'
               if rc.action.where == 'h'
-                current_user.my_reps.each do |rep| 
+                current_user.my_reps.each do |rep|
                   voted = rc.vote_for_person(rep).to_s
                   out += "<p>#{rep.title_full_name}<font class='#{voted}'> #{voted} </font></p><font>[#{rep.party_and_state}]</font>"
                 end
               end
             end
           end
-        end 
-      end   
+        end
+      end
       unless out.blank?
         return ("<h5>My Regional Officials</h5>" + out).html_safe
       end
-    end             
+    end
   end
-  
+
   def countdown_field(field_id, update_id, max, options = {})
     function = "$('#{update_id}').innerHTML = (#{max} - $F('#{field_id}').length);"
     count_field_tag(field_id,function,options)
@@ -608,12 +608,12 @@ EOT
     count_field_tag(field_id,function,options)
   end
 
-  def count_field_tag(field_id, function, options = {})  
+  def count_field_tag(field_id, function, options = {})
     out = javascript_tag function
     out += observe_field(field_id, options.merge(:function => function))
     return out
   end
-  
+
   def dbox_trigger(text_name)
     %Q{<script type="text/javascript">
     $j().ready(function() {
@@ -622,7 +622,7 @@ EOT
         .jqResize('##{text_name}_resize')
         .jqm({
           trigger:'##{text_name}_trigger',
-          overlay:0,                      
+          overlay:0,
           onShow: function(h) {
             h.w.css('opacity',0.92).slideDown();
           },
@@ -635,7 +635,7 @@ EOT
     </script>
     <a href="#" id="#{text_name}_trigger" class="dbox_trigger">?</a>}.html_safe
   end
-  
+
   def dbox_content(text_name)
     st = SiteText.find_dropdown_text(text_name)
     text = st ? st : ""
@@ -650,7 +650,7 @@ EOT
      <img src="/images/resize.gif" id="#{text_name}_resize" alt="resize" class="dbox_resize" />
      </div>}.html_safe
   end
-  
+
   def dbox_start(div_name, x_off, y_off, width, point = "")
     out = %Q{<div class="dboxed" id="#{div_name}" style="display:none;">
     <div style="position:relative;left:#{x_off.to_s ||= '80'}px;top:#{y_off.to_s ||= '30'}px;width:#{width.to_s}px;">
@@ -683,7 +683,7 @@ EOT
     </div>
     </div>'.html_safe
   end
-  
+
   def make_tabs(tabs)
     make_tabs = tabs.inject([]) do |text, link|
       here = (link[1][:action] == controller.action_name) ? 'here' : ''
@@ -705,11 +705,11 @@ EOT
       yield t[0], classes[(t[1] - min) / divisor]
     }
   end
-  
+
   def bill_category(bill)
     klass = ''
     klass += bill.status_class
-    unless bill.hot_bill_category.nil? 
+    unless bill.hot_bill_category.nil?
       klass += ' hot'
     end
     if Time.at(bill.introduced) > 30.days.ago
@@ -727,10 +727,10 @@ EOT
     elsif @meta_description
       meta_tag = "<meta name=\"description\" content=\"#{truncate(strip_tags(@meta_description), :length => 256)}\" />"
     end
-    
+
     meta_tag.html_safe
   end
-  
+
   def meta_keywords_tag
     meta_tag = ""
 
@@ -756,13 +756,13 @@ EOT
       title += ": #{@head_title}"
     end
     if @page_title_prefix
-      title += " - #{@page_title_prefix}" 
+      title += " - #{@page_title_prefix}"
     end
     stop = title.length > 113 ? (title.rindex(' ', 113)) : title.length
     title = title.length > 113 ? (title[0...stop] + "... ") : (title + " - ")
-    title += "OpenCongress"                                   
+    title += "OpenCongress"
     return title
-  end 
+  end
 
   def info_box
     if @site_text_page && !@site_text_page.title_desc.blank?
@@ -770,8 +770,8 @@ EOT
     else
       return ""
     end
-  end 
-  
+  end
+
   def get_vote_image(vote)
     vote_hash = {
       "+" => image_tag("passed_big.png"),
@@ -779,14 +779,14 @@ EOT
   		"0" => "",
   		"P" => ""
     }
-    
+
     vote_hash[vote]
   end
 
   def bookmarking_image
     "<link rel=\"image_src\" href=\"" + (@bookmarking_image.blank? ? image_path("fb-default.jpg") : @bookmarking_image) + "\" />".html_safe
   end
-  
+
   def has_originating_chamber_roll_call?(bill)
     if bill and bill.originating_chamber_vote
       if bill.originating_chamber_vote.roll_call
@@ -795,11 +795,11 @@ EOT
         # sometimes the parser misses this
         a = bill.originating_chamber_vote
         rc = RollCall.find_by_ident("#{a.datetime.year}-#{a.where}#{a.roll_call_number}")
-        
+
         if rc
           a.roll_call = rc
           a.save
-        
+
           return true
         end
       end
@@ -808,7 +808,7 @@ EOT
   end
 
   def has_other_chamber_roll_call?(bill)
-    
+
     if bill and bill.other_chamber_vote
       if bill.other_chamber_vote.roll_call
         return true
@@ -816,35 +816,35 @@ EOT
         # sometimes the parser misses this
         a = bill.other_chamber_vote
         rc = RollCall.find_by_ident("#{a.datetime.year}-#{a.where}#{a.roll_call_number}")
-        
+
         if rc
           a.roll_call = rc
           a.save
-        
+
           return true
         end
       end
     end
     return false
   end
-  
+
   def opensecrets_cycle_years
     "#{Settings.current_opensecrets_cycle.to_i - 1}-#{Settings.current_opensecrets_cycle}"
   end
 
   def bitly_url(object)
     require 'open-uri'
-    
+
     case object
     when Article
       url = url_for(:only_path => false, :controller => 'articles', :action => 'view', :id => object)
     when ContactCongressLetter
       url = url_for(:only_path => false, :controller => 'contact_congress_letters', :action => 'show', :id => object)
     end
-    
+
     begin
       json = JSON.parse(open("http://api.bit.ly/shorten?login=arossoc&apiKey=#{ApiKeys.bitly}&longUrl=#{url}").read)
-      
+
       if json['errorCode'] == 0
         return json['results'][url]['shortUrl']
       else
@@ -865,5 +865,5 @@ EOT
       'tracking'
     end
   end
-  
+
 end

@@ -14,8 +14,10 @@ db/schema.rb
 public/assets/*
 public/system/*
 public/robots.txt
+public/images/photos
 vendor/plugins/acts_as_solr/solr/tmp/*
 vendor/plugins/acts_as_solr/solr/solr/data/**/*
 vendor/plugins/acts_as_solr/solr/logs/*
 .bundle
 .*.swp
+TAGS

@@ -7,6 +7,42 @@ namespace :update do
     (Dir.mkdir path) unless (Dir.exists? path)
   end
 
+  def dl_congress_zip_archive (cong_num)
+    stub = Settings.unitedstates_congress_url_stub
+    sep = (s.ends_with? '/') and '' or '/'
+    url = "#{stub}#{sep}#{cong_num}.zip"
+
+    dest_dir_path = File.join(Settings.data_path, "unitedstates")
+    dest_file_path = File.join(dest_dir_path, "#{cong_num}.zip")
+    mkdir_guard Settings.data_path
+    mkdir_guard dest_dir_path
+
+    puts "Downloading #{url}"
+    $stdout.flush
+    system "curl --silent --show-error #{url} -o #{dest_file_path}"
+    system "ls -lh #{dest_file_path}"
+  end
+
+  task :dl_named_congress => :environment do
+    cong_num = ENV['cong_num']
+    if cong_num.nil?
+      puts 'You must specify cong_num=###'
+    else
+      dl_congress_zip_archive cong_num
+    end
+  end
+
+  task :dl_latest_congress => :environment do
+    latest_congress = Settings.available_congresses.sort.last
+    dl_congress_zip_archive latest_congress
+  end
+
+  task :dl_all_congresses => :environment do
+    Settings.available_congresses.each do |cong_num|
+      dl_congress_zip_archive cong_num
+    end
+  end
+
   task :congress_legislators => :environment do
     clone_path = Settings.unitedstates_legislators_clone_path
     repo_url = Settings.unitedstates_legislators_repo_url

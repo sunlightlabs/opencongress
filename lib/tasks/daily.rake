@@ -3,6 +3,22 @@ require 'o_c_logger'
 namespace :update do
   desc "controls the running of parsing scripts that are intended to be run daily"
 
+  def mkdir_guard (path)
+    (Dir.mkdir path) unless (Dir.exists? path)
+  end
+
+  task :congress_legislators => :environment do
+    clone_path = Settings.unitedstates_legislators_clone_path
+    repo_url = Settings.unitedstates_legislators_repo_url
+
+    if Dir.exist? clone_path
+      system "cd #{Settings.unitedstates_legislators_clone_path} && git pull"
+    else
+      mkdir_guard clone_path
+      system "cd #{clone_path} && git clone #{repo_url} ."
+    end
+  end
+
   task :rsync => :environment do
     begin
       OCLogger.log "rsync with govtrack beginning...\n\n"

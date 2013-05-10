@@ -22,7 +22,7 @@ usage unless ['current', 'historical'].include? ARGV[0]
 
 
 mode = ARGV[0]
-legislators_file_path = File.join(Settings.data_path, "unitedstates", "legislators-#{mode}.yaml")
+legislators_file_path = File.join(Settings.unitedstates_legislators_clone_path, "legislators-#{mode}.yaml")
 if not File.exists? legislators_file_path
     OCLogger.log "No such file: #{legislators_file_path}"
     exit
@@ -102,15 +102,16 @@ legislators.each do |leg|
         start_date = Date.parse(term['start'])
         end_date = Date.parse(term['end'])
 
-        begin
-            role = leg_person.roles.where(:startdate => start_date,
-                                          :enddate => end_date) .last
+        role = leg_person.roles.where(:startdate => start_date,
+                                      :enddate => end_date) .last
+        if role.nil?
             OCLogger.log "Updating #{term['type']} Role from #{start_date} to #{end_date}"
-        rescue ActiveRecord::RecordNotFound
             role = leg_person.roles.new(:startdate => start_date,
                                         :enddate => end_date)
+        else
             OCLogger.log "Added #{term['type']} Role from #{start_date} to #{end_date}"
         end
+
         role.role_type = term['type']
         role.party = term['party']
         role.district = term['district']

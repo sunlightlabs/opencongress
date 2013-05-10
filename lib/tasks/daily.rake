@@ -40,7 +40,7 @@ namespace :update do
 
   task :photos => :environment do
     begin
-      system "sh #{Rails.root}/bin/daily/govtrack-photo-rsync.sh #{Settings.data_path}"
+      system "bash #{Rails.root}/bin/daily/govtrack-photo-rsync.sh #{Settings.data_path}"
       unless (['production', 'staging'].include?(Rails.env))
         system "ln -s -i -F #{Settings.data_path}/govtrack/photos #{Rails.root}/public/images/photos"
       end

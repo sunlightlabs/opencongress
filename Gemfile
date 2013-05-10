@@ -40,6 +40,8 @@ gem "closure-compiler"
 # paperclip -- for attaching files to requests
 gem 'paperclip'
 
+# Deal with unicode strings
+gem 'unicode_utils'
 
 # notifier for production errors
 gem "airbrake"

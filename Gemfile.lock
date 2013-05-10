@@ -333,6 +333,7 @@ GEM
     unf (0.1.1)
       unf_ext
     unf_ext (0.0.6)
+    unicode_utils (1.4.0)
     validates_captcha (0.9.7)
       actionpack (>= 2.3.2)
       activerecord (>= 2.3.2)
@@ -409,6 +410,7 @@ DEPENDENCIES
   silent-postgres
   simple-rss
   simplecov
+  unicode_utils
   validates_captcha
   webrat
   will_paginate (~> 3.0.pre2)

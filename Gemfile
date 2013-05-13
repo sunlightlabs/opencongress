@@ -12,6 +12,7 @@ gem "settingslogic"
 # HAML support
 gem "haml", "~> 3.1.8"
 gem "haml-rails"
+gem 'sass'
 # gem "sass-rails"  #<= after upgrading past rails 3.1
 
 # RABL for API / JSON

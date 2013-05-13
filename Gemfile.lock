@@ -315,6 +315,7 @@ GEM
     ruby-hmac (0.4.0)
     ruby-openid (2.2.3)
     ruby-progressbar (1.0.2)
+    sass (3.2.8)
     selenium-client (1.2.18)
     settingslogic (2.0.9)
     sexp_processor (4.2.1)
@@ -405,6 +406,7 @@ DEPENDENCIES
   rmagick (= 2.13.1)
   rspec-rails (~> 2.4)
   ruby-openid
+  sass
   selenium-client
   settingslogic
   silent-postgres

@@ -3,6 +3,8 @@ source 'http://rubygems.org'
 gem 'rails', '~> 3.0.19'
 gem 'rake', '~> 0.9.1'
 
+gem 'thin'
+
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
 gem 'mysql'

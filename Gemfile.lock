@@ -326,6 +326,10 @@ GEM
       simplecov-html (~> 0.7.1)
     simplecov-html (0.7.1)
     slop (3.4.4)
+    thin (1.5.1)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
     thor (0.14.6)
     treetop (1.4.12)
       polyglot
@@ -412,6 +416,7 @@ DEPENDENCIES
   silent-postgres
   simple-rss
   simplecov
+  thin
   unicode_utils
   validates_captcha
   webrat

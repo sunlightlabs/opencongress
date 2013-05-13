@@ -21,6 +21,7 @@ class Committee < ActiveRecord::Base
   
   has_one :wiki_link, :as => "wikiable"
 
+  validates_uniqueness_of :thomas_id
 
   
   @@DISPLAY_OBJECT_NAME = 'Committee'

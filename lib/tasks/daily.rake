@@ -1,8 +1,6 @@
 require 'o_c_logger'
 
 namespace :update do
-  desc "controls the running of parsing scripts that are intended to be run daily"
-
   def mkdir_guard (path)
     (Dir.mkdir path) unless (Dir.exists? path)
   end
@@ -23,6 +21,8 @@ namespace :update do
     system "ls -lh #{dest_file_path}"
   end
 
+
+  desc "Downloads bills for a specific congress"
   task :dl_named_congress => :environment do
     cong_num = ENV['cong_num']
     if cong_num.nil?
@@ -32,17 +32,20 @@ namespace :update do
     end
   end
 
+  desc "Downloads bills for the latest congress"
   task :dl_latest_congress => :environment do
     latest_congress = Settings.available_congresses.sort.last
     dl_congress_zip_archive latest_congress
   end
 
+  desc "Downloads bills for all congresses"
   task :dl_all_congresses => :environment do
     Settings.available_congresses.each do |cong_num|
       dl_congress_zip_archive cong_num
     end
   end
 
+  desc "Clones the @unitedstates/congress-legislators repository"
   task :congress_legislators => :environment do
     clone_path = Settings.unitedstates_legislators_clone_path
     repo_url = Settings.unitedstates_legislators_repo_url
@@ -55,6 +58,7 @@ namespace :update do
     end
   end
 
+  desc "Fetches data from govtrack's rsync service"
   task :rsync => :environment do
     begin
       OCLogger.log "rsync with govtrack beginning...\n\n"
@@ -74,6 +78,7 @@ namespace :update do
     load 'bin/daily/civicrm_sync.rb'
   end
 
+  desc "Fetches legislator photos from govtrack"
   task :photos => :environment do
     begin
       system "bash #{Rails.root}/bin/daily/govtrack-photo-rsync.sh #{Settings.data_path}"
@@ -90,6 +95,7 @@ namespace :update do
     end
   end
 
+  desc "Parses bioguide"
   task :bios => :environment do
     begin
       load 'bin/daily/daily_parse_bioguide.rb'
@@ -116,6 +122,7 @@ namespace :update do
     end
   end
 
+  desc "DEPRECATED: Loads legislator information from govtrack"
   task :people => :environment do
     begin
       begin
@@ -140,6 +147,7 @@ namespace :update do
     end    
   end
 
+  desc "Loads bills from govtrack"
   task :bills => :environment do
     begin
       load 'bin/daily/daily_parse_bills.rb'
@@ -153,6 +161,7 @@ namespace :update do
     end
   end
 
+  desc "Loads bill text from govtrack"
   task :bill_text => :environment do
     begin
       load 'bin/daily/daily_parse_bill_text.rb'
@@ -202,6 +211,7 @@ namespace :update do
     end
   end
 
+  desc "Parse committee reports from Thomas"
   task :committee_reports_parse => :environment do
     begin
       CommitteeReport.transaction {

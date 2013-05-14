@@ -54,7 +54,7 @@ legislators.each do |leg|
     leg_person = Person.find leg['id']['govtrack']
     OCLogger.log "Updating Legislator: #{leg['id']['govtrack']}"
   rescue ActiveRecord::RecordNotFound
-    leg_person = Person.new
+    leg_person = Person.new :id => leg['id']['govtrack']
     OCLogger.log "Adding Legislator: #{leg['id']['govtrack']}"
   end
 
@@ -105,11 +105,11 @@ legislators.each do |leg|
     role = leg_person.roles.where(:startdate => start_date,
                                   :enddate => end_date) .last
     if role.nil?
-      OCLogger.log "Updating #{term['type']} Role from #{start_date} to #{end_date}"
+      OCLogger.log "Added #{term['type']} Role from #{start_date} to #{end_date}"
       role = leg_person.roles.new(:startdate => start_date,
                                   :enddate => end_date)
     else
-      OCLogger.log "Added #{term['type']} Role from #{start_date} to #{end_date}"
+      OCLogger.log "Updating #{term['type']} Role from #{start_date} to #{end_date}"
     end
 
     role.role_type = term['type']

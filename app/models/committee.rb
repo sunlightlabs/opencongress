@@ -114,15 +114,24 @@ class Committee < ActiveRecord::Base
   end
 
   def chair
-    Person.find :first, :select => "people.*", :include => :committee_people, :order => 'committees_people.id DESC', :conditions => ["(lower(committees_people.role) = 'chair' OR lower(committees_people.role) = 'chairman') AND committees_people.committee_id = ? AND committees_people.session = ?", id, Settings.default_congress]
-  end 
-  
-  def vice_chair
-    Person.find :first, :select => "people.*", :include => :committee_people, :order => 'committees_people.id DESC', :conditions => ["lower(committees_people.role) = 'vice chairman' AND committees_people.committee_id = ? AND committees_people.session = ?", id, Settings.default_congress]
+    membership = CommitteePerson.where(:committee_id => self.id,
+                                       :role => ['Chair', 'Chairman'],
+                                       :session => Settings.default_congress) .first
+    membership and membership.person
   end
-  
+ 
+  def vice_chair
+    membership = CommitteePerson.where(:committee_id => self.id,
+                                       :role => 'Vice Chairman',
+                                       :session => Settings.default_congress) .first
+    membership and membership.person
+  end
+
   def ranking_member
-    Person.find :first, :select => "people.*", :include => :committee_people, :order => 'committees_people.id DESC', :conditions => ["lower(committees_people.role) = 'ranking member' AND committees_people.committee_id = ? AND committees_people.session = ?", id, Settings.default_congress]
+    membership = CommitteePerson.where(:committee_id => self.id,
+                                       :role => 'Ranking Member',
+                                       :session => Settings.default_congress) .first
+    membership and membership.person
   end
   
   def Committee.major_committees

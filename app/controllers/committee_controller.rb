@@ -27,6 +27,11 @@ class CommitteeController < ApplicationController
       return
     end
     @reports = @committee.reports.sort_by { |r| r.index }.reverse.first(5)
+
+    special_titles = ['Vice Chairman', 'Chair', 'Chairman', 'Ranking Member']
+    @members = @committee.members.order(:lastname).select do |p|
+      not special_titles.include? p.title
+    end
     @chair = @committee.chair
     @ranking_member = @committee.ranking_member
     @vice_chair = @committee.vice_chair

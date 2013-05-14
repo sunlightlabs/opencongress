@@ -19,51 +19,21 @@
       <div class="carousel_wrapper">
         <div class="carousel_inner">
           <div id="kthxbye2" style="width:<%= 118 * @committee.members.length %>px;">
-            <% conditions = "" %>
             <% if @chair %>
-              <% conditions += "people.id != #{@chair.id}" %>
-              <div class="graph_item">
-                <a href="<%= person_url @chair.ident %>">
-                  <image src="/images/photos/thumbs_125/<%= @chair.id %>.jpeg" width="102px" height="125px"/></a>
-
-                <span class="name"><%= @chair.full_name %></span>
-                <em>Chair</em>
-              </div>
+              <%= render :partial => "member", :object => @chair,
+                         :locals => { :title => "Chair" } %>
             <% end %>
             <% if @vice_chair %>
-              <% if conditions.blank? %>
-                <% conditions += "people.id != #{@vice_chair.id}" %>
-              <% else %>
-                <% conditions += " AND people.id != #{@vice_chair.id}" %>
-              <% end %>  
-              <div class="graph_item">
-                <a href="<%= person_url @vice_chair.ident %>"><image src="/images/photos/thumbs_125/<%= @vice_chair.id %>.jpeg" width="102px" height="125px"/></a>
-                <span class="name"><%= @vice_chair.full_name %></span>
-                <em>Vice Chair</em>
-              </div>
+              <%= render :partial => "member", :object => @vice_chair,
+                         :locals => { :title => "Vice Chair" } %>
             <% end %>
             <% if @ranking_member %>
-              <% if conditions.blank? %>
-                <% conditions += "people.id != #{@ranking_member.id}" %>
-              <% else %>
-                <% conditions += " AND people.id != #{@ranking_member.id}" %>
-              <% end %>  
-              <div class="graph_item">
-                <a href="<%= person_url @ranking_member.ident %>"><image src="/images/photos/thumbs_125/<%= @ranking_member.id %>.jpeg" width="102px" height="125px"/></a>
-                <span class="name"><%= @ranking_member.full_name %></span>
-                <em>Ranking Member</em>
-              </div>
+              <%= render :partial => "member", :object => @ranking_member,
+                         :locals => { :title => "Ranking Member" } %>
             <% end %>
 
-            <% @committee.members.find(:all, :conditions => conditions, :order => "people.lastname asc").each do |m| %>
-              <div class="graph_item">
-                <a href="<%= person_url m.ident %>"><%= image_tag m.photo_path %>
-                  <span class="name"><%= m.full_name %></span></a>
-              </div>
-            <% end %>
+            <%= render :partial => "member", :collection => @members, :locals => { :title => nil } %>
           </div>
-
-
         </div>
         <br style="clear:both;" />
 

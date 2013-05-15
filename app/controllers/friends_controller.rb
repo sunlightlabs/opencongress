@@ -1,7 +1,7 @@
 class FriendsController < ApplicationController
   #require 'contacts'
   layout 'application'
- 
+
   before_filter :get_user
   before_filter :login_required, :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
   before_filter :must_be_owner, :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
@@ -14,9 +14,9 @@ class FriendsController < ApplicationController
      elsif params[:name]
        @results = User.find(:all, :conditions => ["LOWER(full_name) = ?", params[:name].downcase])
      elsif params[:login]
-       @results = User.find(:all, :conditions => ["LOWER(login) = ?", params[:login].downcase]) 
+       @results = User.find(:all, :conditions => ["LOWER(login) = ?", params[:login].downcase])
      end
-     render :action => 'search', :layout => false 
+     render :action => 'search', :layout => false
   end
 
   def invite_form
@@ -24,55 +24,55 @@ class FriendsController < ApplicationController
   end
 
   def tracking_bill
-		@bill = Bill.find_by_ident(params[:id])
-		@object = @bill
-		@users_solr = User.find_users_tracking_bill(@bill)
+    @bill = Bill.find_by_ident(params[:id])
+    @object = @bill
+    @users_solr = User.find_users_tracking_bill(@bill)
     @users = @users_solr.nil? ? [] : User.find_for_tracking_table(current_user, @bill, @users_solr.docs)
-		@page_title = "Users tracking #{@bill.typenumber}"
+    @page_title = "Users tracking #{@bill.typenumber}"
 
-		if params[:state]
-		  @state_abbrev = params[:state]
+    if params[:state]
+      @state_abbrev = params[:state]
       if @state_name = State.for_abbrev(@state_abbrev)
-   		  @in_my_state_solr = User.find_users_in_states_tracking([params[:state]], @bill, 1000)
-  		  @in_my_state = User.find_for_tracking_table(current_user, @bill, @in_my_state_solr.docs)
+        @in_my_state_solr = User.find_users_in_states_tracking([params[:state]], @bill, 1000)
+        @in_my_state = User.find_for_tracking_table(current_user, @bill, @in_my_state_solr.docs)
       end
     elsif logged_in? && !current_user.zipcode.blank?
-		  @state_abbrev = current_user.state_cache.first  
+      @state_abbrev = current_user.state
       @state_name = State.for_abbrev(@state_abbrev)
-		  @in_my_state_solr = User.find_users_in_states_tracking(current_user.state_cache, @bill, 1000)
-		  @in_my_state = User.find_for_tracking_table(current_user, @bill, @in_my_state_solr.docs)
-		  @in_my_district_solr = User.find_users_in_districts_tracking(current_user.district_cache, @bill, 1000)
-		  @in_my_district = User.find_for_tracking_table(current_user, @bill, @in_my_district_solr.docs)
+      @in_my_state_solr = User.find_users_in_states_tracking(current_user.state, @bill, 1000)
+      @in_my_state = User.find_for_tracking_table(current_user, @bill, @in_my_state_solr.docs)
+      @in_my_district_solr = User.find_users_in_districts_tracking(current_user.district, @bill, 1000)
+      @in_my_district = User.find_for_tracking_table(current_user, @bill, @in_my_district_solr.docs)
     end
   end
 
   def tracking_person
     @person = Person.find(params[:id])
-		@object = @person
+    @object = @person
     @users_solr = User.find_users_tracking_person(@person)
     @users = @users_solr.nil? ? [] : User.find_for_tracking_table(current_user, @person, @users_solr.docs)
- 		@page_title = "Users tracking #{@person.short_name}"
+    @page_title = "Users tracking #{@person.short_name}"
 
-		if logged_in? && !current_user.zipcode.blank?
-		  @in_my_state_solr = User.find_users_in_states_tracking(current_user.state_cache, @person, 1000)
-		  @in_my_state = User.find_for_tracking_table(current_user, @person, @in_my_state_solr.docs)
-		  @in_my_district_solr = User.find_users_in_districts_tracking(current_user.district_cache, @person, 1000)
-		  @in_my_district = User.find_for_tracking_table(current_user, @person, @in_my_district_solr.docs)
-		end
-	end
+    if logged_in? && !current_user.zipcode.blank?
+      @in_my_state_solr = User.find_users_in_states_tracking(current_user.state, @person, 1000)
+      @in_my_state = User.find_for_tracking_table(current_user, @person, @in_my_state_solr.docs)
+      @in_my_district_solr = User.find_users_in_districts_tracking(current_user.district, @person, 1000)
+      @in_my_district = User.find_for_tracking_table(current_user, @person, @in_my_district_solr.docs)
+    end
+  end
 
   def tracking_issue
     @issue = Subject.find(params[:id])
     @users_solr = User.find_users_tracking_issue(@issue)
     @users = @users_solr.nil? ? [] : User.find_for_tracking_table(current_user, @issue, @users_solr.docs)
- 		@page_title = "Users tracking #{@issue.term}"
+    @page_title = "Users tracking #{@issue.term}"
 
-		if logged_in? && !current_user.zipcode.blank?
-		  @in_my_state_solr = User.find_users_in_states_tracking(current_user.my_state, @issue, 1000)
-		  @in_my_state = User.find_for_tracking_table(current_user, @issue, @in_my_state_solr.docs)
-		  @in_my_district_solr = User.find_users_in_districts_tracking(current_user.my_district, @issue, 1000)
-		  @in_my_district = User.find_for_tracking_table(current_user, @issue, @in_my_district_solr.docs)
-		end
+    if logged_in? && !current_user.zipcode.blank?
+      @in_my_state_solr = User.find_users_in_states_tracking(current_user.state, @issue, 1000)
+      @in_my_state = User.find_for_tracking_table(current_user, @issue, @in_my_state_solr.docs)
+      @in_my_district_solr = User.find_users_in_districts_tracking(current_user.district, @issue, 1000)
+      @in_my_district = User.find_for_tracking_table(current_user, @issue, @in_my_district_solr.docs)
+    end
 
   end
 
@@ -80,93 +80,88 @@ class FriendsController < ApplicationController
     @committee = Committee.find(params[:id])
     @users_solr = User.find_users_tracking_committee(@committee)
     @users = @users_solr.nil? ? [] : User.find_for_tracking_table(current_user, @committee, @users_solr.docs)
- 		@page_title = "Users tracking the #{@committee.name} Committee"
+    @page_title = "Users tracking the #{@committee.name} Committee"
 
-		if logged_in? && !current_user.zipcode.blank?
-		  @in_my_state_solr = User.find_users_in_states_tracking(current_user.my_state, @committee, 1000)
-		  @in_my_state = User.find_for_tracking_table(current_user, @committee, @in_my_state_solr.docs)
-		  @in_my_district_solr = User.find_users_in_districts_tracking(current_user.my_district, @committee, 1000)
-		  @in_my_district = User.find_for_tracking_table(current_user, @committee, @in_my_district_solr.docs)
-		end
+    if logged_in? && !current_user.zipcode.blank?
+      @in_my_state_solr = User.find_users_in_states_tracking(current_user.state, @committee, 1000)
+      @in_my_state = User.find_for_tracking_table(current_user, @committee, @in_my_state_solr.docs)
+      @in_my_district_solr = User.find_users_in_districts_tracking(current_user.district, @committee, 1000)
+      @in_my_district = User.find_for_tracking_table(current_user, @committee, @in_my_district_solr.docs)
+    end
 
   end
 
   def supporting_person
     @person = Person.find(params[:id])
-		@object = @person
+    @object = @person
     @users_solr = User.find_users_supporting_person(@person)
     @users = @users_solr.nil? ? [] : User.find_for_tracking_table(current_user, @person, @users_solr.docs)
- 		@page_title = "Users Supporting #{@person.short_name}"
+    @page_title = "Users Supporting #{@person.short_name}"
 
-		if logged_in? && !current_user.zipcode.blank?
-		  @in_my_state_solr = User.find_users_in_states_supporting(current_user.state_cache, @person, 1000)
-		  @in_my_state = User.find_for_tracking_table(current_user, @person, @in_my_state_solr.docs)
-		  @in_my_district_solr = User.find_users_in_districts_supporting(current_user.district_cache, @person, 1000)
-		  @in_my_district = User.find_for_tracking_table(current_user, @person, @in_my_district_solr.docs)
-		end
+    if logged_in? && !current_user.zipcode.blank?
+      @in_my_state_solr = User.find_users_in_states_supporting(current_user.state, @person, 1000)
+      @in_my_state = User.find_for_tracking_table(current_user, @person, @in_my_state_solr.docs)
+      @in_my_district_solr = User.find_users_in_districts_supporting(current_user.district, @person, 1000)
+      @in_my_district = User.find_for_tracking_table(current_user, @person, @in_my_district_solr.docs)
+    end
   end
 
-
-  
   def opposing_person
     @person = Person.find(params[:id])
-		@object = @person
+    @object = @person
     @users_solr = User.find_users_opposing_person(@person)
     @users = @users_solr.nil? ? [] : User.find_for_tracking_table(current_user, @person, @users_solr.docs)
- 		@page_title = "Users Opposing #{@person.short_name}"
+    @page_title = "Users Opposing #{@person.short_name}"
 
-		if logged_in? && !current_user.zipcode.blank?
-		  @in_my_state_solr = User.find_users_in_states_opposing(current_user.state_cache, @person, 1000)
-		  @in_my_state = User.find_for_tracking_table(current_user, @person, @in_my_state_solr.docs)
-		  @in_my_district_solr = User.find_users_in_districts_opposing(current_user.district_cache, @person, 1000)
-		  @in_my_district = User.find_for_tracking_table(current_user, @person, @in_my_district_solr.docs)
-		end    
+    if logged_in? && !current_user.zipcode.blank?
+      @in_my_state_solr = User.find_users_in_states_opposing(current_user.state, @person, 1000)
+      @in_my_state = User.find_for_tracking_table(current_user, @person, @in_my_state_solr.docs)
+      @in_my_district_solr = User.find_users_in_districts_opposing(current_user.district, @person, 1000)
+      @in_my_district = User.find_for_tracking_table(current_user, @person, @in_my_district_solr.docs)
+    end
   end
 
   def supporting_bill
-		@bill = Bill.find_by_ident(params[:id])
-		@object = @bill
+    @bill = Bill.find_by_ident(params[:id])
+    @object = @bill
     @users_solr = User.find_users_supporting_bill(@bill)
     @users = @users_solr.nil? ? [] : User.find_for_tracking_table(current_user, @bill, @users_solr.docs)
- 		@page_title = "Users Supporting #{@bill.typenumber}"
+    @page_title = "Users Supporting #{@bill.typenumber}"
 
-		if logged_in? && !current_user.zipcode.blank?
-		  @in_my_state_solr = User.find_users_in_states_supporting(current_user.state_cache, @bill, 1000)
-		  @in_my_state = User.find_for_tracking_table(current_user, @bill, @in_my_state_solr.docs)
-		  @in_my_district_solr = User.find_users_in_districts_supporting(current_user.district_cache, @bill, 1000)
-		  @in_my_district = User.find_for_tracking_table(current_user, @bill, @in_my_district_solr.docs)
-		end
+    if logged_in? && !current_user.zipcode.blank?
+      @in_my_state_solr = User.find_users_in_states_supporting(current_user.state, @bill, 1000)
+      @in_my_state = User.find_for_tracking_table(current_user, @bill, @in_my_state_solr.docs)
+      @in_my_district_solr = User.find_users_in_districts_supporting(current_user.district, @bill, 1000)
+      @in_my_district = User.find_for_tracking_table(current_user, @bill, @in_my_district_solr.docs)
+    end
   end
 
   def opposing_bill
-		@bill = Bill.find_by_ident(params[:id])
-		@object = @bill
+    @bill = Bill.find_by_ident(params[:id])
+    @object = @bill
     @users_solr = User.find_users_opposing_bill(@bill)
     @users = @users_solr.nil? ? [] : User.find_for_tracking_table(current_user, @bill, @users_solr.docs)
- 		@page_title = "Users Opposing #{@bill.typenumber}"
+    @page_title = "Users Opposing #{@bill.typenumber}"
 
-		if logged_in? && !current_user.zipcode.blank?
-		  @in_my_state_solr = User.find_users_in_states_opposing(current_user.state_cache, @bill, 1000)
-		  @in_my_state = User.find_for_tracking_table(current_user, @bill, @in_my_state_solr.docs)
-		  @in_my_district_solr = User.find_users_in_districts_opposing(current_user.district_cache, @bill, 1000)
-		  @in_my_district = User.find_for_tracking_table(current_user, @bill, @in_my_district_solr.docs)
-		end    
+    if logged_in? && !current_user.zipcode.blank?
+      @in_my_state_solr = User.find_users_in_states_opposing(current_user.state, @bill, 1000)
+      @in_my_state = User.find_for_tracking_table(current_user, @bill, @in_my_state_solr.docs)
+      @in_my_district_solr = User.find_users_in_districts_opposing(current_user.district, @bill, 1000)
+      @in_my_district = User.find_for_tracking_table(current_user, @bill, @in_my_district_solr.docs)
+    end
   end
 
-
   def near_me
-		@title_class = "tab-nav"
- 		@profile_nav = @user
-		@ziplookup = ZipcodeDistrict.zip_lookup(@user.zipcode, @user.zip_four).first
-    @user_district = @ziplookup.district
+    @title_class = "tab-nav"
+    @profile_nav = @user
     @in_state = []
-    @in_state = @user.find_other_users_in_state(@ziplookup.state) if @user.zipcode
-    @in_district = @user.find_other_users_in_district(@ziplookup.state, @user_district) if @user.zipcode && @user_district
+    @in_state = @user.find_other_users_in_state(@user.state) if @user.state.present?
+    @in_district = @user.find_other_users_in_district(@user.state, @user.district) if @user.state.present? && @user.district.present?
   end
 
   def import_contacts
     @page_title = "#{@user.login}'s Profile"
-		@title_class = "tab-nav"
+    @title_class = "tab-nav"
 
     if request.post? && params[:from]
       @results = []
@@ -182,32 +177,35 @@ class FriendsController < ApplicationController
           @already = User.find(:all, :conditions => ["LOWER(email) in (?)", @results.collect{|p| p[1]}.compact])
         when "hotmail"
           @results = Contacts::Hotmail.new(params[:glogin], params[:gpasswd]).contacts
-          @already = User.find(:all, :conditions => ["LOWER(email) in (?)", @results.collect{|p| p[1]}.compact])          
+          @already = User.find(:all, :conditions => ["LOWER(email) in (?)", @results.collect{|p| p[1]}.compact])
         end
       rescue
-        @login_failed = params[:from] 
+        @login_failed = params[:from]
       end
     end
   end
+
   def invite_contacts
     if !simple_captcha_valid?
       flash[:notice] = "SPAM Check Failed"
       redirect_to :action => 'import_contacts'
       return
     end
-    
+
     if request.post? && params[:addfriend]
-      message = "(this message was sent by #{current_user.email})
+      message = <<-EOM.strip_heredoc
+        (this message was sent by #{current_user.email})
 
-Hi, I wanted to encourage you to join OpenCongress so that we can share information about bills and issues in Congress.
+        Hi, I wanted to encourage you to join OpenCongress so that we can share information about bills and issues in Congress.
 
-Personal Note: #{CGI.escapeHTML(params[:message])}"    
+        Personal Note: #{CGI.escapeHTML(params[:message])}"
+      EOM
       @results = []
       params[:addfriend].each_key do |k|
         key = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
         FriendInvite.find_or_create_by_inviter_id_and_invitee_email_and_invite_key(current_user.id, k, key)
-    
-        Emailer::deliver_invite(k, current_user.full_name.blank? ? current_user.login : current_user.full_name, 
+
+        Emailer::deliver_invite(k, current_user.full_name.blank? ? current_user.login : current_user.full_name,
                                 "#{Settings.base_url}account/invited/#{key}", message)
         @results << k
       end
@@ -254,16 +252,16 @@ Personal Note: #{CGI.escapeHTML(params[:message])}"
   end
 
   def invite
-    
+
     if params[:email].blank?
       @message = "You didn't enter an email address!"
     end
-    
+
     emails = params[:email].split(/,/)
-    
+
     emails.each do |email|
       email.strip!
-      
+
       # first check to see if this person is already is a user
       invited_user = User.find_by_email(email)
       if invited_user
@@ -272,22 +270,22 @@ Personal Note: #{CGI.escapeHTML(params[:message])}"
           fr.confirmed = false
           fr.save
         end
-      else    
+      else
         # create the invite record
         key = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
         FriendInvite.find_or_create_by_inviter_id_and_invitee_email_and_invite_key(current_user.id, email, key)
-    
-        Emailer::deliver_invite(email, current_user.full_name.blank? ? current_user.login : current_user.full_name, 
+
+        Emailer::deliver_invite(email, current_user.full_name.blank? ? current_user.login : current_user.full_name,
                                 "#{Settings.base_url}account/invited/#{key}", params[:message])
-                              
+
       end
     end
-          
+
     @message = "Your invitations have been sent!"
-                  
+
     render :layout => false
   end
-  
+
   # GET /friends
   # GET /friends.xml
   def index
@@ -299,11 +297,11 @@ Personal Note: #{CGI.escapeHTML(params[:message])}"
     @more_recent_friends_activity = @total_recent_friends_activity[12..23]
     #@page_title = "#{@user.login}'s Friends"
     @page_title = "#{@user.login}'s Profile"
-		@profile_nav = @user
-		@title_class = "tab-nav"
+    @profile_nav = @user
+    @title_class = "tab-nav"
 
     flash.now[:notice] = "We're working on this page."
-    
+
     respond_to do |format|
       format.html # index.rhtml
       format.xml  { render :xml => @friends.to_xml }
@@ -325,8 +323,8 @@ Personal Note: #{CGI.escapeHTML(params[:message])}"
   def new
     @friend = @user.friends.new
     @page_title = "#{@user.login}'s Profile"
-		@title_class = "tab-nav"
-		@profile_nav = @user
+    @title_class = "tab-nav"
+    @profile_nav = @user
   end
 
   # GET /friends/1;edit
@@ -380,13 +378,13 @@ Personal Note: #{CGI.escapeHTML(params[:message])}"
       format.xml  { head :ok }
     end
   end
-  private 
+  private
   def get_user
     @user = User.find_by_login(params[:login])
   end
   def must_be_owner
     if current_user == @user
-      return true 
+      return true
     else
       flash[:error] = "You are not allowed to access that page."
       redirect_to :controller => 'index'

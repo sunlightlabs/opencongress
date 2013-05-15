@@ -1,0 +1,9 @@
+---
+states_virginia:
+  id: 1
+  name: Virginia
+  abbreviation: VA
+states_california:
+  id: 2
+  name: California
+  abbreviation: CA

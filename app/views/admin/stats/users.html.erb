@@ -19,7 +19,7 @@
         <th>State</th><th>Users</th>
         <% @state_users.each do |su| %>
           <tr>
-            <td><%= su.state_cache.first.blank? ? "Unknown" : State.for_abbrev(su.state_cache.first) %></td>
+            <td><%= su.state.blank? ? "Unknown" : State.for_abbrev(su.state) %></td>
             <td><%= su.cnt %></td>
           </tr>
         <% end %>
@@ -31,7 +31,7 @@
         <th>District</th><th>Users</th>
         <% @district_users.each do |su| %>
           <tr>
-            <td><%= su.district_cache.first.blank? ? "Unknown" : su.district_cache.first %></td>
+            <td><%= su.district.blank? ? "Unknown" : su.district %></td>
             <td><%= su.cnt %></td>
           </tr>
         <% end %>

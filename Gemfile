@@ -33,8 +33,9 @@ gem 'fog'
 
 gem "awesome_nested_set", ">= 2.0"
 
-# GovKit
+# Open Gov APIs
 gem "govkit", :git => "git@github.com:sunlightlabs/govkit.git"
+gem "congress"
 
 # jammit support
 gem "jammit"
@@ -45,6 +46,9 @@ gem 'paperclip'
 
 # Deal with unicode strings
 gem 'unicode_utils'
+
+# Geocoding users on create
+gem 'geocoder', :git => 'git@github.com:sunlightlabs/geocoder.git'
 
 # notifier for production errors
 gem "airbrake"
@@ -79,9 +83,6 @@ group :deployment do
   gem 'capistrano-ext'
 end
 
-# new relic RPM
-gem 'newrelic_rpm'
-
 # oauth
 gem 'oauth'
 gem 'facebooker2'
@@ -96,30 +97,31 @@ gem 'acts-as-taggable-on', '~> 2.3.3'
 gem 'mechanize'
 gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'
 
+group :production do
+  # new relic RPM
+gem 'newrelic_rpm'
+end
 
 group :test, :development do
   gem 'autotest'
   gem 'silent-postgres'	# Quieter postgres log messages
   gem 'database_cleaner'
-
-  gem 'rspec-rails', '~> 2.4'
+  gem 'vcr'
+  gem 'rspec-rails',          '~> 2.4'
   gem 'fuubar'
   gem 'cucumber'
-  gem 'cucumber-rails',         :require => false
-  gem 'webrat'
+  gem 'cucumber-rails',       :require => false
+  gem 'webmock'
   gem 'selenium-client'
-
   gem 'capybara'
-
+  gem 'launchy'
   gem 'guard'
   gem 'guard-livereload'
-
   gem 'pry'
   gem 'pry-nav'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
-
   gem 'rails_best_practices'
-  gem 'simplecov', :require => false
+  gem 'simplecov',            :require => false
 end
 

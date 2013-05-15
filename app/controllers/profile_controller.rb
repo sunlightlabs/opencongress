@@ -45,65 +45,65 @@ class ProfileController < ApplicationController
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])
     @page_title = "#{@user.login}'s Profile"
-		@title_class = "tab-nav"
+    @title_class = "tab-nav"
     @profile_nav = @user
 
-  	if logged_in? && (current_user.id == @user.id) && @user.zipcode && @user.zip_four
-  	  zd = ZipcodeDistrict.zip_lookup(@user.zipcode, (@user.zip_four ? @user.zip_four : nil)).first
+    if logged_in? && (current_user.id == @user.id) && @user.zipcode && @user.zip_four
+      zd = ZipcodeDistrict.zip_lookup(@user.zipcode, (@user.zip_four ? @user.zip_four : nil)).first
       unless zd.nil?
         @cd_text = zd.state.to_s + "-" + zd.district.to_s
       else
         @cd_text = "(Incorrect Zip +4)"
       end
-  	else
-  	  @cd_text = "(Add Zip +4)"
-  	end
-	end
-	
-	def howtouse
-		@page_title = "Ways To Use \"My OpenCongress\""
-	end
-	
-	def user_actions_rss
-    @user = User.find_by_login(params[:login]) 
+    else
+      @cd_text = "(Add Zip +4)"
+    end
+  end
+
+  def howtouse
+    @page_title = "Ways To Use \"My OpenCongress\""
+  end
+
+  def user_actions_rss
+    @user = User.find_by_login(params[:login])
     @items = @user.recent_actions
     render :action => "new_link.rxml", :layout => false
-	end
-	
-	def actions
-	  @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
-    @page_title = "#{@user.login}'s Profile"
-		@profile_nav = @user
+  end
 
-    @bills_supported = Bill.paginate_by_sql("select bills.* FROM bills 
-                      INNER JOIN (select bill_votes.support, bill_votes.user_id, 
+  def actions
+    @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
+    @page_title = "#{@user.login}'s Profile"
+    @profile_nav = @user
+
+    @bills_supported = Bill.paginate_by_sql("select bills.* FROM bills
+                      INNER JOIN (select bill_votes.support, bill_votes.user_id,
                         bill_votes.created_at, bill_votes.bill_id FROM bill_votes WHERE bill_votes.support = 0
                         AND bill_votes.user_id = #{@user.id}) b ON b.bill_id = bills.id
                       ORDER BY b.created_at", :per_page=>20, :page => params[:s_page])
 
-    @bills_opposed = Bill.paginate_by_sql("select bills.* FROM bills 
-                      INNER JOIN (select bill_votes.support, bill_votes.user_id, 
+    @bills_opposed = Bill.paginate_by_sql("select bills.* FROM bills
+                      INNER JOIN (select bill_votes.support, bill_votes.user_id,
                         bill_votes.created_at, bill_votes.bill_id FROM bill_votes WHERE bill_votes.support = 1
                         AND bill_votes.user_id = #{@user.id}) b ON b.bill_id = bills.id
                       ORDER BY b.created_at", :per_page=>20, :page => params[:o_page])
-		
-		@title_class = "tab-nav"
 
-    @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login}'s Actions"}  
-    
-    
-	  @my_comments = Comment.paginate(:all, :conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => params[:page])
+    @title_class = "tab-nav"
+
+    @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login}'s Actions"}
+
+
+    @my_comments = Comment.paginate(:all, :conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => params[:page])
   end
-  
+
   def items_tracked
     @atom = {'link' => url_for(:controller => 'user_feeds', :login => @user.login, :action => 'tracked_items', :key => logged_in? ? current_user.feed_key : nil)}
     @hide_atom = true
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
     @page_title = "#{@user.login}'s Profile"
     @profile_nav = @user
-		@title_class = "tab-nav"
+    @title_class = "tab-nav"
 
-		@senators, @reps = Person.find_current_congresspeople_by_zipcode(@user.zipcode, @user.zip_four) if ( logged_in? && @user == current_user && !(@user.zipcode.nil? || @user.zipcode.empty?))
+    @senators, @reps = Person.find_current_congresspeople_by_zipcode(@user.zipcode, @user.zip_four) if ( logged_in? && @user == current_user && !(@user.zipcode.nil? || @user.zipcode.empty?))
     if logged_in? && current_user.id == @user.id
       mailing_list = UserMailingList.find_or_create_by_user_id(@user.id)
       @show_email_alerts = true
@@ -121,32 +121,32 @@ class ProfileController < ApplicationController
     @bill = Bill.find_by_id(params[:id])
     @limit = params[:limit].to_i
     @limit > 5 ? @limit = 5 : @limit = @limit
-    '<h3 class="darkline">Recent Actions</h3>' + 
+    '<h3 class="darkline">Recent Actions</h3>' +
     render(:partial => 'bill/action_list_recent', :locals => { :actions => @bill.actions.find(:all, :limit => @limit) })
   end
-  
+
   def tracked_votes
     @person = Person.find_by_id(params[:id])
     @limit = params[:limit].to_i
     @limit > 30 ? @limit = 30 : @limit = @limit
-    '<h3 class="darkline">Recent Voting History </h3>' + 
-    render(:partial => 'people/voting_history', :locals => { :votes => @person.votes(@limit.to_i) }) + 
+    '<h3 class="darkline">Recent Voting History </h3>' +
+    render(:partial => 'people/voting_history', :locals => { :votes => @person.votes(@limit.to_i) }) +
     '<p><a href="/people/voting_history/<%= person.to_param %>"><img src="/images/btn-voting-history.gif" class="noborder"></a></p>'
   end
-     
+
   def tracked_commentary_news
     @limit = params[:limit].to_i
     @limit > 5 ? @limit = 5 : @limit = @limit
     if params[:object] == "Bill"
       bill = Object.const_get(params[:object]).find_by_id(params[:id])
       render :partial => 'shared/news', :object => bill.news.find(:all, :limit => @limit),
-  	      :locals => { :limit => @limit, :all_size => bill.news_article_count, :default_title => bill.title_common, 
-  	                   :more_url => { :controller => 'bill', :action => 'news', :id => bill.ident } }
-    elsif params[:object] ==  "Person"    
+          :locals => { :limit => @limit, :all_size => bill.news_article_count, :default_title => bill.title_common,
+                       :more_url => { :controller => 'bill', :action => 'news', :id => bill.ident } }
+    elsif params[:object] ==  "Person"
       person = Object.const_get(params[:object]).find_by_id(params[:id])
 
       render :partial => 'shared/news', :object => person.news.find(:all, :limit => @limit),
-        :locals => { :limit => @limit, :all_size => person.news_article_count, :default_title => person.name, 
+        :locals => { :limit => @limit, :all_size => person.news_article_count, :default_title => person.name,
                      :more_url => { :controller => 'people', :action => 'news', :id => person } }
     else
       render :nothing
@@ -160,13 +160,13 @@ class ProfileController < ApplicationController
     if params[:object] == "Bill"
       bill = Object.const_get(params[:object]).find_by_id(params[:id])
       render :partial => 'shared/blogs', :object => bill.blogs.find(:all, :limit => @limit),
-  	      :locals => { :limit => @limit, :all_size => bill.blog_article_count, :default_title => bill.title_common, 
-  	                   :more_url => { :controller => 'bill', :action => 'blogs', :id => bill.ident } }
-    elsif params[:object] ==  "Person"    
+          :locals => { :limit => @limit, :all_size => bill.blog_article_count, :default_title => bill.title_common,
+                       :more_url => { :controller => 'bill', :action => 'blogs', :id => bill.ident } }
+    elsif params[:object] ==  "Person"
       person = Object.const_get(params[:object]).find_by_id(params[:id])
 
       render :partial => 'shared/blogs', :object => person.blogs.find(:all, :limit => @limit),
-        :locals => { :limit => @limit, :all_size => person.blog_article_count, :default_title => person.name, 
+        :locals => { :limit => @limit, :all_size => person.blog_article_count, :default_title => person.name,
                      :more_url => { :controller => 'people', :action => 'blogs', :id => person } }
     else
       render :nothing
@@ -187,13 +187,13 @@ class ProfileController < ApplicationController
       render :action => "bills.html.erb"
     end
   end
-  
+
   def groups
     @page_title = "My Groups"
     @user = User.find_by_login(params[:login])
     @groups = @user.active_groups.paginate(:per_page => 20, :page => params[:page])
   end
-  
+
   def my_votes
     @user = User.find_by_login(params[:login])
     @page_title = "Profile of #{@user.login} - Bills Voted On"
@@ -214,31 +214,31 @@ class ProfileController < ApplicationController
 
       render :action => "new_link.rxml", :layout => false
     else
-      render :action => 'my_votes' 
+      render :action => 'my_votes'
     end
   end
-  
+
   def remove_vote
     bill_vote = current_user.bill_votes.find_by_bill_id(params[:id])
     bill_vote.destroy
     flash[:notice] = "Vote Removed"
     redirect_back_or_default(:action => 'index', :login => current_user.login)
   end
-  
+
   def remove_bill_bookmark
     bookmark = current_user.bookmarks.find_by_bookmarkable_type_and_bookmarkable_id("Bill", params[:id])
     bookmark.destroy
     flash[:notice] = "Bill Removed from Tracking"
     redirect_back_or_default(:action => 'items_tracked', :login => current_user.login)
   end
-  
+
   def remove_person_bookmark
     bookmark = current_user.bookmarks.find_by_bookmarkable_type_and_bookmarkable_id("Person", params[:id])
     bookmark.destroy
     flash[:notice] = "Person Removed from Tracking"
     redirect_back_or_default(:action => 'items_tracked', :login => current_user.login)
   end
-  
+
   def remove_bookmark
     book = current_user.bookmarks.find_by_id(params[:id])
     if book
@@ -261,7 +261,7 @@ class ProfileController < ApplicationController
       render :action => "comments.html.erb"
     end
   end
-  
+
   def person
     role_type = String.new
     case params[:person_type]
@@ -273,7 +273,7 @@ class ProfileController < ApplicationController
     @ptype = params[:person_type].capitalize
     @user = User.find_by_login(params[:login])
     @page_title = "Profile of #{@user.login} - #{params[:person_type].capitalize} Tracked"
-    @bookmarks = @user.representative_bookmarks if role_type == "rep" 
+    @bookmarks = @user.representative_bookmarks if role_type == "rep"
     @bookmarks = @user.senator_bookmarks if role_type == "sen"
 
 
@@ -303,9 +303,9 @@ class ProfileController < ApplicationController
     @tracked_bills = Bookmark.find_bookmarked_bills_by_user(@user.id)
     @tracked_people = @user.representative_bookmarks
     @tracked_committees = @user.committee_bookmarks
-    
+
     @items = []
-    
+
     @tracked_issues.each do |i|
       @items.concat(i.subject.latest_major_actions(5))
     end
@@ -313,16 +313,16 @@ class ProfileController < ApplicationController
         @items.concat(p.person.bills.to_a)
         @items.concat(p.person.votes(10).to_a)
     end
-    
+
     @tracked_bills.each do |b|
       @items.concat(b.bill.last_5_actions.to_a)
     end
-    
+
     @tracked_committees.each do |b|
       @items.concat(b.bookmarkable.latest_reports(5).to_a)
       @items.concat(b.bookmarkable.latest_major_actions(5))
     end
-    
+
     @items.flatten!
     @items.sort! { |x,y| y.rss_date <=> x.rss_date }
     expires_in 60.minutes, :public => true
@@ -330,7 +330,7 @@ class ProfileController < ApplicationController
     render :action => "new_link.rxml", :layout => false
   end
 
-  
+
   def issues
     @user = User.find_by_login(params[:login])
     @page_title = "Profile of #{@user.login} - Issues tracked"
@@ -349,7 +349,7 @@ class ProfileController < ApplicationController
       render :action => "new_link.rxml", :layout => false
     else
       render :action => 'issues'
-    end 
+    end
 
   end
 
@@ -382,7 +382,7 @@ class ProfileController < ApplicationController
     if logged_in?
       @user = current_user
       field = params[:field]
-      value = params[:value]  
+      value = params[:value]
 
       if value == "[Click to Edit]"
         render :text => "[Click to Edit]"
@@ -396,7 +396,7 @@ class ProfileController < ApplicationController
         logger.debug "Setting '#{field}' to '#{value}'"
         @user[field] = value
         @user[field] = nil if ( field == "zipcode" && value == "" )
-        @user[field] = nil if ( field == "zip_four" && value == "" ) 
+        @user[field] = nil if ( field == "zip_four" && value == "" )
         if @user.valid?
           @user.save
           render :action => 'edit_profile', :layout => false
@@ -412,7 +412,7 @@ class ProfileController < ApplicationController
       logger.debug "BBBBBBBBBBBBBBBBBOUNCED"
     end
   end
-  
+
   def track
     if logged_in?
       object = Object.const_get(params[:type])
@@ -435,18 +435,18 @@ class ProfileController < ApplicationController
       end
     end
   end
-  
+
   def update_privacy
      @user = current_user
      params[:privacy_option].delete("user_id")
      @user.privacy_option.update_attributes(params[:privacy_option])
      flash[:notice] = "Privacy Setting Updated"
      redirect_back_or_default(user_profile_url(@user.login))
-         
+
   end
 
   def upload_pic
-    tmp_file = params[:picture]['tmp_file'] 
+    tmp_file = params[:picture]['tmp_file']
     new_main_file_name = current_user.login + "_m.jpg"
     new_small_file_name = current_user.login + "_s.jpg"
     picture = tmp_file.read
@@ -464,7 +464,7 @@ class ProfileController < ApplicationController
     user.update_attribute("small_picture", new_small_file_name)
     redirect_to user_profile_url(current_user.login)
   end
-  
+
   def delete_images
     File.delete("public/images/users/" + current_user.main_picture) if (current_user.main_picture && File.exists?("public/images/users/" + current_user.main_picture))
     File.delete("public/images/users/" + current_user.small_picture) if (current_user.small_picture && File.exists?("public/images/users/" + current_user.small_picture))
@@ -474,13 +474,13 @@ class ProfileController < ApplicationController
 
     redirect_to user_profile_url(current_user.login)
   end
-  
+
   def hide_field
     @user = current_user
     @user.toggle!(params[:type])
     redirect_to user_profile_url(current_user.login)
   end
-  
+
   def ratings
     this_rating = params[:user]['default_filter'].to_i
     logger.info(this_rating.to_s + " DEFAU")
@@ -490,13 +490,13 @@ class ProfileController < ApplicationController
     end
     redirect_to :controller => 'profile', :action => 'show', :login => current_user.login, :anchor => "comm_fil"
   end
-  
+
   def watchdog
     @page_title = "WatchDog"
-		@title_class = "tab-nav"
-		@profile_nav = @user
-    @my_state = State.find_by_abbreviation(@user.state_cache.first)
-    @my_districts = @user.district_cache
+    @title_class = "tab-nav"
+    @profile_nav = @user
+    @my_state = State.find_by_abbreviation(@user.state)
+    @my_districts = @user.district
     if @user.definitive_district
       @my_district = District.find_by_district_number_and_state_id(@my_districts.first.split('-').last, @my_state.id)
 #      @watchdog = @user.definitive_district_object.current_watch_dog.user if @user.definitive_district_object.current_watch_dog
@@ -505,7 +505,7 @@ class ProfileController < ApplicationController
     logger.info @bookmarked_bills.length
 
   end
-  
+
   def pn_ajax
     @commentary = Commentary.find_by_id(params[:id])
     if ["Person", "Bill", "Commentary"].include?(params[:object_type])
@@ -515,7 +515,7 @@ class ProfileController < ApplicationController
     render :layout => false
 
   end
-  
+
   private
   def can_view_tab
     @user = User.find_by_login(params[:login])

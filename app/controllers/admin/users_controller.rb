@@ -1,6 +1,6 @@
 class Admin::UsersController < Admin::IndexController
   before_filter :admin_login_required
-  
+
   def index
     list
     render :action => 'list'
@@ -66,18 +66,18 @@ class Admin::UsersController < Admin::IndexController
      @user = User.find_by_id(params[:id])
      UserNotifier.deliver_signup_notification(@user)
      redirect_to :action => 'edit', :id => @user
-  end 
+  end
 
   def activate_user
     @user = User.find_by_id(params[:id])
-    @user.activate
+    @user.activate!
     redirect_to :action => 'edit', :id => @user
   end
 
   def destroy
     User.find(params[:id]).destroy
     flash[:notice] = 'User deleted!'
-    
+
     redirect_to :action => 'list'
   end
 end

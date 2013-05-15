@@ -5,46 +5,47 @@ class District < ActiveRecord::Base
   has_many :watch_dogs
   has_one :current_watch_dog, :class_name => "WatchDog", :conditions => ["is_active = ?", true], :order => "created_at desc"
   has_one :group
-  
-  
-  def user_count
-    User.count_by_sql(['select count(distinct users.id) from users where district_cache like ?;', "%#{state.abbreviation}-#{district_number}%"])
 
-    # User.count_by_solr("my_state:\"#{abbreviation}\"")    
+
+  def user_count
+    User.for_district(state.abbreviation, district_number).count
+    # User.count_by_sql(['select count(distinct users.id) from users where district like ?;', "%#{state.abbreviation}-#{district_number}%"])
+    # User.count_by_solr("my_state:\"#{abbreviation}\"")
   end
 
-  
-  def users
-    User.find_by_sql(['select distinct users.id, users.login from users where district_cache like ?;', "%#{state.abbreviation}-#{district_number}%"])
 
-    
-    # User.find_by_solr("my_district:#{self.state.abbreviation}-#{district_number}", :facets => {:fields => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed, 
+  def users
+    User.for_district(state.abbreviation, district_number)
+    # User.find_by_sql(['select distinct users.id, users.login from users where district like ?;', "%#{state.abbreviation}-#{district_number}%"])
+    # User.find_by_solr("my_district:#{self.state.abbreviation}-#{district_number}", :facets => {:fields => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed,
     #                        :my_committees_tracked, :my_bills_tracked, :my_people_tracked, :my_issues_tracked,
     #                        :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens], :limit => 10, :sort => true, :browse => ["public_tracking:true", "public_actions:true"]}, :order => "last_login desc")
   end
-  
-  def all_users
-    User.find_by_sql(['select distinct users.id, users.login from users where district_cache like ?;', "%#{state.abbreviation}-#{district_number}%"])
 
-    # User.find_by_solr("my_district:#{self.state.abbreviation}-#{district_number}", :facets => {:fields => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed, 
+  def all_users
+    users
+    # User.find_by_sql(['select distinct users.id, users.login from users where district like ?;', "%#{state.abbreviation}-#{district_number}%"])
+    # User.find_by_solr("my_district:#{self.state.abbreviation}-#{district_number}", :facets => {:fields => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed,
     #                        :my_committees_tracked, :my_bills_tracked, :my_people_tracked, :my_issues_tracked,
     #                        :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens], :limit => 500, :sort => true}, :order => "last_login desc")
-    
-  end
-  
-  def all_active_users
-    User.find_by_sql(['select distinct users.id, users.login from users where district_cache like ? AND previous_login_date >= ;', 
-                      "%#{state.abbreviation}-#{district_number}%", 2.months.ago])
 
+  end
+
+  def all_active_users
+    User.active.for_district(state.abbreviation, district_number)
+    # User.find_by_sql(['select distinct users.id, users.login from users where district like ? AND previous_login_date >= ;',
+    #                   "%#{state.abbreviation}-#{district_number}%", 2.months.ago])
     # query = "my_district:#{self.state.abbreviation}-#{district_number} AND last_login:[#{(Time.now - 2.months).iso8601[0,19] + 'Z'} TO *] AND total_number_of_actions:[5 TO *]"
     # User.find_by_solr(query, :limit => 500, :order => "last_login desc")
-        
+
   end
 
+  # TODO: This finder returned incongrous results with its companion method, all_active_users.
+  #       Updating it to use the same scopes, but keep an eye on whatever the implications may be.
   def all_active_users_count
-    
-    query = "my_district:#{self.state.abbreviation}-#{district_number} AND last_login:[#{(Time.now - 2.months).iso8601[0,19] + 'Z'} TO *] AND total_number_of_actions:[5 TO *]"
-    User.count_by_solr(query)
+    User.active.for_district(state.abbreviation, district_number).count
+    # query = "my_district:#{self.state.abbreviation}-#{district_number} AND last_login:[#{(Time.now - 2.months).iso8601[0,19] + 'Z'} TO *] AND total_number_of_actions:[5 TO *]"
+    # User.count_by_solr(query)
 
   end
 
@@ -70,10 +71,10 @@ class District < ActiveRecord::Base
     if state
       return self.find_by_state_id_and_district_number(state.id, number.to_i)
     end
-    
+
     return nil
   end
-  
+
   def self.csv_of_active_users_count
 
     require 'csv'
@@ -92,12 +93,12 @@ class District < ActiveRecord::Base
   def tracking_suggestions
     # temporarily removing solr for now - June 2012
     return [0, {}]
-    
+
     facets = self.users.facets
     my_trackers = 0
-    facet_results_hsh = {:my_bills_supported_facet => [], 
-                         :my_people_tracked_facet => [], 
-                         :my_issues_tracked_facet => [], 
+    facet_results_hsh = {:my_bills_supported_facet => [],
+                         :my_people_tracked_facet => [],
+                         :my_issues_tracked_facet => [],
                          :my_bills_tracked_facet => [],
                          :my_approved_reps_facet => [],
                          :my_approved_sens_facet => [],
@@ -109,10 +110,10 @@ class District < ActiveRecord::Base
                          :my_bills_opposed_facet => []}
     facet_results_ff = facets['facet_fields']
     if facet_results_ff && facet_results_ff != []
-      
+
       facet_results_ff.each do |fkey, fvalue|
         facet_results = facet_results_ff[fkey]
-      
+
         #solr running through acts as returns as a Hash, or an array if running through tomcat...hence this stuffs
         facet_results_temp_hash = Hash[*facet_results] unless facet_results.class.to_s == "Hash"
         facet_results_temp_hash = facet_results if facet_results.class.to_s == "Hash"
@@ -126,13 +127,13 @@ class District < ActiveRecord::Base
             unless facet_results_hsh[fkey.to_sym].length == 5
               object = Person.find_by_id(key) if fkey == "my_people_tracked_facet" || fkey =~ /my_approved_/ || fkey =~ /my_disapproved_/
               object = Subject.find_by_id(key) if fkey == "my_issues_tracked_facet"
-              object = Bill.find_by_ident(key) if fkey == "my_bills_tracked_facet" 
+              object = Bill.find_by_ident(key) if fkey == "my_bills_tracked_facet"
               object = Bill.find_by_id(key) if fkey =~ /my_bills_supported/ || fkey =~ /my_bills_opposed/
               facet_results_hsh[fkey.to_sym] << {:object => object, :trackers => value}
             end
 #          end
         end
-      end      
+      end
     else
       return [my_trackers,{}]
     end
@@ -153,7 +154,7 @@ class District < ActiveRecord::Base
   def ordinalized_number
     if self.district_number == 0
       "At Large"
-    else 
+    else
       district_number.ordinalize
     end
   end
@@ -167,23 +168,23 @@ class District < ActiveRecord::Base
       URI.escape("http://www.freebase.com/api/service/search?query=#{self.state.name}'s congressional district&type=/common/topic&type=/government/political_district")
     else
       URI.escape("http://www.freebase.com/api/service/search?query=#{self.state.name}'s #{self.district_number.ordinalize} congressional district&type=/common/topic&type=/government/political_district")
-    end  
+    end
   end
-  
+
   def freebase_link
     "http://www.freebase.com/view/en/#{name.downcase.gsub(' ', '_')}"
   end
-  
+
   def wiki_link
     "/wiki/#{state.abbreviation}-#{district_number == 0 ? "AL" : district_number}"
   end
-  
+
   def freebase_guid
      require 'open-uri'
      require 'json'
      JSON.parse(open(freebase_guid_url).read)['result'].first['article']['id']
   end
-  
+
   def freebase_description_url
     "http://www.freebase.com/api/trans/blurb#{self.freebase_guid}?maxlength=800"
   end
@@ -204,5 +205,5 @@ class District < ActiveRecord::Base
   def rep
     Person.rep.find_by_state_and_district(self.state.abbreviation, district_number.to_s)
   end
-  
+
 end

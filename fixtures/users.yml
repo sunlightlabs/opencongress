@@ -1,6 +1,6 @@
---- 
-users_001: 
-  partner_mailing: 
+---
+users_001:
+  partner_mailing:
   salt: d3bc4851d15d3be6a489f35ff5733d35c0811263
   chat_gtalk: donnydonnyzxcasdqwe@gmail.com
   activated_at: 2008-01-14 04:19:05.480086
@@ -13,10 +13,10 @@ users_001:
   crypted_password: e9df7394fdecfe1d3c354ef7818ba93ba9c67578
   chat_msn: ""
   zipcode: 01084
-  password_reset_code: 
+  password_reset_code:
   updated_at: 2010-04-02 08:49:05.426847
   zip_four: "9605"
-  activation_code: 
+  activation_code:
   admin: f
   previous_login_date: 2010-03-26 14:41:25.196049
   enabled: t
@@ -34,82 +34,74 @@ users_001:
   accept_terms: t
   homepage: www.participatorypolitics.org
   show_homepage: t
-  remember_token: 
+  remember_token:
   full_name: Donny Shaw
   feed_key: 7429b60ea6326ca486ab675ac74bfe9067c75241
   subscribed: f
   accepted_tos_at: 2009-03-24 23:42:42.592366
-  state_cache: |
-    --- 
-    - MA
+  state: MA
 
-  identity_url: 
-  status: 
-  password: 
+  identity_url:
+  status:
+  password:
   login: donnyshaw
   is_banned: f
-  district_cache: |
-    --- 
-    - MA-1
+  district: 1
 
   chat_aim: donaldwarnershaw
   email: donnydonnyzxcasdqwe@gmail.com
   blog_author: f
-users_002: 
-  partner_mailing: 
+users_002:
+  partner_mailing:
   salt: 8b74ca288d0e05c7ede7723b8990d43cc506421d
-  chat_gtalk: 
+  chat_gtalk:
   activated_at: 2010-01-13 16:50:45.022104
-  location: 
+  location:
   created_at: 2010-01-13 10:48:47.772348
   accepted_tos: t
   default_filter: "5"
   mailing: t
   last_login: 2010-04-06 14:26:56.149317
   crypted_password: 0789967153cdd211bc1d07852a4eb26c0530c0d4
-  chat_msn: 
+  chat_msn:
   zipcode: "20002"
-  password_reset_code: 
+  password_reset_code:
   updated_at: 2010-04-06 14:26:56.151032
-  zip_four: 
-  activation_code: 
+  zip_four:
+  activation_code:
   admin: f
   previous_login_date: 2010-04-05 11:34:47.54711
   enabled: t
   show_full_name: f
-  chat_yahoo: 
+  chat_yahoo:
   id: "100442"
   small_picture: enaing_s.jpg
   main_picture: enaing_m.jpg
-  about: 
+  about:
   show_email: f
   representative_id: "400295"
   user_role_id: "2"
   show_aim: f
-  chat_icq: 
-  accept_terms: 
-  homepage: 
+  chat_icq:
+  accept_terms:
+  homepage:
   show_homepage: f
-  remember_token: 
+  remember_token:
   full_name: |
     Eric Naing
 
   feed_key: d52269f30c59107b377c6d4934282d4d9dbfcfe0
   subscribed: f
   accepted_tos_at: 2010-01-13 10:48:47.532932
-  state_cache: |
-    --- 
-    - DC
+  state: DC
 
-  identity_url: 
-  status: 
-  password: 
+  identity_url:
+  status:
+  password:
   login: enaing
   is_banned: f
-  district_cache: |
-    --- 
-    - DC-0
+  district: 0
 
-  chat_aim: 
+  chat_aim:
   email: enaing@gmail.com
   blog_author: f

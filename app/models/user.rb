@@ -1,41 +1,51 @@
 require 'digest/sha1'
 
-# this model expects a certain database layout and its based on the name/login pattern. 
+# this model expects a certain database layout and its based on the name/login pattern.
 class User < ActiveRecord::Base
-  # acts_as_solr :fields => [:placeholder, {:definitive_district => :integer},:public_actions,:my_committees_tracked, :my_bills_supported, 
+  # acts_as_solr :fields => [:placeholder, {:definitive_district => :integer},:public_actions,:my_committees_tracked, :my_bills_supported,
   #                          :my_people_tracked, :my_bills_opposed, :login, :username, :full_name, :email,
   #                          :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens,
-  #                          {:my_state => :string}, {:my_district => :string}, 
-  #                          {:total_number_of_actions => :range_integer}, :my_bills_tracked, :public_tracking, 
-  #                          :my_issues_tracked, :my_state_f, :my_district_f, {:last_login => :date}], 
-  #              :facets => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed, 
+  #                          {:my_state => :string}, {:my_district => :string},
+  #                          {:total_number_of_actions => :range_integer}, :my_bills_tracked, :public_tracking,
+  #                          :my_issues_tracked, :my_state_f, :my_district_f, {:last_login => :date}],
+  #              :facets => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed,
   #                          :my_committees_tracked, :my_bills_tracked, :my_people_tracked, :my_issues_tracked,
-  #                          :my_approved_reps, :my_approved_sens, :my_disapproved_reps, 
+  #                          :my_approved_reps, :my_approved_sens, :my_disapproved_reps,
   #                          :my_disapproved_sens, :my_state_f, :my_district_f], :auto_commit => false
 
   apply_simple_captcha
-  
-  attr_accessor :password_confirmation
-  
+
+  attr_accessible :login, :password, :password_confirmation, :captcha, :captcha_key,
+                  :full_name, :email, :remember_token,
+                  :remember_created_at, :location, :homepage, :subscribed,
+                  :show_email, :show_homepage, :zipcode, :mailing, :accept_terms, :about, :main_picture, :small_picture,
+                  :chat_aim, :chat_yahoo, :chat_msn, :chat_icq, :chat_gtalk, :show_aim, :show_full_name, :default_filter,
+                  :representative_id, :zip_four, :district, :state, :partner_mailing
+
+  attr_accessor :password
+
   # the following is so acts_as_autheticated doesn't bomb since we added devise compatibility
   attr_accessor :remember_token_expires_at
 
-  validates_presence_of     :login, :email, :unless => :openid?
-  validates_acceptance_of   :accept_tos, :on => :create
-  validates_presence_of     :password,                   :if => :password_required?
-  #validates_presence_of     :password_confirmation,      :if => :password_required?
-  validates_length_of       :password, :within => 4..40, :if => :password_required?
-  validates_confirmation_of :password,                   :if => :password_required?
-  validates_length_of       :login,    :within => 3..40, :unless => :openid?
-  validates_length_of       :email,    :within => 3..100, :unless => :openid?
-  #validates_email_veracity_of :email
-  validates_format_of :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :message => "address invalid"
-  validates_numericality_of :zipcode, :only_integer => true, :allow_nil => true, :message => "is not a valid 5 digit zipcode"
-  validates_numericality_of :zip_four, :only_integer => true, :allow_nil => true, :message => "is not a valid 4 digit zipcode extension"
-  validates_length_of :zipcode, :is => 5, :allow_nil => true, :message => "is not a valid 5 digit zipcode"
-  validates_length_of :zip_four, :is => 4, :allow_nil => true, :message => "is not a valid 4 digit zipcode extension"
-  validates_format_of :login, :with => /^\w+$/, :message => "can only contain letters and numbers (no spaces)."
-  validates_uniqueness_of   :login, :email, :identity_url, :case_sensitive => false, :allow_nil => true
+  serialize :possible_states
+  serialize :possible_districts
+
+  validates_presence_of       :login, :email, :unless => :openid?
+  validates_acceptance_of     :accept_tos, :on => :create
+  validates_presence_of       :password,                   :if => :password_required?
+  # validates_presence_of       :password_confirmation,      :if => :password_required?
+  validates_length_of         :password, :within => 4..40, :if => :password_required?
+  validates_confirmation_of   :password,                   :if => :password_required?
+  validates_length_of         :login,    :within => 3..40, :unless => :openid?
+  validates_length_of         :email,    :within => 3..100, :unless => :openid?
+  validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :message => "is invalid"
+  validates_numericality_of   :zipcode, :only_integer => true, :allow_nil => true, :message => "is not a valid 5 digit zipcode"
+  validates_numericality_of   :zip_four, :only_integer => true, :allow_nil => true, :message => "is not a valid 4 digit zipcode extension"
+  validates_length_of         :zipcode, :is => 5, :allow_nil => true, :message => "is not a valid 5 digit zipcode"
+  validates_length_of         :zip_four, :is => 4, :allow_nil => true, :message => "is not a valid 4 digit zipcode extension"
+  validates_format_of         :login, :with => /^\w+$/, :message => "can only contain letters and numbers (no spaces)."
+  validates_uniqueness_of     :login, :email, :identity_url, :case_sensitive => false, :allow_nil => true
+
   HUMANIZED_ATTRIBUTES = {
     :email => "E-mail address",
     :accept_tos => "Terms of service",
@@ -46,31 +56,30 @@ class User < ActiveRecord::Base
   }
 
   before_create :make_activation_code
-  after_create :make_feed_key
-  after_create :make_privacy_options
-  before_save :encrypt_password
-  
-  # district and state information is cached to save some db queries
-  before_save :cache_district_and_state
-  serialize :district_cache
-  serialize :state_cache
-  
+  before_create :update_state_and_district
+  after_create  :make_feed_key
+  after_create  :make_privacy_options
+  before_save   :encrypt_password
+  # before_save :update_state_and_district, :if => Proc.new {|instance|
+  #   instance.district_needs_update or !instance.district_is_definitive
+  # }
+
   has_many :owned_groups, :class_name => 'Group'
   has_many :group_members
   has_many :groups, :through => :group_members
-  
+
   has_many :api_hits
   has_many :comments, :dependent => :destroy
   has_one  :privacy_option
-  has_one :user_mailing_list
-  has_one :twitter_config
+  has_one  :user_mailing_list
+  has_one  :twitter_config
   has_many :person_approvals
   has_many :commentary_ratings
   has_many :bill_votes
   has_many :comment_scores
   has_many :bookmarks
   has_many :user_ip_addresses
-  has_one :latest_ip_address, :class_name => "UserIpAddress", :order => "created_at DESC"
+  has_one  :latest_ip_address, :class_name => "UserIpAddress", :order => "created_at DESC"
   has_many :friends
   has_many :friend_invites, :foreign_key => "inviter_id"
   has_many :fans, :class_name => "Friend", :foreign_key => "friend_id", :conditions => ["confirmed = ?", false]
@@ -83,9 +92,9 @@ class User < ActiveRecord::Base
   has_many :watched_districts, :class_name => "WatchDog"
 
 
-  has_many :bookmarked_bills, :class_name => "Bill", 
-                              :finder_sql => 'select bills.*, bm.bookmarkers FROM bills 
-                                 INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id, 
+  has_many :bookmarked_bills, :class_name => "Bill",
+                              :finder_sql => 'select bills.*, bm.bookmarkers FROM bills
+                                 INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
              bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = bills.id
                                  LEFT JOIN (select count(user_id) as bookmarkers, bookmarkable_id
                                  from bookmarks WHERE bookmarkable_type = \'Bill\'
@@ -93,48 +102,48 @@ class User < ActiveRecord::Base
                            WHERE b.bookmarkable_type = \'Bill\' AND b.user_id = #{id}
                            ORDER BY b.created_at'
 
-  
-  has_many :bills_supported, :class_name => "Bill", 
-                              :finder_sql => 'select bills.* FROM bills 
-                                 INNER JOIN (select bill_votes.support, bill_votes.user_id, 
+
+  has_many :bills_supported, :class_name => "Bill",
+                              :finder_sql => 'select bills.* FROM bills
+                                 INNER JOIN (select bill_votes.support, bill_votes.user_id,
                                     bill_votes.created_at, bill_votes.bill_id FROM bill_votes WHERE bill_votes.support = 0
                                     AND bill_votes.user_id = #{id}) b ON b.bill_id = bills.id
                                  ORDER BY b.created_at'
 
-  
-  has_many :bills_opposed, :class_name => "Bill", 
-                              :finder_sql => 'select bills.* FROM bills 
-                                  INNER JOIN (select bill_votes.support, bill_votes.user_id, 
+
+  has_many :bills_opposed, :class_name => "Bill",
+                              :finder_sql => 'select bills.* FROM bills
+                                  INNER JOIN (select bill_votes.support, bill_votes.user_id,
                                    bill_votes.created_at, bill_votes.bill_id FROM bill_votes WHERE bill_votes.support = 1
                                   AND bill_votes.user_id = #{id}) b ON b.bill_id = bills.id
                                   ORDER BY b.created_at'
-  
-  has_many :bookmarked_senators, :class_name => "Person", 
-                              :finder_sql => 'select people.* FROM people 
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id, 
+
+  has_many :bookmarked_senators, :class_name => "Person",
+                              :finder_sql => 'select people.* FROM people
+                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
                                                   bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = people.id
                                                 WHERE people.name like \'Sen.%\' AND b.bookmarkable_type = \'Person\' AND b.user_id = #{id}
                                                 ORDER BY b.created_at'
 
 
-  
-  has_many :bookmarked_representatives, :class_name => "Person", 
-                              :finder_sql => 'select people.* FROM people 
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id, 
+
+  has_many :bookmarked_representatives, :class_name => "Person",
+                              :finder_sql => 'select people.* FROM people
+                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
                                                   bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = people.id
                                                 WHERE people.name like \'Rep.%\' AND b.bookmarkable_type = \'Person\' AND b.user_id = #{id}
                                                 ORDER BY b.created_at'
 
-  has_many :bookmarked_people, :class_name => "Person", 
-                              :finder_sql => 'select people.* FROM people 
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id, 
+  has_many :bookmarked_people, :class_name => "Person",
+                              :finder_sql => 'select people.* FROM people
+                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
                                                   bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = people.id
                                                 WHERE b.bookmarkable_type = \'Person\' AND b.user_id = #{id}
                                                 ORDER BY b.created_at'
-  
-  has_many :bookmarked_issues, :class_name => "Subject", 
-                              :finder_sql => 'select subjects.* FROM subjects 
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id, 
+
+  has_many :bookmarked_issues, :class_name => "Subject",
+                              :finder_sql => 'select subjects.* FROM subjects
+                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
                                                   bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = subjects.id
                                                 WHERE b.bookmarkable_type = \'Subject\' AND b.user_id = #{id}
                                                 ORDER BY b.created_at'
@@ -148,14 +157,18 @@ class User < ActiveRecord::Base
 
   belongs_to :representative, :class_name => "Person", :foreign_key => "representative_id"
   belongs_to :user_role
-  has_one :watch_dog
-  has_many :user_warnings
-  
-  has_one :political_notebook, :dependent => :destroy
-  has_many :notebook_items, :through => :political_notebook
+  has_one    :watch_dog
+  has_many   :user_warnings
 
-  has_many :contact_congress_letters
-  
+  has_one    :political_notebook, :dependent => :destroy
+  has_many   :notebook_items, :through => :political_notebook
+
+  has_many   :contact_congress_letters
+
+  scope :for_state, lambda { |state| where("state = ?", state.upcase) }
+  scope :for_district, lambda { |state, district| for_state(state).where("district = ?", district.to_i) }
+  scope :active, lambda { where("created_at >= ?", 2.months.ago) }
+
 #  has_many :bill_comments
   def self.human_attribute_name(attr, options = {})
     HUMANIZED_ATTRIBUTES[attr.to_sym] || super
@@ -168,49 +181,90 @@ class User < ActiveRecord::Base
   def username
     login
   end
-  
+
   def active_groups
     owned_groups + groups.where("group_members.status != 'BOOTED'")
   end
-  
+
   def join_default_groups
-    if my_state.size == 1
-      state_group = State.find_by_abbreviation(self.state).group
+    if state.present?
+      state_group = State.find_by_abbreviation(state).group
       unless state_group.nil? or state_group.users.include?(self)
-        state_group.group_members.create(:user_id => self.id, :status => 'MEMBER')
+        state_group.group_members.create(:user_id => id, :status => 'MEMBER')
       end
     end
-    
-    if my_district.size == 1
-      district_group = District.find_by_district_tag(self.district).group
+
+    if district.present?
+      district_group = District.find_by_district_tag(district_tag).group
       unless district_group.nil? or district_group.users.include?(self)
-        district_group.group_members.create(:user_id => self.id, :status => 'MEMBER')
-      end 
+        district_group.group_members.create(:user_id => id, :status => 'MEMBER')
+      end
     end
   end
-  
+
   def total_number_of_actions
     self.comments.count + self.friends.count + self.bill_votes.count + self.person_approvals.count + self.bookmarks.count
   end
 
-  def state
-    my_state.empty? ? nil : my_state.first
+  def update_state_and_district(params = {})
+    # Resets state and district based on lat/lng if present
+    # if missing, tries to get from zip5. If multiple results returned,
+    # user stays in 'give us your address' purgatory.
+    # TODO: Allow user to send feedback if they get stuck here.
+    if params[:lat].present? and params[:lng].present?
+      dsts = Congress.districts_locate(params[:lat], params[:lng]) rescue []
+    else
+      dsts = Congress.districts_locate(zipcode).results rescue []
+    end
+    # Multiple states can be returned per zcta. See: 53511
+    states = dsts.collect(&:state).uniq
+    if states.length == 1
+      self.state = states.first
+      self.possible_states = []
+    else
+      self.state = nil
+      self.possible_states = states
+    end
+    if dsts.length == 1
+      self.district = dsts.first.district
+      self.district_needs_update = false
+      self.possible_districts = []
+    else
+      self.district = nil
+      self.possible_districts = dsts.collect {|d| "#{d.state}-#{d.district}"}
+    end
+    "#{state || '?'}-#{district || '?'}"
   end
-  
-  def district
-    my_district.empty? ? nil : my_district.first
+
+  def district_tag
+    "#{state}-#{district}"
   end
-  
+
+  # TODO: Deprecate me
+  def zip5_districts
+    Congress.districts_locate(zipcode).results rescue []
+  end
+
+  # TODO: Deprecate me
   def my_state
-    ZipcodeDistrict.zip_lookup(self.zipcode, self.zip_four).collect {|p| p.state}.uniq
+    state || zip5_districts.collect(&:state).uniq rescue []
   end
-  
+
+  # TODO: Deprecate me
   def my_district
-    ZipcodeDistrict.zip_lookup(self.zipcode, self.zip_four).collect {|p| "#{p.state}-#{p.district}"}.uniq
+    if state.present? && district.present?
+      ["#{state}-#{district}"]
+    else
+      zip5_districts.collect {|p| "#{p.state}-#{p.district}"} rescue []
+    end
   end
+
+  # TODO: Deprecate me
   def my_district_number
-    ZipcodeDistrict.zip_lookup(self.zipcode, self.zip_four).collect {|p| "#{p.district}"}.uniq
+    zip5_districts.collect(&:district)
   end
+
+  # TODO: Deprecate me
   def definitive_district
     if self.my_district.compact.length == 1
        t_state, t_district = self.my_district.first.split('-')
@@ -224,17 +278,20 @@ class User < ActiveRecord::Base
     else
       return nil
     end
- 
+
   end
-  
+
+  # TODO: Deprecate me
   def my_state_f
     self.my_state
   end
-  
+
+  # TODO: Deprecate me
   def my_district_f
     self.my_district
   end
-  
+
+  # TODO: Deprecate me
   def definitive_district_object
     if self.my_district.compact.length == 1
        t_state, t_district = self.my_district.first.split('-')
@@ -249,12 +306,12 @@ class User < ActiveRecord::Base
       return nil
     end
   end
-  
+
   def friends_in_state(state = self.my_state)
-    unless self.my_state.empty? 
+    unless self.my_state.empty?
       friends_logins = friends.collect{|p| "login:#{p.friend.login}"}
       unless friends_logins.empty?
-        User.find_by_solr("#{friends_logins.join(' OR ')}", 
+        User.find_by_solr("#{friends_logins.join(' OR ')}",
              :facets => {:browse => ["my_state_f:\"#{self.my_state}\""]}, :limit => 100).results
       else
         return []
@@ -268,7 +325,7 @@ class User < ActiveRecord::Base
     unless self.my_district.empty?
       friends_logins = friends.collect{|p| "login:#{p.friend.login}"}
       unless friends_logins.empty?
-        User.find_by_solr("#{friends_logins.join(' OR ')}", 
+        User.find_by_solr("#{friends_logins.join(' OR ')}",
           :facets => {:browse => ["my_district_f:#{self.my_district}"]}, :limit => 100).results
       else
         return []
@@ -277,18 +334,19 @@ class User < ActiveRecord::Base
       return []
     end
   end
-  
+
+  # TODO: Use scopes
   def my_sens
     Person.find_current_senators_by_state(self.my_state)
   end
   def my_reps
-    Person.find_current_representatives_by_state_and_district(self.my_state, self.my_district_number)  
+    Person.find_current_representatives_by_state_and_district(self.my_state, self.my_district_number)
   end
- 
+
   def my_approved_reps
     self.person_approvals.find(:all, :include => [:person], :conditions => ["people.name LIKE ? AND rating > 5", '%Rep.%']).collect {|p| p.person.id}
   end
-  
+
   def my_disapproved_reps
     self.person_approvals.find(:all, :include => [:person], :conditions => ["people.name LIKE ? AND rating <= 5", '%Rep.%']).collect {|p| p.person.id}
   end
@@ -296,11 +354,11 @@ class User < ActiveRecord::Base
   def my_approved_sens
     self.person_approvals.find(:all, :include => [:person], :conditions => ["people.name LIKE ? AND rating > 5", '%Sen.%']).collect {|p| p.person.id}
   end
-  
+
   def my_disapproved_sens
     self.person_approvals.find(:all, :include => [:person], :conditions => ["people.name LIKE ? AND rating <= 5", '%Sen.%']).collect {|p| p.person.id}
   end
-  
+
   def public_actions
     self.can_view(:my_actions, nil)
   end
@@ -320,11 +378,11 @@ class User < ActiveRecord::Base
   def my_committees_tracked
     self.bookmarked_committees.collect{|p| p.id}
   end
-  
+
   def my_people_tracked
     self.bookmarked_people.collect{|p| p.id}
   end
-  
+
   def my_issues_tracked
     self.bookmarked_issues.collect{|p| p.id}
   end
@@ -337,7 +395,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  
+
   def votes_like_me
     req = []
     self.my_bills_supported.each do |b|
@@ -346,9 +404,9 @@ class User < ActiveRecord::Base
     self.my_bills_opposed.each do |b|
       req << "my_bills_opposed:#{b}"
     end
-    
-    unless req.empty? 
-      query = req.join(' OR ')  
+
+    unless req.empty?
+      query = req.join(' OR ')
       return User.find_by_solr(query, :scores => true, :limit => 31, :facets => {:zeros => true, :browse => ["public_actions:true"] }).results
     else
       return nil
@@ -356,14 +414,14 @@ class User < ActiveRecord::Base
   end
 
   def find_other_users_in_state(state)
-    User.find_by_sql(['select distinct users.id, users.login from users where state_cache like ?;', "%#{state}%"])
+    User.find_by_sql(['select distinct users.id, users.login from users where state like ?;', "%#{state}%"])
   end
 
   def find_other_users_in_district(state, district)
-    User.find_by_sql(['select distinct users.id, users.login from users where district_cache like ?;', "%#{state}-#{district}%"])
+    User.find_by_sql(['select distinct users.id, users.login from users where district like ?;', "%#{state}-#{district}%"])
   end
 
-  
+
   def senator_bookmarks_count
     current_user.bookmarks.count(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", "sen"])
   end
@@ -384,9 +442,9 @@ class User < ActiveRecord::Base
         User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_issues_tracked:#{object.id}"]}, :limit => limit)
       when 'Committee'
         User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_committees_tracked:#{object.id}"]}, :limit => limit)
-      end      
+      end
     end
-  
+
     def find_users_in_districts_supporting(districts, object, limit)
       query = "my_district:(#{districts.join(' OR ')})"
       case object.class.to_s
@@ -446,7 +504,7 @@ class User < ActiveRecord::Base
           User.find_id_by_solr(query, :facets => {:browse => ["public_actions:true", "my_bills_opposed:#{object.id}"]}, :limit => limit)
       end
     end
-          
+
     def find_users_in_states_tracking(states, object, limit)
       query = "my_state:(\"#{states.join('" OR "')}\")"
       case object.class.to_s
@@ -458,7 +516,7 @@ class User < ActiveRecord::Base
         User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_issues_tracked:#{object.id}"]}, :limit => limit)
       when 'Committee'
         User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_committees_tracked:#{object.id}"]}, :limit => limit)
-      end 
+      end
     end
 
     def find_users_tracking_bill(bill)
@@ -490,7 +548,7 @@ class User < ActiveRecord::Base
           User.find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_tracking:true", "my_approved_reps:#{person.id}"]}, :limit => 1000)
         when 'Sen.'
           User.find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_tracking:true", "my_approved_sens:#{person.id}"]}, :limit => 1000)
-      end    
+      end
     end
 
     def find_users_opposing_person(person)
@@ -499,10 +557,10 @@ class User < ActiveRecord::Base
           User.find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_tracking:true", "my_disapproved_reps:#{person.id}"]}, :limit => 1000)
         when 'Sen.'
           User.find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_tracking:true", "my_disapproved_sens:#{person.id}"]}, :limit => 1000)
-      end    
+      end
     end
 
- 
+
     def find_users_tracking_committee(committee)
   #    find(:all, :include => [:bookmarks, :privacy_option], :conditions => ["bookmarkable_type = 'Subject' AND bookmarkable_id = ? AND privacy_options.my_tracked_items = ?", issue.id, 2], :order => "users.login")
        find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["my_committees_tracked:#{committee.id}","public_tracking:true"]}, :limit => 1000)
@@ -515,17 +573,17 @@ class User < ActiveRecord::Base
       end
     end
 
-    # state, district, location_allowed (permissions options), total site actions ( votes, comments, friends ) 
+    # state, district, location_allowed (permissions options), total site actions ( votes, comments, friends )
     # user_vote, user_approval
     def find_for_tracking_table(logged_in_user, object, ids)
        this_user = nil
        this_user = logged_in_user.id if logged_in_user
        case object.class.to_s
          when 'Person'
-             find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed, 
+             find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed,
                                COALESCE(comments2.tc,0) as total_comments, COALESCE(bill_votes_agg.tc, 0) + COALESCE(user_votes.tc, 0) + COALESCE(user_votes2.tc,0) + COALESCE(comments.tc,0) + COALESCE(friends.tc,0) as total_actions,
                                person_approvals.rating as object_rating, fri.friend_id as is_friend, fri.confirmed as is_friend_confirmed FROM users
-                                LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions, 
+                                LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions,
                                 privacy_options.user_id from privacy_options where privacy_options.user_id in (?))
                                     po ON po.user_id = users.id
                                 LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
@@ -547,10 +605,10 @@ class User < ActiveRecord::Base
                                     person_approvals ON person_approvals.user_id = users.id
                                 WHERE users.id in (?)", ids, ids, ids, ids, ids, ids, true, ids, object.id, ids, this_user, ids, object.id, ids])
          when 'Bill'
-             find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed, 
+             find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed,
                                COALESCE(comments2.tc,0) as total_comments, COALESCE(bill_votes_agg.tc, 0) + COALESCE(user_votes.tc, 0) + COALESCE(user_votes2.tc,0) + COALESCE(comments.tc,0) + COALESCE(friends.tc,0) as total_actions,
                                bill_votes.support as support, fri.friend_id as is_friend, fri.confirmed as is_friend_confirmed FROM users
-                                LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions, 
+                                LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions,
                                 privacy_options.user_id from privacy_options where privacy_options.user_id in (?))
                                     po ON po.user_id = users.id
                                 LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
@@ -568,14 +626,14 @@ class User < ActiveRecord::Base
                                     comments2 ON comments2.user_id = users.id
                                 LEFT OUTER JOIN ( select friends.user_id, friends.friend_id, friends.confirmed from friends WHERE friends.friend_id in (?) AND friends.user_id = (?))
                                     fri ON fri.friend_id = users.id
-                                LEFT OUTER JOIN ( select bill_votes.support, bill_votes.user_id FROM bill_votes WHERE bill_votes.user_id in (?) AND bill_votes.bill_id = ?) 
+                                LEFT OUTER JOIN ( select bill_votes.support, bill_votes.user_id FROM bill_votes WHERE bill_votes.user_id in (?) AND bill_votes.bill_id = ?)
                                     bill_votes ON bill_votes.user_id = users.id
                                 WHERE users.id in (?)", ids, ids, ids, ids, ids, ids, true, ids, object.id, ids, this_user, ids, object.id, ids])
          when 'Subject'
-             find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed, 
+             find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed,
                                COALESCE(comments2.tc,0) as total_comments, COALESCE(bill_votes_agg.tc, 0) + COALESCE(user_votes.tc, 0) + COALESCE(user_votes2.tc,0) + COALESCE(comments.tc,0) + COALESCE(friends.tc,0) as total_actions,
                                fri.friend_id as is_friend, fri.confirmed as is_friend_confirmed FROM users
-                                LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions, 
+                                LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions,
                                 privacy_options.user_id from privacy_options where privacy_options.user_id in (?))
                                     po ON po.user_id = users.id
                                 LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
@@ -595,10 +653,10 @@ class User < ActiveRecord::Base
                                     fri ON fri.friend_id = users.id
                                 WHERE users.id in (?)", ids, ids, ids, ids, ids, ids, true, ids, object.id, ids, this_user, ids])
          when 'Committee'
-             find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed, 
+             find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed,
                                COALESCE(comments2.tc,0) as total_comments, COALESCE(bill_votes_agg.tc, 0) + COALESCE(user_votes.tc, 0) + COALESCE(user_votes2.tc,0) + COALESCE(comments.tc,0) + COALESCE(friends.tc,0) as total_actions,
                                fri.friend_id as is_friend, fri.confirmed as is_friend_confirmed FROM users
-                                LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions, 
+                                LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions,
                                 privacy_options.user_id from privacy_options where privacy_options.user_id in (?))
                                     po ON po.user_id = users.id
                                 LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
@@ -618,15 +676,15 @@ class User < ActiveRecord::Base
                                     fri ON fri.friend_id = users.id
                                 WHERE users.id in (?)", ids, ids, ids, ids, ids, ids, true, ids, object.id, ids, this_user, ids])
        end
-    end 
- 
+    end
+
     def find_all_by_ip(address)
        ip = UserIpAddress.int_form(address)
        self.find(:all, :include => [:user_ip_addresses], :conditions => ["user_ip_addresses.addr = ?", ip])
     end
 
  end # class << self
- 
+
   # permissions method
   def can_view(option,viewer)
     res = false
@@ -659,7 +717,7 @@ class User < ActiveRecord::Base
       return false
     end
   end
-  
+
   def recent_actions(limit = 10)
     b = self.bookmarks.find(:all, :order => "created_at DESC", :limit => limit)
     c = self.comments.find(:all, :order => "created_at DESC", :limit => limit)
@@ -667,7 +725,7 @@ class User < ActiveRecord::Base
     pa = self.person_approvals.find(:all, :order => "created_at DESC", :limit => limit)
     f = self.friends.find(:all, :conditions => ["confirmed = ?", true], :order => "confirmed_at DESC", :limit => limit)
     l = self.contact_congress_letters.order('created_at DESC').limit(limit)
-    
+
     items = b.concat(c).concat(bv).concat(pa).concat(f).concat(l).compact
     items.sort! { |x,y| y.created_at <=> x.created_at }
     return items
@@ -695,26 +753,32 @@ class User < ActiveRecord::Base
        nil
      end
   end
-    # Activates the user in the database.
-    def activate
-      @activated = true
-      update_attributes(:activated_at => Time.now, :activation_code => nil)
-    end
+  # Activates the user in the database.
+  def activate!
+    @activated = true
+    self.update_attribute(:activated_at, Time.now)
+    self.update_attribute(:activation_code, nil)
+  end
 
-    # Returns true if the user has just been activated.
-    def recently_activated?
-      @activated
-    end
+  # Returns true if the user has just been activated.
+  def recently_activated?
+    @activated
+  end
   # Encrypts some data with the salt.
   def self.encrypt(password, salt)
     Digest::SHA1.hexdigest("--#{salt}--#{password}--")
   end
 
+  def activated?
+    activated_at != nil
+  end
+
   def check_feed_key
     unless self.feed_key
+      self.feed_key
       self.update_attribute(:feed_key, Digest::SHA1.hexdigest("--#{self.login}--#{self.email}--ASDFASDFASDF@ASDFKTWDS"))
     end
-  end    
+  end
 
   # Encrypts the password with the user salt
   def encrypt(password)
@@ -751,9 +815,9 @@ class User < ActiveRecord::Base
    def reset_password
      # First update the password_reset_code before setting the
      # reset_password flag to avoid duplicate email notifications.
-     update_attributes(:password_reset_code => nil)
+     self.update_attribute(:password_reset_code, nil)
      @reset_password = true
-     self.activate if self.activated_at.nil?
+     self.activate! if self.activated_at.nil?
    end
 
    def recently_reset_password?
@@ -800,7 +864,7 @@ class User < ActiveRecord::Base
    def facebook_connect_user?
      !facebook_uid.blank?
    end
-   
+
    protected
 
    def make_password_reset_code
@@ -813,16 +877,16 @@ class User < ActiveRecord::Base
       self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
       self.crypted_password = encrypt(password)
    end
-   
+
    def make_activation_code
       self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
-      
+
    end
 
    def make_feed_key
      self.check_feed_key
    end
-   
+
    def make_privacy_options
      PrivacyOption.create({:user_id => self.id})
    end
@@ -833,15 +897,6 @@ class User < ActiveRecord::Base
 
    def openid?
     !identity_url.blank?
-   end
-  
-   
-   private
-   def cache_district_and_state
-     if self.zipcode_changed? || self.zip_four_changed?
-       self.district_cache = self.my_district
-       self.state_cache = self.my_state
-     end
    end
 
 end

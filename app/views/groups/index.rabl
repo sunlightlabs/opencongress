@@ -1,6 +1,6 @@
 object false
 
-child (@groups => :groups) do
+child (@groups) do
   extends "groups/group"
 end
 

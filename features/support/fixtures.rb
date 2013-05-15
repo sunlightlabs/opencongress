@@ -1,13 +1,6 @@
-Fixtures.create_fixtures("features/fixtures", "actions")
-Fixtures.create_fixtures("features/fixtures", "amendments")
-Fixtures.create_fixtures("features/fixtures", "articles")
-Fixtures.create_fixtures("features/fixtures", "bills")
-Fixtures.create_fixtures("features/fixtures", "hot_bill_categories")
-Fixtures.create_fixtures("features/fixtures", "people")
-Fixtures.create_fixtures("features/fixtures", "roles")
-Fixtures.create_fixtures("features/fixtures", "taggings")
-Fixtures.create_fixtures("features/fixtures", "tags")
-Fixtures.create_fixtures("features/fixtures", "bills")
-Fixtures.create_fixtures("features/fixtures", "user_roles")
-Fixtures.create_fixtures("features/fixtures", "users")
-Fixtures.create_fixtures("features/fixtures", "zipcode_districts")
+Before do
+  Fixtures.reset_cache
+  fixtures_folder = File.join(Rails.root.to_s, 'fixtures')
+  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml')}
+  Fixtures.create_fixtures(fixtures_folder, fixtures)
+end

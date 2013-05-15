@@ -29,39 +29,38 @@ class State < ActiveRecord::Base
   end
 
   has_one :group
-  
+
   def to_param
-    self.abbreviation
+    abbreviation
   end
 
   def user_count
-    User.count_by_sql(['select count(distinct users.id) from users where state_cache like ?;', "%#{abbreviation}%"])
-
-    # User.count_by_solr("my_state:\"#{abbreviation}\"")    
+    User.for_state(abbreviation).count
+    # User.count_by_sql(['select count(distinct users.id) from users where state like ?;', "%#{abbreviation}%"])
+    # User.count_by_solr("my_state:\"#{abbreviation}\"")
   end
 
-  
+
   def users
-    User.find_by_sql(['select distinct users.id, users.login from users where state_cache like ?;', "%#{abbreviation}%"])
-    
-    
-    # User.find_by_solr("my_state:\"#{abbreviation}\"", :facets => {:fields => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed, 
+    User.for_state(abbreviation)
+    # User.find_by_sql(['select distinct users.id, users.login from users where state like ?;', "%#{abbreviation}%"])
+    # User.find_by_solr("my_state:\"#{abbreviation}\"", :facets => {:fields => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed,
     #                        :my_committees_tracked, :my_bills_tracked, :my_people_tracked, :my_issues_tracked,
-    #                        :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens], :limit => 10, :sort => true}, 
+    #                        :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens], :limit => 10, :sort => true},
     #                        #:browse => ["public_tracking:true", "public_actions:true"]}
     #                         :order => "last_login desc")
   end
-  
+
   def tracking_suggestions
     # temporarily removing solr for now - June 2012
     return [0, {}]
-    
-    
+
+
     facets = self.users.facets
     my_trackers = 0
-    facet_results_hsh = {:my_bills_supported_facet => [], 
-                         :my_people_tracked_facet => [], 
-                         :my_issues_tracked_facet => [], 
+    facet_results_hsh = {:my_bills_supported_facet => [],
+                         :my_people_tracked_facet => [],
+                         :my_issues_tracked_facet => [],
                          :my_bills_tracked_facet => [],
                          :my_approved_reps_facet => [],
                          :my_approved_sens_facet => [],
@@ -73,10 +72,10 @@ class State < ActiveRecord::Base
                          :my_bills_opposed_facet => []}
     facet_results_ff = facets['facet_fields']
     if facet_results_ff && facet_results_ff != []
-      
+
       facet_results_ff.each do |fkey, fvalue|
         facet_results = facet_results_ff[fkey]
-      
+
         #solr running through acts as returns as a Hash, or an array if running through tomcat...hence this stuffs
         facet_results_temp_hash = Hash[*facet_results] unless facet_results.class.to_s == "Hash"
         facet_results_temp_hash = facet_results if facet_results.class.to_s == "Hash"
@@ -90,13 +89,13 @@ class State < ActiveRecord::Base
             unless facet_results_hsh[fkey.to_sym].length == 5
               object = Person.find_by_id(key) if fkey == "my_people_tracked_facet" || fkey =~ /my_approved_/ || fkey =~ /my_disapproved_/
               object = Subject.find_by_id(key) if fkey == "my_issues_tracked_facet"
-              object = Bill.find_by_ident(key) if fkey == "my_bills_tracked_facet" 
+              object = Bill.find_by_ident(key) if fkey == "my_bills_tracked_facet"
               object = Bill.find_by_id(key) if fkey =~ /my_bills_supported/ || fkey =~ /my_bills_opposed/
               facet_results_hsh[fkey.to_sym] << {:object => object, :trackers => value}
             end
 #          end
         end
-      end      
+      end
     else
       return [my_trackers,{}]
     end
@@ -113,61 +112,61 @@ class State < ActiveRecord::Base
       return [my_trackers,{}]
     end
   end
-  
+
   def freebase_guid_url
     URI.escape("http://www.freebase.com/api/service/search?query=#{self.name}&type=/common/topic&type=/location/us_state")
   end
-  
+
   def freebase_link
     "http://www.freebase.com/view/en/#{name.downcase.gsub(' ', '_')}"
   end
-  
+
   def freebase_guid
      require 'open-uri'
      require 'json'
      JSON.parse(open(freebase_guid_url).read)['result'].first['article']['id']
   end
-  
+
   def freebase_description_url
     "http://www.freebase.com/api/trans/blurb#{self.freebase_guid}?maxlength=800"
   end
-  
+
   def freebase_description
      require 'open-uri'
      require 'json'
-     
+
      Rails.cache.fetch("state_freebase_desc_#{self.id}") {
        open(freebase_description_url).read.gsub(/\/(.)\(help(.)info\)/,'/')
      }
 
   end
-  
+
   def image_path
     "public/images/states/#{self.image_name}"
   end
-  
+
   def census_url
     "http://ftp2.census.gov/geo/maps/cong_dist/cd109_gen/st_based/#{self.image_name}"
   end
-  
+
   def image_name
     "cd109_#{abbreviation}.gif"
   end
-  
+
   def self.make_download_script
     State.all.each do |s|
       puts "wget -q '#{s.census_url}'"
     end
   end
-  
+
   def available_in_og?
     ['CA','LA','MD','WI','MN','TX'].include?(abbreviation)
   end
-  
+
   def og_link
     'http://' + abbreviation.downcase + '.opengovernment.org'
   end
-  
+
   def m_thumb_path
     "/images/states/thumbs_250/#{self.image_name}"
   end
@@ -191,7 +190,7 @@ chs=#{size}&chl=Republicans (#{republican_representatives.count})&chds=0,100&chc
         "http://chart.apis.google.com/chart?cht=p&chd=t:#{democrat_representatives.count},#{republican_representatives.count}&\
 chs=#{size}&chl=Democrats (#{democrat_representatives.count})|Republicans (#{republican_representatives.count})&chds=0,100,0,100&chco=#{colors}&chtt=#{title}"
 
-      end        
+      end
 
     else
       "http://chart.apis.google.com/chart?cht=p&chd=t:#{democrat_representatives.count},#{republican_representatives.count},#{other_representatives.count}&\
@@ -199,12 +198,12 @@ chs=#{size}&chl=Democrats (#{democrat_representatives.count})|Republicans (#{rep
     end
   end
 
-  STATE_FOR_ABBREV = { 
+  STATE_FOR_ABBREV = {
     "AL" => "Alabama",
     "AK" => "Alaska",
     "AS" => "American Samoa",
     "AZ" => "Arizona",
-    "AR" => "Arkansas",  
+    "AR" => "Arkansas",
     "CA" => "California",
     "CO" => "Colorado",
     "CT" => "Connecticut",
@@ -272,63 +271,63 @@ chs=#{size}&chl=Democrats (#{democrat_representatives.count})|Republicans (#{rep
     end
 
     RESIDENT_FOR_ABBREV = {
-    "AL" => "Alabamian", 		  
-    "AK" => "Alaskan", 	      
+    "AL" => "Alabamian",
+    "AK" => "Alaskan",
     "AR" => "Arkansan",
-    "AZ" => "Arizonan", 		  
+    "AZ" => "Arizonan",
     "AS" => "American Samoan",
-    "CA" => "Californian", 	  
-    "CO" => "Coloradan",   
-    "CT" => "Connecticuter", 	  
-    "DE" => "Delawarean", 	      
-    "FL" => "Floridian", 		  
+    "CA" => "Californian",
+    "CO" => "Coloradan",
+    "CT" => "Connecticuter",
+    "DE" => "Delawarean",
+    "FL" => "Floridian",
     "GA" => "Georgian",
-    "GU" => "Guamanian",	      
-    "HI" => "Hawaiian", 		  
-    "ID" => "Idahoan", 	      
-    "IL" => "Illinoisan", 	      
-    "IN" => "Indianian", 		  
-    "IA" => "Iowan", 	          
-    "KS" => "Kansan", 	          
-    "KY" => "Kentuckian", 	      
-    "LA" => "Louisianian", 	  
-    "ME" => "Mainer", 			  
-    "MD" => "Marylander", 	      
-    "MA" => "Massachusettsan",   
-    "MI" => "Michiganian", 	  
-    "MN" => "Minnesotan", 	      
-    "MS" => "Mississippian", 	  
-    "MO" => "Missourian", 	      
-    "MT" => "Montanan", 	      
-    "NE" => "Nebraskan", 	      
-    "NV" => "Nevadan", 		  
-    "NH" => "New Hampshirite",   
-    "NJ" => "New Jerseyan",   	  
-    "NM" => "New Mexican", 	  
-    "NY" => "New Yorker", 	      
-    "NC" => "North Carolinian",  
-    "ND" => "North Dakotan", 	  
-    "OH" => "Ohioan", 	          
-    "OK" => "Oklahoman", 		  
-    "OR" => "Oregonian", 	      
+    "GU" => "Guamanian",
+    "HI" => "Hawaiian",
+    "ID" => "Idahoan",
+    "IL" => "Illinoisan",
+    "IN" => "Indianian",
+    "IA" => "Iowan",
+    "KS" => "Kansan",
+    "KY" => "Kentuckian",
+    "LA" => "Louisianian",
+    "ME" => "Mainer",
+    "MD" => "Marylander",
+    "MA" => "Massachusettsan",
+    "MI" => "Michiganian",
+    "MN" => "Minnesotan",
+    "MS" => "Mississippian",
+    "MO" => "Missourian",
+    "MT" => "Montanan",
+    "NE" => "Nebraskan",
+    "NV" => "Nevadan",
+    "NH" => "New Hampshirite",
+    "NJ" => "New Jerseyan",
+    "NM" => "New Mexican",
+    "NY" => "New Yorker",
+    "NC" => "North Carolinian",
+    "ND" => "North Dakotan",
+    "OH" => "Ohioan",
+    "OK" => "Oklahoman",
+    "OR" => "Oregonian",
     "PA" => "Pennsylvanian",
     "PR" => "Puerto Rican",
-    "RI" => "Rhode Islander", 	  
-    "SC" => "South Carolinian",  
-    "SD" => "South Dakotan", 	  
-    "TN" => "Tennessean", 	      
-    "TX" => "Texan", 			  
-    "UT" => "Utahn", 			  
-    "VT" => "Vermonter", 	      
-    "VA" => "Virginian", 	      
-    "WA" => "Washingtonian", 	  
-    "WV" => "West Virginian", 	  
-    "WI" => "Wisconsinite", 	  
-    "WY" => "Wyomingite" }     
+    "RI" => "Rhode Islander",
+    "SC" => "South Carolinian",
+    "SD" => "South Dakotan",
+    "TN" => "Tennessean",
+    "TX" => "Texan",
+    "UT" => "Utahn",
+    "VT" => "Vermonter",
+    "VA" => "Virginian",
+    "WA" => "Washingtonian",
+    "WV" => "West Virginian",
+    "WI" => "Wisconsinite",
+    "WY" => "Wyomingite" }
 
   def self.resident_for_abbrev(abbr)
     RESIDENT_FOR_ABBREV[abbr.upcase]
-  end  
+  end
 
-  
+
 end

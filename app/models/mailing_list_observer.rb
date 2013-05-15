@@ -3,9 +3,9 @@ class MailingListObserver < ActiveRecord::Observer
 
   # The goal of this class is to record changes to columns relating to our e-mail list so
   # that we can keep CiviCRM in sync with OC.
-  
+
   # We don't care about user create because they're not going to be activated when they're created.
-  
+
   def after_update(user)
     # When users become active (activated_at),
     # change their mailing preference (mailing),
@@ -15,8 +15,13 @@ class MailingListObserver < ActiveRecord::Observer
     # We only save the old value of e-mail address because that's our primary key for
     # accessing the row in civicrm.
     if user.activated_at && user.enabled
-
-      if user.mailing_changed? || user.zipcode_changed? || user.email_changed? || user.activated_at_changed? || user.full_name_changed? || user.district_cache_changed?
+      if (user.mailing_changed? ||
+          user.zipcode_changed? ||
+          user.email_changed? ||
+          user.activated_at_changed? ||
+          user.full_name_changed? ||
+          user.state_changed? ||
+          user.district_changed?)
         UserAudit.create(
           :user_id => user.id,
           :mailing => user.mailing.nil? ? false : user.mailing,
@@ -24,10 +29,10 @@ class MailingListObserver < ActiveRecord::Observer
           :email_was => user.email_changed? ? user.email_was : nil,
           :zipcode => user.zipcode,
           :full_name => user.full_name,
-          :district => user.district_cache ? user.district_cache.first : nil
-        )
+          :state => user.state,
+          :district => user.district
+          )
       end
-
     end
   end
 

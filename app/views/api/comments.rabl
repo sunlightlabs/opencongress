@@ -1,6 +1,6 @@
 object false
 
-child (@comments => :comments) do
+child (@comments) do
   attributes :comment, :average_rating, :plus_score_count, :minus_score_count, :created_at, :root_id, :lft, :id
 
   child(:user => :author) do

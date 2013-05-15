@@ -1,4 +1,3 @@
-@wip
 Feature: Api
   All API queries should function properly
 

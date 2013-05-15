@@ -36,7 +36,7 @@ class AccountController < ApplicationController
     end
   end
 
-  def login    
+  def login
     if params[:login_action]
       session[:login_action] = {:url => session[:return_to], :action_result => params[:login_action]}
     end
@@ -58,7 +58,7 @@ class AccountController < ApplicationController
     if session[:return_to].nil?
       session[:return_to] = request.referer
     end
-    
+
     if using_open_id?
        open_id_authentication(params[:openid_url])
     elsif params[:user]
@@ -89,7 +89,7 @@ class AccountController < ApplicationController
       flash.now[:warning] = "Login failed"
     end
   end
-  
+
   def accept_tos
     @page_title = "Please Accept our Terms of Service and Privacy Policy"
     if request.post?
@@ -106,79 +106,60 @@ class AccountController < ApplicationController
 
   def determine_district
     @page_title = "Determine Your Congressional District"
-    
     if request.post?
-      if !params[:zip4].blank?
-        zd = ZipcodeDistrict.zip_lookup(params[:zipcode], params[:zip4]).first
-        puts zd.inspect
-        if zd
-          current_user.zipcode = params[:zipcode]
-          current_user.zip_four = params[:zip4]
-          current_user.save
-          
-          current_user.join_default_groups
-
-          flash[:notice] = "Your Congressional District (#{current_user.district}) has been saved."
-
-          activate_redirect(user_profile_path(:login => current_user.login))
-          return
-        else
-          @error_msg = "Well, this is odd, we can't find that zipcode with the +4 extension, either. Please email writeus@opencongress.org with your address and zipcode and we'll get back to you.  We apologize."
-          
-          return          
-        end
+      if !params[:address].present?
+        lat, lng = Geocoder.coordinates("#{params[:address]}, #{params[:zipcode]}")
+        new_district = current_user.update_state_and_district(:lat => lat, :lng => lng)
       else
-        yg = YahooGeocoder.new("#{params[:address]}, #{params[:zipcode]}")
-        unless yg.zip4.nil?
-          current_user.zipcode = yg.zip5
-          current_user.zip_four = yg.zip4
-          current_user.save
-        
-          current_user.join_default_groups
-        
-          flash[:notice] = "Your Congressional District (#{current_user.district}) has been saved."
-        
-          activate_redirect(user_profile_path(:login => current_user.login))
-        else
-          @error_msg = "Sorry, that address in zip code #{params[:zipcode]} was not recognized.  Please try using your Zipcode with the +4 extension (if you don't know it, you can follow the link below and lookup your address on the US Postal Service's website)."
-        end
+        new_district = current_user.update_state_and_district
+      end
+      current_user.save
+
+      if current_user.state.present? and current_user.district.present?
+        flash[:notice] = "Your Congressional District (#{new_district}) has been saved."
+        current_user.join_default_groups
+        activate_redirect(user_profile_path(:login => current_user.login))
+        return
+      else
+        @error_msg = "Sorry, we weren't able to find your representatives. Please email writeus@opencongress.org with your address and zipcode and we'll get back to you. We apologize for the inconvenience."
+        return
       end
     end
   end
-  
+
   def facebook_complete
     @page_title = 'Facebook Connect'
-    
+
     @user = User.where(['facebook_uid=?', @facebook_user.id]).first
     if @user.nil?
       @user = User.new
     end
-    
+
     if request.post?
       @user.update_attributes(params[:user])
       @user.facebook_uid = @facebook_user.id
       @user.email = @facebook_user.email
-      
+
       if @user.save
-        @user.activate
+        @user.activate!
         self.current_user = @user
         flash[:notice] = 'You have successfully signed up with your Facebook Account!'
-        
+
         activate_redirect
         return
       end
     end
   end
-  
+
   def contact_congress
     @page_title = 'Contact Congress'
-    
+
     if session[:formageddon_unsent_threads].nil?
       # not sure how we got here; redirect to regular signup
       redirect_to '/signup'
       return
     end
-    
+
     thread = Formageddon::FormageddonThread.find(session[:formageddon_unsent_threads].first)
     if thread.nil?
       # not sure how we got here; redirect to regular signup
@@ -189,50 +170,50 @@ class AccountController < ApplicationController
     # first see if we recognize the email address
     @existing_user = User.where(["UPPER(email)=?", thread.sender_email.upcase]).first
     unless @existing_user
-      @new_user = User.new   
+      @new_user = User.new
       @new_user.email = thread.sender_email
       @new_user.zipcode = thread.sender_zip5
       @new_user.zip_four = thread.sender_zip4
       puts "setting zip_four to #{thread.sender_zip4}"
     end
-    
+
     if request.post?
       @new_user.update_attributes(params[:user])
-      
+
       if @new_user.save
         redirect_to(:controller => 'account', :action => 'confirm', :login => @new_user.login)
-        
+
         return
       end
     end
   end
-  
+
   def group_signup_complete
     if request.post?
       @group_invite = GroupInvite.find(params[:group_invite_id])
       @user = User.new(params[:user])
-      
+
       if @user.email != @group_invite.email
         redirect_to groups_path, :error => 'There was an error with the group invitation.'
         return
       end
-      
+
       @group = @group_invite.group
-      
+
       if @user.save
-        @user.activate
+        @user.activate!
         self.current_user = @user
-        
+
         @group_invite.user = @user
         @group_invite.save
-        
+
         redirect_to group_group_invite_path(@group, @group_invite, :key => @group_invite.key)
       else
         render :action => 'group_invites/show'
       end
     end
   end
-  
+
   def signup
     @page_title = "Create a New Account"
 
@@ -244,10 +225,12 @@ class AccountController < ApplicationController
     @user.accepted_tos = true
     @user.accepted_tos_at = Time.now
 
+    # FIXME: Use different tooling for this, namely the district and state fields on the user.
+    # Also, why the eff were we storing a rep id but not state/district... wot.
     if @user.zipcode
       @senators, @reps = Person.find_current_congresspeople_by_zipcode(@user.zipcode, @user.zip_four)
       @user.representative_id = @reps.first.id if (@reps && @reps.length == 1)
-    end  
+    end
 
     if @user.save_with_captcha
       # check for an invitation
@@ -257,7 +240,7 @@ class AccountController < ApplicationController
       end
 
       @user.join_default_groups
-      
+
       redirect_to(:controller => 'account', :action => 'confirm', :login => @user.login)
     else
       render :action => 'signup'
@@ -266,16 +249,14 @@ class AccountController < ApplicationController
 
   def confirm
     @page_title = 'Confirm Your Email Address'
-    
     @user = User.find_by_login(params[:login], :conditions => ["activated_at is null"])
-
     @contact_congress_signup = session[:formageddon_unsent_threads].nil? ? false : true
   end
 
   def logout
     if params[:wiki_return_page]
       session[:return_to] = "http://www.opencongress.org/wiki/#{params[:wiki_return_page]}"
-    end    
+    end
     redirect_loc = session[:return_to]
     self.current_user.forget_me if logged_in?
     cookies.delete :auth_token
@@ -288,25 +269,25 @@ class AccountController < ApplicationController
     cookies.delete 'wiki_session', {:domain => '.opencongress.org'}
     cookies.delete 'wikiUserID', {:domain => '.opencongress.org'}
     cookies.delete 'wikiUserName', {:domain => '.opencongress.org'}
-    
+
     # force hard delete of the facebook cookie
     force_fb_cookie_delete
-    
+
     reset_session
     session[:return_to] = redirect_loc
     flash[:notice] = "You have been logged out."
-    
+
     #redirect_back_or_default('/')
     redirect_to :controller => 'index'
   end
-  
+
   def activate
     @page_title = 'Account Activation'
-    
+
     @user = User.find_by_activation_code(params[:id])
-    if @user and @user.activate
+    if @user and @user.activate!
       self.current_user = @user
-      
+
       activate_redirect
     else
       flash[:notice] = "We didn't find that confirmation code; maybe you've already activated your account?"
@@ -341,16 +322,16 @@ class AccountController < ApplicationController
     redirect_to '/account/forgot_password' and return if params[:id].blank?
     @user = User.find_by_password_reset_code(params[:id])
     @page_title = "Reset Password"
-    
+
     if @user.nil?
       flash[:error] = "Password reset link not recognized.  Please try again."
       redirect_to '/account/forgot_password'
     else
       return unless request.post?
-    
+
       @user.password = ''
     end
-    
+
     if (params[:user][:password] == params[:user][:password_confirmation])
       self.current_user = @user #for the next two lines to work
       current_user.password_confirmation = params[:user][:password_confirmation]
@@ -410,9 +391,9 @@ class AccountController < ApplicationController
 
   def invited
     invite = FriendInvite.find_by_invite_key(params[:id])
-    
+
     session[:invite] = invite
-    
+
     redirect_to signup_url
   end
 
@@ -424,16 +405,16 @@ class AccountController < ApplicationController
        @user = User.new(params[:user])
        @user.identity_url = identity_url
        @user.email = session[:invite].invitee_email unless session[:invite].nil? or request.post?
-  
+
        @user.accepted_tos = true
-       @user.accepted_tos_at = Time.now     
-  
+       @user.accepted_tos_at = Time.now
+
        if @user.zipcode
          @senators, @reps = Person.find_current_congresspeople_by_zipcode(@user.zipcode, @user.zip_four)
          @user.representative_id = @reps.first.id if (@reps && @reps.length == 1)
        end
        @user.save!
-  
+
        # check for an invitation
        if session[:invite]
          Friend.create_confirmed_friendship(@user, session[:invite].inviter)
@@ -446,7 +427,7 @@ class AccountController < ApplicationController
      end
     end
   end
-  
+
   def check_wiki
     if logged_in? and (Rails.env == 'production')
       begin
@@ -476,7 +457,7 @@ class AccountController < ApplicationController
             cookies[cookie_name] = {:value => cookie_value, :expires => 30.days.from_now, :domain => cookie_domain, :path => '/'}
           end
         end
-        
+
         # now we need to validate the token
         j = JSON.parse(resp.body)
         data = "action=login&lgname=#{CGI::escape(current_user.login)}&lgpassword=#{ApiKeys.wiki_pass}&#{ApiKeys.wiki_key}=1&lgtoken=#{j['login']['token']}&format=json"
@@ -486,7 +467,7 @@ class AccountController < ApplicationController
         }
         resp, data = http.post(path,data,headers)
         returned_cookies = resp['set-cookie'].split(',')
-        
+
         # now set the wiki user and token cookies
         returned_cookies.each do |b|
           b.strip!
@@ -540,7 +521,7 @@ class AccountController < ApplicationController
             end
             if u.save && self.current_user = User.find_by_identity_url(identity_url)
               logger.info "rock on"
-            else 
+            else
               session[:idurl] = identity_url
               redirect_to :action => 'new_openid' and return
             end
@@ -562,8 +543,8 @@ class AccountController < ApplicationController
         return
       end
     end
-    
-    
+
+
     def root_url
       home_url
     end
@@ -589,7 +570,7 @@ class AccountController < ApplicationController
           end
         end
       end
-      
+
       if session[:login_action] and session[:login_action][:action_result]
         if session[:login_action][:action_result] == 'track'
           case session[:login_action][:url]
@@ -600,7 +581,7 @@ class AccountController < ApplicationController
               if bill
                 bookmark = Bookmark.new(:user_id => current_user.id)
                 bill.bookmarks << bookmark
-              end    
+              end
             end
           when /\/([^\/]+)\/[^\/]+\/(\d+)/
             obj = $1
@@ -617,18 +598,18 @@ class AccountController < ApplicationController
         elsif session[:login_action][:action_result] == 'contact_congress'
           session[:formageddon_unsent_threads].each do |t|
             thread = Formageddon::FormageddonThread.find(t)
-            
+
             thread.formageddon_sender = current_user
-            
-            # force the email on the letters to the user email 
+
+            # force the email on the letters to the user email
             thread.sender_email = current_user.email
-            
+
             thread.save
           end
-          
+
           session[:return_to] = "/contact_congress_letters/delayed_send"
         end
       end
     end
-    
+
 end

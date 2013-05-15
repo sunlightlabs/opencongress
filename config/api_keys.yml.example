@@ -1,4 +1,6 @@
 defaults: &defaults
+  mapquest: xxx
+  congress: xxx
   technorati_api_key: xxx
   daylife_access_key: xxx
   daylife_secret: xxx

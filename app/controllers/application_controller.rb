@@ -134,8 +134,11 @@ class ApplicationController < ActionController::Base
   def has_district?
     if logged_in?
       if current_user.state.nil? or current_user.my_district.size != 1
-        redirect_to :controller => 'account', :action => 'determine_district' unless (params[:action] == 'determine_district' or params[:action] == 'accept_tos')
-
+        redirect_to :controller => 'account', :action => 'determine_district' unless (
+          params[:action] == 'determine_district' or
+          params[:action] == 'accept_tos' or
+          params[:action] == 'logout'
+        )
       end
     end
   end

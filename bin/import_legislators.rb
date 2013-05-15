@@ -54,7 +54,8 @@ legislators.each do |leg|
     leg_person = Person.find leg['id']['govtrack']
     OCLogger.log "Updating Legislator: #{leg['id']['govtrack']}"
   rescue ActiveRecord::RecordNotFound
-    leg_person = Person.new :id => leg['id']['govtrack']
+    leg_person = Person.new
+    leg_person.id = leg['id']['govtrack']
     OCLogger.log "Adding Legislator: #{leg['id']['govtrack']}"
   end
 
@@ -123,5 +124,14 @@ legislators.each do |leg|
     # addresses, so I think it was unused.
     role.save!
   end
+end
+
+num_sens = Person.sen.count
+num_reps = Person.rep.count
+if num_sens != 100
+  OCLogger.log "After importing legislators there should be 100 senators but there are #{num_sens}"
+end
+if num_sens != 439
+  OCLogger.log "After importing legislators there should be 439 reprentatives but there are #{num_reps}"
 end
 

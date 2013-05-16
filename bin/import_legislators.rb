@@ -59,6 +59,10 @@ legislators.each do |leg|
     OCLogger.log "Adding Legislator: #{leg['id']['govtrack']}"
   end
 
+  leg_person.govtrack_id = leg['id']['govtrack']
+  leg_person.thomas_id = leg['id']['thomas']
+  leg_person.fec_id = leg['id']['fec']
+  leg_person.cspan_id = leg['id']['cspan']
   leg_person.bioguideid = leg['id']['bioguide']
   leg_person.osid = leg['id']['opensecrets']
   # leg_person.youtube_id came from govtrack's people.xml
@@ -131,7 +135,7 @@ num_reps = Person.rep.count
 if num_sens != 100
   OCLogger.log "After importing legislators there should be 100 senators but there are #{num_sens}"
 end
-if num_sens != 439
+if num_reps != 439
   OCLogger.log "After importing legislators there should be 439 reprentatives but there are #{num_reps}"
 end
 

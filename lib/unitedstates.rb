@@ -109,8 +109,51 @@ module UnitedStates
             end
           end
         end
+
+        import_amendments bill_hash
+        import_bill_actions bill_hash
       else
         OCLogger.log "#{bill_hash['bill_id']} is already up-to-date."
+      end
+    end
+
+    def self.import_bill_actions (bill_hash)
+      bill_ident = { :session => bill_hash['congress'],
+                     :bill_type => bill_hash['bill_type'],
+                     :number => bill_hash['number'] }
+      bill = Bill.where(bill_ident) .first
+      if not bill.nil?
+        intro = bill.actions.find_by_action_type 'introduced'
+        if intro.nil?
+          intro = bill.actions.new :action_type => 'introduced'
+        end
+        intro.date = bill_hash['+introduced_at'].to_i
+        intro.datetime = bill_hash['+introduced_at']
+        intro.save!
+
+        bill_hash['actions'].each do |act|
+          action_ident = { :action_type => act['type'],
+                           :date => act['+acted_at'].to_i,
+                           :datetime => act['+acted_at'],
+                           :text => act['text'] }
+          action = bill.actions.where(action_ident) .first
+          if action.nil?
+            action = bill.actions.new action_ident
+          end
+          action.save!
+        end
+      end
+    end
+
+    def self.import_amendments (bill_hash)
+      bill_ident = { :session => bill_hash['congress'],
+                     :bill_type => bill_hash['bill_type'],
+                     :number => bill_hash['number'] }
+      bill = Bill.where(bill_ident) .first
+      if not bill.nil?
+        bill_hash['amendments'].each do |amdt|
+          bill.amendments.find_or_create_by_number(amdt['number'])
+        end
       end
     end
 

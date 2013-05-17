@@ -504,15 +504,31 @@ class BillController < ApplicationController
   end
 
   def amendments
-    @amendments = @bill.amendments.paginate(:all, :page => @page, :per_page => 10, :order => ["retreived_date DESC"])
+    pagination_opts = {
+      :page => @page,
+      :per_page => 10,
+      :order => ["retreived_date DESC"],
+      :conditions => ["offered_datetime IS NOT NULL"]
+    }
+    @amendments = @bill.amendments.paginate(pagination_opts)
   end
 
   def actions
-    @actions = @bill.actions.paginate(:all, :page => @page, :per_page => 10, :order => ["datetime::date DESC, id DESC"])
+    pagination_opts = {
+      :page => @page,
+      :per_page => 10,
+      :order => ["datetime::date DESC, id DESC"]
+    }
+    @actions = @bill.actions.paginate(pagination_opts)
   end 
   
   def votes
-    @roll_calls = @bill.roll_calls.paginate(:all, :page => @page, :per_page => 8, :order => ["date DESC"])
+    pagination_opts = {
+      :page => @page,
+      :per_page => 8,
+      :order => ["date DESC"]
+    }
+    @roll_calls = @bill.roll_calls.paginate(pagination_opts)
   end
 
   def comms

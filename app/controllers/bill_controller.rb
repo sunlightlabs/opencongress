@@ -311,7 +311,7 @@ class BillController < ApplicationController
   end
 
   def atom
-    session, bill_type, number = Bill.ident params[:id]
+    bill_type, number, session = Bill.ident params[:id]
     @bill = Bill.find_by_session_and_bill_type_and_number session, bill_type, number, :include => :actions
     @posts = []
     expires_in 60.minutes, :public => true
@@ -525,7 +525,7 @@ class BillController < ApplicationController
       require 'mediacloth'
       require 'open-uri'
       wiki_url = "http://#{WIKI_HOST}/w/api.php?action=query&prop=revisions&titles=Economic_Stimulus_Bill_of_2008&rvprop=timestamp|content&format=xml"
-      session, bill_type, number = Bill.ident params[:id]
+      bill_type, number, session = Bill.ident params[:id]
       if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
          #unwise = %w({ } | \ ^ [ ] `)
          badchar = '|'
@@ -609,7 +609,7 @@ class BillController < ApplicationController
   end
 
   def money
-    session, bill_type, number = Bill.ident(params[:id])
+    bill_type, number, session = Bill.ident params[:id]
     if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
       respond_to do |format|
         format.html
@@ -744,7 +744,7 @@ private
   end
 
   def bill_profile_shared
-    session, bill_type, number = Bill.ident params[:id]
+    bill_type, number, session = Bill.ident params[:id]
     if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
       @page_title_prefix = "U.S. Congress"
       @page_title = @bill.typenumber
@@ -778,7 +778,7 @@ private
       @bookmarking_image = "/images/fb-bill.jpg"
       @atom = {'link' => url_for(:only_path => false, :controller => 'bill', :id => @bill.ident, :action => 'atom'), 'title' => "#{@bill.typenumber} activity"}
     else
-      flash[:error] = "Invalid bill URL."
+      flash[:error] = "Invalid bill URL. (#{params[:id]})"
       redirect_to :action => 'all'
     end    
   end
@@ -791,7 +791,7 @@ private
   end
 
   def page_view
-    session, bill_type, number = Bill.ident params[:id]
+    bill_type, number, session = Bill.ident params[:id]
     
     if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => :actions })
       key = "page_view_ip:Bill:#{@bill.id}:#{request.remote_ip}"

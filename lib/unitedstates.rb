@@ -34,6 +34,7 @@ module UnitedStates
       end
       bill_hash['actions'].sort_by! { |action| action['+acted_at'] }
       bill_hash['+introduced_at'] = Time.parse(bill_hash['introduced_at'])
+      bill_hash['+updated_at'] = Time.parse(bill_hash['updated_at'])
       bill_hash
     end
 

@@ -101,6 +101,7 @@ group :test, :development do
   gem 'autotest'
   gem 'silent-postgres'	# Quieter postgres log messages
   gem 'database_cleaner'
+  gem 'awesome_print'
 
   gem 'rspec-rails', '~> 2.4'
   gem 'fuubar'

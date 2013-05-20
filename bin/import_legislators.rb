@@ -62,6 +62,7 @@ legislators.each do |leg|
   leg_person.govtrack_id = leg['id']['govtrack']
   leg_person.thomas_id = leg['id']['thomas']
   leg_person.fec_id = leg['id']['fec']
+  leg_person.lis_id = leg['id']['lis']
   leg_person.cspan_id = leg['id']['cspan']
   leg_person.bioguideid = leg['id']['bioguide']
   leg_person.osid = leg['id']['opensecrets']

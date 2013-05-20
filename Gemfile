@@ -78,11 +78,6 @@ gem "nokogiri"
 gem "defensio", :git => 'git://github.com/drinks/defensio-ruby.git'  # this forces :json api format
 gem "defender"
 
-group :deployment do
-  gem 'capistrano'
-  gem 'capistrano-ext'
-end
-
 # oauth
 gem 'oauth'
 gem 'facebooker2'
@@ -97,31 +92,42 @@ gem 'acts-as-taggable-on', '~> 2.3.3'
 gem 'mechanize'
 gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'
 
+group :deployment do
+  gem 'capistrano'
+  gem 'capistrano-ext'
+end
+
 group :production do
   # new relic RPM
-gem 'newrelic_rpm'
+  gem 'newrelic_rpm'
 end
 
 group :test, :development do
-  gem 'autotest'
-  gem 'silent-postgres'	# Quieter postgres log messages
-  gem 'database_cleaner'
-  gem 'vcr'
-  gem 'rspec-rails',          '~> 2.4'
-  gem 'fuubar'
-  gem 'cucumber'
-  gem 'cucumber-rails',       :require => false
-  gem 'webmock'
-  gem 'selenium-client'
-  gem 'capybara'
-  gem 'launchy'
-  gem 'guard'
-  gem 'guard-livereload'
   gem 'pry'
   gem 'pry-nav'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
   gem 'rails_best_practices'
   gem 'simplecov',            :require => false
+  gem 'rspec-rails',          '~> 2.4'
+  gem 'guard'
+  gem 'guard-livereload'
+end
+
+group :test do
+  gem 'autotest'
+  gem 'silent-postgres'  # Quieter postgres log messages
+  gem 'database_cleaner'
+  gem 'vcr'
+  gem 'fuubar'
+  gem 'poltergeist'  # Requires PhantomJS >= 1.8.1
+  gem 'cucumber'
+  gem 'cucumber-rails',       :require => false
+  gem 'fuubar-cucumber',      :git => 'git://github.com/martinciu/fuubar-cucumber.git'
+  gem 'webmock',              '~> 1.9.0'
+  gem 'selenium-client'
+  gem 'capybara'
+  gem 'launchy'
+  gem 'spork'
 end
 

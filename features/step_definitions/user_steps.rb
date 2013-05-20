@@ -6,25 +6,27 @@ When /^I track a bill$/ do
 end
 
 Given /^an active non-tos user is logged in as "(.*)"$/ do |login|
-  @current_user = User.create!(
-    :login => login,
-    :password => 'generic',
-    :password_confirmation => 'generic',
-    :email => "dshettler-#{login}@gmail.com",
-    :enabled => true,
-    :is_banned => false,
-    :accept_tos => false,
-    :accept_terms => true
-  )
+  VCR.use_cassette('active_non-tos_user') do
+    @current_user = User.create!(
+      :login => login,
+      :password => 'generic',
+      :password_confirmation => 'generic',
+      :email => "dshettler-#{login}@gmail.com",
+      :enabled => true,
+      :is_banned => false,
+      :accept_tos => false,
+      :accept_terms => true
+    )
 
-  # :create syntax for restful_authentication w/ aasm. Tweak as needed.
-  @current_user.activate!
+    # :create syntax for restful_authentication w/ aasm. Tweak as needed.
+    @current_user.activate!
 
-  visit "/login"
-  fill_in("user[login]", :with => login)
-  fill_in("user[password]", :with => 'generic')
-  click_button("Login")
-  page.should have_content("Logged")
+    visit "/login"
+    fill_in("user[login]", :with => login)
+    fill_in("user[password]", :with => 'generic')
+    click_button("Login")
+    page.should have_content("Logged")
+  end
 end
 
 Given /^a newly created user is logged in as "(.*)"$/ do |login|
@@ -38,48 +40,52 @@ Given /^a newly created user is logged in as "(.*)"$/ do |login|
     fill_in("user[captcha]", :with => SimpleCaptcha::SimpleCaptchaData.last.value)
     check("user[accept_tos]")
     click_button("Register")
+    page.should have_content("Thank you for Signing Up")
+    user = User.find_by_login(login)
+    code = user.activation_code
+    visit "/account/activate/#{code}"
+    page.should have_content("Thanks for registering")
+    visit "/logout"
+    visit "/"
+    find('#login-link').click
+    fill_in("login_field", :with => login)
+    fill_in("password_field", :with => 'generic')
+    click_button("Login")
+    page.should have_content("Logged")
   end
-  page.should have_content("Thank you for Signing Up")
-  user = User.find_by_login(login)
-  code = user.activation_code
-  visit "/account/activate/#{code}"
-  page.should have_content("Thanks for registering")
-  visit "/logout"
-  visit "/"
-  fill_in("user[login]", :with => login)
-  fill_in("user[password]", :with => 'generic')
-  click_button("Login")
-  page.should have_content("Logged")
 end
 
 Given /^an active user is logged in as "(.*)"$/ do |login|
-  @current_user = User.create!(
-    :login => login,
-    :password => 'generic',
-    :password_confirmation => 'generic',
-    :email => "dshettler-#{login}@gmail.com",
-    :zipcode => '90039',
-    :enabled => true,
-    :is_banned => false,
-    :accepted_tos => true,
-    :accept_terms => true
-  )
+  VCR.use_cassette('active_user') do
+    @current_user = User.create!(
+      :login => login,
+      :password => 'generic',
+      :password_confirmation => 'generic',
+      :email => "dshettler-#{login}@gmail.com",
+      :zipcode => '22204',
+      :enabled => true,
+      :is_banned => false,
+      :accepted_tos => true,
+      :accept_terms => true
+    )
 
-  # :create syntax for restful_authentication w/ aasm. Tweak as needed.
-  @current_user.activate!
-
-  visit "/login"
-  fill_in("user[login]", :with => login)
-  fill_in("user[password]", :with => 'generic')
-  click_button("Login")
-  page.should have_content("Logged")
+    # :create syntax for restful_authentication w/ aasm. Tweak as needed.
+    @current_user.activate!
+    visit "/login"
+    fill_in("user_login", :with => login)
+    fill_in("user_password", :with => 'generic')
+    click_button("Login")
+    page.should have_content("Logged")
+  end
 end
 
 Given /^an existing user is logged in as "(.*)"$/ do |login|
-  visit "/login"
-  fill_in("user[login]", :with => login)
-  fill_in("user[password]", :with => 'generic')
-  click_button("Login")
-  page.should have_content("Logged")
+  VCR.use_cassette('existing_user') do
+    visit "/login"
+    fill_in("user[login]", :with => login)
+    fill_in("user[password]", :with => 'generic')
+    click_button("Login")
+    page.should have_content("Logged")
+  end
 end
 

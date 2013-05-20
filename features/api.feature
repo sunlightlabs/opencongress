@@ -1,6 +1,7 @@
 Feature: Api
   All API queries should function properly
 
+  @javascript
   Scenario: People by First Name
     Given a newly created user is logged in as "dirt"
     When I go to the people api

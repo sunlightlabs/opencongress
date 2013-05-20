@@ -9,7 +9,7 @@ div.form label {
 div.floatright {
   .float:left !important;
   _float:left !important;
-}        
+}
 div.ie6_box {
   _width:750px;
 }
@@ -22,7 +22,7 @@ div.ie6_box {
 <div class="ie6_box" style="padding-top: 15px;">
   <div class="floatleft paddingtopnone" style="padding-right:30px;width:300px;">
     <h3>I have an account:</h3>
-    <% form_for :user do |f| %>
+    <%= form_for :user do |f| %>
     <div title="Account login" id="loginform" class="floatleft form">
 
       <p><label for="user_login">Login:</label>
@@ -39,9 +39,9 @@ div.ie6_box {
     </div>
 
     <% end %>
-    <% form_for :user do |f| %>
+    <%= form_for :user do |f| %>
     <div style="clear:left;" title="Account login" id="oid_loginform" class="form">
-      <h3 style="text-align:left;">Login with OpenID</h3> 
+      <h3 style="text-align:left;">Login with OpenID</h3>
       <p class="openidform"><label for="identity_url">OpenID URL:</label>
         <%= text_field_tag :openid_url,nil, :size => 30 %>
       </p>

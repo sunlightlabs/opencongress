@@ -2,7 +2,7 @@
 
 <%= error_messages_for :political_notebook %>
 
-<% form_for(@political_notebook) do |f| %>
+<%= form_for(@political_notebook) do |f| %>
   <p>
     <b>User</b><br />
     <%= f.text_field :user_id %>

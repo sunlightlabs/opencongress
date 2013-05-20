@@ -1,0 +1,177 @@
+--- 
+http_interactions: 
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:57556/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Mon, 20 May 2013 20:10:16 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Mon, 20 May 2013 20:10:16 GMT
+- request: 
+    method: post
+    uri: http://api.defensio.com/2.0/users/<DEFENSIO_KEY>/documents.json
+    body: 
+      encoding: US-ASCII
+      string: client=Defender%20%7C%202.0.3%20%7C%20Henrik%20Hodne%20%7C%20dvyjones%40binaryhex.com&content=blah%20blah%20blah&author-name=xyzxyz123123&author-email=dshettler-xyzxyz123123%40gmail.com&author-ip=127.0.0.1&author-url=&platform=ruby&type=comment
+    headers: {}
+
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Cache-Control: 
+      - max-age=0, private, must-revalidate
+      Content-Type: 
+      - application/json; charset=utf-8
+      Date: 
+      - Mon, 20 May 2013 20:07:33 GMT
+      Etag: 
+      - "\"32e2f03f113eca34c7beb9ff3778cc32\""
+      Server: 
+      - nginx/1.0.6 + Phusion Passenger 3.0.9 (mod_rails/mod_rack)
+      Status: 
+      - "200"
+      X-Powered-By: 
+      - Phusion Passenger (mod_rails/mod_rack) 3.0.9
+      X-Rack-Cache: 
+      - invalidate, pass
+      X-Runtime: 
+      - "0.255952"
+      X-Ua-Compatible: 
+      - IE=Edge,chrome=1
+      Content-Length: 
+      - "193"
+      Connection: 
+      - keep-alive
+    body: 
+      encoding: US-ASCII
+      string: "{\"defensio-result\":{\"status\":\"success\",\"message\":\"\",\"api-version\":\"2.0\",\"signature\":\"d17976d4d17190e2823808\",\"allow\":true,\"spaminess\":0.2,\"classification\":\"legitimate\",\"profanity-match\":false}}"
+    http_version: 
+  recorded_at: Mon, 20 May 2013 20:10:17 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:57556/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Mon, 20 May 2013 20:10:17 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Mon, 20 May 2013 20:10:17 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:57772/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Mon, 20 May 2013 20:37:25 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Mon, 20 May 2013 20:37:25 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:57772/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Mon, 20 May 2013 20:37:26 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Mon, 20 May 2013 20:37:26 GMT
+recorded_with: VCR 2.4.0

@@ -10,14 +10,14 @@ namespace :update do
       OCLogger.log "rsync with govtrack finished.\n\n"
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error rsyncing govtrack data!")
+        Emailer.rake_error(e, "Error rsyncing govtrack data!").deliver
       else
         puts "Error rsyncing govtrack data!"
       end
       throw e
     end
   end
-  
+
   task :mailing_list => :environment do
     load 'bin/daily/civicrm_sync.rb'
   end
@@ -30,7 +30,7 @@ namespace :update do
       end
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error updating photos!")
+        Emailer.rake_error(e, "Error updating photos!").deliver
       else
         puts "Error updating photos!"
       end
@@ -43,7 +43,7 @@ namespace :update do
       load 'bin/daily/daily_parse_bioguide.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error updating from bioguide!")
+        Emailer.rake_error(e, "Error updating from bioguide!").deliver
       else
         puts "Error updating from bioguide!"
       end
@@ -56,7 +56,7 @@ namespace :update do
       load 'bin/daily/daily_parse_video.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error getting video data!")
+        Emailer.rake_error(e, "Error getting video data!").deliver
       else
         puts "Error getting video data!"
       end
@@ -71,7 +71,7 @@ namespace :update do
       rescue
         data = "XXX"
       end
-      
+
       unless data.match(/OK\n$/)
         Person.transaction {
           load 'bin/daily/daily_parse_people.rb'
@@ -81,11 +81,11 @@ namespace :update do
       end
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing people!")
+        Emailer.rake_error(e, "Error parsing people!").deliver
       else
         puts "Error parsing people!"
       end
-    end    
+    end
   end
 
   task :bills => :environment do
@@ -93,7 +93,7 @@ namespace :update do
       load 'bin/daily/daily_parse_bills.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing bills!")
+        Emailer.rake_error(e, "Error parsing bills!").deliver
       else
         puts "Error parsing bills!"
       end
@@ -106,7 +106,7 @@ namespace :update do
       load 'bin/daily/daily_parse_bill_text.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing bill text!")
+        Emailer.rake_error(e, "Error parsing bill text!").deliver
       else
         puts "Error parsing bill text!"
       end
@@ -127,7 +127,7 @@ namespace :update do
       load 'bin/daily/daily_gpo_billtext_timestamps.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing GPO timestamps!")
+        Emailer.rake_error(e, "Error parsing GPO timestamps!").deliver
       else
         puts "Error parsing GPO timestamps!"
       end
@@ -142,7 +142,7 @@ namespace :update do
       }
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing amendments!")
+        Emailer.rake_error(e, "Error parsing amendments!").deliver
       else
         puts "Error parsing amendments!"
       end
@@ -157,7 +157,7 @@ namespace :update do
       }
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing committee reports!")
+        Emailer.rake_error(e, "Error parsing committee reports!").deliver
       else
         puts "Error parsing committee reports!"
       end
@@ -173,7 +173,7 @@ namespace :update do
       }
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing committee reports!")
+        Emailer.rake_error(e, "Error parsing committee reports!").deliver
       else
         puts "Error parsing committee reports!"
       end
@@ -188,12 +188,12 @@ namespace :update do
       }
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing committee schedule!")
+        Emailer.rake_error(e, "Error parsing committee schedule!").deliver
       else
         puts "Error parsing committee schedule!"
       end
       throw e
-    end    
+    end
   end
 
   task :today_in_congress => :environment do
@@ -203,7 +203,7 @@ namespace :update do
       }
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing today in Congress!")
+        Emailer.rake_error(e, "Error parsing today in Congress!").deliver
       else
         puts "Error parsing today in Congress!"
       end
@@ -216,7 +216,7 @@ namespace :update do
       load 'bin/daily/daily_parse_rolls.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing roll calls!")
+        Emailer.rake_error(e, "Error parsing roll calls!").deliver
       else
         puts "Error parsing roll calls!"
       end
@@ -229,7 +229,7 @@ namespace :update do
       load 'bin/daily/person_voting_similarities.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error compiling voting similarities!")
+        Emailer.rake_error(e, "Error compiling voting similarities!").deliver
       else
         puts "Error compiling voting similarities!"
       end
@@ -242,33 +242,33 @@ namespace :update do
       load 'bin/daily/sponsored_bill_stats.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error compiling sponsored bill stats!")
+        Emailer.rake_error(e, "Error compiling sponsored bill stats!").deliver
       else
         puts "Error compiling sponsored bill stats!"
       end
       throw e
     end
   end
-  
+
   task :realtime => :environment do
     begin
       load 'bin/daily/drumbone_realtime_api.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing Drumbone realtime API!")
+        Emailer.rake_error(e, "Error parsing Drumbone realtime API!").deliver
       else
         puts "Error parsing Drumbone realtime API!"
       end
       throw e
     end
   end
-  
+
   task :project_vote_smart => :environment do
     begin
       load 'bin/daily/project_vote_smart.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error parsing PVS data!")
+        Emailer.rake_error(e, "Error parsing PVS data!").deliver
       else
         puts "Error parsing PVS data!"
       end
@@ -295,7 +295,7 @@ namespace :update do
       }
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error running gossip!")
+        Emailer.rake_error(e, "Error running gossip!").deliver
       else
         puts "Error running gossip!"
       end
@@ -317,7 +317,7 @@ namespace :update do
       end
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error expiring cached bill fragments!")
+        Emailer.rake_error(e, "Error expiring cached bill fragments!").deliver
       else
         puts "Error expiring cached bill fragments!"
       end
@@ -337,7 +337,7 @@ namespace :update do
       end
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.deliver_rake_error(e, "Error expiring cached person fragments!")
+        Emailer.rake_error(e, "Error expiring cached person fragments!").deliver
       else
         puts "Error expiring cached person fragments!"
       end
@@ -345,12 +345,12 @@ namespace :update do
     end
   end
 
-  # CRP data tasks 
+  # CRP data tasks
   task :crp_interest_groups => :environment do
     begin
       load 'bin/crp/parse_interest_groups.rb'
     rescue Exception => e
-      #Emailer.deliver_rake_error(e, "Error compiling voting similarities!")
+      #Emailer.rake_error(e, "Error compiling voting similarities!").deliver
       throw e
     end
   end
@@ -359,16 +359,16 @@ namespace :update do
     begin
       load 'bin/crp/maplight_bill_positions.rb'
     rescue Exception => e
-      #Emailer.deliver_rake_error(e, "Error compiling voting similarities!")
+      #Emailer.rake_error(e, "Error compiling voting similarities!").deliver
       throw e
     end
   end
-  
+
   task :partytime_fundraisers => :environment do
     begin
       load 'bin/crp/partytime_fundraisers.rb'
     rescue Exception => e
-      #Emailer.deliver_rake_error(e, "Error compiling voting similarities!")
+      #Emailer.rake_error(e, "Error compiling voting similarities!").deliver
       throw e
     end
   end

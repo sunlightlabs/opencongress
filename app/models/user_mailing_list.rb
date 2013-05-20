@@ -36,9 +36,9 @@ class UserMailingList < ActiveRecord::Base
       self.all_admin.all_ok.each do |s|
         s.send_message(since)
       end
-    end    
+    end
   end
-    
+
 
   def send_message(since = nil)
     return unless self.status == OK
@@ -53,7 +53,7 @@ class UserMailingList < ActiveRecord::Base
     else
       people = []
     end
-    bills = []  
+    bills = []
     these_bills = self.mailing_list_items.bills
     these_bills.each do |tp|
       bills << tp.mailable.recent_activity_mini_list(since)
@@ -64,12 +64,12 @@ class UserMailingList < ActiveRecord::Base
     else
       bills = []
     end
-    
+
     unless people.empty? && bills.empty?
-      MiniMailingList.deliver_standard_message(user,bills,people)
+      MiniMailingList.standard_message(user,bills,people).deliver
     end
     self.update_attribute(:last_processed, Time.now)
-    
+
   end
-  
+
 end

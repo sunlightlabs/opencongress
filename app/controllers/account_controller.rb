@@ -71,7 +71,7 @@ class AccountController < ApplicationController
     if logged_in?
       self.current_user.update_attribute(:previous_login_date, self.current_user.last_login ? self.current_user.last_login : Time.now)
       self.current_user.update_attribute(:last_login, Time.now)
-      ip = self.current_user.user_ip_addresses.find_or_create_by_addr(UserIpAddress.int_form(request.remote_ip))
+      self.current_user.user_ip_addresses.find_or_create_by_addr(UserIpAddress.int_form(request.remote_ip))
       self.current_user.check_feed_key
       process_login_actions
       cookies[:ocloggedin]="true"

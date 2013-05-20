@@ -205,8 +205,8 @@ class FriendsController < ApplicationController
         key = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
         FriendInvite.find_or_create_by_inviter_id_and_invitee_email_and_invite_key(current_user.id, k, key)
 
-        Emailer::deliver_invite(k, current_user.full_name.blank? ? current_user.login : current_user.full_name,
-                                "#{Settings.base_url}account/invited/#{key}", message)
+        Emailer::invite(k, current_user.full_name.blank? ? current_user.login : current_user.full_name,
+                        "#{Settings.base_url}account/invited/#{key}", message).deliver
         @results << k
       end
     end
@@ -275,8 +275,8 @@ class FriendsController < ApplicationController
         key = Digest::SHA1.hexdigest(Time.now.to_s.split(//).sort_by {rand}.join)
         FriendInvite.find_or_create_by_inviter_id_and_invitee_email_and_invite_key(current_user.id, email, key)
 
-        Emailer::deliver_invite(email, current_user.full_name.blank? ? current_user.login : current_user.full_name,
-                                "#{Settings.base_url}account/invited/#{key}", params[:message])
+        Emailer::invite(email, current_user.full_name.blank? ? current_user.login : current_user.full_name,
+                        "#{Settings.base_url}account/invited/#{key}", params[:message]).deliver
 
       end
     end

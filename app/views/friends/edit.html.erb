@@ -4,7 +4,7 @@
 
 <%= error_messages_for :friend %>
 
-<% form_for(:friend, :url => friend_path(@friend), :html => { :method => :put }) do |f| %>
+<%= form_for(:friend, :url => friend_path(@friend), :html => { :method => :put }) do |f| %>
   <p>
     <b>User</b><br />
     <%= f.text_field :user_id %>

@@ -12,7 +12,7 @@
 <% if @user.id == current_user.id %>
 <div style="float:right;width:100px;">
   <%= image_tag("private.png", :alt => "private", :title => "Private", :id => 'Privacy', :style => "float:left;margin-right:5px;") %>
-<% form_for :privacy_option, @user.privacy_option, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
+<%= form_for :privacy_option, @user.privacy_option, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
 <%= f.select PrivacyOption.column_names[9].to_sym, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
 </div>
 <% end %>
@@ -22,7 +22,7 @@
 
 <div id="linkcontent">
 		<div class="my_left">
-		  
+
 <h3 class="dark"><%= user_name("My","'s") %> Letters to Congress</h3>
 
 <%= render :partial => 'contact_congress_letters/letters_list', :object => @user.contact_congress_letters %>
@@ -34,12 +34,12 @@
 		   <p style="clear:both;">No comments yet. You can add a comment on pages for any bill, Member of Congress, issues, and more. If you're looking to share your comments and votes with other people, they can easily track your actions on OpenCongress by subscribing to your personal RSS feed above.</p>
 		  <% end %>
     	    <% logged_in? ? myscores = current_user.comment_scores.find(:all) : myscores = Array.new %>
-		
+
 		  <% @my_comments.each do |com| %>
            <%= render :partial => 'shared/comments_comment', :locals => {:object => com.commentable_type, :comment => com, :myscores => myscores } %>
 		<% end %>
 		<br />
-		
+
 <table style="width:250px;">
   <tr>
     <td>Number of Comments: </td>
@@ -55,7 +55,7 @@
   </tr>
 </table>
 		</div>
-		<hr />		
+		<hr />
 	    <h3 class="dark"><%= user_name("My","'s") %> Supported Bills</h3>
 	    <% if @bills_supported.empty? %>
 	      <p>No supported bills yet. You can vote "aye" at the top of any bill's page.</p>

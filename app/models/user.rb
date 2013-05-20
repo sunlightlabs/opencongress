@@ -15,8 +15,9 @@ class User < ActiveRecord::Base
 
   apply_simple_captcha
 
+  #FIXME: Why do :accept_terms and :accepted_tos both exist?
   attr_accessible :login, :password, :password_confirmation, :captcha, :captcha_key,
-                  :full_name, :email, :remember_token,
+                  :full_name, :email, :remember_token, :accepted_tos,
                   :remember_created_at, :location, :homepage, :subscribed,
                   :show_email, :show_homepage, :zipcode, :mailing, :accept_terms, :about, :main_picture, :small_picture,
                   :chat_aim, :chat_yahoo, :chat_msn, :chat_icq, :chat_gtalk, :show_aim, :show_full_name, :default_filter,
@@ -831,7 +832,7 @@ class User < ActiveRecord::Base
    def comment_warn(comment, admin)
      self.user_warnings.create({:warning_message => "Comment Warning for Comment #{comment.id}", :warned_by => admin.id})
      if Rails.env.production?
-       UserNotifier.deliver_comment_warning(self, comment)
+       UserNotifier.comment_warning(self, comment).deliver
      end
    end
 

@@ -8,7 +8,7 @@ describe IndexController do
       response.should be_success
     end
 
-    it 'should load' do
+    it 'should display articles' do
       Article.should_receive(:frontpage_gossip).and_return([
         Article.new(
           :title => 'Title',
@@ -16,9 +16,9 @@ describe IndexController do
           :excerpt => 'blah, blah..'
         )
       ])
-      get :index
-      response.should have_selector("strong.gossip") do |content|
-        content.text.should include('Title')
+      visit '/'
+      page.should have_selector("strong.gossip") do |content|
+        content.should have_text('Title')
       end
     end
   end

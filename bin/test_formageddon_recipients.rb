@@ -15,18 +15,18 @@ bill = Bill.find_by_ident('112-h1349')
 sender = User.find_by_login('drm')
 people.each do |p|
   send = true
-  
+
   if send
     if p.formageddon_contact_steps.empty?
       puts "Skipping #{p.name}.  Not configured."
     else
       puts "Sending to #{p.name}..."
-      
+
       thread = Formageddon::FormageddonThread.new
-      
+
       thread.formageddon_recipient = p
       thread.formageddon_sender = sender
-      
+
       thread.sender_email = "david@opencongress.org"
       thread.sender_title = "Mr."
       thread.sender_first_name = "David"
@@ -46,20 +46,24 @@ people.each do |p|
         thread.sender_zip5 = zd.zip5
         thread.sender_zip4 = zd.zip4
 
-        y = YahooGeocoder.new("#{zd.zip5}-#{zd.zip4}")
-      
-        thread.sender_city = y.city
+        geo = Geocoder.search("#{zd.zip5}-#{zd.zip4}")[0].data
+        1.upto(5).each do |i|
+          if geo["adminArea#{i}Type"] == "City"
+            thread.sender_city = geo["adminArea#{i}"]
+            break
+          end
+        end
       end
-    
+
       unless thread.save
         puts "Validation error: probably a weird delegate or something.  Skipping"
       else
         message = "
-    OpenCongress.org, a free & open-source public resource website for transparency in the U.S. Congress, urges all members of Congress to support the Principles of Open Government Data :: 
+    OpenCongress.org, a free & open-source public resource website for transparency in the U.S. Congress, urges all members of Congress to support the Principles of Open Government Data ::
 
     http://www.opengovdata.org/
 
-    First drafted by volunteers in 2007, these principles help ensure that legislative data is open to the public and that government is as accountable as possible in our representative democracy. We're currently soliciting members of the U.S. Congress to become signatories of these community-generated principles in a forthcoming blog post on our flagship website, OpenCongress.org. Please have your office reply to this email with your current position on endorsing the Principles below :: 
+    First drafted by volunteers in 2007, these principles help ensure that legislative data is open to the public and that government is as accountable as possible in our representative democracy. We're currently soliciting members of the U.S. Congress to become signatories of these community-generated principles in a forthcoming blog post on our flagship website, OpenCongress.org. Please have your office reply to this email with your current position on endorsing the Principles below ::
     Open Government Data Definition: The 8 Principles of Open Government Data
 
     Government data shall be considered open if the data are made public in a way that complies with the principles below:
@@ -84,10 +88,10 @@ people.each do |p|
     A contact person must be designated to respond to complaints about violations of the principles.
     An administrative or judicial court must have the jurisdiction to review whether the agency has applied these principles appropriately.
 
-    Sincerely, 
+    Sincerely,
 
     David Moore
-    Program Manager, OpenCongress.org 
+    Program Manager, OpenCongress.org
 
     david@opencongress.org
 
@@ -97,9 +101,9 @@ people.each do |p|
     "
 
         thread.formageddon_letters.create(:subject => "Support the Principles of Open Government Data", :message => message, :issue_area => 'Other', :direction => 'TO_RECIPIENT', :status => 'START')
-    
+
         thread.formageddon_letters.first.send_letter
-        
+
         # ccl = ContactCongressLetter.new
         # ccl.user = sender
         # ccl.bill = bill

@@ -64,7 +64,7 @@ class Admin::UsersController < Admin::IndexController
 
   def resend_confirmation
      @user = User.find_by_id(params[:id])
-     UserNotifier.deliver_signup_notification(@user)
+     UserNotifier.signup_notification(@user).deliver
      redirect_to :action => 'edit', :id => @user
   end
 

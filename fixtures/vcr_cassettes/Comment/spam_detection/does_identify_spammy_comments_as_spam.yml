@@ -1,0 +1,84 @@
+--- 
+http_interactions: 
+- request: 
+    method: get
+    uri: http://congress.api.sunlightfoundation.com/districts/locate?apikey=<SUNLIGHT_KEY>&zip=90039
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      User-Agent: 
+      - Faraday v0.8.7
+      Accept-Encoding: 
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept: 
+      - "*/*"
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx/0.8.52
+      Date: 
+      - Mon, 20 May 2013 20:06:57 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Keep-Alive: 
+      - timeout=20
+      Status: 
+      - 200 OK
+      Content-Length: 
+      - "52"
+      X-Ua-Compatible: 
+      - IE=edge
+    body: 
+      encoding: US-ASCII
+      string: "{\"results\":[{\"state\":\"CA\",\"district\":28}],\"count\":1}"
+    http_version: 
+  recorded_at: Mon, 20 May 2013 20:07:46 GMT
+- request: 
+    method: post
+    uri: http://api.defensio.com/2.0/users/<DEFENSIO_KEY>/documents.json
+    body: 
+      encoding: US-ASCII
+      string: client=Defender%20%7C%202.0.3%20%7C%20Henrik%20Hodne%20%7C%20dvyjones%40binaryhex.com&content=%5Bspam%2C0.85%5D%20%3Ca%20href%3D%22http%3A%2F%2Fwww.kigtropin-shop.com%2FWholesale-hgh_c6%22%3EHGH%3C%2Fa%3E%20%3Ca%20href%3D%22http%3A%2F%2Fwww.kigtropin-shop.com%2FWholesale-jintropin_c1%22%3EJintropin%3C%2Fa%3E%20%3Ca%20href%3D%22http%3A%2F%2Fwww.kigtropin-shop.com%2FWholesale-hygetropin_c3%22%3EHygetropin%3C%2Fa%3E%20%3Ca%20href%3D%22http%3A%2F%2Fwww.kigtropin-shop.com%2FWholesale-kigtropin_c4%22%3EKigtropin%3C%2Fa%3E%20%3Ca%20href%3D%22http%3A%2F%2Fwww.kigtropin-shop.com%2FWholesale-jintropin-aq_c2%22%3EJintropin%20AQ%3C%2Fa%3E%20%3Ca%20href%3D%22http%3A%2F%2Fwww.kigtropin-shop.com%2FWholesale-hcg_c7%22%3EHCG%3C%2Fa%3E&author-name=commenttest&author-email=commenttest%40opencongress.org&author-ip=&author-url=&platform=ruby&type=test
+    headers: {}
+
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Cache-Control: 
+      - max-age=0, private, must-revalidate
+      Content-Type: 
+      - application/json; charset=utf-8
+      Date: 
+      - Mon, 20 May 2013 20:03:15 GMT
+      Etag: 
+      - "\"fbf045cf981f3e2648c3a1d64418594f\""
+      Server: 
+      - nginx/1.0.6 + Phusion Passenger 3.0.9 (mod_rails/mod_rack)
+      Status: 
+      - "200"
+      X-Powered-By: 
+      - Phusion Passenger (mod_rails/mod_rack) 3.0.9
+      X-Rack-Cache: 
+      - invalidate, pass
+      X-Runtime: 
+      - "0.048406"
+      X-Ua-Compatible: 
+      - IE=Edge,chrome=1
+      Transfer-Encoding: 
+      - chunked
+      Connection: 
+      - keep-alive
+    body: 
+      encoding: US-ASCII
+      string: "{\"defensio-result\":{\"status\":\"success\",\"message\":\"\",\"api-version\":\"2.0\",\"signature\":\"fa3dbb61a824c5c07e2ebd\",\"allow\":false,\"spaminess\":0.9,\"classification\":\"spam\",\"profanity-match\":false}}"
+    http_version: 
+  recorded_at: Mon, 20 May 2013 20:07:46 GMT
+recorded_with: VCR 2.4.0

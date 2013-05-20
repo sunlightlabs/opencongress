@@ -238,3 +238,4 @@ padding: 14px 0 14px 50px;
   width: 450px;
 }
 
+.fb_iframe_widget[login_text] { width: 100%; overflow: hidden; height: 30px; }

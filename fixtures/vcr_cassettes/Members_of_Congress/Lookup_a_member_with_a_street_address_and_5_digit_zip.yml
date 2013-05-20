@@ -1,0 +1,46 @@
+--- 
+http_interactions: 
+- request: 
+    method: get
+    uri: http://www.mapquestapi.com/geocoding/v1/address?key=<MAPQUEST_KEY>&location=2901%20Angus%20St.,%2090039
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept-Encoding: 
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - Apache-Coyote/1.1
+      Access-Control-Allow-Origin: 
+      - "*"
+      Access-Control-Allow-Methods: 
+      - OPTIONS,GET,POST
+      Expires: 
+      - Mon, 20 Dec 1998 01:00:00 GMT
+      Last-Modified: 
+      - Mon, 20 May 2013 20:37:52 GMT
+      Cache-Control: 
+      - no-cache, must-revalidate
+      Pragma: 
+      - no-cache
+      Content-Type: 
+      - application/json;charset=UTF-8
+      Content-Length: 
+      - "998"
+      Date: 
+      - Mon, 20 May 2013 20:37:52 GMT
+    body: 
+      encoding: ASCII-8BIT
+      string: "{\"results\":[{\"locations\":[{\"latLng\":{\"lng\":-118.26908,\"lat\":34.10716},\"adminArea4\":\"Los Angeles County\",\"adminArea5Type\":\"City\",\"adminArea4Type\":\"County\",\"adminArea5\":\"Los Angeles\",\"street\":\"2901 Angus St\",\"adminArea1\":\"US\",\"adminArea3\":\"CA\",\"type\":\"s\",\"displayLatLng\":{\"lng\":-118.26898,\"lat\":34.10745},\"linkId\":23914299,\"postalCode\":\"90039-2632\",\"sideOfStreet\":\"R\",\"dragPoint\":false,\"adminArea1Type\":\"Country\",\"geocodeQuality\":\"POINT\",\"geocodeQualityCode\":\"P1AAA\",\"mapUrl\":\"http://www.mapquestapi.com/staticmap/v4/getmap?key=Fmjtd|luub2d6yl1,2w=o5-9u2nuz&type=map&size=225,160&pois=purple-1,34.10716,-118.26908,0,0|&center=34.10716,-118.26908&zoom=15&rand=1088626515\",\"adminArea3Type\":\"State\"}],\"providedLocation\":{\"location\":\"2901 Angus St., 90039\"}}],\"options\":{\"ignoreLatLngInput\":false,\"maxResults\":-1,\"thumbMaps\":true},\"info\":{\"copyright\":{\"text\":\"\xC2\xA9 2013 MapQuest, Inc.\",\"imageUrl\":\"http://api.mqcdn.com/res/mqlogo.gif\",\"imageAltText\":\"\xC2\xA9 2013 MapQuest, Inc.\"},\"statuscode\":0,\"messages\":[]}}"
+    http_version: 
+  recorded_at: Mon, 20 May 2013 20:37:52 GMT
+recorded_with: VCR 2.4.0

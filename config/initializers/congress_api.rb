@@ -1,1 +1,1 @@
-Congress.key = ApiKeys.congress
+Congress.key = ApiKeys.sunlightlabs_key

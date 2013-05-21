@@ -5,43 +5,6 @@ class ProfileController < ApplicationController
                                                 :tracked_votes,:tracked_commentary_news,:tracked_commentary_blogs,
                                                 :edit_profile,:watchdog, :remove_vote, :remove_bill_bookmark, :remove_person_bookmark, :remove_bookmark, :pn_ajax, :update_privacy]
 
-  class Picture
-    def getSmallThumb(x)
-      maxwidth = 80
-      maxheight = 80
-      aspectratio = maxwidth.to_f / maxheight.to_f
-      pic = Magick::Image.from_blob(x).first
-      imgwidth = pic.columns
-      imgheight = pic.rows
-      imgratio = imgwidth.to_f / imgheight.to_f
-      imgratio > aspectratio ? scaleratio = maxwidth.to_f / imgwidth : scaleratio = maxheight.to_f / imgheight
-      thumb = pic.thumbnail(scaleratio)
-      thumb.to_blob
-    end
-    def getMainPicture(y)
-      maxwidth = 120
-      maxheight = 120
-      aspectratio = maxwidth.to_f / maxheight.to_f
-      pic = Magick::Image.from_blob(y).first
-      imgwidth = pic.columns
-      imgheight = pic.rows
-      imgratio = imgwidth.to_f / imgheight.to_f
-      imgratio > aspectratio ? scaleratio = maxwidth.to_f / imgwidth : scaleratio = maxheight.to_f / imgheight
-      thumb = pic.thumbnail(scaleratio)
-      thumb.to_blob
-    end
-    def writePicture(y, x)
-      require 'RMagick'
-       pic = Magick::Image.from_blob(y).first
-      pic.write("public/images/users/" + x.to_s) { self.quality = 80 }
-    end
-    def writePictureMain(y, x)
-      require 'RMagick'
-      pic = Magick::Image.from_blob(y).first
-      pic.write("public/images/users/" + x.to_s) { self.quality = 80 }
-    end
-  end
-
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])
     @page_title = "#{@user.login}'s Profile"
@@ -447,31 +410,18 @@ class ProfileController < ApplicationController
 
   def upload_pic
     tmp_file = params[:picture]['tmp_file']
-    new_main_file_name = current_user.login + "_m.jpg"
-    new_small_file_name = current_user.login + "_s.jpg"
     picture = tmp_file.read
-
-    lpic = Picture.new
-    main_picture = lpic.getMainPicture(picture)
-    lpic.writePictureMain(main_picture,new_main_file_name)
-
-    lpic = Picture.new
-    small_picture = lpic.getSmallThumb(picture)
-    lpic.writePicture(small_picture,new_small_file_name)
-
-    user = current_user
-    user.update_attribute("main_picture",new_main_file_name)
-    user.update_attribute("small_picture", new_small_file_name)
+    lpic = Avatar.new(picture, :name => current_user.login)
+    current_user.main_picture, current_user.small_picture = lpic.create_sizes!
+    current_user.save(:validate => false)
     redirect_to user_profile_url(current_user.login)
   end
 
   def delete_images
-    File.delete("public/images/users/" + current_user.main_picture) if (current_user.main_picture && File.exists?("public/images/users/" + current_user.main_picture))
-    File.delete("public/images/users/" + current_user.small_picture) if (current_user.small_picture && File.exists?("public/images/users/" + current_user.small_picture))
-    @user = current_user
-    @user.update_attribute("main_picture",nil)
-    @user.update_attribute("small_picture", nil)
-
+    File.delete("public/images/users/#{current_user.main_picture}") if current_user.main_picture.present? rescue nil
+    File.delete("public/images/users/#{current_user.small_picture}") if current_user.small_picture.present? rescue nil
+    current_user.main_picture = current_user.small_picture = nil
+    current_user.save(:validate => false)
     redirect_to user_profile_url(current_user.login)
   end
 

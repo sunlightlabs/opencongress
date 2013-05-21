@@ -59,7 +59,8 @@ class MemcacheExpiration
 
   def connect
     if Rails.env == 'production'
-      hostport = '10.13.219.6:11211' 
+
+      hostport = Rails.application.config.cache_store[1]
       errorcount = 0
     
       while errorcount < 5

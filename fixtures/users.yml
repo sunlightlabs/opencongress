@@ -43,7 +43,6 @@ users_001:
 
   identity_url:
   status:
-  password:
   login: donnyshaw
   is_banned: f
   district: 1
@@ -97,7 +96,6 @@ users_002:
 
   identity_url:
   status:
-  password:
   login: enaing
   is_banned: f
   district: 0
@@ -105,3 +103,11 @@ users_002:
   chat_aim:
   email: enaing@gmail.com
   blog_author: f
+users_003:
+  login: dan
+  email: dan@example.com
+  zipcode: 22204
+  state: 'VA'
+  district: 8
+  activated_at: <%= 10.minutes.ago %>
+  accepted_tos: true

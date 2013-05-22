@@ -1,6 +1,4 @@
 class Avatar
-  require 'RMagick'
-
   DEFAULT_UPLOAD_PATH = "#{Rails.root.to_s}/public/images/users/"
   DEFAULT_SIZES = { :m => [120, 120], :s => [80, 80] }
   DEFAULT_QUALITY = 80

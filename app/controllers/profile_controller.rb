@@ -409,11 +409,15 @@ class ProfileController < ApplicationController
   end
 
   def upload_pic
-    tmp_file = params[:picture]['tmp_file']
-    picture = tmp_file.read
-    lpic = Avatar.new(picture, :name => current_user.login)
-    current_user.main_picture, current_user.small_picture = lpic.create_sizes!
-    current_user.save(:validate => false)
+    redirect_to :back, :flash => "You need to be logged in to do that." and return unless current_user
+    begin
+      tmp_file = params[:picture]['tmp_file']
+      avatar = Avatar.new(tmp_file.read, :name => current_user.login)
+      current_user.main_picture, current_user.small_picture = avatar.create_sizes!
+      current_user.save(:validate => false)
+    rescue
+      flash[:warning] = "Failed to upload your picture"
+    end
     redirect_to user_profile_url(current_user.login)
   end
 

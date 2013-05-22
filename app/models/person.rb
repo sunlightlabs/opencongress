@@ -802,7 +802,7 @@ class Person < ActiveRecord::Base
 
   def Person.find_current_representatives_by_state_and_district(state, district)
       Person.find(:all,
-                  :conditions => ["title='Rep.' AND state = ? AND district in (?)", state, district])
+                  :conditions => ["title='Rep.' AND state = ? AND district in (?)", state, district.to_s])
   end
 
 

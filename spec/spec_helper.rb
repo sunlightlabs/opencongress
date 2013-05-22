@@ -11,6 +11,8 @@ require 'vcr'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
+include ActionDispatch::TestProcess
+
 VCR.configure do |config|
   config.cassette_library_dir = 'fixtures/vcr_cassettes'
   config.hook_into :webmock
@@ -24,6 +26,7 @@ end
 
 RSpec.configure do |config|
 
+  config.fixture_path = "#{Rails.root}/fixtures"
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.

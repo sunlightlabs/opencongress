@@ -31,6 +31,8 @@ class Person < ActiveRecord::Base
   scope :sen, :joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='sen' AND roles.enddate > ?", Date.today]
   scope :rep, :joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='rep' AND roles.enddate > ?", Date.today]
 
+  scope :legislator, :joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND (roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]
+
 
   has_many :news, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC', :conditions => proc { "commentaries.is_ok = 't' AND commentaries.is_news='t'" }
   has_many :blogs, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC', :conditions => proc { "commentaries.is_ok = 't' AND commentaries.is_news='f'" }

@@ -1,4 +1,6 @@
 class Avatar
+  include Rake::DSL
+
   DEFAULT_UPLOAD_PATH = "#{Rails.root.to_s}/public/images/users/"
   DEFAULT_SIZES = { :m => [120, 120], :s => [80, 80] }
   DEFAULT_QUALITY = 80
@@ -8,8 +10,8 @@ class Avatar
   def initialize(img, options=nil)
     self.blob = img
     self.name = options[:name] || (raise "Picture instances must have a name")
-    self.upload_path ||= DEFAULT_UPLOAD_PATH
-    self.quality ||= DEFAULT_QUALITY
+    self.upload_path = options[:upload_path] || DEFAULT_UPLOAD_PATH
+    self.quality = options[:quality] || DEFAULT_QUALITY
     mkdir_p(upload_path)
   end
 

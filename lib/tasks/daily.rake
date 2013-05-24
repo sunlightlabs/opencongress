@@ -147,10 +147,10 @@ namespace :update do
     end    
   end
 
-  desc "Loads bills from govtrack"
+  desc "Loads bills from United States repo"
   task :bills => :environment do
-    begin
-      load 'bin/daily/daily_parse_bills.rb'
+    begin 
+      load 'bin/import_bills.rb'
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
         Emailer.deliver_rake_error(e, "Error parsing bills!")
@@ -160,6 +160,7 @@ namespace :update do
       throw e
     end
   end
+
 
   desc "Loads bill text from govtrack"
   task :bill_text => :environment do
@@ -286,6 +287,7 @@ namespace :update do
     end
   end
 
+=begin 
   task :person_voting_similarities => :environment do
     begin
       load 'bin/daily/person_voting_similarities.rb'
@@ -298,10 +300,11 @@ namespace :update do
       throw e
     end
   end
+=end
 
   task :sponsored_bill_stats => :environment do
     begin
-      load 'bin/daily/sponsored_bill_stats.rb'
+      load 'bin/daily/create_bill_leg_stats.rb' # new file for United States data
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
         Emailer.deliver_rake_error(e, "Error compiling sponsored bill stats!")
@@ -311,7 +314,7 @@ namespace :update do
       throw e
     end
   end
-  
+=begin  
   task :realtime => :environment do
     begin
       load 'bin/daily/drumbone_realtime_api.rb'
@@ -364,7 +367,7 @@ namespace :update do
       throw e
     end
   end
-
+=end
   task :expire_cached_bill_fragments => :environment do
     begin
       require File.dirname(__FILE__) + '/../../app/models/bill.rb'
@@ -437,7 +440,7 @@ namespace :update do
 
   task :all => [:rsync, :photos, :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule, :person_voting_similarities, :sponsored_bill_stats, :expire_cached_bill_fragments, :expire_cached_person_fragments]
   task :parse_all => [ :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule]
-  task :govtrack => [ :rsync, :people, :bills, :amendments, :roll_calls, :expire_cached_bill_fragments, :expire_cached_person_fragments]
+  task :govtrack => [ :rsync, :bills, :bill_text ] #:amendments, :roll_calls, :expire_cached_bill_fragments, :expire_cached_person_fragments]
   task :committee_info => [:committee_reports, :committee_schedule]
   task :people_meta_data => [:person_voting_similarities, :sponsored_bill_stats, :expire_cached_person_fragments]
 end

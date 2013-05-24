@@ -181,9 +181,6 @@ def parse_from_file(bill, text_version, filename)
    
    
     bill_abbrev = bill.reverse_abbrev_lookup 
-    puts "bill_abbrev"
-    puts bill_abbrev
-    puts bill.bill_type
     version.word_count = get_text_word_count(bill_abbrev, bill.number, text_version)
     
     # now parse the html

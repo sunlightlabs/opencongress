@@ -686,8 +686,19 @@ EOT
 
   def make_tabs(tabs)
     make_tabs = tabs.inject([]) do |text, link|
-      here = (link[1][:action] == controller.action_name) ? 'here' : ''
-      text << "<li id='#{link[1][:action]}' class='#{here}'>" + link_to("<span>#{link[0].to_s}</span>".html_safe, link[1], :class => link[0].slice!(0..3)) + "</li>"
+      if link[1].is_a?(Hash)
+        if (link[1][:action] == controller.action_name)
+          text << "<li id='#{link[1][:action]}' class='here'>"
+        else
+          text << "<li id='#{link[1][:action]}'>"
+        end
+      else
+        text << "<li>"
+      end
+
+      inner_span = "<span>#{link[0].to_s}</span>".html_safe
+      text << link_to(inner_span, link[1], :class => link[0].slice!(0..3))
+      text << "</li>"
      end
      make_tabs.join("\n").html_safe
   end

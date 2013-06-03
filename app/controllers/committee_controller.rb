@@ -2,10 +2,15 @@ class CommitteeController < ApplicationController
   before_filter :page_view, :only => :show
   
   def index
-    all = Committee.find(:all, :conditions => ['active = ?', true]).sort_by { |c| [(c.name || ""), (c.subcommittee_name || "") ] }
-    @committees = all.group_by {|c| c.name || ""}
-    @house_committees = Committee.by_chamber('house').sort_by { |c| [c.name, (c.subcommittee_name || "")] }.group_by(&:name)
-    @senate_committees = Committee.by_chamber('senate').sort_by { |c| [c.name, (c.subcommittee_name || "")] }.group_by(&:name)
+    @committees = Committee.where(:parent_id => nil)
+    @house_committees = Committee.where(:chamber => 'house',
+                                        :parent_id => nil,
+                                        :active => true)
+                                 .order(:name, :subcommittee_name)
+    @senate_committees = Committee.where(:chamber => 'senate',
+                                         :parent_id => nil,
+                                         :active => true)
+                                  .order(:name, :subcommittee_name)
 
     @carousel = ObjectAggregate.popular('Committee', Settings.default_count_time).slice(0..7)
     
@@ -20,7 +25,7 @@ class CommitteeController < ApplicationController
       @wiki_tab = true
       @wiki_url = @committee.wiki_url
     end
-    
+
     @main = Committee.find_by_name_and_subcommittee_name(@committee.name, nil)
     unless @main
       redirect_to :action => 'nodata' 
@@ -28,13 +33,12 @@ class CommitteeController < ApplicationController
     end
     @reports = @committee.reports.sort_by { |r| r.index }.reverse.first(5)
 
-    special_titles = ['Vice Chairman', 'Chair', 'Chairman', 'Ranking Member']
-    @members = @committee.members.order(:lastname).select do |p|
-      not special_titles.include? p.title
-    end
     @chair = @committee.chair
     @ranking_member = @committee.ranking_member
     @vice_chair = @committee.vice_chair
+    @members = @committee.members.order(:lastname).select do |p|
+      not [@chair, @ranking_member, @vice_chair].include? p
+    end
  
     @bills_sponsored = @committee.bills_sponsored(5)
  	 	@title_class = "tabs"
@@ -48,17 +52,19 @@ class CommitteeController < ApplicationController
   end
 
   def by_chamber
-    if params[:chamber] == 'house'
-      @chamber = @sort = :house
+    case params[:chamber]
+    when 'house'
       @page_title = "House Committees"
-    else
-      @chamber = @sort = :senate
+    when 'senate'
       @page_title = "Senate Committees"
+    when nil
+      redirect_to :action => 'index'
+    else
+      raise ActionController::RoutingError.new('No such chamber')
     end
 
-    @committees = Committee.by_chamber(@chamber).sort_by { |c| [c.name, (c.subcommittee_name || "")] }.group_by(&:name)
-    @major = @committees.keys.sort
-    
+    @committees = Committee.where(:chamber => params[:chamber], :parent_id => nil, :active => true)
+
     @related_committees = ObjectAggregate.popular('Committee', Settings.default_count_time).slice(0..2) unless @custom_sidebar 
     
     @title_class = "sort"

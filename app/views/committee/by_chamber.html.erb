@@ -2,6 +2,8 @@
 
 <div id="committee_summary">
   <ul class="list">
-    <%= render(:partial =>'committees_list', :locals => {:committees => @committees}, :collection => @major ) %>
+      <%= render(:partial => 'committees_list',
+                 :as => :committee,
+                 :collection => @committees ) %>
   </ul>
 </div>

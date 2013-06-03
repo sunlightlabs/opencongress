@@ -297,4 +297,60 @@ module UnitedStates
       end
     end
   end
+
+  class Committees
+    @@ActiveCommitteeIds = Set.new
+
+    def self.active_committee_id_cache_guard ()
+      if @@ActiveCommitteeIds.size == 0
+        cmtes_file_path = File.join(Settings.unitedstates_legislators_clone_path, 'committees-current.yaml')
+        cmtes = YAML.load_file(cmtes_file_path)
+        cmtes.each do |cmte|
+          @@ActiveCommitteeIds.add cmte['thomas_id']
+          cmte.fetch('subcommittees', []).each do |subcmte|
+            @@ActiveCommitteeIds.add "#{cmte['thomas_id']}#{subcmte['thomas_id']}"
+          end
+        end
+      end
+    end
+
+    def self.active_committee_ids
+      @@ActiveCommitteeIds
+    end
+
+    def self.import_committee (cmte_hash, parent_cmte = nil)
+      active_committee_id_cache_guard
+
+      # parent_cmte will be non-nil if importing a subcommittee
+      if parent_cmte
+        thomas_id = "#{parent_cmte.thomas_id}#{cmte_hash['thomas_id']}"
+      else
+        thomas_id = cmte_hash['thomas_id']
+      end
+
+      cmte_rec = Committee.find_or_initialize_by_thomas_id(thomas_id)
+      cmte_rec.name = parent_cmte.nil? ? cmte_hash['name'] : parent_cmte.name
+      cmte_rec.subcommittee_name = parent_cmte.nil? ? nil : cmte_hash['name']
+      chamber = parent_cmte.nil? ? cmte_hash['type'] : parent_cmte.chamber
+      chamber &&= chamber.downcase
+      cmte_rec.chamber = chamber
+      cmte_rec.active = @@ActiveCommitteeIds.include? thomas_id
+      cmte_rec.parent = parent_cmte # nil for top-level committees
+      cmte_rec.save!
+
+      #TODO: Also, memberships
+
+      subcmte_hashes = cmte_hash.fetch('subcommittees', [])
+      subcmte_hashes.each do |subcmte_hash|
+        import_committee(subcmte_hash, cmte_rec)
+      end
+
+      names = cmte_hash.fetch('names', [])
+      names.each do |session, name|
+        name_rec = cmte_rec.names.find_or_initialize_by_session(session)
+        name_rec.name = name
+        name_rec.save!
+      end
+    end
+  end
 end

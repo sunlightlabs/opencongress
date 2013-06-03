@@ -13,7 +13,7 @@
   <a name="comm_fil"></a>
   <!--Comments will only display if they have an average rating of-->
   <%= form_for :user, @user, :url => {:action => 'ratings'}, :html => {:style => "display:inline;"} do |f| %>
-  <%= f.select :default_filter, [1,2,3,4,5,6,7,8,9,10], {}, {:onChange => "this.form.submit();"} %>
+  <%= f.select :default_filter, 1.upto(10), {}, {:onChange => "this.form.submit();"} %>
   <!--or higher.-->
   <% end %>
 

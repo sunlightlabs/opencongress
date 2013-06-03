@@ -356,6 +356,9 @@ GEM
     sexp_processor (4.2.1)
     silent-postgres (0.1.1)
     simple-rss (1.2.3)
+    simple_form (2.1.0)
+      actionpack (~> 3.0)
+      activemodel (~> 3.0)
     simplecov (0.7.1)
       multi_json (~> 1.0)
       simplecov-html (~> 0.7.1)
@@ -456,6 +459,7 @@ DEPENDENCIES
   settingslogic
   silent-postgres
   simple-rss
+  simple_form
   simplecov
   spork
   thin

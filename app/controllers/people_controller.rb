@@ -57,9 +57,10 @@ class PeopleController < ApplicationController
     if @sort == :popular || @sort == :approval
       @days = days_from_params(params[:days])
     end
-    @people = Rails.cache.fetch("people_list_#{ @sort.to_s }_#{ @person_type.to_s }", :expires_in => 20.minutes) {
-          Person.list_chamber(person_type, congress, @sort_by)
-    }
+
+    @people = Rails.cache.fetch("people_list_#{ @sort.to_s }_#{ @person_type.to_s }", :expires_in => 20.minutes) do
+      Person.list_chamber(person_type, congress, @sort_by)
+    end
 
     if @sort == :popular
       @atom = {'link' => url_for(:only_path => false, :controller => 'people', :action => 'atom_top20', :type => person_type), 'title' => "Top 20 Most Viewed #{@person_type.to_s.capitalize}"}
@@ -674,7 +675,7 @@ class PeopleController < ApplicationController
       @atom = {'link' => url_for(:only_path => false, :controller => 'people', :id => @person, :action => 'atom'), 'title' => "#{@person.popular_name} activity"}
       @bookmarking_image = @person.photo_path
     else
-      flash[:error] = "Invalid person URL."
+      flash[:warning] = "Invalid person URL."
       redirect_to :action => 'all'
     end
 

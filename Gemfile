@@ -89,6 +89,8 @@ gem "okkez-open_id_authentication"
 
 gem 'acts-as-taggable-on', '~> 2.3.3'
 
+gem 'simple_form'
+
 gem 'mechanize'
 gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'
 

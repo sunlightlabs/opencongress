@@ -1,7 +1,7 @@
-<div class="main"> 
-<%= render :partial => 'shared/sort_commentary', 
+<div class="main">
+<%= render :partial => 'shared/sort_commentary',
                                 :locals => { :object_type => 'bill', :object_id => @bill.ident } %>
-<%= render :partial => 'nbtabs' %>                                
+<%= render :partial => 'nbtabs' %>
 <% cache("#{@bill.fragment_cache_key}_#{params[:action]}_#{@sort}_page_#{@page}") do %>
   <!-- cached: <%= "#{@bill.fragment_cache_key}_#{params[:action]}_#{@sort}_page_#{@page}" %> // <%= Time.now %> -->
   <div id="blogs_list">

@@ -1,0 +1,78 @@
+<div id="heading">
+  <h2>Edit Your Profile</h2>
+</div>
+
+<div class="container_12 clearfix">
+  <div class="clear space">&nbsp;</div>
+  <div class="grid_4">
+    <div id="picture_detail">
+      <%= render :partial => "profile_image", :locals => { :editable => @user == current_user } %>
+    </div>
+    <div id="congressional_district">
+      <p><strong>Congressional District:</strong> <span class="district"><%= @user.my_district.first %></span></p>
+    </div>
+    <div id="openid">
+      <% form_tag(url_for(:controller => :account, :action => :add_openid)) do %>
+        <%= label_tag "identity_url", "OpenID URL:", :style => "font-weight: bold;" %><br/>
+        <%= text_field_tag "identity_url", current_user.identity_url, :size => 20, :class => "field" %>
+        <%= submit_tag "Set", :class => "button gray small" %>
+      <% end %>
+    </div>
+  </div>
+
+
+  <div class="grid_8">
+    <div id="sort_nav">
+      <ul class="tabs sorts">
+        <li class="active"><a href="#general_information" class="button silver small fullyrounded push-right">General Information</a></li>
+        <li><a href="#site_preferences" class="button silver small fullyrounded push-right">Site Preferences</a></li>
+        <li><a href="#privacy_settings" class="button silver small fullyrounded push-right">Privacy Settings</a></li>
+      </ul>
+    </div>
+
+    <%= simple_form_for @user, :url => update_profile_path(@user.login), :action => :put,
+                               :defaults => { :input_html => { :class => 'field' } } do |f| %>
+      <%= field_set_tag "General Information", {:id => "general_information", :class => "tab-pane active"} do %>
+        <%= f.input :full_name, :required => true %>
+        <%= f.input :about, :as => :text, :input_html => { :rows => 6 } %>
+        <%= f.input :email, :required => true %>
+        <%= f.input :zipcode, :required => true %>
+        <%= f.input :zip_four, :label => "Zip+4" %>
+      <% end %>
+
+      <%= field_set_tag "Site Preferences", {:id => "site_preferences", :class => "tab-pane"} do %>
+        <%= f.input :default_filter, :as => :select, :collection => 1..10,
+                    :label => "Hide comments with ratings below", :input_html => { :class => "select" } %>
+        <%= f.input :mailing, :as => :radio_buttons, :label => "Receive announcements about OpenCongress via email?" %>
+        <%= f.input :partner_mailing, :as => :radio_buttons, :label => "Join the Sunlight Foundation email list?" %>
+      <% end %>
+
+      <%= field_set_tag "Privacy Settings", {:id => "privacy_settings", :class => "tab-pane"} do %>
+        <%= f.simple_fields_for :privacy_option, @user.privacy_option,
+                                :defaults => { :input_html => { :class => 'select' } } do |p| %>
+          <% privacy_options = {"Private" => 0, "Friends" => 1, "Public" => 2 } %>
+          <%= p.input :my_full_name, :label => "My name", :as => :select, :collection => privacy_options,:prompt => nil %>
+          <%= p.input :about_me, :label => "My bio", :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_last_login_date, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_email, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_zip_code, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_instant_messenger_names, :label => "My IM names", :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_website, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_location, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_actions, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_tracked_items, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_friends, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_congressional_district, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :my_political_notebook, :as => :select, :collection => privacy_options, :prompt => nil %>
+          <%= p.input :watchdog, :as => :select, :collection => privacy_options, :prompt => nil %>
+        <% end %>
+      <% end %>
+
+      <div class="form-actions">
+        <%= f.button :submit, :value => "Save Profile", :class => "button blue huge" %>
+        or <%= link_to "Cancel", user_profile_path(@user.login) %>
+      </div>
+    <% end %>
+  </div>
+
+</div>

@@ -144,7 +144,7 @@
       input.setValue(input.readAttribute('data-disable-with')).disable();
     });
   }
-  
+
   function enableFormElements(form) {
     form.select('input[type=submit][data-disable-with]').each(function(input) {
       input.setValue(input.retrieve('rails:original-value')).enable();
@@ -174,6 +174,12 @@
   document.on("click", "form input[type=submit], form button[type=submit], form button:not([type])", function(event, button) {
     // register the pressed submit button
     event.findElement('form').store('rails:submit-button', button.name || false);
+
+    // :confirm with button_to ends up here
+    if (!allowAction(event.findElement())) {
+      event.stop();
+      return false;
+    }
   });
 
   document.on("submit", function(event) {
@@ -195,7 +201,7 @@
   document.on('ajax:create', 'form', function(event, form) {
     if (form == event.findElement()) disableFormElements(form);
   });
-  
+
   document.on('ajax:complete', 'form', function(event, form) {
     if (form == event.findElement()) enableFormElements(form);
   });

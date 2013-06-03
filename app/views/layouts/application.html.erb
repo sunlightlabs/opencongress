@@ -12,23 +12,24 @@
   <title><%= page_title %></title>
 
   <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="icon" type="image/png" href="/favicon.png" /> 
+  <link rel="icon" type="image/png" href="/favicon.png" />
 
   <%= bookmarking_image.html_safe %>
-    
+
   <% unless content_for?(:javascripts) %>
     <%= include_javascripts :defaults, :common  %>
     <script>
       var $j = jQuery.noConflict();
     </script>
     <%= javascript_include_tag 'jquery.jcarousel' if @carousel %>
+    <%= javascript_include_tag 'jquery.form.min' %>
     <%= javascript_include_tag 'swfobject' if (@roll_call || @roll_calls) %>
     <%# javascript_include_tag 'http://metavid.org/w/js2/mwEmbed/jsScriptLoader.php?class=mv_embed' if @include_vids_styles %>
     <!--[if lt IE 7]>
     <%= javascript_include_tag 'ie8/IE8' %>
     <![endif]-->
   <% else %>
-    <%= content_for(:javascripts) %>
+    <%= yield :javascripts %>
   <% end %>
 
   <% unless content_for?(:stylesheets) %>
@@ -46,11 +47,11 @@
 
     <!--[if lt IE 7]><style type="text/css">@import url("/stylesheets/ie6.css");</style><![endif]-->
     <!--[if IE 7]><style type="text/css">@import url("/stylesheets/ie7.css");</style><![endif]-->
-    
+
   <% else %>
-    <%= content_for(:stylesheets) %>
+    <%= yield :stylesheets %>
   <% end %>
-  
+
   <%= remote_forgery_protection %>
 
   <%= yield(:header) %>
@@ -71,7 +72,7 @@
   <div id="wrapper">
     <%= render :partial => 'layouts/header' %>
 
-	 
+
     <div id="content" class="clearfix">
       <%= render :partial => 'shared/notices' %>
       <%= render :partial => 'layouts/banner' %>
@@ -79,17 +80,17 @@
       <%= info_box %>
       <div class="inner">
 
-      <% if @user_object || @related_bills || @related_people || @related_issues || 
+      <% if @user_object || @related_bills || @related_people || @related_issues ||
             @related_committees || @related_industries || @related_gossip || @custom_sidebar %>
         <div id="content-main">
-      <% end %>               
-		
+      <% end %>
+
 			<% if @topic %>
-				<div id="topic">        
+				<div id="topic">
 			    <%= render :partial => "#{@topic.class.to_s.underscore}/topic", :object => @topic %>
 				</div>
 			<% end %>
-		  
+
 			<% if @profile_nav %>
 				<%= render :partial => "profile/logged_in_profile_nav", :locals => {:user => @profile_nav} %>
 			<% end %>
@@ -100,35 +101,35 @@
         <%= @content_for_timeframe %>
 
      	<% end %>
-      
-	 
+
+
 			<%= yield %>
-	 
-   
+
+
       <% if @user_object || @related_bills || @related_people || @related_issues || @related_committees || @related_industries || @related_gossip || @custom_sidebar %>
-	  
-	  </div> <!-- // content-main --> 
+
+	  </div> <!-- // content-main -->
       <% end %>
 
-    
-    <% if @user_object %>       
+
+    <% if @user_object %>
       <%= render :partial => 'shared/user_content', :locals => {:object => @user_object} %>
     <% elsif @related_bills %>
       <%= render :partial => 'bill/related_bills_panel', :locals => { :related_bills => @related_bills }%>
 
     <% elsif @related_issues %>
 	    <%= render :partial => 'issue/related_issues_panel', :locals => { :related_issues => @related_issues }%>
- 
+
   	<% elsif @related_industries %>
-  	  <%= render :partial => 'industry/related_industries_panel', :locals => { :related_industries => @related_industries }%> 
+  	  <%= render :partial => 'industry/related_industries_panel', :locals => { :related_industries => @related_industries }%>
   	<% elsif @related_gossip %>
   	  <%= render :partial => 'gossip/related_gossip_panel', :locals => { :related_gossip => @related_gossip }%>
     <% elsif @custom_sidebar %>
       <%= render :partial => 'shared/custom_sidebar_panel', :locals => { :sidebar => @custom_sidebar }%>
 	  <% end %>
-	
+
 	<div class="clearfix"></div>
-	
+
 	</div> <!-- // inner -->
 
     </div> <!-- // content -->
@@ -137,15 +138,15 @@
 	  <%# cache("layout_footer", :expires_in => 3.hours) do %>
 	    <%= render :partial => 'layouts/footer' %>
     <%# end %>
-   
+
   </div> <!-- // wrapper -->
 
 
 
   <div class="clear">&nbsp;</div>
   </div> <!-- // top bar -->
-    
+
   <%= render :partial => 'shared/analytics_foot' %>
-  
+
 </body>
 </html>

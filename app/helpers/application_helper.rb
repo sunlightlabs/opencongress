@@ -227,8 +227,8 @@ EOT
   end
 
   def toggler(div_name, show_link_text, hide_link_text, show_link_class = "", hide_link_class = "")
-    out = %Q{<span class="" id="show_#{div_name}">} + link_to_function(show_link_text, "Element.show('hide_#{div_name}');Element.hide('show_#{div_name}');new Effect.BlindDown('#{div_name}');", :class => show_link_class) + "</span>"
-    out += %Q{<span class="" id="hide_#{div_name}" style="display:none;">} + link_to_function(hide_link_text, "Element.show('show_#{div_name}');Element.hide('hide_#{div_name}');new Effect.BlindUp('#{div_name}');", :class => hide_link_class) + "</span>"
+    out = %Q{<span class="" id="show_#{div_name}">} + link_to_function(show_link_text, "Element.show('hide_#{div_name}');Element.hide('show_#{div_name}');new Effect.BlindDown('#{div_name}', {duration: 0.25});", :class => show_link_class) + "</span>"
+    out += %Q{<span class="" id="hide_#{div_name}" style="display:none;">} + link_to_function(hide_link_text, "Element.show('show_#{div_name}');Element.hide('hide_#{div_name}');new Effect.BlindUp('#{div_name}', {duration: 0.25});", :class => hide_link_class) + "</span>"
 
     out.html_safe
   end

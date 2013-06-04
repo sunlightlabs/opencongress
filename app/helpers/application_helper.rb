@@ -165,7 +165,7 @@ EOT
 
   def opensecrets_button(person = nil)
     if person
-      %Q{<h3>See more campaign contribution data by visiting #{person.full_name}'s profile on <a class="arrow" target="_blank" href="http://www.opensecrets.org/politicians/summary.asp?cid=#{person.osid}">OpenSecrets</a></h3>}.html_safe
+      %Q{<h3>See more campaign contribution data by visiting #{person.full_name.possessive} profile on <a class="arrow" target="_blank" href="http://www.opensecrets.org/politicians/summary.asp?cid=#{person.osid}">OpenSecrets</a></h3>}.html_safe
     else
       %Q{<h3>See more at </h3><br /><a class="arrow" target="_blank" href="http://www.opensecrets.org">OpenSecrets</a><br />}.html_safe
     end
@@ -227,8 +227,8 @@ EOT
   end
 
   def toggler(div_name, show_link_text, hide_link_text, show_link_class = "", hide_link_class = "")
-    out = %Q{<span class="" id="show_#{div_name}">} + link_to_function(show_link_text, "Element.show('hide_#{div_name}');Element.hide('show_#{div_name}');new Effect.BlindDown('#{div_name}');", :class => show_link_class) + "</span>"
-    out += %Q{<span class="" id="hide_#{div_name}" style="display:none;">} + link_to_function(hide_link_text, "Element.show('show_#{div_name}');Element.hide('hide_#{div_name}');new Effect.BlindUp('#{div_name}');", :class => hide_link_class) + "</span>"
+    out = %Q{<span class="" id="show_#{div_name}">} + link_to_function(show_link_text, "Element.show('hide_#{div_name}');Element.hide('show_#{div_name}');new Effect.BlindDown('#{div_name}', {duration: 0.25});", :class => show_link_class) + "</span>"
+    out += %Q{<span class="" id="hide_#{div_name}" style="display:none;">} + link_to_function(hide_link_text, "Element.show('show_#{div_name}');Element.hide('hide_#{div_name}');new Effect.BlindUp('#{div_name}', {duration: 0.25});", :class => hide_link_class) + "</span>"
 
     out.html_safe
   end
@@ -686,8 +686,19 @@ EOT
 
   def make_tabs(tabs)
     make_tabs = tabs.inject([]) do |text, link|
-      here = (link[1][:action] == controller.action_name) ? 'here' : ''
-      text << "<li id='#{link[1][:action]}' class='#{here}'>" + link_to("<span>#{link[0].to_s}</span>".html_safe, link[1], :class => link[0].slice!(0..3)) + "</li>"
+      if link[1].is_a?(Hash)
+        if (link[1][:action] == controller.action_name)
+          text << "<li id='#{link[1][:action]}' class='here'>"
+        else
+          text << "<li id='#{link[1][:action]}'>"
+        end
+      else
+        text << "<li>"
+      end
+
+      inner_span = "<span>#{link[0].to_s}</span>".html_safe
+      text << link_to(inner_span, link[1], :class => link[0].slice!(0..3))
+      text << "</li>"
      end
      make_tabs.join("\n").html_safe
   end
@@ -863,6 +874,18 @@ EOT
       'in opposition to'
     else
       'tracking'
+    end
+  end
+
+  def user_name(pronoun, extras=nil, &block)
+    if @user == current_user
+      use_name = "#{pronoun}"
+    elsif extras.present?
+      use_name = @user.login + "#{extras}"
+    elsif block_given?
+      use_name = yield @user.login
+    else
+      use_name = @user.login
     end
   end
 

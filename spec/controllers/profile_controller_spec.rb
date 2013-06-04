@@ -7,6 +7,10 @@ describe ProfileController do
     { :user => current_user.id }
   end
 
+  before :each do
+    request.env['HTTP_REFERER'] = '/'
+  end
+
   describe 'upload_pic' do
     it 'uploads an avatar in 2 sizes' do
       post(:upload_pic,

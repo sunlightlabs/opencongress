@@ -165,9 +165,9 @@ class District < ActiveRecord::Base
 
   def freebase_guid_url
     if self.district_number == 0
-      URI.escape("http://www.freebase.com/api/service/search?query=#{self.state.name}'s congressional district&type=/common/topic&type=/government/political_district")
+      URI.escape("http://www.freebase.com/api/service/search?query=#{self.state.name.possessive} congressional district&type=/common/topic&type=/government/political_district")
     else
-      URI.escape("http://www.freebase.com/api/service/search?query=#{self.state.name}'s #{self.district_number.ordinalize} congressional district&type=/common/topic&type=/government/political_district")
+      URI.escape("http://www.freebase.com/api/service/search?query=#{self.state.name.possessive} #{self.district_number.ordinalize} congressional district&type=/common/topic&type=/government/political_district")
     end
   end
 

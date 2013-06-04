@@ -274,6 +274,7 @@ GEM
       faye-websocket (>= 0.4.4, < 0.5.0)
       http_parser.rb (~> 0.5.3)
     polyglot (0.3.3)
+    possessive (1.0.1)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -356,6 +357,9 @@ GEM
     sexp_processor (4.2.1)
     silent-postgres (0.1.1)
     simple-rss (1.2.3)
+    simple_form (2.1.0)
+      actionpack (~> 3.0)
+      activemodel (~> 3.0)
     simplecov (0.7.1)
       multi_json (~> 1.0)
       simplecov-html (~> 0.7.1)
@@ -438,6 +442,7 @@ DEPENDENCIES
   paperclip
   pg
   poltergeist
+  possessive
   pry
   pry-nav
   pry-rescue
@@ -456,6 +461,7 @@ DEPENDENCIES
   settingslogic
   silent-postgres
   simple-rss
+  simple_form
   simplecov
   spork
   thin

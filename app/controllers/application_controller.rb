@@ -154,31 +154,39 @@ class ApplicationController < ActionController::Base
   def current_tab
     @current_tab = params[:navtab].blank? ? nil : params[:navtab]
   end
+
+  # login_required is defined in lib/authenticated_system.rb
+
   def admin_login_required
     if !(logged_in? && current_user.user_role.can_administer_users)
       redirect_to :controller => 'admin', :action => 'index'
     end
   end
+
   def can_text
     if !(logged_in? && current_user.user_role.can_manage_text)
       redirect_to :controller => 'admin', :action => 'index'
     end
   end
+
   def can_moderate
     if !(logged_in? && current_user.user_role.can_moderate_articles)
       redirect_to :controller => 'admin', :action => 'index'
     end
   end
+
   def can_blog
     unless (logged_in? && current_user.user_role.can_blog)
       redirect_to :controller => 'admin', :action => 'index'
     end
   end
+
   def can_stats
     unless (logged_in? && current_user.user_role.can_see_stats)
       redirect_to :controller => 'admin', :action => 'index'
     end
   end
+
   def no_users
     unless (logged_in? && current_user.user_role.name != "User")
       flash[:notice] = "Permission Denied"

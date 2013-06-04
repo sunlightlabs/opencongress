@@ -56,7 +56,7 @@
     <h3>Changes since my last visit</h3>
     <%= render :partial => "person_main_detail", :locals => {:show_updates => true, :people => [@no_show_name.first], :buttons_only => true } %><br/><br/>
   <% end %>
-  <h3><%= s.title %> <%= s.full_name %>'s votes on my tracked items</h3>
+  <h3><%= s.title %> <%= s.full_name.possessive %> votes on my tracked items</h3>
   <table>
   <tr><th>Bill</th><th width="18">My Vote</th><th><%= s.title %> <%= s.full_name %></th></tr>
   <% @bookmarked_bills.each do |b| %>
@@ -69,7 +69,7 @@
   </table>
   <br/>
 
-  <h3><%= s.title %> <%= s.full_name %>'s record on my bills I've voted on</h3>
+  <h3><%= s.title %> <%= s.full_name.possessive %> record on my bills I've voted on</h3>
 
   <table>
   <tr><th>Bill</th><th>My Vote</th><th><%= s.title %> <%= s.full_name %></th></tr>

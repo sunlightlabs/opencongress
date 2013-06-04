@@ -1,5 +1,5 @@
 #heading
-  %h2= "#{@user.login}'s Groups"
+  %h2= "#{@user.login.possessive} Groups"
 
 .margin-top.margin-bottom
   = render :partial => 'groups/groups_list', :locals => { :groups => @groups }

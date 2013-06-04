@@ -1,217 +1,167 @@
 <div id="heading">
-  <h2><%= @user.login %>'s Profile</h2>
+  <h2><%= @user.login.possessive %> Profile
+    <% if current_user == @user %> (<%= link_to("Edit", edit_profile_path(current_user)) %>)<% end %>
+  </h2>
 </div>
 
-
-
 <div class="container_12">
+  <div class="clear space">&nbsp;</div>
 
-<div class="clear space">&nbsp;</div>
-
-<div class="grid_4 profile-deets">
-
-
-
+  <div class="grid_4 profile-deets">
     <div id="picture_detail">
-      <% if @user.main_picture %>
-      <%= image_tag "#{Settings.base_url}/images/users/" + @user.login + "_m.jpg", :alt => @user.login %>
-      <% if @user == current_user %>
-      <br /><%= link_to "Delete Current Image", {:action => 'delete_images'} %>
-      <% end %>
-      <% else %>
-      <%= image_tag "anonymous.gif", :alt => "No Picture" %>
-      <% end %>
-      <% if @user == current_user %>
-      <br /><%= toggler('ul_pic', 'Upload New Picture', 'close').html_safe %>
-      <div id="ul_pic" style="display:none;">
-        <%= form_for :user, :url => { :action => 'upload_pic' }, :html=>{:multipart=>true, :style=> "display:inline;"} do |form| %>
-        <%= file_field "picture", "tmp_file", :size=> 20 %>
-        <%= submit_tag "Upload" %>
-      </div>
-      <% end %>
-      <% else %>
-      <br/><br/>
-      <div id="fdiv">
-        <%= add_friend_link_ajax(@user) %>
-      </div>
+      <%= render :partial => 'profile_image', :locals => { :editable => false } %>
+    </div>
+
+    <div class="clear space">&nbsp;</div>
+
+    <% if current_user == @user %>
+      <%= link_to("Edit your profile", edit_profile_path(current_user), :class => "button small blue") %>
+    <% end %>
+
+    <div id="about_me">
+      <% if @user.can_view(:about_me, current_user) %>
+        <p><label>About <%=h @user == current_user ? "me" : @user.login %></label> <%=h @user.about %></p>
       <% end %>
     </div>
 
-  <div id="privacy_settings">
-        <% if @user == current_user %>
-          <div id="phide" style="display:none;">
-          <%= form_for :privacy_option, @user.privacy_option, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
-            <%= f.select :my_last_login_date, [["Public",2],["Friends", 1], ["Private",0]] %>
-            <%= f.select :my_full_name, [["Public",2],["Friends", 1], ["Private",0]] %>
-            <%= f.select :my_email, [["Public",2],["Friends", 1], ["Private",0]] %>
-            <%= f.select :my_location, [["Public",2],["Friends", 1], ["Private",0]] %>
-            <%= f.select :my_zip_code, [["Public",2],["Friends", 1], ["Private",0]] %>
-            <%= f.select :my_congressional_district, [["Public",2],["Friends", 1], ["Private",0]] %>
-            <%= submit_tag "Save changes", :id => "submit", :name => "submit", :class => "form_submit", :disabled => false, :disable_with => "Please wait..." %>
-          <% end %>
-          </div>
-
-
-
-
-      <div id="about_me">
-        <% if @user.can_view(:about_me, current_user) %>
-        <p><label>About <%=h @user == current_user ? "me" : @user.login %></label> <%= draw_edit_in_place("about", 3) %></p>
-        <% end %>
-      </div>
-
-        <p style="margin-bottom: 400px; display: block; width: 180px;">
-          <%= toggler("phide","Change Privacy Settings", "Hide Privacy Settings", "privacy button silver medium", "privacy button silver medium").html_safe %>
-        </p>
-        <% end %>
-
-
-        </div>
-
     <div id="personal_info">
       <% if @user.can_view(:my_last_login_date, current_user) %>
-      <p><label>Last Login</label>
-        <% unless @user.last_login.blank? %>
-        <%= time_ago_in_words(@user.last_login) %> ago
-        <% end %>
-      </p>
+        <p><label>Last Login</label>
+          <% unless @user.last_login.blank? %>
+          <%= time_ago_in_words(@user.last_login) %> ago
+          <% end %>
+        </p>
       <% end %>
 
       <% if @user.can_view(:my_full_name, current_user) %>
-      <p><label>Name</label>
-        <%= draw_edit_in_place("full_name") %>
-      </p>
+        <p><label>Name</label>
+          <%= @user.full_name %>
+        </p>
       <% end %>
 
-
-
       <% if @user.can_view(:my_email, current_user) %>
-      <p><label>Email</label>
-      <%= draw_edit_in_place("email") %>
-      </p>
+        <p><label>Email</label>
+        <%= @user.email %>
+        </p>
       <% end %>
 
       <% unless @user.location.blank? %>
         <% if @user.can_view(:my_location, current_user) %>
-      <p><label>Location</label>
-      <%= draw_edit_in_place("location") %>
-      </p>
+          <p><label>Location</label>
+          <%= @user.location %>
+          </p>
         <% end %>
       <% end %>
 
-
       <% if @user.can_view(:my_zip_code, current_user) %>
-      <p><label>Zipcode</label>
-        <%= draw_edit_in_place("zipcode") %>
-        <label style="clear: both;">Zip+4</label>
-        <%= draw_edit_in_place("zip_four") %>
-        <%= dbox_trigger('zip4help') if @user == current_user %>
-        <div class="dboxed">
-          <%= dbox_content('zip4help') %>
-        </div>
-        <% end %>
-      </p>
-        <% if @user.can_view(:my_congressional_district, current_user) && ( @cd_text != "(Add Zip +4)" || @user == current_user ) %>
+        <p><label>Zipcode</label>
+          <%= @user.zipcode %>
+          <label style="clear: both;">Zip+4</label>
+          <%= @user.zip_four %>
+          <%= dbox_trigger('zip4help') if @user == current_user %>
+          <div class="dboxed">
+            <%= dbox_content('zip4help') %>
+          </div>
+        </p>
+      <% end %>
+
+      <% if @user.can_view(:my_congressional_district, current_user) && ( @user.district.present? || @user == current_user ) %>
         <p>
         <label>Cong. District</label>
-        <%= @cd_text %>
+        <%= @user.my_district.first rescue link_to("Find your district", :url => { :controller => :account, :action => :determine_district }) %>
         </p>
-        <% end %>
+      <% end %>
 
-
-        <p>
-        <label>Registered</label>
-        <span><%=h @user.created_at ? time_ago_in_words(@user.created_at) + " ago." : Date.today()  %></span>
-        </p>
-        </div>
-
-
-        <div class="settings">
-        <% if logged_in? && params[:login] == current_user.login %>
-        <%= render :partial => "settings" %>
-        <% else %>
-        <% end %>
-        </div>
-      <% if @senators%>
-
-      <h3 class="darkline">Senators Representing Your State</h3>
       <p>
-        <div>
-          <%= render :partial => 'people/people_list', :locals => { :people => @senators, :show_contact => true }%></p>
-          <% end %>
+        <label>Registered</label>
+        <span><%=h @user.created_at ? time_ago_in_words(@user.created_at) + " ago" : Date.today()  %></span>
+      </p>
+    </div>
 
-          <% if @reps %>
-          <br />
-          <h3 class="darkline">Representatives Representing Your Zipcode</h3>
-          <% if @reps.size > 1 %>
-          <p>
-            We found multiple Representatives serving your zipcode. You can narrow the representatives down by adding your zipcode's 4 digit extension to your profile. Don't worry if you don't know it offhand -- you can look it up easily on the <a href="http://zip4.usps.com/zip4/welcome.jsp" target="_blank">U.S. Postal Service site</a>.
-          </p>
-          <% end %>
+    <% if @senators  %>
+      <h3 class="darkline">Senators Representing Your State</h3>
+      <div>
+        <%= render :partial => 'people/people_list', :locals => { :people => @senators, :show_contact => true }%>
+      </div>
+    <% end %>
+    <% if @reps %>
+      <h3 class="darkline">Representatives Representing Your Zipcode</h3>
+      <% if @reps.size > 1 %>
+      <p>
+        We found multiple Representatives serving your zipcode. You can narrow
+        the representatives down by adding your zipcode's 4 digit extension to
+        your profile. Don't worry if you don't know it offhand -- you can look
+        it up easily on the <a href="http://zip4.usps.com/zip4/welcome.jsp" target="_blank">U.S. Postal Service site</a>.
+      </p>
+      <% end %>
+      <div>
+        <%= render :partial => 'people/people_list', :locals => { :people => @reps, :show_contact => true }%>
+      </div>
+    <% end %>
+  </div>
 
-          <p><div><%= render :partial => 'people/people_list', :locals => { :people => @reps, :show_contact => true }%></p>
-            <% end %>
 
-          </div>
-
-</div>
-</div>
-
-
-<div class="grid_6 ">
-  <% if logged_in? && params[:login] == current_user.login %>
-  <p><em>This page shows only the personal information that you have chosen to make
-    public. OpenCongress users are encouraged to share their preferred contact
-    info above: website or IM address (and coming soon, e-mail). This allows
-    other users to get in touch -- for example, users located in the same
-    state or district, or users tracking similar bills and issues, or users
-    with shared opinions on Congress.</em></p>
+  <div class="grid_6 ">
+    <% if current_user == @user %>
+      <p>
+        <em>This page shows only the personal information that you have chosen to make
+            public. OpenCongress users are encouraged to share their preferred contact
+            info above: website or IM address (and coming soon, e-mail). This allows
+            other users to get in touch -- for example, users located in the same
+            state or district, or users tracking similar bills and issues, or users
+            with shared opinions on Congress.</em>
+      </p>
     <% else %>
-    <p><em>This page shows only the personal information that this user has chosen to make public. OpenCongress users are encouraged to share their preferred contact info above: website or IM address (and coming soon, email). This allows other users to get in touch -- for example, users located in the same state or district, or users tracking similar bills and issues, or users with shared opinions on Congress.</em></p>
+      <p>
+        <em>This page shows only the personal information that this user has
+            chosen to make public. OpenCongress users are encouraged to share
+            their preferred contact info above: website or IM address
+            (and coming soon, email). This allows other users to get in
+            touch -- for example, users located in the same state or
+            district, or users tracking similar bills and issues, or
+            users with shared opinions on Congress.</em>
+      </p>
     <% end %>
 
-
-<% if @user.can_view(:my_congressional_district, current_user) %>
-  <h3 class="margin-top">State Group</h3>
-  <ul class='container_16'>
-    <% @user.groups.where("state_id IS NOT NULL").each do |g| %>
-      <li class='grid_10 lined'>
-        <span class='grid_1 alpha'>
-          <div class='thumb smaller'><%= group_image(g) %></div>
-        </span>
-        <span class='grid_3'><a href="<%= url_for g %>"><strong><%= g.name %></strong></a></span>
-        <span class='grid_3'>State Group</span>
-        <span class='grid_2'><%= group_members_num_with_delimiter(g) %></span>
-        <% if logged_in? and g.is_member?(current_user) %>
-          <span class='grid_1 omega'>
-            <%= link_to 'Leave', group_group_member_path(g, g.group_members.find_by_user_id(current_user.id)), :method => 'delete', :class => 'button yellow small floatright' %>
-          </span>
+    <% if @user.can_view(:my_congressional_district, current_user) %>
+      <h3 class="margin-top">State Group</h3>
+      <ul class='container_16'>
+        <% @user.groups.where("state_id IS NOT NULL").each do |g| %>
+          <li class='grid_10 lined'>
+            <span class='grid_1 alpha'>
+              <div class='thumb smaller'><%= group_image(g) %></div>
+            </span>
+            <span class='grid_3'><a href="<%= url_for g %>"><strong><%= g.name %></strong></a></span>
+            <span class='grid_3'>State Group</span>
+            <span class='grid_2'><%= group_members_num_with_delimiter(g) %></span>
+            <% if logged_in? and g.is_member?(current_user) %>
+              <span class='grid_1 omega'>
+                <%= link_to 'Leave', group_group_member_path(g, g.group_members.find_by_user_id(current_user.id)), :method => 'delete', :class => 'button yellow small floatright' %>
+              </span>
+            <% end %>
+          </li>
         <% end %>
-      </li>
-    <% end %>
-  </ul>
+      </ul>
 
-  <div class="clear space">&nbsp;</div>
-  <h3 class="margin-top">Congressional District Group</h3>
-
-  <ul class='container_16'>
-    <% @user.groups.where("district_id IS NOT NULL").each do |g| %>
-      <li class='grid_10 lined'>
-        <span class='grid_1 alpha'>
-          <div class='thumb smaller'><%= group_image(g) %></div>
-        </span>
-        <span class='grid_3'><a href="<%= url_for g %>"><strong><%= g.name %></strong></a></span>
-        <span class='grid_3'>District Group</span>
-        <span class='grid_2'><%= group_members_num_with_delimiter(g) %></span>
-        <% if logged_in? and g.is_member?(current_user) %>
-          <span class='grid_1 omega'>
-            <%= link_to 'Leave', group_group_member_path(g, g.group_members.find_by_user_id(current_user.id)), :method => 'delete', :class => 'button yellow small floatright' %>
-          </span>
+      <div class="clear space">&nbsp;</div>
+      <h3 class="margin-top">Congressional District Group</h3>
+      <ul class='container_16'>
+        <% @user.groups.where("district_id IS NOT NULL").each do |g| %>
+          <li class='grid_10 lined'>
+            <span class='grid_1 alpha'>
+              <div class='thumb smaller'><%= group_image(g) %></div>
+            </span>
+            <span class='grid_3'><a href="<%= url_for g %>"><strong><%= g.name %></strong></a></span>
+            <span class='grid_3'>District Group</span>
+            <span class='grid_2'><%= group_members_num_with_delimiter(g) %></span>
+            <% if logged_in? and g.is_member?(current_user) %>
+              <span class='grid_1 omega'>
+                <%= link_to 'Leave', group_group_member_path(g, g.group_members.find_by_user_id(current_user.id)), :method => 'delete', :class => 'button yellow small floatright' %>
+              </span>
+            <% end %>
+          </li>
         <% end %>
-      </li>
+      </ul>
     <% end %>
-  </ul>
-<% end %>
+  </div>
 </div>
-</div>
-

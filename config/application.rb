@@ -44,7 +44,13 @@ module OpenCongress
     # config.i18n.default_locale = :de
 
     # JavaScript files you want as :defaults (application.js is always included).
-    # config.action_view.javascript_expansions[:defaults] = %w(jquery rails)
+    ####
+    # Nothing to see here, you want assets.yml
+    ####
+    # config.action_view.javascript_expansions[:defaults] = %w(prototype effects dragdrop controls rails jquery-1.5.2)
+    # config.action_view.javascript_expansions[:common] = %w(jquery.qtip-1.0.0-rc3.min jquery.simplyCountable jqmodal
+    #                                                       star_rating/jquery.MetaData star_rating/jquery.rating slider
+    #                                                       sorttable builder m styles)
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
@@ -62,8 +68,9 @@ module OpenCongress
     # we'll use this just to help debug live servers
     ENV['APP_SERVER'] = %x{hostname}.rstrip
 
-    # following should go in application_settings.yml, but it appears settingslogic
-    # does not support hashes
+    # following should go in application_settings.yml, but settingslogic creates
+    # accessors for keys of nested hashes, and numeric keys don't work out so well,
+    # whether sent as strings, symbols or integers.
     CONGRESS_START_DATES = {
       113 => '2013-01-03',
       112 => '2011-01-05',

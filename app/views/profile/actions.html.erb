@@ -1,5 +1,5 @@
 <div id="heading">
-  <h2><%= @user.login %>'s Actions</h2>
+  <h2><%= @user.login.possessive %> Actions</h2>
 </div>
 
 <div class="container_12">
@@ -23,12 +23,12 @@
 <div id="linkcontent">
 		<div class="my_left">
 
-<h3 class="dark"><%= user_name("My","'s") %> Letters to Congress</h3>
+<h3 class="dark"><%= user_name("My", &:possessive) %> Letters to Congress</h3>
 
 <%= render :partial => 'contact_congress_letters/letters_list', :object => @user.contact_congress_letters %>
 
 
-		<h3 class="dark"><%= user_name("My","'s") %> Comments</h3>
+		<h3 class="dark"><%= user_name("My", &:possessive) %> Comments</h3>
 		<p style="text-align:center;clear:both;"><%= will_paginate(@my_comments) %></p>
 		  <% if @my_comments.empty? %>
 		   <p style="clear:both;">No comments yet. You can add a comment on pages for any bill, Member of Congress, issues, and more. If you're looking to share your comments and votes with other people, they can easily track your actions on OpenCongress by subscribing to your personal RSS feed above.</p>
@@ -56,7 +56,7 @@
 </table>
 		</div>
 		<hr />
-	    <h3 class="dark"><%= user_name("My","'s") %> Supported Bills</h3>
+	    <h3 class="dark"><%= user_name("My", &:possessive) %> Supported Bills</h3>
 	    <% if @bills_supported.empty? %>
 	      <p>No supported bills yet. You can vote "aye" at the top of any bill's page.</p>
 			<% else %>
@@ -82,7 +82,7 @@
 
     <% end %>
 
-	  <tr><td><h3 class="dark"><%= user_name("My","'s") %> Opposed Bills</h3></td></tr>
+	  <tr><td><h3 class="dark"><%= user_name("My", &:possessive) %> Opposed Bills</h3></td></tr>
 	    <% if @bills_opposed.empty? %>
 	      <tr><td><p>No opposed bills yet. You can vote "nay" at the top of any bill's page.</p></td></tr>
 			<% else %>

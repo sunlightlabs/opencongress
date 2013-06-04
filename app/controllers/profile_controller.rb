@@ -1,13 +1,15 @@
 class ProfileController < ApplicationController
   before_filter :can_view_tab, :only => [:actions,:items_tracked,:bills, :my_votes, :comments, :person, :issues, :watchdog]
+  before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
   skip_before_filter :store_location, :only => [:track,:tracked_bill_status,
                                                 :tracked_votes,:tracked_commentary_news,:tracked_commentary_blogs,
-                                                :edit_profile,:watchdog, :remove_vote, :remove_bill_bookmark, :remove_person_bookmark, :remove_bookmark, :pn_ajax, :update_privacy]
+                                                :edit_profile, :watchdog, :remove_vote, :remove_bill_bookmark,
+                                                :remove_person_bookmark, :remove_bookmark, :pn_ajax, :update_privacy]
 
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])
-    @page_title = "#{@user.login}'s Profile"
+    @page_title = "#{@user.login.possessive} Profile"
     @title_class = "tab-nav"
     @profile_nav = @user
 
@@ -23,6 +25,25 @@ class ProfileController < ApplicationController
     end
   end
 
+  def edit
+    @user = current_user
+    redirect_to edit_profile_path(@user.login) unless params[:login] == @user.login
+  end
+
+  def update
+    @user = current_user
+    if @user.update_attributes(params[:user])
+      flash[:notice] = 'Your profile was updated.'
+      redirect_to edit_profile_path(@user.login)
+    else
+      flash[:warning] = @user.errors.full_messages.to_sentence
+      redirect_to :back
+    end
+  end
+
+  def destroy
+  end
+
   def howtouse
     @page_title = "Ways To Use \"My OpenCongress\""
   end
@@ -35,7 +56,7 @@ class ProfileController < ApplicationController
 
   def actions
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
-    @page_title = "#{@user.login}'s Profile"
+    @page_title = "#{@user.login.possessive} Profile"
     @profile_nav = @user
 
     @bills_supported = Bill.paginate_by_sql("select bills.* FROM bills
@@ -52,17 +73,17 @@ class ProfileController < ApplicationController
 
     @title_class = "tab-nav"
 
-    @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login}'s Actions"}
+    @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login.possessive} Actions"}
 
 
-    @my_comments = Comment.paginate(:all, :conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => params[:page])
+    @my_comments = Comment.paginate(:conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => params[:page])
   end
 
   def items_tracked
     @atom = {'link' => url_for(:controller => 'user_feeds', :login => @user.login, :action => 'tracked_items', :key => logged_in? ? current_user.feed_key : nil)}
     @hide_atom = true
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
-    @page_title = "#{@user.login}'s Profile"
+    @page_title = "#{@user.login.possessive} Profile"
     @profile_nav = @user
     @title_class = "tab-nav"
 
@@ -404,21 +425,25 @@ class ProfileController < ApplicationController
      params[:privacy_option].delete("user_id")
      @user.privacy_option.update_attributes(params[:privacy_option])
      flash[:notice] = "Privacy Setting Updated"
-     redirect_back_or_default(user_profile_url(@user.login))
-
+     redirect_back_or_default(user_profile_path(@user.login))
   end
 
   def upload_pic
-    redirect_to :back, :flash => "You need to be logged in to do that." and return unless current_user
     begin
       tmp_file = params[:picture]['tmp_file']
       avatar = Avatar.new(tmp_file.read, :name => current_user.login)
       current_user.main_picture, current_user.small_picture = avatar.create_sizes!
       current_user.save(:validate => false)
     rescue
-      flash[:warning] = "Failed to upload your picture"
+      flash.now[:warning] = "Failed to upload your picture"
     end
-    redirect_to user_profile_url(current_user.login)
+    if request.xhr?
+      @user = current_user
+      render :partial => "profile_image", :locals => { :editable => true }
+    else
+      # redirect_back_or_default(user_profile_path(current_user.login))
+      redirect_to :back
+    end
   end
 
   def delete_images
@@ -426,7 +451,15 @@ class ProfileController < ApplicationController
     File.delete("public/images/users/#{current_user.small_picture}") if current_user.small_picture.present? rescue nil
     current_user.main_picture = current_user.small_picture = nil
     current_user.save(:validate => false)
-    redirect_to user_profile_url(current_user.login)
+    if request.xhr?
+      flash.now[:notice] = "Profile picture deleted"
+      @user = current_user
+      render :partial => "profile_image", :locals => { :editable => true }
+    else
+      flash[:notice] = "Profile picture deleted"
+      # redirect_back_or_default(user_profile_path(current_user.login))
+      redirect_to :back
+    end
   end
 
   def hide_field
@@ -450,9 +483,9 @@ class ProfileController < ApplicationController
     @title_class = "tab-nav"
     @profile_nav = @user
     @my_state = State.find_by_abbreviation(@user.state)
-    @my_districts = @user.district
+    @my_district = @user.district
     if @user.definitive_district
-      @my_district = District.find_by_district_number_and_state_id(@my_districts.first.split('-').last, @my_state.id)
+      @my_district = District.find_by_district_number_and_state_id(@my_district, @my_state.id)
 #      @watchdog = @user.definitive_district_object.current_watch_dog.user if @user.definitive_district_object.current_watch_dog
     end
     @bookmarked_bills = @user.bookmarked_bills

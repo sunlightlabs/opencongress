@@ -15,7 +15,7 @@
   .blue (associated with bills)
   .yellow (associated with senators)
   .orange (associated with reps)
-  
+
   .tiny
 
 
@@ -32,7 +32,7 @@
 .button{
 	font-family:  Helvetica, Arial, sans-serif;
   font-weight: bold !important;
-  
+
   text-decoration: none;
 line-height: 1em;
 
@@ -71,11 +71,11 @@ outline: none;
   border: 1px solid #aaa;
   border-top: 1px solid #dbdbdb;
   border-bottom: 1px solid #777;
-  
+
   -moz-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   -webkit-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   box-shadow:  0 1px 0px #ddd, inset 0 1px 0px #fff;
-  
+
   background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee)); /* for webkit browsers */
   background: -moz-linear-gradient(top,  #fff,  #eee); /* for firefox 3.6+ */
 
@@ -90,11 +90,11 @@ color: rgba(0,0,0,.9)
   border: 1px solid #999;
   border-top: 1px solid #bbb;
   border-bottom: 1px solid #666;
-  
+
   -moz-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   -webkit-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   box-shadow:  0 1px 0px #ddd, inset 0 1px 0px #fff;
-  
+
   background: #999; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#ddd'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd)); /* for webkit browsers */
@@ -109,15 +109,15 @@ color: rgba(0,0,0,.9)
   border: 1px solid #999;
   border-top: 1px solid #666;
   border-bottom: 1px solid #ccc;
-  
+
   -moz-box-shadow: 0 1px 0px #fff, inset 0 1px 1px #888;
   -webkit-box-shadow: 0 1px 0px #fff, inset 0 1px 2px #888;
   box-shadow:  0 1px 0px #fff, inset 0 1px 1px #888;
-  
+
   background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#eee)); /* for webkit browsers */
   background: -moz-linear-gradient(top,  #ddd,  #eee); /* for firefox 3.6+ */
 
-  text-shadow: 0 1px 0px #fff;  
+  text-shadow: 0 1px 0px #fff;
   }
 
 
@@ -135,13 +135,13 @@ color: rgba(0,0,0,.9)
   border: 1px solid #9fc9e5;
   border-top: 1px solid #badcf2;
   border-bottom: 1px solid #79aed2;
- 
+
   color: #122f44;
 
   -moz-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #f3faff;
   -webkit-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #f3faff;
   box-shadow:  0 1px 0px #e2e2e2, inset 0 1px 0px #f3faff;
-  
+
   background: #bcdaf0; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e5f4ff', endColorstr='#cbe2f2'); /* for IE */
   background-image: -webkit-gradient(linear, left top, left bottom, from(#e5f4ff), to(#cbe2f2)); /* for webkit browsers */
@@ -163,13 +163,13 @@ color: rgba(0,0,0,.9)
   border: 1px solid #9fc9e5;
   border-top: 1px solid #badcf2;
   border-bottom: 1px solid #79aed2;
- 
+
   color: #36424b;
 
   -moz-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
   -webkit-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
   box-shadow:  0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
-  
+
   background: #bcdaf0; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d9efff', endColorstr='#b4d5ec'); /* for IE */
   background-image: -webkit-gradient(linear, left top, left bottom, from(#d9efff), to(#b4d5ec)); /* for webkit browsers */
@@ -184,13 +184,13 @@ color: rgba(0,0,0,.9)
   border: 1px solid #9fc9e5;
   border-top: 1px solid #badcf2;
   border-bottom: 1px solid #79aed2;
- 
+
   color: #36424b;
 
   -moz-box-shadow: 0 1px 0px #fff, inset 0 1px 1px #666;
   -webkit-box-shadow: 0 1px 0px #fff, inset 0 1px 2px #666;
   box-shadow:  0 1px 0px #fff, inset 0 1px 1px #666;
-  
+
   background: #bcdaf0; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b4d5ec', endColorstr='#d9efff'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#b4d5ec), to(#d9efff)); /* for webkit browsers */
@@ -215,13 +215,13 @@ border: 1px solid #f5e8d5;
   border: 1px solid #cfcc79;
   border-top: 1px solid #e7e5a3;
   border-bottom: 1px solid #bdb959;
- 
+
   color: #6f6d30;
 
   -moz-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #fff;
   -webkit-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #fff;
   box-shadow:  0 1px 0px #e2e2e2, inset 0 1px 0px #fff;
-  
+
   background: #f9f8dd; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffeeb', endColorstr='#f2f1cb'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#fffeeb), to(#f2f1cb)); /* for webkit browsers */
@@ -244,13 +244,13 @@ border: 1px solid #f5e8d5;
   border: 1px solid #cfcc79;
   border-top: 1px solid #e7e5a3;
   border-bottom: 1px solid #bdb959;
- 
+
   color: #6f6d30;
 
   -moz-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
   -webkit-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
   box-shadow:  0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
-  
+
   background: #f4f3c8; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffee2', endColorstr='#eceab4'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#fffee2), to(#eceab4)); /* for webkit browsers */
@@ -266,13 +266,13 @@ border: 1px solid #f5e8d5;
   border: 1px solid #cfcc79;
   border-top: 1px solid #e7e5a3;
   border-bottom: 1px solid #bdb959;
- 
+
   color: #6f6d30;
 
   -moz-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
   -webkit-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
   box-shadow:  0 1px 0px #e2e2e2, inset 0 1px 0px #eef8ff;
-  
+
   background: #f4f3c8; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffee2', endColorstr='#eceab4'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#fffee2), to(#eceab4)); /* for webkit browsers */
@@ -641,11 +641,11 @@ margin: 0;
   font-size: 12px;
 	font-family:  Helvetica, Arial, sans-serif;
   font-weight: normal !important;
-    
+
   -moz-box-shadow: inset 0 1px 2px #333;
   -webkit-box-shadow:inset 0 1px 2px #333;
-  box-shadow: inset 0 1px 2px #333;  
-  
+  box-shadow: inset 0 1px 2px #333;
+
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
 
@@ -685,15 +685,15 @@ margin: 0;
   font-size: 12px;
 	font-family:  Helvetica, Arial, sans-serif;
   font-weight: normal !important;
-    
+
   -moz-box-shadow: inset 0 1px 2px #333;
   -webkit-box-shadow:inset 0 1px 2px #333;
-  box-shadow: inset 0 1px 2px #333;  
-  
+  box-shadow: inset 0 1px 2px #333;
+
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
 
-  background: url('../images/tiny-search.png') 8px 8px no-repeat, -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#efefef)); 
+  background: url('../images/tiny-search.png') 8px 8px no-repeat, -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#efefef));
   background: url('../images/tiny-search.png') 8px 8px no-repeat, -moz-linear-gradient(top,  #ddd,  #efefef);
   }
 
@@ -743,9 +743,9 @@ background: url('../images/carousel_dark_bg.png') top left repeat-x;
 border-bottom: 1px solid #aaa;
 }
 
-.image{ 
-padding: 4px; 
-border: 1px solid #ddd; 
+.image{
+padding: 4px;
+border: 1px solid #ddd;
 background: #fff;
 
 }
@@ -753,10 +753,10 @@ background: #fff;
 /* clearfix */
 
 .clearfix:after{
-    content: "."; 
-    display: block; 
-    height: 0; 
-    clear: both; 
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
     visibility: hidden;
 }
 
@@ -927,11 +927,11 @@ right: 0;
   border: 1px solid #999;
   border-top: 1px solid #bbb;
   border-bottom: 1px solid #666;
-  
+
   -moz-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   -webkit-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   box-shadow:  0 1px 0px #ddd, inset 0 1px 0px #fff;
-  
+
   background: #999; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#ddd'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd)); /* for webkit browsers */
@@ -959,5 +959,10 @@ background: rgba(54,205,143, .2);
 
 }
 
-
-
+/* Hide/Show Tabs */
+.tabs { padding: 2em 0; }
+#sort_nav ul.tabs { margin-left: 0; }
+.tabs li { display: inline-block; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+.img-polaroid { border: 1px solid #ddd; padding: 2px; display: block; }

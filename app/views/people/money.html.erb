@@ -1,8 +1,8 @@
 <div id="money_trail">
   <h2>Campaign Contributions</h2>
-  
+
   <p>This is a list of the top 10 industries giving campaign contributions to <%= @person.popular_name %> in <%= opensecrets_cycle_years %>, the most recent fundraising cycle for which we have campaign contribution data.*</p>
-  
+
   <table class="simple-table">
     <tr><th>Industry</th><th>Individual</th><th>PAC</th><th>Total</th></tr>
     <% @person.top_industries.each do |ig| %>
@@ -13,11 +13,11 @@
         <td>$<%= number_with_delimiter(ig.contrib_total) %></td>
       </tr>
     <% end %>
-    
+
   </table>
   <br />
   <p>This is a list of the top 10 interest groups giving campaign contributions to <%= @person.popular_name %> in <%= opensecrets_cycle_years %>.*</p>
-  
+
   <table cellpadding=10>
     <tr><th>Interest Group</th><th>Individual</th><th>PAC</th><th>Total</th></tr>
     <% @igs.each do |ig| %>
@@ -29,23 +29,27 @@
       </tr>
     <% end %>
   </table>
-  
+
 
   <% unless @fundraisers.empty? %>
     <h2 style="margin-top: 30px;">Fundraisers</h2>
     <p>Below are the three latest fundraising events for <%= @person.popular_name %>.</p>
-  
+
     <% @fundraisers[0..2].each do |f| %>
       <%= render :partial => 'fundraiser', :object => f %>
     <% end %>
-    
+
     <div class="fundraiser_more_button"><p><%= link_to "<span>See all events (#{@fundraisers.size})</span>", { :controller => 'people', :action => 'fundraisers', :id => @person }, :class => 'med_button' %></p></div>
-    
+
     <div class="partner_logo">
     <%= link_to image_tag('partners/opensecrets.png'), "http://opensecrets.org" %>
-    <p>Campaign contribution data provided by <%= link_to "OpenSecrets.org", "http://OpenSecrets.org" %>, the nonpartisan guide to money in politics. * Contribution data is constantly being updated and this page may not be entirely up to date.  For the most current info visit <a href="http://www.opensecrets.org/politicians/summary.php?cycle=<%= Settings.current_opensecrets_cycle %>&cid=<%= @person.osid %>"><%= @person.popular_name %>'s OpenSecrets profile</a>.</p>
+    <p>Campaign contribution data provided by <%= link_to "OpenSecrets.org", "http://OpenSecrets.org" %>,
+      the nonpartisan guide to money in politics. * Contribution data is
+      constantly being updated and this page may not be entirely up to date.
+      For the most current info visit
+      <a href="http://www.opensecrets.org/politicians/summary.php?cycle=<%= Settings.current_opensecrets_cycle %>&cid=<%= @person.osid %>"><%= @person.popular_name.possessive %> OpenSecrets profile</a>.</p>
     </div>
-    
+
     <div class="fundraiser_footer"><p>Fundraiser data provided by <a href="http://politicalpartytime.org" target="_new">Political Party Time</a>.</p></div>
   <% end %>
 </div>

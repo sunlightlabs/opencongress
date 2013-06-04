@@ -72,7 +72,7 @@ class Admin::StatsController < Admin::IndexController
                             :limit => 30).reverse.collect {|p| [p.date,p.count]}
 
     g = Graph.new
-    g.title("#{CGI::escapeHTML(params[:id]).capitalize}'s tracked over the last 30 days", '{font-size:26px;}')
+    g.title("#{CGI::escapeHTML(params[:id]).capitalize.possessive} tracked over the last 30 days", '{font-size:26px;}')
     g.set_data(@user_graph.collect {|p| p[1]})
     g.set_x_labels(@user_graph.collect{|p| p[0]})
     g.set_y_max(900)

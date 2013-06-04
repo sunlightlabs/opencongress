@@ -1,21 +1,19 @@
 class AccountController < ApplicationController
   before_filter :login_from_cookie, :except => [:reset_password]
-  before_filter :login_required, :only => [:welcome, :accept_tos]
+  before_filter :login_required, :only => [:index, :welcome, :accept_tos, :determine_district, :change_pw,
+                                           :mailing_list, :partner_mailing_list]
   after_filter :check_wiki, :only => [:login, :activate]
 
   skip_before_filter :store_location
   skip_before_filter :has_accepted_tos?, :only => [:accept_tos, :logout]
   skip_before_filter :is_banned?, :only => [:logout]
+
   include OpenIdAuthentication
 
 #  observer :user_observer
 
   def index
-    unless logged_in?
-      redirect_to(login_path)
-    else
-      redirect_to(user_profile_path(:login => current_user.login))
-    end
+    redirect_to(user_profile_path(:login => current_user.login))
   end
 
   def get_user_email
@@ -347,6 +345,7 @@ class AccountController < ApplicationController
   def profile
     @user = User.find_by_login(params[:user])
   end
+
   def change_pw
     @user = current_user
     if (params[:user][:password] == params[:user][:password_confirmation])

@@ -13,7 +13,7 @@ div.profile_content {
 	float:left;
 	width:730px;
 	padding-top:40px;
-	padding-bottom:50px;	
+	padding-bottom:50px;
 }
 
 
@@ -27,7 +27,7 @@ ul.profile_nav li a {
     display:block;
 	margin:10px 0 10px 4px;
 	padding-right: 17px;
-	font-size:13px;	
+	font-size:13px;
 	text-decoration: none;
 	  background: url('../images/arrow_button_cap.png') right 0 no-repeat;
    _background: url('../images/arrow_button_cap.gif') right 0 no-repeat;
@@ -235,10 +235,10 @@ width: 120px;
 
 
 #about_me {
-  clear:left;
-  float:left;
-  width: 250px;
-  margin-bottom: 40px;
+  /*clear:left;*/
+  /*float:left;*/
+  /*width: 250px;*/
+  /*margin-bottom: 40px;*/
 }
 
 #about_me textarea{
@@ -264,12 +264,12 @@ overflow: hidden;
 
 #personal_info {
 margin: 0px 0 20px;
-width: 260px;
-float:left;
-position: absolute;;
-z-index: 999999999;
-margin-top: 390px;
-clear:left;
+/*width: 260px;*/
+/*float:left;*/
+/*position: absolute;;*/
+/*z-index: 999999999;*/
+/*margin-top: 390px;*/
+/*clear:left;*/
 }
 #personal_info p, #privacy_settings p, .settings p {
 margin: 10px 0 0 0;
@@ -285,11 +285,11 @@ clear: left;
   float:left;
   font-weight:bold;
   width:300px;
-}            
+}
 a#about_ratings_trigger {
   position:relative;
   left:-340px;
-}               
+}
 #user_mailing {
   float:none;
   margin:0 !important;
@@ -314,7 +314,7 @@ p span.editable-content{
   font-size: 12px;
   font-family: Helvetica, Arial, sans-serif;
   font-weight: normal !important;
-    
+
 float: left;
 
 }
@@ -339,17 +339,17 @@ float: left;
   font-size: 12px;
   font-family: Helvetica, Arial, sans-serif;
   font-weight: normal !important;
-    
+
   -moz-box-shadow: inset 0 1px 2px #333;
   -webkit-box-shadow:inset 0 1px 2px #333;
-  box-shadow: inset 0 1px 2px #333;  
-  
+  box-shadow: inset 0 1px 2px #333;
+
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
 
   background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#efefef)); /* for webkit browsers */
   background: -moz-linear-gradient(top,  #ddd,  #efefef);
- 
+
 
 }
 
@@ -366,11 +366,11 @@ right: -63px;
   border: 1px solid #aaa;
   border-top: 1px solid #dbdbdb;
   border-bottom: 1px solid #777;
-  
+
   -moz-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   -webkit-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   box-shadow:  0 1px 0px #ddd, inset 0 1px 0px #fff;
-  
+
   background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee)); /* for webkit browsers */
   background: -moz-linear-gradient(top,  #fff,  #eee); /* for firefox 3.6+ */
 
@@ -398,11 +398,11 @@ dispaly: inline-block;
   border: 1px solid #aaa;
   border-top: 1px solid #dbdbdb;
   border-bottom: 1px solid #777;
-  
+
   -moz-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   -webkit-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
   box-shadow:  0 1px 0px #ddd, inset 0 1px 0px #fff;
-  
+
   background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee)); /* for webkit browsers */
   background: -moz-linear-gradient(top,  #fff,  #eee); /* for firefox 3.6+ */
 
@@ -411,7 +411,7 @@ opacity: .7;
 color: rgba(0,0,0,.9)
   font-family: Helvetica, Arial, sans-serif;
   font-weight: bold !important;
-  
+
   text-decoration: none;
 line-height: 1em;
 
@@ -443,7 +443,7 @@ margin-right: 10px;
 }
 #privacy_settings a {
   text-decoration:none;
-}                      
+}
 .privacy {
   background:url('../images/private.png') no-repeat left center;
   padding-left:18px;
@@ -452,7 +452,7 @@ margin-right: 10px;
 #privacy_settings select, #privacy_settings input {
   margin:10px 0 0 0;
   display:block;
-}         
+}
 .settings {
   clear:both;
 }
@@ -629,7 +629,7 @@ margin: 0 10px 0 0;
 
 #profile.watchdog li.person{
 width: 490px;
-padding: 0; 
+padding: 0;
 float: left;
 margin: 0 0 20px 0 !important;
 }
@@ -673,3 +673,41 @@ margin-bottom: 55px !important;
 
 }
 
+/* change profile picture */
+#picture_detail {
+  position:relative;
+}
+#picture_detail.loading {
+  opacity: 0.5;
+}
+#picture_detail.loading:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  background: url(../images/throbber.gif) no-repeat;
+  background-size: 15%;
+  left: 5%;
+  top: 5%;
+  width: 202px;
+  height: 250px;
+}
+
+/* edit profile form */
+#picture_tmp_file { position: absolute; z-index: 2; opacity: 0; width: 128px; height: 24px; cursor: pointer; }
+
+form div.input { margin-bottom: 1em; }
+form label { display:inline-block; text-align: right; margin-right: 1em; vertical-align: top; padding-top: 5px; }
+form.edit_user { padding-bottom: 3em; }
+form.edit_user fieldset {}
+form.edit_user fieldset legend { display: none; }
+form.edit_user label { width: 100px; }
+form.edit_user label.radio { width: auto; text-align: left; }
+form.edit_user button:first-child,
+form.edit_user .form-actions { padding-left: 110px; }
+form.edit_user select { margin: 5px 0; }
+form.edit_user input[type=radio] { margin-right: 5px; }
+form.edit_user #site_preferences label { display: block; width: auto; text-align: left; }
+form.edit_user #site_preferences label.radio { display: inline; }
+form.edit_user #site_preferences select:nth-child(2), #site_preferences label.radio:nth-child(2) { margin-left: 110px; }
+form.edit_user #privacy_settings { width: auto; float: none; }
+form.edit_user #privacy_settings select { display: inline-block; margin: 5px 0; width: 250px; }

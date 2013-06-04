@@ -1,0 +1,43 @@
+<% editable = defined?(editable) ? editable : current_user == @user %>
+<% if @user.main_picture %>
+  <%= image_tag "#{Settings.base_url}/images/users/" + @user.login + "_m.jpg", :alt => @user.login, :class => "img-polaroid" %>
+  <% if editable %>
+    <%= button_to "Delete Picture", delete_profile_images_path(@user.login),
+                                    :method => :delete, :remote => true,
+                                    :id => "delete_picture", :class => "button yellow small",
+                                    :confirm => "Are you sure you want to delete your profile image?" %>
+    <script>
+      // FIXME: Really need to switch over to jquery-rails and jquery ujs
+      Event.observe(Element.up($('delete_picture'), 'form'), 'ajax:start', function(event){
+        jQuery('#picture_detail').addClass('loading');
+      });
+      Event.observe(Element.up($('delete_picture'), 'form'), 'ajax:success', function(event){
+        jQuery('#picture_detail').removeClass('loading').html(event.memo.responseText);
+      });
+    </script>
+  <% end %>
+<% else %>
+  <%= image_tag "anonymous.gif", :alt => "No Picture", :class => "img-polaroid" %>
+<% end %>
+<% if editable %>
+  <%= form_for :user, :url => { :action => 'upload_pic' },
+               :html=>{:multipart=>true, :style=> "display:inline;", :id => "new_picture"} do |f| %>
+    <%= file_field "picture", "tmp_file", :size=> 0 %>
+    <%= submit_tag "Upload New Picture", :class=> "button blue small" %>
+  <% end %>
+  <script>
+  (function($){
+    $('#new_picture').ajaxForm({
+      success: function(data){
+        $('#picture_detail').removeClass('loading').html(data);
+      }
+    });
+    $('#picture_tmp_file').change(function(e){
+      if($(this).val()){
+        $('#picture_detail').addClass('loading');
+        $('#new_picture').submit();
+      }
+    })
+  })(jQuery);
+  </script>
+<% end %>

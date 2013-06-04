@@ -1,4 +1,5 @@
 defaults: &defaults
+  secret_token: --
   current_opensecrets_cycle: '2010'
   default_search_page_size: 10
   default_congress: 113

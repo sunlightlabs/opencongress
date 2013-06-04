@@ -1,5 +1,5 @@
 <div id="heading">
-  <h2><%= @user.login %>'s Tracked Items</h2>
+  <h2><%= @user.login.possessive %> Tracked Items</h2>
 </div>
 <div class="container_12">
 <div class="space">&nbsp;</div>
@@ -130,7 +130,7 @@
 
   <h3 class="darkline">Senators Representing Your State</h3>
   <p>
-  <div>
+  <div class="clearfix">
     <%= render :partial => "person_main_detail", :locals => {:people => @senators, :show_updates => false, :no_show_stats => true}, :person_type => "Senator" %>
   </div>
   </p>
@@ -145,7 +145,7 @@
     </p>
     <% end %>
   <p>
-    <div>
+    <div class="clearfix">
       <%= render :partial => "person_main_detail", :locals => {:people => @reps, :show_updates => false, :no_show_stats => true}, :person_type => "Representatives" %>
     </div>
   </p>

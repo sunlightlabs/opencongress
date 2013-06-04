@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
                   :remember_created_at, :location, :homepage, :subscribed,
                   :show_email, :show_homepage, :zipcode, :mailing, :accept_terms, :about, :main_picture, :small_picture,
                   :chat_aim, :chat_yahoo, :chat_msn, :chat_icq, :chat_gtalk, :show_aim, :show_full_name, :default_filter,
-                  :representative_id, :zip_four, :district, :state, :partner_mailing
+                  :representative_id, :zip_four, :district, :state, :partner_mailing, :privacy_option_attributes
 
   attr_accessor :password
 
@@ -40,10 +40,10 @@ class User < ActiveRecord::Base
   validates_length_of         :login,    :within => 3..40, :unless => :openid?
   validates_length_of         :email,    :within => 3..100, :unless => :openid?
   validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :message => "is invalid"
-  validates_numericality_of   :zipcode, :only_integer => true, :allow_nil => true, :message => "is not a valid 5 digit zipcode"
-  validates_numericality_of   :zip_four, :only_integer => true, :allow_nil => true, :message => "is not a valid 4 digit zipcode extension"
-  validates_length_of         :zipcode, :is => 5, :allow_nil => true, :message => "is not a valid 5 digit zipcode"
-  validates_length_of         :zip_four, :is => 4, :allow_nil => true, :message => "is not a valid 4 digit zipcode extension"
+  validates_numericality_of   :zipcode, :only_integer => true, :allow_blank => true, :message => "should be all numbers"
+  validates_numericality_of   :zip_four, :only_integer => true, :allow_blank => true, :message => "should be all numbers"
+  validates_length_of         :zipcode, :is => 5, :allow_blank => true, :message => "should be 5 digits"
+  validates_length_of         :zip_four, :is => 4, :allow_blank => true, :message => "should be 4 digits"
   validates_format_of         :login, :with => /^\w+$/, :message => "can only contain letters and numbers (no spaces)."
   validates_uniqueness_of     :login, :email, :identity_url, :case_sensitive => false, :allow_nil => true
 
@@ -165,6 +165,8 @@ class User < ActiveRecord::Base
   has_many   :notebook_items, :through => :political_notebook
 
   has_many   :contact_congress_letters
+
+  accepts_nested_attributes_for :privacy_option
 
   scope :for_state, lambda { |state| where("state = ?", state.upcase) }
   scope :for_district, lambda { |state, district| for_state(state).where("district = ?", district.to_i) }
@@ -419,7 +421,7 @@ class User < ActiveRecord::Base
   end
 
   def find_other_users_in_district(state, district)
-    User.find_by_sql(['select distinct users.id, users.login from users where district like ?;', "%#{state}-#{district}%"])
+    User.find_by_sql(['select distinct users.id, users.login from users where state like ? and district = ?;', "%#{state}%", district])
   end
 
 

@@ -71,8 +71,9 @@ gem 'hpricot'
 gem 'RedCloth'
 gem 'bluecloth'
 gem 'htmlentities'
-gem "json"
-gem "nokogiri"
+gem 'json'
+gem 'nokogiri'
+gem 'possessive'
 
 # spam protection
 gem "defensio", :git => 'git://github.com/drinks/defensio-ruby.git'  # this forces :json api format
@@ -88,6 +89,8 @@ gem "validates_captcha"
 gem "okkez-open_id_authentication"
 
 gem 'acts-as-taggable-on', '~> 2.3.3'
+
+gem 'simple_form'
 
 gem 'mechanize'
 gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'

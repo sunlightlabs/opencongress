@@ -2,7 +2,7 @@ Hi <%=h @friend.friend.login %>,
 
 <%=h @friend.user.login %> has invited you to become OpenCongress friends.
 
-You may view <%=h @friend.user.login %>'s profile here:
+You may view <%=h @friend.user.login.possessive %> profile here:
 
 <%= Settings.base_url %>users/<%=h @friend.user.login %>/profile
 

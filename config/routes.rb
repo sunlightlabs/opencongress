@@ -22,7 +22,7 @@ OpenCongress::Application.routes.draw do
     resources :group_invites
     resources :group_members
     resources :group_bill_positions
-    
+
     resource :political_notebook do
       resources :notebook_items do
         collection do
@@ -32,19 +32,19 @@ OpenCongress::Application.routes.draw do
       resources :notebook_links
       resources :notebook_videos
       resources :notebook_notes
-      resources :notebook_files    
+      resources :notebook_files
     end
   end
-  
+
   resources :simple_captcha, :only => :show
-  
+
   match '/' => 'index#index', :as => :home
 
   # Allow downloading Web Service WSDL as a file with an extension
   # instead of a file named 'wsdl'
   # match ':controller/service.wsdl' => 'wsdl'
 
-  # Handle bill routing. The action determines what information about the bill will 
+  # Handle bill routing. The action determines what information about the bill will
   # be displayed.
   match 'bill/:id/users_tracking' => 'friends#tracking_bill', :as => :users_tracking_bill
   match 'bill/:id/users_tracking/:state' => 'friends#tracking_bill', :state => /\w{2}/, :as => :users_tracking_bill_by_state
@@ -65,9 +65,9 @@ OpenCongress::Application.routes.draw do
 
     scope ':id' do
       match 'blogs(/:page)', :action => 'blogs', :as => :blogs_bill
-      match 'blogs/search(/:page)', :action => 'commentary_search', :commentary_type => 'blog'        
+      match 'blogs/search(/:page)', :action => 'commentary_search', :commentary_type => 'blog'
       match 'news(/:page)', :action => 'news', :as => :news_bill
-      match 'news/search(/:page)', :action => 'commentary_search', :commentary_type => 'news'        
+      match 'news/search(/:page)', :action => 'commentary_search', :commentary_type => 'news'
       match 'text', :action => 'text', :as => :bill_text
       match 'comments', :action => 'comments', :as => :bill_comments
       match 'show', :action => 'show', :as => :bill
@@ -108,23 +108,23 @@ OpenCongress::Application.routes.draw do
      end
 
      match '/' => 'index#index', :as => 'admin'
-     
+
      scope 'stats', :controller => 'stats' do
        match 'bills.:format', :action => 'bills'
        match 'partner_email.:format', :action => 'partner_email'
      end
-     
+
      match 'contact_congress' => 'contact_congress#index'
      match 'contact_congress/letters' => 'contact_congress#letters'
   end
   match '/:controller(/:action(/:id))', :controller => /admin\/[^\/]+/
-  
+
 
   match 'battle_royale' => 'battle_royale#index'
   match 'battle_royale/:action', :controller => 'battle_royale'
 
   match 'blog(/:tag)' => 'articles#list', :as => :blogs
-  
+
   scope 'articles', :controller => 'articles' do
     match 'view/:id', :action => 'view', :as => :article
     match ':id/atom', :action => 'article_atom'
@@ -137,35 +137,35 @@ OpenCongress::Application.routes.draw do
     match ':action/:id'
   end
 
-  
+
   #######TEMP REMOVE
-  # scope :module => 'formageddon', :as => 'formageddon' do    
+  # scope :module => 'formageddon', :as => 'formageddon' do
   #   resources :formageddon_threads, :controller => 'threads', :path => '/formageddon/threads'
   #   resources :formageddon_contact_steps, :controller => 'contact_steps', :path => '/formageddon/contact_steps'
   # end
-  # 
-  # 
-  # 
-  # 
-  # 
+  #
+  #
+  #
+  #
+  #
   # # Install the default route as the lowest priority.
   # map.connect ':controller/:action/:id'
-  
+
 
   resources :contact_congress_letters, :only => [:index, :show, :new, :update] do
     get 'create_from_formageddon', :on => :collection # create uses POST and we'll be redirecting to create
-    get 'get_recipients', :on => :collection 
+    get 'get_recipients', :on => :collection
     get 'delayed_send', :on => :collection
     get 'get_replies', :on => :collection
   end
-  
+
   match 'howtouse' => 'about#howtouse'
-  
+
   scope :controller => 'account' do
     for action in %w{ login why logout signup welcome contact_congress}
       match action, :action => action
     end
-    
+
     match 'register', :action => 'signup'
     match 'account/confirm/:login', :action => 'confirm'
   end
@@ -175,11 +175,14 @@ OpenCongress::Application.routes.draw do
     match 'comments/atom/:object/:id', :action => 'atom_comments'
   end
 
-  match 'users/:login/profile' => 'profile#show', :as => :user_profile
-
   scope 'users/:login' do
+    get 'profile' => 'profile#show', :as => :user_profile
+    get 'profile/edit' => 'profile#edit', :as => :edit_profile
+    put 'profile' => 'profile#update', :as => :update_profile
+    delete 'profile' => 'profile#destroy', :as => :destroy_profile
+    delete 'profile/images' => 'profile#delete_images', :as => :delete_profile_images
 
-    scope 'profile' do 
+    scope 'profile' do
       resource :political_notebook do
         collection do
           post :update_privacy
@@ -192,9 +195,9 @@ OpenCongress::Application.routes.draw do
         end
         resources :notebook_videos
         resources :notebook_notes
-        resources :notebook_files    
+        resources :notebook_files
       end
-    
+
       scope 'friends', :controller => 'friends' do
         for action in %w{ import_contacts like_voters invite_contacts near_me invite invite_form }
           match action, :action => action, :as => 'friends_' + action
@@ -204,7 +207,7 @@ OpenCongress::Application.routes.draw do
           match action + '/:id', :action => action, :as => 'friends_add_' + action
         end
       end
-  
+
       resources :friends
 
       scope :controller => 'profile' do
@@ -215,15 +218,15 @@ OpenCongress::Application.routes.draw do
         match ':person_type', :action => 'person'
       end
     end # profile
-    
+
     match 'feeds/:action(/:key)', :controller => 'user_feeds'
-    
+
   end # users/:login
 
   match 'video/rss' => 'video#all', :format => 'atom'
 
   scope :controller => 'roll_call' do
-    match 'roll_call/text/summary/:id', :action => 'summary_text'      
+    match 'roll_call/text/summary/:id', :action => 'summary_text'
     match 'vote/:year/:chamber/:number(/:state)', :action => 'by_number', :year => /\d{4}/, :chamber => /[hs]/, :number => /\d+/, :state => /\w{2}/
   end
 
@@ -253,4 +256,4 @@ OpenCongress::Application.routes.draw do
 
   match '/donate' => redirect('http://sunlightfoundation.com/about/funding/')
 
-end  
+end

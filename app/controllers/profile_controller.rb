@@ -1,15 +1,15 @@
 class ProfileController < ApplicationController
   before_filter :can_view_tab, :only => [:actions,:items_tracked,:bills, :my_votes, :comments, :person, :issues, :watchdog]
-  before_filter :login_required, :only => [:edit, :update, :destroy]
+  before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
   skip_before_filter :store_location, :only => [:track,:tracked_bill_status,
                                                 :tracked_votes,:tracked_commentary_news,:tracked_commentary_blogs,
-                                                :edit_profile,:watchdog, :remove_vote, :remove_bill_bookmark,
+                                                :edit_profile, :watchdog, :remove_vote, :remove_bill_bookmark,
                                                 :remove_person_bookmark, :remove_bookmark, :pn_ajax, :update_privacy]
 
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])
-    @page_title = "#{@user.login}'s Profile"
+    @page_title = "#{@user.login.possessive} Profile"
     @title_class = "tab-nav"
     @profile_nav = @user
 
@@ -56,7 +56,7 @@ class ProfileController < ApplicationController
 
   def actions
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
-    @page_title = "#{@user.login}'s Profile"
+    @page_title = "#{@user.login.possessive} Profile"
     @profile_nav = @user
 
     @bills_supported = Bill.paginate_by_sql("select bills.* FROM bills
@@ -73,7 +73,7 @@ class ProfileController < ApplicationController
 
     @title_class = "tab-nav"
 
-    @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login}'s Actions"}
+    @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login.possessive} Actions"}
 
 
     @my_comments = Comment.paginate(:conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => params[:page])
@@ -83,7 +83,7 @@ class ProfileController < ApplicationController
     @atom = {'link' => url_for(:controller => 'user_feeds', :login => @user.login, :action => 'tracked_items', :key => logged_in? ? current_user.feed_key : nil)}
     @hide_atom = true
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
-    @page_title = "#{@user.login}'s Profile"
+    @page_title = "#{@user.login.possessive} Profile"
     @profile_nav = @user
     @title_class = "tab-nav"
 

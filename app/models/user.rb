@@ -21,7 +21,7 @@ class User < ActiveRecord::Base
                   :remember_created_at, :location, :homepage, :subscribed,
                   :show_email, :show_homepage, :zipcode, :mailing, :accept_terms, :about, :main_picture, :small_picture,
                   :chat_aim, :chat_yahoo, :chat_msn, :chat_icq, :chat_gtalk, :show_aim, :show_full_name, :default_filter,
-                  :representative_id, :zip_four, :district, :state, :partner_mailing
+                  :representative_id, :zip_four, :district, :state, :partner_mailing, :privacy_option_attributes
 
   attr_accessor :password
 

@@ -178,7 +178,7 @@ class State < ActiveRecord::Base
   def party_makeup_graph_url
     size = "330x130"
     colors = "CCCCFF,FFCCCC"
-    title = "#{abbreviation}'s%20House%20Party%20Make-up"
+    title = "#{abbreviation.possessive}%20House%20Party%20Make-up"
     if other_representatives.count == 0
       if republican_representatives.count == 0
         "http://chart.apis.google.com/chart?cht=p&chd=t:#{democrat_representatives.count}&\

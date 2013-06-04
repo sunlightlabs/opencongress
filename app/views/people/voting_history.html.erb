@@ -1,4 +1,4 @@
-<!--<p><a href="/people/show/<%= @person.to_param %>" class="arrow-left"><b>Back to <%= @person.popular_name %>'s Profile</b></a></p>-->
+<!--<p><a href="/people/show/<%= @person.to_param %>" class="arrow-left"><b>Back to <%= @person.popular_name.possessive %> Profile</b></a></p>-->
 
 <%= render :partial => 'shared/generic_search_field', :locals => { :field_text => "<span>Search Voting History</span>" }%>
 

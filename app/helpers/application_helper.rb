@@ -165,7 +165,7 @@ EOT
 
   def opensecrets_button(person = nil)
     if person
-      %Q{<h3>See more campaign contribution data by visiting #{person.full_name}'s profile on <a class="arrow" target="_blank" href="http://www.opensecrets.org/politicians/summary.asp?cid=#{person.osid}">OpenSecrets</a></h3>}.html_safe
+      %Q{<h3>See more campaign contribution data by visiting #{person.full_name.possessive} profile on <a class="arrow" target="_blank" href="http://www.opensecrets.org/politicians/summary.asp?cid=#{person.osid}">OpenSecrets</a></h3>}.html_safe
     else
       %Q{<h3>See more at </h3><br /><a class="arrow" target="_blank" href="http://www.opensecrets.org">OpenSecrets</a><br />}.html_safe
     end
@@ -874,6 +874,18 @@ EOT
       'in opposition to'
     else
       'tracking'
+    end
+  end
+
+  def user_name(pronoun, extras=nil, &block)
+    if @user == current_user
+      use_name = "#{pronoun}"
+    elsif extras.present?
+      use_name = @user.login + "#{extras}"
+    elsif block_given?
+      use_name = yield @user.login
+    else
+      use_name = @user.login
     end
   end
 

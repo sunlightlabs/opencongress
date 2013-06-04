@@ -160,7 +160,7 @@ class FriendsController < ApplicationController
   end
 
   def import_contacts
-    @page_title = "#{@user.login}'s Profile"
+    @page_title = "#{@user.login.possessive} Profile"
     @title_class = "tab-nav"
 
     if request.post? && params[:from]
@@ -295,8 +295,8 @@ class FriendsController < ApplicationController
     @total_recent_friends_activity = Friend.recent_activity(@friends)
     @recent_friends_ativity = @total_recent_friends_activity.first(12)
     @more_recent_friends_activity = @total_recent_friends_activity[12..23]
-    #@page_title = "#{@user.login}'s Friends"
-    @page_title = "#{@user.login}'s Profile"
+    #@page_title = "#{@user.login.possessive} Friends"
+    @page_title = "#{@user.login.possessive} Profile"
     @profile_nav = @user
     @title_class = "tab-nav"
 
@@ -322,7 +322,7 @@ class FriendsController < ApplicationController
   # GET /friends/new
   def new
     @friend = @user.friends.new
-    @page_title = "#{@user.login}'s Profile"
+    @page_title = "#{@user.login.possessive} Profile"
     @title_class = "tab-nav"
     @profile_nav = @user
   end

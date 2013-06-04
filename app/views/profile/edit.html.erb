@@ -49,22 +49,24 @@
 
       <%= field_set_tag "Privacy Settings", {:id => "privacy_settings", :class => "tab-pane"} do %>
         <%= f.simple_fields_for :privacy_option, @user.privacy_option,
-                                :defaults => { :input_html => { :class => 'select' } } do |p| %>
-          <% privacy_options = {"Private" => 0, "Friends" => 1, "Public" => 2 } %>
-          <%= p.input :my_full_name, :label => "My name", :as => :select, :collection => privacy_options,:prompt => nil %>
-          <%= p.input :about_me, :label => "My bio", :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_last_login_date, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_email, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_zip_code, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_instant_messenger_names, :label => "My IM names", :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_website, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_location, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_actions, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_tracked_items, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_friends, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_congressional_district, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :my_political_notebook, :as => :select, :collection => privacy_options, :prompt => nil %>
-          <%= p.input :watchdog, :as => :select, :collection => privacy_options, :prompt => nil %>
+                                :defaults => {:as => :select,
+                                              :collection => {"Private" => 0, "Friends" => 1, "Public" => 2 },
+                                              :prompt => nil,
+                                              :input_html => { :class => 'select' } } do |p| %>
+          <%= p.input :my_full_name, :label => "My name" %>
+          <%= p.input :about_me, :label => "My bio" %>
+          <%= p.input :my_last_login_date %>
+          <%= p.input :my_email %>
+          <%= p.input :my_zip_code %>
+          <%= p.input :my_instant_messenger_names, :label => "My IM names" %>
+          <%= p.input :my_website %>
+          <%= p.input :my_location %>
+          <%= p.input :my_actions %>
+          <%= p.input :my_tracked_items %>
+          <%= p.input :my_friends %>
+          <%= p.input :my_congressional_district %>
+          <%= p.input :my_political_notebook %>
+          <%= p.input :watchdog %>
         <% end %>
       <% end %>
 

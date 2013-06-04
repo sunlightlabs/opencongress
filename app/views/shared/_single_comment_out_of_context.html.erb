@@ -1,6 +1,6 @@
 <% if comment.censored %>
 <div class="commentfl" style="clear:both;float:none;border-top:1px solid #D0D6E2;">
-	<p>Moderated Comment</p>
+  <p>Moderated Comment</p>
 </div>
 <% else %>
 <% def_fil = 5 %>
@@ -14,54 +14,54 @@
 <% if (def_fil > comment.average_rating) %>display:none;<%end%>; width: 100%;">
 
 <div style="display:none;" class="comment_rating_help" id="useful<%=comment.id.to_s%>">
-	How helpful was this comment for you? Use the slider bar to rate it 1-10, with 10 being very helpful and 1 being least helpful.
+  How helpful was this comment for you? Use the slider bar to rate it 1-10, with 10 being very helpful and 1 being least helpful.
 </div>
 
 <div class="comm_comm">
-	<table class="ctable">
-		<tr>
-			<td style="">
-			<% if comment.user %><%= link_to h(comment.user.login), user_profile_path(:login => comment.user.login) %>'s
-				<% else %>
-				Anonymous's
-				<% end %>
-				comment on <%= link_to "#{comment.commentable_type} #{comment.commentable.ident}", comment.commentable_link %> 
-			</td>
+  <table class="ctable">
+    <tr>
+      <td style="">
+      <% if comment.user %><%= link_to h(comment.user.login.possessive), user_profile_path(:login => comment.user.login) %>
+        <% else %>
+        Anonymous'
+        <% end %>
+        comment on <%= link_to "#{comment.commentable_type} #{comment.commentable.ident}", comment.commentable_link %>
+      </td>
 
-			<td><%= comment.created_at.strftime('%b %d, %Y') %><% unless controller_name == 'articles' %> (<%= time_ago_in_words comment.created_at %> ago) <% end %></td>
-			<td><%= link_to 'Link', url_for(comment.commentable_link.merge({:goto_comment => comment.id})) %></td>
-		</table>
-		<table class="ctable2">
-			<tr>      
-				<td>Overall Rating: <%=h number_with_precision(comment.average_rating,1) %>&nbsp;&ensp;|&ensp;</td>
-				<% if logged_in? %>
-				<td>
-					<div class="rate_comm" id="rate_comment_<%= comment.id.to_s%>">
-					<% if (comment_score = myscores.select{ |s| s.comment_id == comment.id }.first).nil? %>Was this comment useful?  
-					<a href="#" onClick="new Ajax.Updater('rate_comment_<%= comment.id.to_s%>','/comments/rate/<%= comment.id %>?value=10', {asynchronous:true, evalScripts:true}); return false;">Yes</a>&nbsp;or&nbsp;
-					<a href="#" onClick="new Ajax.Updater('rate_comment_<%= comment.id.to_s%>','/comments/rate/<%= comment.id %>?value=1', {asynchronous:true, evalScripts:true}); return false;">No</a>
-					<% else %>
-					You rated this comment: <%= "not " if comment_score.score < 5 %>useful.
-					<% end %>
-				</div>
+      <td><%= comment.created_at.strftime('%b %d, %Y') %><% unless controller_name == 'articles' %> (<%= time_ago_in_words comment.created_at %> ago) <% end %></td>
+      <td><%= link_to 'Link', url_for(comment.commentable_link.merge({:goto_comment => comment.id})) %></td>
+    </table>
+    <table class="ctable2">
+      <tr>
+        <td>Overall Rating: <%=h number_with_precision(comment.average_rating,1) %>&nbsp;&ensp;|&ensp;</td>
+        <% if logged_in? %>
+        <td>
+          <div class="rate_comm" id="rate_comment_<%= comment.id.to_s%>">
+          <% if (comment_score = myscores.select{ |s| s.comment_id == comment.id }.first).nil? %>Was this comment useful?
+          <a href="#" onClick="new Ajax.Updater('rate_comment_<%= comment.id.to_s%>','/comments/rate/<%= comment.id %>?value=10', {asynchronous:true, evalScripts:true}); return false;">Yes</a>&nbsp;or&nbsp;
+          <a href="#" onClick="new Ajax.Updater('rate_comment_<%= comment.id.to_s%>','/comments/rate/<%= comment.id %>?value=1', {asynchronous:true, evalScripts:true}); return false;">No</a>
+          <% else %>
+          You rated this comment: <%= "not " if comment_score.score < 5 %>useful.
+          <% end %>
+        </div>
 
-			</td>
-			<% else %>
-			<td><%= link_to "Login to Rate", login_url %></td>
-			<% end %>
-			<% comment_scores = comment.comment_scores %>
-			<% unless comment_scores.empty? %>
-			<td>&nbsp;|&nbsp;&nbsp;<%= comment_scores.select{ |s| s.score > 5 }.size %> of <%= comment_scores.size %> found useful.
-			</td>
-			<% end %>
-			<% if logged_in? %>
-			<td class="flag" onmouseover="Element.show('flag_help_<%= comment.id.to_s %>');" onmouseout="Element.hide('flag_help_<%= comment.id.to_s %>');">
-			<%= link_to image_tag('/images/flag.png', :alt => 'flag'), :controller => 'comments', :action => 'flag', :id => comment.id %>
-			<%= dbox_start("flag_help_#{comment.id.to_s}", -190, 0, 175, "right")%>
-			Click this flag to mark this comment as inappropriate
-			<%= dbox_end %>
-		</td><% end %>
-	</tr>
+      </td>
+      <% else %>
+      <td><%= link_to "Login to Rate", login_url %></td>
+      <% end %>
+      <% comment_scores = comment.comment_scores %>
+      <% unless comment_scores.empty? %>
+      <td>&nbsp;|&nbsp;&nbsp;<%= comment_scores.select{ |s| s.score > 5 }.size %> of <%= comment_scores.size %> found useful.
+      </td>
+      <% end %>
+      <% if logged_in? %>
+      <td class="flag" onmouseover="Element.show('flag_help_<%= comment.id.to_s %>');" onmouseout="Element.hide('flag_help_<%= comment.id.to_s %>');">
+      <%= link_to image_tag('/images/flag.png', :alt => 'flag'), :controller => 'comments', :action => 'flag', :id => comment.id %>
+      <%= dbox_start("flag_help_#{comment.id.to_s}", -190, 0, 175, "right")%>
+      Click this flag to mark this comment as inappropriate
+      <%= dbox_end %>
+    </td><% end %>
+  </tr>
 </table>
 </div>
 <% if comment.user && comment.user.small_picture %>
@@ -70,18 +70,18 @@
 <div style="clear:left;"></div>
 <% end %>
 <p class="com_content">
-	<span><%= h(comment.comment).gsub(/\n/, "<br/>") %></span>
-</p>  
+  <span><%= h(comment.comment).gsub(/\n/, "<br/>") %></span>
+</p>
 
 
 <div id="com_<%= comment.id.to_s %>" style="clear:both;display:none;"> </div>
 
 </div>
 <% if logged_in? && current_user.user_role.can_moderate_articles %>
-<div style="clear:left;">       
-	<form class="button-to" action="/comments/censor/<%=h comment.id %>" method="post">
-	<%= submit_tag "Censor", :value => "Censor" %>
-	<%= submit_tag "Censor+BanIP", :value => "Censor+BanIP" %>
+<div style="clear:left;">
+  <form class="button-to" action="/comments/censor/<%=h comment.id %>" method="post">
+  <%= submit_tag "Censor", :value => "Censor" %>
+  <%= submit_tag "Censor+BanIP", :value => "Censor+BanIP" %>
     </form>
 </div>
 <% end %>

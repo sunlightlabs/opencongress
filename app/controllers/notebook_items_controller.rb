@@ -6,7 +6,7 @@ class NotebookItemsController < ApplicationController
 
   def create
     return false unless @can_edit
-    
+
     valid_types = %w[NotebookVideo NotebookLink NotebookNote]
     try_type = params[:item_type]
     use_type = (valid_types.include? try_type) ? try_type : nil
@@ -14,13 +14,13 @@ class NotebookItemsController < ApplicationController
     unless use_type.blank?
       @item = use_type.constantize.new(params[use_type.tableize.singularize])
       @item.political_notebook = @political_notebook
-      @success = @item.save      
-      
+      @success = @item.save
+
       @from_bookmarklet = (params[:from_bookmarklet] == 'true') if @success
     end
 
-    respond_to do |format|      
-      format.js        
+    respond_to do |format|
+      format.js
     end
   end
 
@@ -37,7 +37,7 @@ class NotebookItemsController < ApplicationController
 
 
   def feed
-    if @group 
+    if @group
       unless @group.publicly_visible?
         redirect_to groups_path
         return
@@ -50,29 +50,29 @@ class NotebookItemsController < ApplicationController
         return
       end
     end
-    
+
     @items = @political_notebook.notebook_items.find(:all, :limit => 20)
     render :layout => false
   end
-  
+
   def update
     return false unless @can_edit
-    
+
     @notebook_item = NotebookItem.find(params[:notebook_item][:id])
 
 
     @success = @notebook_item.update_attributes(params[:notebook_item])
-      
-    respond_to do |format| 
+
+    respond_to do |format|
       format.js
     end
   end
-  
+
   # only used by groups right now
   def destroy
     item = NotebookItem.find(params[:id])
     group = item.political_notebook.group
-    
+
     if current_user != :false and ((item.group_user == current_user) or item.political_notebook.group.can_moderate?(current_user))
       item.destroy
       redirect_to group, :notice => "The post has been deleted."
@@ -80,32 +80,32 @@ class NotebookItemsController < ApplicationController
       redirect_to group, :notice => "Could not delete post."
     end
   end
-  
+
 protected
   def notebook_env
     get_user_or_group
-    
+
     unless (@user || @group)
       redirect_to "/"
       return false
     end
-    
+
     get_notebook
     set_title
     set_profile_nav_location
   end
-  
+
   def set_title
     if @group
       @page_title = "#{@group.name} Activity Stream"
     else
-      @page_title = "#{@user.login}'s Profile"
-    end  
+      @page_title = "#{@user.login.possessive} Profile"
+    end
   end
 
   def set_profile_nav_location
-  	@title_class = "tab-nav"    
-    @profile_nav = @user    
+  	@title_class = "tab-nav"
+    @profile_nav = @user
   end
 
   def get_user_or_group
@@ -119,16 +119,16 @@ protected
   def get_notebook
     if @group
       @political_notebook = PoliticalNotebook.find_or_create_from_group(@group)
-      
+
       # ajax requests weren't seeing the PN after creating the first item so force here
       if @group.political_notebook.nil?
         @group.political_notebook = @political_notebook
         @group.save
-      end   
+      end
     else
-      @political_notebook = PoliticalNotebook.find_or_create_from_user(@user)    
+      @political_notebook = PoliticalNotebook.find_or_create_from_user(@user)
     end
-    
+
     @can_edit = @political_notebook.can_edit?(current_user)
     @can_view = @political_notebook.can_view?(current_user)
   end

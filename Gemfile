@@ -71,8 +71,9 @@ gem 'hpricot'
 gem 'RedCloth'
 gem 'bluecloth'
 gem 'htmlentities'
-gem "json"
-gem "nokogiri"
+gem 'json'
+gem 'nokogiri'
+gem 'possessive'
 
 # spam protection
 gem "defensio", :git => 'git://github.com/drinks/defensio-ruby.git'  # this forces :json api format

@@ -9,11 +9,11 @@
     	$j('#contribution_data_container').html("<%= escape_javascript(render :partial => 'contact_congress_letters/message_builder_industry_contribution_data', :locals => { :trigger_js => true}) %>");
   	<% end %>
   <% end %>
-	
+
 	<% unless @issue.nil? %>
 		$j('#contribution_data_container').html("<%= escape_javascript(render :partial => 'contact_congress_letters/message_builder_issue_contribution_data', :locals => { :trigger_js => true}) %>");
 	<% end %>
-	
+
   <% unless @bill.nil? or @bill.roll_calls.first.nil? %>
     $j('#roll_call_container').html("<%= escape_javascript(render :partial => 'contact_congress_letters/message_builder_roll_call', :locals => { :roll_call => @bill.roll_calls.first }) %>");
   <% end %>
@@ -22,11 +22,11 @@
   <% if @zip4 %>
     $j('#formageddon_formageddon_thread_sender_zip4').val('<%= @zip4 %>');
   <% end %>
-  
+
   <% unless @reps.empty? %>
-    $j('.desk .the-user').html("A Constituent Out of <%= State.find_by_abbreviation(@reps.first.state).name %>'s <%= @reps.first.district.to_i.ordinalize %> District");
+    $j('.desk .the-user').html("A Constituent Out of <%= State.find_by_abbreviation(@reps.first.state).name.possessive %> <%= @reps.first.district.to_i.ordinalize %> District");
   <% end %>
-    
+
   <% if @letter_start %>
     $j('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').val("<%= @letter_start %> " + $j('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').val());
   <% end %>

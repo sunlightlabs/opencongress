@@ -1,6 +1,6 @@
 module ProfileHelper
 
- def draw_edit_in_place(field, rows = 1) 
+ def draw_edit_in_place(field, rows = 1)
      @user == current_user ? editable_content(
         :content => {
           :element => 'span',
@@ -46,14 +46,6 @@ module ProfileHelper
    ) + javascript_tag( script.join("\n") )
  end
 
-	def user_name(pronoun,extras)
-		if @user == current_user
-			use_name = "#{pronoun}"
-		else
- 			use_name = @user.login + "#{extras}"
-		end
-	end
-	
 	def user_bill_vote_string(bill)
 		out = "<td"
 		if logged_in?
@@ -61,7 +53,7 @@ module ProfileHelper
       if bv
         if bv.support == 0
 				out += " class='color10'>Aye"
-      	elsif bv.support == 1 
+      	elsif bv.support == 1
 				out += " class='color0'>Nay"
     		end
 			else
@@ -71,7 +63,7 @@ module ProfileHelper
 		out += "\n</td>"
 		return out.html_safe
 	end
-	
+
   def link_to_report(report)
     link_to report.title.capitalize, :action => :report, :id => report
   end
@@ -126,5 +118,5 @@ module ProfileHelper
       end
       return out.html_safe
   end
-    
+
 end

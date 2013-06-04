@@ -14,7 +14,7 @@ class DistrictsController < ApplicationController
 
     @senators = Person.find_current_senators_by_state(@state.abbreviation)
 
-    @page_title = "#{@state.name.titleize}'s #{@district.ordinalized_number} Congressional District"
+    @page_title = "#{@state.name.titleize.possessive} #{@district.ordinalized_number} Congressional District"
     @users = @district.users
     @tracking_suggestions = @district.tracking_suggestions
     respond_to do |format|
@@ -26,5 +26,5 @@ class DistrictsController < ApplicationController
   def get_state
     @state = State.find_by_abbreviation(params[:state_id])
   end
-  
+
 end

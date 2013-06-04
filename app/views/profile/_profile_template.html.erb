@@ -50,14 +50,14 @@ dsfsdddsf
 				</li>
 	<% end %>
 	</ul>
-  
+
 	<h5><%= link_to "#{@bookmarks_sen.length} Senators", :controller => 'profile', :action => 'person', :person_type => "senators" %></h5>
 	<ul class="links_detailed">
 		<% @bookmarks_sen.each do |b| %>
 		  <li><%= render :partial => "person_main_detail", :locals => {:b => b} %></li>
 		<% end %>
 	</ul>
-	
+
   <h5><%= link_to "#{@bookmarks_rep.length} Representatives", :controller => 'profile', :action => 'person', :person_type => "representatives" %></h5>
  	<ul class="links_detailed">
 		<% @bookmarks_rep.each do |b| %>
@@ -67,7 +67,7 @@ dsfsdddsf
 
 	<% link_to "Committees", :controller => 'accounts', :action => 'committees' %>
   <% link_to "Industries", :controller => 'accounts', :action => 'industries' %>
-  
+
 	<h5><%= link_to "#{@bookmarks_issue.length} Issues", :controller => 'profile', :action => 'issues' %></h5>
 	<ul class="links_detailed">
 		<% @bookmarks_issue.each do |b| %>
@@ -84,17 +84,17 @@ dsfsdddsf
 				<div id="new_comments_<%= b.subject.term %>" style="display:none;">
 					  <%= render :partial => 'shared/comments_embedded', :locals => {:object => b.subject }%>
 				</div>
-			</li>                    
+			</li>
 		<% end %>
 	</ul>
 
 <% link_to "Blogs", :controller => 'accounts', :action => 'blogs' %> <br/>
 
 <% if @user == current_user %>
-    <h3 class="darkline">Recent <%=link_to "Friends", friends_path(@user.login) %> History</h3>  
+    <h3 class="darkline">Recent <%=link_to "Friends", friends_path(@user.login) %> History</h3>
 	<h3 class="darkline">My History:</h3>
 <% else %>
-	<h3 class="darkline"><%= @user.login %>'s History</h3>
+	<h3 class="darkline"><%= @user.login.possessive %> History</h3>
 <% end %>
   <h5><%= link_to "My Votes", :controller => 'profile', :action => 'my_votes' %></h5>
   <h5><%= link_to "My Comments", :controller => 'profile', :action => 'comments' %></h5>

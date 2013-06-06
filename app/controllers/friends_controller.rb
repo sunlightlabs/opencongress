@@ -291,16 +291,13 @@ class FriendsController < ApplicationController
   def index
     @friends = @user.friends.find(:all)
     @fans = @user.fans
-    @more_recent_friends_activity = []
     @total_recent_friends_activity = Friend.recent_activity(@friends)
-    @recent_friends_ativity = @total_recent_friends_activity.first(12)
-    @more_recent_friends_activity = @total_recent_friends_activity[12..23]
+    @recent_friends_activity = @total_recent_friends_activity.first(12) || []
+    @more_recent_friends_activity = @total_recent_friends_activity[12..23] || []
     #@page_title = "#{@user.login.possessive} Friends"
     @page_title = "#{@user.login.possessive} Profile"
     @profile_nav = @user
     @title_class = "tab-nav"
-
-    flash.now[:notice] = "We're working on this page."
 
     respond_to do |format|
       format.html # index.rhtml

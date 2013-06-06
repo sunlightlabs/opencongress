@@ -711,3 +711,6 @@ form.edit_user #site_preferences label.radio { display: inline; }
 form.edit_user #site_preferences select:nth-child(2), #site_preferences label.radio:nth-child(2) { margin-left: 110px; }
 form.edit_user #privacy_settings { width: auto; float: none; }
 form.edit_user #privacy_settings select { display: inline-block; margin: 5px 0; width: 250px; }
+
+/* add to friends div */
+#fdiv { margin-top: 14px; }

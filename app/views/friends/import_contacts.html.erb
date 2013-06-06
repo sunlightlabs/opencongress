@@ -23,7 +23,7 @@
     <tr>
       <td></td><td><input type="submit" value="Find Contacts"/></td>
     </tr>
-  </table>  
+  </table>
 </form>
 </div>
 <div style="float:left;padding:10px;">
@@ -40,7 +40,7 @@
     <tr>
       <td></td><td><input type="submit" value="Find Contacts"/></td>
     </tr>
-  </table>  
+  </table>
 </form>
 </div>
 <div style="float:left;padding:10px;">
@@ -57,7 +57,7 @@
     <tr>
       <td></td><td><input type="submit" value="Find Contacts"/></td>
     </tr>
-  </table>  
+  </table>
 </form>
 </div>
 </div>
@@ -69,7 +69,7 @@
     <tr><th>Add Friend</th><th>Name</th><th>Email</th><th>Username</th></tr>
     <% @already.each do |r| %>
       <% unless r.id == current_user.id %>
-      <tr><td id="f_<%=r.login %>" class="itable"><%= add_friend_link_ajax(r, update_div = "f_#{r.login}") %></td><td><%= r.full_name && r.full_name.empty? ? r.full_name : "[none]" %></td><td><%= r.email %></td><td><%= link_to(h(r.login), user_profile_path(:login => r.login)) %></td></tr>
+      <tr><td id="f_<%=r.login %>" class="itable"><%= add_friend_link_ajax(r, :update => "f_#{r.login}") %></td><td><%= r.full_name && r.full_name.empty? ? r.full_name : "[none]" %></td><td><%= r.email %></td><td><%= link_to(h(r.login), user_profile_path(:login => r.login)) %></td></tr>
     <% end %>
     <% end %>
   </table>
@@ -99,7 +99,7 @@
   <%= submit_tag "Invite Contacts" %>
   </form>
   <% end %>
-  
+
   <% else %>
   <h3 style="clear:both;color:red;">Error</h3>
      <p>Login failed to <%= @login_failed.capitalize %></p>

@@ -13,7 +13,7 @@
         <% if u.small_picture %>
            <%= image_tag "/images/users/" + h(u.login) + "_s.jpg", :alt => "user photo" %>
          <% else %>
-           <%= image_tag "anon-img-ex1.gif", :alt => "no photo" %> 
+           <%= image_tag "anon-img-ex1.gif", :alt => "no photo" %>
          <% end %>
         </td>
         <td>
@@ -23,11 +23,11 @@
       <td><%= u.solr_score %></td>
       <td>
           <div id="fdiv_<%= u.id %>">
-              <%= add_friend_link_ajax(u,"fdiv_#{u.id}") %>
+              <%= add_friend_link_ajax(u, :update => "fdiv_#{u.id}") %>
           </div>
       </td>
       </tr>
     <% end %>
   </table>
 <% end %>
-  
+

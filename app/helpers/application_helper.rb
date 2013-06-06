@@ -367,7 +367,6 @@ EOT
     end
   end
 
-
   def person_basic_atom_entry(xml, p, updated_method = :entered_top_viewed)
     xml.entry do
       xml.title   p.name
@@ -379,26 +378,25 @@ EOT
       end
     end
   end
-  def add_friend_link_ajax(friend, update_div = "fdiv")
-     if logged_in?
-       friend_login = CGI::escapeHTML(friend.login)
-       f = current_user.friends.find_by_friend_id(friend.id)
-       if f.nil? && friend != current_user
-         link_to_remote("Add #{friend_login} to Friends", { :update => update_div,
-                             :url => {:controller => 'friends',
-                             :action => 'add',
-                             :login => current_user.login,
-                             :id => friend.id}})
-       elsif f.nil? && friend == current_user
-          ""
-       elsif f.confirmed == true
-          "#{friend_login} is my friend"
-       else
-          "#{friend_login} has yet to approve me"
-       end
-     else
-        link_to("Login", login_url) + " to add friends"
-     end
+
+  def add_friend_link_ajax(friend, options={})
+    if logged_in?
+      options[:update] = "fdiv" if options[:update].nil?
+      friend_login = CGI::escapeHTML(friend.login)
+      f = current_user.friends.find_by_friend_id(friend.id)
+      options[:url] = { :controller => 'friends', :action => 'add', :login => current_user.login, :id => friend.id }
+      if f.nil? && friend != current_user
+        link_to_remote("Add #{friend_login} to Friends", options)
+      elsif f.nil? && friend == current_user
+        ""
+      elsif f.confirmed == true
+        "#{friend_login} is my friend"
+      else
+        "#{friend_login} has yet to approve me"
+      end
+    else
+       link_to("Login", login_url) + " to add friends"
+    end
   end
 
   def display_tree_recursive(tree, parent_id)

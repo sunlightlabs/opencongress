@@ -8,7 +8,7 @@ Sorry, nothing found.
 
 <ul>
   <% @results.each do |r| %>
-    <li><%= link_to h(r.login), user_profile_path(r.login) %> <span id="fdiv_<%=h r.id %>"><%= add_friend_link_ajax(r, "fdiv_#{r.id}") %></span></li>
+    <li><%= link_to h(r.login), user_profile_path(r.login) %> <span id="fdiv_<%=h r.id %>"><%= add_friend_link_ajax(r, :update => "fdiv_#{r.id}") %></span></li>
   <% end %>
 </ul>
 

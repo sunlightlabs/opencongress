@@ -123,7 +123,6 @@ group :test do
   gem 'silent-postgres'  # Quieter postgres log messages
   gem 'database_cleaner'
   gem 'vcr'
-  gem 'awesome_print'
   gem 'fuubar'
   gem 'poltergeist'  # Requires PhantomJS >= 1.8.1
   gem 'cucumber'

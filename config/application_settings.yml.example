@@ -22,6 +22,8 @@ defaults: &defaults
   govtrack_billtext_diff_path: /data/govtrack/bills.text.cmp
   oc_billtext_path: /data/opencongress/bills.text
   committee_reports_path: /data/committee_reports
+  unitedstates_legislators_repo_url: 'git://github.com/unitedstates/congress-legislators.git'
+  unitedstates_legislators_clone_path: '/data/unitedstates-legislators'
 
   base_url: http://www.opencongress.org/
   api_host: api.opencongress.org

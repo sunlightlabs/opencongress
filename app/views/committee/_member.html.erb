@@ -1,0 +1,9 @@
+              <div class="graph_item">
+                <a href="<%= person_url member.ident %>">
+                  <%= image_tag member.photo_path %>
+                  <span class="name"><%= member.full_name %></span>
+                </a>
+                <% if title %>
+                  <em><%= title %></em>
+                <% end %>
+              </div>

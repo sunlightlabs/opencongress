@@ -112,17 +112,18 @@ module PeopleHelper
   end
 
 	def sponsored_bill_stats
-	  total_people = (@person.title == "Sen.") ? 100 : 440
-
-	  output = ""
-	  unless @person.person_stats.sponsored_bills.nil?
-  	  output += "<li>" +
+    high_sponsor_rank = (@person.title == "Sen.") ? Person.sen.includes(:person_stats).maximum("sponsored_bills_rank") : Person.rep.includes(:person_stats).maximum("sponsored_bills_rank")
+    high_cosponsor_rank = (@person.title == "Sen.") ? Person.sen.includes(:person_stats).maximum("cosponsored_bills_rank") : Person.rep.includes(:person_stats).maximum("cosponsored_bills_rank")
+ 
+    output = ""
+    unless @person.person_stats.sponsored_bills.nil?
+      output += "<li>" +
   	          link_to(@person.person_stats.sponsored_bills, {:controller => 'people', :action => 'bills', :id => @person}) +
-  	          " Sponsored Bills (Ranks #{@person.person_stats.sponsored_bills_rank} of #{total_people}) "
-       unless @person.person_stats.sponsored_bills_passed.nil?
-         output += @person.person_stats.sponsored_bills_passed.to_s +
-         " Made Into Law (Ranks #{@person.person_stats.sponsored_bills_passed_rank} of #{total_people})</li>"
-       end
+  	          " Sponsored Bills (Ranks #{@person.person_stats.sponsored_bills_rank} of #{high_sponsor_rank}) "
+      unless @person.person_stats.sponsored_bills_passed.nil?
+        output += @person.person_stats.sponsored_bills_passed.to_s +
+          " Made Into Law (Ranks #{@person.person_stats.sponsored_bills_passed_rank} of #{high_sponsor_rank})</li>"
+      end
     else
       output += "<li>No Sponsored Bills</li>"
     end
@@ -130,11 +131,11 @@ module PeopleHelper
     unless @person.person_stats.cosponsored_bills.nil?
       output += "<li>" +
           	  link_to(@person.person_stats.cosponsored_bills, {:controller => 'people', :action => 'bills', :id => @person}) +
-          	  " Co-Sponsored Bills (Ranks #{@person.person_stats.cosponsored_bills_rank} of #{total_people}) "
+          	  " Co-Sponsored Bills (Ranks #{@person.person_stats.cosponsored_bills_rank} of #{high_cosponsor_rank}) "
       unless @person.person_stats.cosponsored_bills_passed.nil?
         output += @person.person_stats.cosponsored_bills_passed.to_s +
-            	  " Made Into Law (Ranks #{@person.person_stats.cosponsored_bills_passed_rank} of #{total_people})"
-      end
+            	  " Made Into Law (Ranks #{@person.person_stats.cosponsored_bills_passed_rank} of #{high_cosponsor_rank})" 
+      end        
       output += "</li>"
     else
       output += "<li>No Co-Sponsored Bills</li>"

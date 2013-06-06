@@ -221,7 +221,7 @@ class BillController < ApplicationController
              page.visual_effect :pulsate, "#{view}_#{@bill.id.to_s}"
            end
        end
-   end
+  end
 
   def list_bill_type
     congress = params[:congress] ? params[:congress] : Settings.default_congress
@@ -311,7 +311,7 @@ class BillController < ApplicationController
   end
 
   def atom
-    session, bill_type, number = Bill.ident params[:id]
+    bill_type, number, session = Bill.ident params[:id]
     @bill = Bill.find_by_session_and_bill_type_and_number session, bill_type, number, :include => :actions
     @posts = []
     expires_in 60.minutes, :public => true
@@ -467,8 +467,7 @@ class BillController < ApplicationController
 
     begin
       # open html from file
-      path = "#{Settings.oc_billtext_path}/#{@bill.session}/#{@bill.bill_type}#{@bill.number}#{@version.version}.gen.html-oc"
-
+      path = "#{Settings.oc_billtext_path}/#{@bill.session}/#{@bill.reverse_abbrev_lookup}/#{@bill.reverse_abbrev_lookup}#{@bill.number}#{@version.version}.gen.html-oc"
       @bill_text = File.open(path).read
     rescue
       @bill_text = "We're sorry but OpenCongress does not have the full bill text at this time.  Try at <a href='http://thomas.loc.gov/cgi-bin/query/z?c#{@bill.session}:#{@bill.typenumber}:'>THOMAS</a>."
@@ -504,15 +503,31 @@ class BillController < ApplicationController
   end
 
   def amendments
-    @amendments = @bill.amendments.paginate(:all, :page => @page, :per_page => 10, :order => ["retreived_date DESC"])
+    pagination_opts = {
+      :page => @page,
+      :per_page => 10,
+      :order => ["retreived_date DESC"],
+      :conditions => ["offered_datetime IS NOT NULL"]
+    }
+    @amendments = @bill.amendments.paginate(pagination_opts)
   end
 
   def actions
-    @actions = @bill.actions.paginate(:all, :page => @page, :per_page => 10, :order => ["datetime::date DESC, id DESC"])
-  end
-
+    pagination_opts = {
+      :page => @page,
+      :per_page => 10,
+      :order => ["datetime::date DESC, id DESC"]
+    }
+    @actions = @bill.actions.paginate(pagination_opts)
+  end 
+  
   def votes
-    @roll_calls = @bill.roll_calls.paginate(:all, :page => @page, :per_page => 8, :order => ["date DESC"])
+    pagination_opts = {
+      :page => @page,
+      :per_page => 8,
+      :order => ["date DESC"]
+    }
+    @roll_calls = @bill.roll_calls.paginate(pagination_opts)
   end
 
   def comms
@@ -525,7 +540,7 @@ class BillController < ApplicationController
       require 'mediacloth'
       require 'open-uri'
       wiki_url = "http://#{WIKI_HOST}/w/api.php?action=query&prop=revisions&titles=Economic_Stimulus_Bill_of_2008&rvprop=timestamp|content&format=xml"
-      session, bill_type, number = Bill.ident params[:id]
+      bill_type, number, session = Bill.ident params[:id]
       if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
          #unwise = %w({ } | \ ^ [ ] `)
          badchar = '|'
@@ -609,7 +624,7 @@ class BillController < ApplicationController
   end
 
   def money
-    session, bill_type, number = Bill.ident(params[:id])
+    bill_type, number, session = Bill.ident params[:id]
     if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
       respond_to do |format|
         format.html
@@ -744,7 +759,7 @@ private
   end
 
   def bill_profile_shared
-    session, bill_type, number = Bill.ident params[:id]
+    bill_type, number, session = Bill.ident params[:id]
     if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
       @page_title_prefix = "U.S. Congress"
       @page_title = @bill.typenumber
@@ -778,7 +793,7 @@ private
       @bookmarking_image = "/images/fb-bill.jpg"
       @atom = {'link' => url_for(:only_path => false, :controller => 'bill', :id => @bill.ident, :action => 'atom'), 'title' => "#{@bill.typenumber} activity"}
     else
-      flash[:error] = "Invalid bill URL."
+      flash[:error] = "Invalid bill URL. (#{params[:id]})"
       redirect_to :action => 'all'
     end
   end
@@ -791,8 +806,8 @@ private
   end
 
   def page_view
-    session, bill_type, number = Bill.ident params[:id]
-
+    bill_type, number, session = Bill.ident params[:id]
+    
     if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => :actions })
       key = "page_view_ip:Bill:#{@bill.id}:#{request.remote_ip}"
       unless read_fragment(key)

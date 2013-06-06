@@ -115,6 +115,7 @@ group :test, :development do
   gem 'rspec-rails',          '~> 2.4'
   gem 'guard'
   gem 'guard-livereload'
+  gem 'awesome_print'
 end
 
 group :test do
@@ -122,6 +123,7 @@ group :test do
   gem 'silent-postgres'  # Quieter postgres log messages
   gem 'database_cleaner'
   gem 'vcr'
+  gem 'awesome_print'
   gem 'fuubar'
   gem 'poltergeist'  # Requires PhantomJS >= 1.8.1
   gem 'cucumber'

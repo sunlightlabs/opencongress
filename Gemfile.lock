@@ -401,6 +401,7 @@ DEPENDENCIES
   airbrake
   autotest
   awesome_nested_set (>= 2.0)
+  awesome_print
   bluecloth
   capistrano
   capistrano-ext

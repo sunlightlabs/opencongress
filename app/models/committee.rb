@@ -21,6 +21,12 @@ class Committee < ActiveRecord::Base
   
   has_one :wiki_link, :as => "wikiable"
 
+  has_many :names, :class_name => "CommitteeName"
+
+  has_many :subcommittees, :class_name => "Committee", :foreign_key => "parent_id"
+  belongs_to :parent, :class_name => "Committee"
+
+  # validates_uniqueness_of :thomas_id
 
   
   @@DISPLAY_OBJECT_NAME = 'Committee'
@@ -113,15 +119,24 @@ class Committee < ActiveRecord::Base
   end
 
   def chair
-    Person.find :first, :select => "people.*", :include => :committee_people, :order => 'committees_people.id DESC', :conditions => ["(lower(committees_people.role) = 'chair' OR lower(committees_people.role) = 'chairman') AND committees_people.committee_id = ? AND committees_people.session = ?", id, Settings.default_congress]
-  end 
-  
-  def vice_chair
-    Person.find :first, :select => "people.*", :include => :committee_people, :order => 'committees_people.id DESC', :conditions => ["lower(committees_people.role) = 'vice chairman' AND committees_people.committee_id = ? AND committees_people.session = ?", id, Settings.default_congress]
+    membership = CommitteePerson.where(:committee_id => self.id,
+                                       :role => ['Chair', 'Chairman'],
+                                       :session => Settings.default_congress) .first
+    membership and membership.person
   end
-  
+ 
+  def vice_chair
+    membership = CommitteePerson.where(:committee_id => self.id,
+                                       :role => 'Vice Chairman',
+                                       :session => Settings.default_congress) .first
+    membership and membership.person
+  end
+
   def ranking_member
-    Person.find :first, :select => "people.*", :include => :committee_people, :order => 'committees_people.id DESC', :conditions => ["lower(committees_people.role) = 'ranking member' AND committees_people.committee_id = ? AND committees_people.session = ?", id, Settings.default_congress]
+    membership = CommitteePerson.where(:committee_id => self.id,
+                                       :role => 'Ranking Member',
+                                       :session => Settings.default_congress) .first
+    membership and membership.person
   end
   
   def Committee.major_committees
@@ -153,9 +168,10 @@ class Committee < ActiveRecord::Base
     @@HOMEPAGES[name.downcase]
   end
   
-  def subcommittees
-    Committee.find(:all, :conditions => ["name = ? and subcommittee_name != ''", name], :order => "subcommittee_name asc")
-  end
+  # Commented out because this now shadows a relation
+  #def subcommittees
+  #  Committee.find(:all, :conditions => ["name = ? and subcommittee_name != ''", name], :order => "subcommittee_name asc")
+  #end
   
   def bills_sponsored(limit)
     ids = Bill.find(:all, :select => "bills.id", :include => :bill_committees, :limit => limit, :order => "lastaction desc", :conditions => ["bills_committees.committee_id = ? AND session = ?", id, Settings.default_congress]).map { |b| b.id } 
@@ -218,7 +234,7 @@ class Committee < ActiveRecord::Base
     proper_name.sub(/house\s+|senate\s+/i, "")
   end
 	
-	def main_committee_name
+  def main_committee_name
     if name.nil? || name == ''
       pn = subcommittee_name
     else
@@ -227,15 +243,15 @@ class Committee < ActiveRecord::Base
     pn
   end
 	
-  def chamber
-    if name.match(/^house/i)
-      "House"
-    elsif name.match(/^senate/i)
-      "Senate"
-    else
-      ""
-    end
-  end
+#  def chamber
+#    if name.match(/^house/i)
+#      "House"
+#    elsif name.match(/^senate/i)
+#      "Senate"
+#    else
+#      ""
+#    end
+#  end
 
   def future_meetings
     self.meetings.select { |m| m.meeting_at > Time.now }

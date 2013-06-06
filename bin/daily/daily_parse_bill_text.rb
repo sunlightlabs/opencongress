@@ -3,7 +3,7 @@
 require 'o_c_logger'
 
 if __FILE__ == $0
-  require File.dirname(__FILE__) + '/../../config/environment'
+  require Rails.root.join('config', 'environment')
 else
   OCLogger.log "Running from #{$0}"
 end
@@ -178,8 +178,10 @@ def parse_from_file(bill, text_version, filename)
   version = bill.bill_text_versions.find_or_create_by_version(text_version)
   if true #version.file_timestamp.nil? or (file_timestamp > version.file_timestamp)        
     OCLogger.log "Parsing bill text: #{filename}"
-    
-    version.word_count = get_text_word_count(bill.bill_type, bill.number, text_version)
+   
+   
+    bill_abbrev = bill.reverse_abbrev_lookup 
+    version.word_count = get_text_word_count(bill_abbrev, bill.number, text_version)
     
     # now parse the html
     doc_root = doc.root
@@ -195,7 +197,10 @@ def parse_from_file(bill, text_version, filename)
     
     tree_walk(doc_root, version)
 
-    outfile = File.new("#{Settings.oc_billtext_path}/#{Settings.default_congress}/#{bill.bill_type}#{bill.number}#{text_version}.gen.html-oc", "w+")
+#    outfile = File.new("#{Settings.oc_billtext_path}/#{Settings.default_congress}/#{bill.bill_type}/#{bill.bill_type}#{bill.number}#{text_version}.gen.html", "w+")
+
+    outfile = File.new("#{Settings.oc_billtext_path}/#{Settings.default_congress}/#{bill_abbrev}/#{bill_abbrev}#{bill.number}#{text_version}.gen.html-oc", "w+")
+    OCLogger.log "Storing bill text in #{Settings.oc_billtext_path}/#{Settings.default_congress}/#{bill_abbrev}/#{bill_abbrev}#{bill.number}#{text_version}.gen.html-oc"
     doc.write outfile
   else
     OCLogger.log "Bill text not updated for #{filename}; skipping."
@@ -205,7 +210,7 @@ end
 
 begin
   if ENV['PARSE_ONLY'].blank?
-    Bill.all_types_ordered.each do |bill_type|
+    Bill.get_types_ordered_new.keys.each do |bill_type|
       OCLogger.log "Parsing bill text of type: #{bill_type}"
       
       type_bills = Bill.find(:all, :conditions => ["bill_type = ? AND session = ?", bill_type, Settings.default_congress])
@@ -213,15 +218,21 @@ begin
         begin
           OCLogger.log "Parsing bill text: #{bill.typenumber} (#{i+1} of #{type_bills.size})"
     
+          bill_type_old = bill.reverse_abbrev_lookup
+
           # first see if there are multiple versions of the bill
-          bill_version_files = Dir.new("#{Settings.govtrack_billtext_diff_path}/#{Settings.default_congress}/#{bill_type}").entries.select { |f| f.match(/#{bill_type}#{bill.number}_(.*)\.xml$/) }
-    
-          if bill_version_files.size > 0
-            OCLogger.log "Multiple versions exist for #{bill_type}#{bill.number}."
+          if  Dir.exists?("#{Settings.govtrack_billtext_diff_path}/#{Settings.default_congress}/#{bill_type_old}")
+            bill_version_files = Dir.new("#{Settings.govtrack_billtext_diff_path}/#{Settings.default_congress}/#{bill_type_old}").entries.select { |f| f.match(/#{bill_type_old}#{bill.number}_(.*)\.xml$/) }
+          else
+            bill_version_files = nil
+          end
+
+          if bill_version_files and bill_version_files.size > 0
+            OCLogger.log "Multiple versions exist for #{bill_type_old}#{bill.number}."
       
             version_hash = {}
             bill_version_files.each do |f| 
-              m = /#{bill_type}#{bill.number}_(\w*)-(\w*)\.xml/.match(f)
+              m = /#{bill_type_old}#{bill.number}_(\w*)-(\w*)\.xml/.match(f)
               version_hash[m.captures[0]] = version_hash[m.captures[0]].nil? ? m.captures[1] : version_hash[m.captures[0]] + m.captures[1]
             end
       
@@ -231,7 +242,7 @@ begin
             previous_version = version_array[0][0]
             index = 1
             while index < version_array.size
-              version_file = "#{Settings.govtrack_billtext_diff_path}/#{Settings.default_congress}/#{bill_type}/#{bill_type}#{bill.number}_#{previous_version}-#{version}.xml"
+              version_file = "#{Settings.govtrack_billtext_diff_path}/#{Settings.default_congress}/#{bill_type_old}/#{bill_type_old}#{bill.number}_#{previous_version}-#{version}.xml"
         
               parse_from_file(bill, version, version_file)
         
@@ -240,15 +251,15 @@ begin
         
               index += 1
             end
-            version_file = "#{Settings.govtrack_billtext_diff_path}/#{Settings.default_congress}/#{bill_type}/#{bill_type}#{bill.number}_#{previous_version}-#{version}.xml"
+            version_file = "#{Settings.govtrack_billtext_diff_path}/#{Settings.default_congress}/#{bill_type_old}/#{bill_type_old}#{bill.number}_#{previous_version}-#{version}.xml"
             parse_from_file(bill, version, version_file)
       
             # also parse first version from the regular bill text path
-            version_file = "#{Settings.govtrack_billtext_path}/#{Settings.default_congress}/#{bill_type}/#{bill_type}#{bill.number}#{version_array.last[0]}.gen.html"
+            version_file = "#{Settings.govtrack_billtext_path}/#{Settings.default_congress}/#{bill_type_old}/#{bill_type_old}#{bill.number}#{version_array.last[0]}.gen.html"
           
             parse_from_file(bill, version_array.last[0], version_file)
           else
-            bill_files = Dir.new("#{Settings.govtrack_billtext_path}/#{Settings.default_congress}/#{bill_type}").entries.select { |f| f.match(/#{bill_type}#{bill.number}[a-z]+[0-9]?\.gen\.html$/) }
+            bill_files = Dir.new("#{Settings.govtrack_billtext_path}/#{Settings.default_congress}/#{bill_type_old}").entries.select { |f| f.match(/#{bill_type_old}#{bill.number}[a-z]+[0-9]?\.gen\.html$/) }
    
             bill_files.each do |f|
               md = /([hs][jcr]?)(\d+)(\w+)\.gen\.html$/.match(f)

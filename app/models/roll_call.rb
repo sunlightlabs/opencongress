@@ -6,6 +6,7 @@ class RollCall < ActiveRecord::Base
   has_one :action
   has_many :roll_call_votes, :include => :person, :order => 'people.lastname'
   
+# TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
   scope :for_ident, lambda { |ident| {:conditions => ["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?", *Bill.ident(ident)]} }
 
   with_options :class_name => 'RollCallVote' do |rc|

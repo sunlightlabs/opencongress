@@ -2,6 +2,7 @@ class Bill < ActiveRecord::Base
   include ViewableObject
   
   require 'wiki_connection'
+  require 'unitedstates'
   
   # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
   #              :facets => [:bill_type, :session], :auto_commit => false
@@ -75,32 +76,61 @@ class Bill < ActiveRecord::Base
   attr_accessor :wiki_summary_holder
 
   @@DISPLAY_OBJECT_NAME = 'Bill'
-                                            
+  
+  #Added these back in to make govtrack bill import work to get the bill text that is marked up with the right paragraph ids
   @@TYPES = {"h" => "H.R.", "s" => "S.", "hj" => "H.J.Res.", "sj" => "S.J.Res.", "hc" => "H.Con.Res.", "sc" => "S.Con.Res.", "hr" => "H.Res.", "sr" => "S.Res."}
   @@TYPES_ORDERED = [ "s", "sj",  "sc",  "sr", "h", "hj", "hc", "hr" ]
-  
-  @@INVERTED_TYPES = {"hconres"=>"hc", "hres"=>"hr", "hr"=>"h", "hjres"=>"hj", "sjres"=>"sj", "sconres"=>"sc", "s"=>"s", "sres"=>"sr"}
 
+  def reverse_abbrev_lookup  
+      lookup =  {
+        "hconres" => "hc",
+        "hjres" => "hj",
+        "hr" => "h",
+        "hres" => "hr",
+        "s" => "s",
+        "sconres" => "sc",
+        "sjres" => "sj",
+        "sres" => "sr"
+      }
+    return lookup[self.bill_type]
+  end
+
+#This can also be removed when we completely get rid of GovTrack 
+  def Bill.get_types_ordered
+    return @@TYPES_ORDERED
+  end
+ 
+  def Bill.get_types_ordered_new 
+    return UnitedStates::Bills.Abbreviations
+  end
+               
   class << self
     def all_types
-      @@TYPES
+      UnitedStates::Bills.Abbreviations.keys
     end
   
     def all_types_ordered
-      @@TYPES_ORDERED
+      sorted_pairs = UnitedStates::Bills.Abbreviations.sort_by do |k, v|
+        v.length
+      end
+      Hash[sorted_pairs].keys
     end
   
     def in_senate
-      @@TYPES_ORDERED[0..3]
+      UnitedStates::Bills.Abbreviations.keys[4..7]
     end
 
     def in_house
-      @@TYPES_ORDERED[4..7]
+      UnitedStates::Bills.Abbreviations.keys[0..3]
     end
   end
-  
-  before_save :update_bill_fulltext_search_table
 
+  def bill_id
+    "#{bill_type}#{number}-#{session}"
+  end
+
+#  before_save :update_bill_fulltext_search_table
+ 
   def update_bill_fulltext_search_table
     if self.id
       # when the bill is new, the bill titles will have just been added to the DB.
@@ -109,10 +139,10 @@ class Bill < ActiveRecord::Base
       # if should be implemented
       bts = BillTitle.find_by_sql(["SELECT bill_titles.* FROM bill_titles WHERE bill_id=?", id])
   
-      stripped_type = type_name.gsub(/[\.\/]+/,"").downcase # ie, 'hconres'
+      stripped_type = type_name_govtrack.gsub(/[\.\/]+/,"").downcase # ie, 'hconres'
      
       self.build_bill_fulltext if self.bill_fulltext.nil? 
-      self.bill_fulltext.fulltext = "#{type_name}#{number} #{type_name} #{number} #{bill_type}#{number} #{stripped_type}#{number} #{stripped_type} #{number} #{bts.collect(&:title).join(" ")} #{plain_language_summary}"
+      self.bill_fulltext.fulltext = "#{type_name_govtrack}#{number} #{type_name_govtrack} #{number} #{bill_type}#{number} #{stripped_type}#{number} #{stripped_type} #{number} #{bts.collect(&:title).join(" ")} #{plain_language_summary}"
       self.bill_fulltext.save
     
       # also, set the lastaction field unless it's a brand new record
@@ -661,7 +691,7 @@ class Bill < ActiveRecord::Base
   
   class << self
     def find_by_ident(ident_string, find_options = {})
-      session, bill_type, number = Bill.ident ident_string
+      bill_type, number, session = Bill.ident ident_string
       Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, find_options)
     end
 
@@ -671,7 +701,7 @@ class Bill < ActiveRecord::Base
       limit = find_options[:limit] != 20
       round = 1
       ident_array.each do |ia|
-        session, bill_type, number = Bill.ident ia
+        bill_type, number, session = Bill.ident ia
         the_bill_conditions << "(session = :session#{round} AND bill_type = :bill_type#{round} AND number = :number#{round})"
         the_bill_params.merge!({"session#{round}".to_sym => session, "bill_type#{round}".to_sym => bill_type, "number#{round}".to_sym => number})
         round = round + 1
@@ -681,13 +711,9 @@ class Bill < ActiveRecord::Base
     end
   
     def long_type_to_short(type)
-      @@INVERTED_TYPES[type.downcase.gsub(/\s|\./, "")]
+      raise RuntimeError, "long_type_to_short must be killed!"
     end
 
-    def short_type_to_long(type)
-      @@TYPES[type]
-    end
-  
     def session_from_date(date)
       session_a = OpenCongress::Application::CONGRESS_START_DATES.to_a.sort { |a, b| a[0] <=> b[0] }
 
@@ -957,16 +983,17 @@ class Bill < ActiveRecord::Base
       "#{name.gsub(/[\.\s\/]+/,"").downcase}"
     end
 
-    def ident(param_id)
-      md = /(\d+)-([hs][jcr]?)(\d+)$/.match(canonical_name(param_id))
-      md ? md.captures : [nil, nil, nil]
+    def ident(bill_id)
+      pattern = /(hconres|hjres|hr|hres|s|sconres|sjres|sres)(\d+)-(\d+)/
+      match = pattern.match(bill_id)
+      match ? match.captures : [nil, nil, nil]
     end
   end # class << self
 
   def ident
-    "#{session}-#{bill_type}#{number}"
+    "#{bill_type}#{number}-#{session}"
   end
-  
+ 
   def to_param
     self.ident
   end
@@ -1022,9 +1049,14 @@ class Bill < ActiveRecord::Base
   end
   
   ## bill title methods
-  
-  def type_name
+
+  #Legacy method to fix govtrack import of full bill text with right paragraph ids --KBD
+  def type_name_govtrack
     @@TYPES[bill_type]
+  end 
+ 
+  def type_name
+    UnitedStates::Bills.Abbreviations[bill_type]
   end
 
   def title_short
@@ -1052,16 +1084,15 @@ class Bill < ActiveRecord::Base
     title ? "#{title.title}" : ""
   end
   
-  def title_full_official # bill type, number and official title
-    title = official_title
-    
-    title ? "#{@@TYPES[bill_type]}#{number} #{title.title}" : ""
-  end
-  
   def title_full_common # bill type, number and popular, short or official title
     title = default_title || popular_title || short_title || official_title
-    
-    title ? "#{@@TYPES[bill_type]}#{number} #{title.title}" : ""
+   
+    if title.nil?
+      ""
+    else
+      prefix = UnitedStates::Bills.Abbreviations[bill_type]
+      "#{prefix}#{number} #{title.title}"
+    end
   end
   
   def title_for_share

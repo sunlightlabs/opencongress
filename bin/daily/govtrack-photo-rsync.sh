@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ -d "$1" ]
   then
   data=$1

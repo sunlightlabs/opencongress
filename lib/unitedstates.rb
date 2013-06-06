@@ -352,5 +352,21 @@ module UnitedStates
         name_rec.save!
       end
     end
+
+    def self.import_membership (cmte_thomas_id, mem_hash)
+      cmte = Committee.find_by_thomas_id cmte_thomas_id
+      legislator = Person.find_by_bioguideid(mem_hash['bioguide'])
+      if cmte and legislator
+        membership = CommitteePerson.find_by_committee_id_and_person_id(cmte.id, legislator.id)
+        if not membership
+          membership = CommitteePerson.new
+          membership.person_id = legislator.id
+          membership.committee_id = cmte.id
+        end
+        membership.role = mem_hash['title']
+        membership.session = nil
+        membership.save!
+      end
+    end
   end
 end

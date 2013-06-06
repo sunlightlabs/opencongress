@@ -10,13 +10,14 @@
   <div class="grid_4 profile-deets">
     <div id="picture_detail">
       <%= profile_image_for(@user, :editable => false) %>
+      <div id="fdiv">
+        <%= add_friend_link_ajax(@user) if current_user != @user %>
+      </div>
     </div>
 
     <div class="clear space">&nbsp;</div>
 
-    <% if current_user == @user %>
-      <%= link_to("Edit your profile", edit_profile_path(current_user), :class => "button small blue") %>
-    <% end %>
+    <%= link_to("Edit your profile", edit_profile_path(current_user), :class => "button small blue") if current_user == @user%>
 
     <div id="about_me">
       <% if @user.can_view(:about_me, current_user) %>

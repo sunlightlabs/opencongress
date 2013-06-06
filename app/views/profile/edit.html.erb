@@ -6,7 +6,7 @@
   <div class="clear space">&nbsp;</div>
   <div class="grid_4">
     <div id="picture_detail">
-      <%= render :partial => "profile_image", :locals => { :editable => @user == current_user } %>
+      <%= profile_image_for(@user) %>
     </div>
     <div id="congressional_district">
       <p><strong>Congressional District:</strong> <span class="district"><%= @user.my_district.first %></span></p>

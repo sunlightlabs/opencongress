@@ -9,7 +9,7 @@
 
   <div class="grid_4 profile-deets">
     <div id="picture_detail">
-      <%= render :partial => 'profile_image', :locals => { :editable => false } %>
+      <%= profile_image_for(@user, :editable => false) %>
     </div>
 
     <div class="clear space">&nbsp;</div>

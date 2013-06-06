@@ -95,7 +95,7 @@
             <table cellspacing="0">
               <tr>
                 <td>
-                  <%= render :partial => "profile/profile_image", :locals => { :size => :small_picture } %>
+                  <%= profile_image_for(@user, :size => :small_picture, :editable => false) %>
                 </td>
                 <td style="padding-left:15px;">
                   <table>

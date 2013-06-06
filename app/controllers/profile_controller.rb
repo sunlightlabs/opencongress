@@ -1,5 +1,7 @@
 class ProfileController < ApplicationController
-  before_filter :can_view_tab, :only => [:actions,:items_tracked,:bills, :my_votes, :comments, :person, :issues, :watchdog]
+  include ProfileHelper
+
+  before_filter :can_view_tab, :only => [:actions, :items_tracked, :bills, :my_votes, :comments, :person, :issues, :watchdog]
   before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
   skip_before_filter :store_location, :only => [:track,:tracked_bill_status,
@@ -438,8 +440,7 @@ class ProfileController < ApplicationController
       flash.now[:warning] = "Failed to upload your picture"
     end
     if request.xhr?
-      @user = current_user
-      render :partial => "profile_image", :locals => { :editable => true }
+      profile_image_for(current_user)
     else
       # redirect_back_or_default(user_profile_path(current_user.login))
       redirect_to :back
@@ -453,8 +454,7 @@ class ProfileController < ApplicationController
     current_user.save(:validate => false)
     if request.xhr?
       flash.now[:notice] = "Profile picture deleted"
-      @user = current_user
-      render :partial => "profile_image", :locals => { :editable => true }
+      profile_image_for(current_user)
     else
       flash[:notice] = "Profile picture deleted"
       # redirect_back_or_default(user_profile_path(current_user.login))
@@ -513,9 +513,11 @@ class ProfileController < ApplicationController
     elsif @user.can_view(:my_tracked_items, current_user)
       return true
     else
-      redirect_to "/"
-      return false
+      flash[:warning] = "That page isn't publicly viewable."
+      redirect_to :back and return
     end
+  rescue
+      redirect_to "/" and return
   end
 end
 

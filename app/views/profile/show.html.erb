@@ -1,7 +1,5 @@
 <div id="heading">
-  <h2><%= @user.login.possessive %> Profile
-    <% if current_user == @user %> (<%= link_to("Edit", edit_profile_path(current_user)) %>)<% end %>
-  </h2>
+  <h2><%= @user.login.possessive %> Profile</h2>
 </div>
 
 <div class="container_12">

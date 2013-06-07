@@ -1,12 +1,28 @@
 <% unless committee.future_meetings.empty? -%>
-  <h3>Meetings</h3>
-
   <div class="calendar_schedule">
-    <table class="simple-table">
-      <tr><th>Date</th><th>Summary</th></tr>
+    <h3>Meetings</h3>
+
+    <ul class="calendar">
+      <li class="heading">
+      <span class="calendar_date">
+        Date
+      </span>
+      <span class="calendar_summary">
+        Summary
+      </span>
+      </li>
+
       <% committee.future_meetings.each do |comm| -%>
-        <tr><td><%= date_format(comm.meeting_at) %> (<%= distance_of_time_in_words_to_now comm.meeting_at %>)</td><td><%= comm.subject %></td></tr>
+        <li>
+        <span class="calendar_date">
+          <%= comm.meeting_at.strftime('%b %d %I:%M %p') %>
+          (<%= distance_of_time_in_words_to_now comm.meeting_at %>)
+        </span>
+        <span class="calendar_summary">
+          <%= comm.subject %>
+        </span>
+        </li>
       <% end -%>
-    </table>
+    </ul>
   </div>
 <% end -%>

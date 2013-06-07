@@ -368,5 +368,41 @@ module UnitedStates
         membership.save!
       end
     end
+
+    def self.decode_meeting_hash (mtg_hash)
+      mtg_hash['+occurs_at'] = Time.parse(mtg_hash['occurs_at'])
+      if mtg_hash['subcommittee']
+        mtg_hash['+committee_id'] = "#{mtg_hash['committee']}#{mtg_hash['subcommittee']}"
+      else
+        mtg_hash['+committee_id'] = "#{mtg_hash['committee']}"
+      end
+      mtg_hash
+    end
+
+    def self.import_meeting (mtg_hash)
+      mtg_hash = decode_meeting_hash(mtg_hash)
+      OCLogger.log "Considering meeting for committee #{mtg_hash['+committee_id']} @ #{mtg_hash['+occurs_at']}"
+      cmte = Committee.find_by_thomas_id(mtg_hash['+committee_id'])
+      if cmte
+        meeting = cmte.meetings.find_by_meeting_at(mtg_hash['+occurs_at'])
+        unless meeting
+          meeting = cmte.meetings.new
+          OCLogger.log "Creating new meeting for committee #{mtg_hash['+committee_id']} @ #{mtg_hash['+occurs_at']}"
+        end
+        meeting.meeting_at = mtg_hash['+occurs_at']
+        meeting.subject = mtg_hash['topic']
+        meeting.where = case mtg_hash['chamber']
+                        when 'house'
+                          'h'
+                        when 'senate'
+                          's'
+                        else
+                          nil
+                        end
+        meeting.save!
+      else
+        OCLogger.log "No such committee #{mtg_hash['+committee_id']} referenced by meeting @ #{mtg_hash['+occurs_at']}"
+      end
+    end
   end
 end

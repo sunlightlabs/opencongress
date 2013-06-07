@@ -120,10 +120,6 @@ module ApplicationHelper
     controller.class.controller_name
   end
 
-  def date_format(date)
-    "#{Date::MONTHNAMES[date.mon]} #{date.day} #{date.hour}:#{date.min}"
-  end
-
   def learn_more
     #this is quite possibly a very bad idea
     text = controller.send :render_to_string, :partial => 'learn'

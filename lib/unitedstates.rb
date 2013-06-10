@@ -184,6 +184,54 @@ module UnitedStates
         end
       end
     end
+
+    def self.parse_amendment_file (path)
+      decode_amendment_hash(JSON.parse(File.read(path)))
+    end
+
+    def self.decode_amendment_hash (amdt_hash)
+      amdt_hash['+status_at'] = Time.parse(amdt_hash['status_at'])
+      amdt_hash['+updated_at'] = Time.parse(amdt_hash['updated_at'])
+      amdt_hash['actions'].each do |action|
+        action['+acted_at'] = Time.parse(action['acted_at'])
+      end
+      amdt_hash
+    end
+
+    def self.import_amendment (amdt_hash)
+      bill_ident = {
+        :session => amdt_hash['amends_bill']['congress'],
+        :number => amdt_hash['amends_bill']['number'],
+        :bill_type => amdt_hash['amends_bill']['bill_type']
+      }
+      bill = Bill.where(bill_ident).first
+      if bill
+        abbr_amdt_id = "#{amdt_hash['chamber']}#{amdt_hash['number']}"
+        amdt_ident = {
+          :number => abbr_amdt_id,
+          :bill_id => bill.id
+        }
+        amdt = Amendment.where(amdt_ident).first
+        if amdt
+          OCLogger.log "Updating amendment #{amdt_hash['amendment_id']}"
+        else
+          OCLogger.log "Creating record for amendment #{amdt_hash['amendment_id']}"
+          amdt = Amendment.new
+          amdt.number = abbr_amdt_id
+        end
+        amdt.status = amdt_hash['status']
+        amdt.status_date = amdt_hash['+status_at'].to_i
+        amdt.status_datetime = amdt_hash['+status_at']
+        amdt.offered_date = amdt_hash['+introduced_at'].to_i
+        amdt.offered_datetime = amdt_hash['+introduced_at']
+        amdt.bill_id = bill.id
+        amdt.purpose = amdt_hash['purpose']
+        amdt.updated = amdt_hash['+updated_at']
+        amdt.save!
+      else
+        OCLogger.log "Amendment #{amdt_hash['amendment_id']} references unrecognized bill #{amdt_hash['amends_bill']['bill_id']}"
+      end
+    end
   end
 
   class Votes

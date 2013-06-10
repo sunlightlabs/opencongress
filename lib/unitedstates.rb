@@ -73,7 +73,9 @@ module UnitedStates
         #     last_speech
         #
         bill.introduced = bill_hash['+introduced_at'].to_i
-        bill.lastaction = bill_hash['actions'].last['+acted_at'].to_i
+        if bill_hash['actions'].length > 0
+          bill.lastaction = bill_hash['actions'].last['+acted_at'].to_i
+        end
         topresident = bill_hash['actions'].select do |action|
           action['type'] == 'topresident'
         end .first
@@ -303,7 +305,9 @@ module UnitedStates
 
     def self.active_committee_id_cache_guard ()
       if @@ActiveCommitteeIds.size == 0
-        cmtes_file_path = File.join(Settings.unitedstates_legislators_clone_path, 'committees-current.yaml')
+        cmtes_file_path = File.join(Settings.data_path,
+                                    'congress-legislators',
+                                    'committees-current.yaml')
         cmtes = YAML.load_file(cmtes_file_path)
         cmtes.each do |cmte|
           @@ActiveCommitteeIds.add cmte['thomas_id']

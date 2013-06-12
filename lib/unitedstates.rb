@@ -7,6 +7,15 @@ require 'time'
 # @unitedstates repositories.
 module UnitedStates
 
+  class Error < StandardError
+  end
+
+  class DataValidationError < Error
+  end
+
+  class MissingRequiredElement < DataValidationError
+  end
+
   class Bills
     def self.Abbreviations
       {
@@ -455,6 +464,107 @@ module UnitedStates
       else
         OCLogger.log "No such committee #{mtg_hash['+committee_id']} referenced by meeting @ #{mtg_hash['+occurs_at']}"
       end
+    end
+
+    def self.import_committee_report_mods_file (rpt_path)
+      begin
+        mods = Nokogiri::XML(File.open(rpt_path))
+        # We need to remove the namespaces because the XML doesn't properly
+        # declare certain elements (e.g. congMember).
+        mods.remove_namespaces!
+      rescue Exception => e
+        OCLogger.log "Cannot parse file #{rpt_path}: #{e.to_s}"
+        return
+      end
+
+      rpt_attrs = extract_from_report_doc(mods)
+
+      rpt_ident = {
+        :number => rpt_attrs[:number],
+        :kind => rpt_attrs[:kind],
+        :congress => rpt_attrs[:congress]
+      }
+      rpt = CommitteeReport.where(rpt_ident).first
+      if rpt.nil?
+        OCLogger.log "Creating new committee report record for #{rpt_ident}"
+        rpt = CommitteeReport.new
+        rpt.update_attributes(rpt_ident)
+      end
+
+      if rpt_attrs[:bill]
+        rpt.bill = Bill.where(rpt_attrs[:bill]).first
+      end
+
+      if rpt_attrs[:committee_id]
+        rpt.committee = Committee.find_by_thomas_id(rpt_attrs[:committee_id])
+      end
+
+      if rpt_attrs[:submitted_by]
+        rpt.person = Person.find_by_bioguideid(rpt_attrs[:submitted_by])
+      end
+
+      rpt.chamber = rpt_attrs[:chamber]
+      rpt.gpo_id = rpt_attrs[:ident]
+      rpt.reported_at = rpt_attrs[:date_issued]
+      rpt.title = rpt_attrs[:title]
+      rpt.save!
+    end
+
+    ##
+    # Accepts a Nokogiri::XML::Document and an XPath expression (as a
+    # string). Searches the document for the expression, returning the
+    # first matching element or raising an exception.
+    def self.element_guard (doc, expr)
+      matches = doc.xpath(expr)
+      (matches.length > 0) or raise MissingRequiredElement.new(expr)
+      matches.first
+    end
+
+    def self.extract_from_report_doc (mods)
+      ident = element_guard mods, '/mods/recordInfo/recordIdentifier'
+      committee = element_guard mods, '/mods/extension/congCommittee[@authorityId]'
+      title = element_guard mods, '/mods/titleInfo/title/text()'
+      date_issued = element_guard mods, '/mods/originInfo/dateIssued'
+
+      ident_match = /^CRPT-(\d+)(.*rpt)(\d+)$/.match(ident.text)
+      ident_match or raise DataValidationError.new("Invalid value in recordInfo/recordIdentifier: #{ident}")
+      cong_num, rpt_kind, rpt_number = ident_match.captures
+      chamber = case rpt_kind
+                 when 'erpt'
+                 when 'srpt'
+                   'senate'
+                 when 'hrpt'
+                   'house'
+                 end
+
+      committee &&= committee['authorityId'].gsub(/00$/, '').upcase
+
+      # Some reports (e.g. legislative activities reports) don't have primary submitters
+      # or primary bills associated, so these are optional.
+      submitted_by = mods.xpath('/mods/extension/congMember[@bioGuideId and @role="SUBMITTEDBY"]').first
+      submitted_by &&= submitted_by['bioGuideId']
+
+      primary_bill = mods.xpath('/mods/extension/bill[@congress and @number and @type and @context="PRIMARY"]').first
+      if primary_bill
+        primary_bill = {
+          :number => primary_bill['number'],
+          :session => primary_bill['congress'],
+          :bill_type => primary_bill['type'].downcase
+        }
+      end
+
+      {
+        :bill => primary_bill,
+        :ident => ident.text,
+        :kind => rpt_kind,
+        :number => rpt_number,
+        :congress => cong_num,
+        :chamber => chamber,
+        :submitted_by => submitted_by,
+        :committee_id => committee,
+        :title => title.text,
+        :date_issued => Date.parse(date_issued.text)
+      }
     end
   end
 end

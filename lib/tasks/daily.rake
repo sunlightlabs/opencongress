@@ -5,57 +5,46 @@ namespace :update do
     (Dir.mkdir path) unless (Dir.exists? path)
   end
 
-  def dl_congress_zip_archive (cong_num)
-    stub = Settings.unitedstates_congress_url_stub
-    sep = (s.ends_with? '/') and '' or '/'
-    url = "#{stub}#{sep}#{cong_num}.zip"
-
-    dest_dir_path = File.join(Settings.data_path, "unitedstates")
-    dest_file_path = File.join(dest_dir_path, "#{cong_num}.zip")
-    mkdir_guard Settings.data_path
-    mkdir_guard dest_dir_path
-
-    puts "Downloading #{url}"
-    $stdout.flush
-    system "curl --silent --show-error #{url} -o #{dest_file_path}"
-    system "ls -lh #{dest_file_path}"
-  end
-
-
-  desc "Downloads bills for a specific congress"
-  task :dl_named_congress => :environment do
-    cong_num = ENV['cong_num']
-    if cong_num.nil?
-      puts 'You must specify cong_num=###'
-    else
-      dl_congress_zip_archive cong_num
-    end
-  end
-
-  desc "Downloads bills for the latest congress"
-  task :dl_latest_congress => :environment do
-    latest_congress = Settings.available_congresses.sort.last
-    dl_congress_zip_archive latest_congress
-  end
-
-  desc "Downloads bills for all congresses"
-  task :dl_all_congresses => :environment do
-    Settings.available_congresses.each do |cong_num|
-      dl_congress_zip_archive cong_num
-    end
-  end
-
   desc "Clones the @unitedstates/congress-legislators repository"
   task :congress_legislators => :environment do
-    clone_path = Settings.unitedstates_legislators_clone_path
-    repo_url = Settings.unitedstates_legislators_repo_url
+    clone_path = File.join(Settings.data_path, 'congress-legislators')
+    repo_url = 'git://github.com/unitedstates/congress-legislators.git'
 
     if Dir.exist? clone_path
-      system "cd #{Settings.unitedstates_legislators_clone_path} && git pull"
+      cmd = "cd #{clone_path} && git pull"
+      OCLogger.log cmd
+      system cmd
     else
       mkdir_guard clone_path
-      system "cd #{clone_path} && git clone #{repo_url} ."
+      cmd = "git clone #{repo_url} #{clone_path}"
+      OCLogger.log cmd
+      system cmd
     end
+  end
+
+  desc "Fetches unitedstates scraper output."
+  task :unitedstates_rsync => :environment do
+    begin
+      src = Settings.unitedstates_rsync_source
+      if src
+        dst = Settings.unitedstates_data_path
+        cmd = "rsync -avz #{src} #{dst}"
+        OCLogger.log "Running rsync to fetch congressional data: #{cmd}"
+        system cmd
+        OCLogger.log "rsync command finished."
+      else
+        OCLogger.log "Skipping rsync due to missing unitedstates_rsync_source configuration"
+      end
+    rescue Exception => e
+      Emailer.rake_error(e, "Error rsyncing unitedstates data!").deliver
+      throw e
+    end
+  end
+
+  desc "Import legislators."
+  task :import_legislators do
+    OCLogger.log "Importing legislators"
+    `rails runner bin/import_legislators.rb current`
   end
 
   desc "Fetches data from govtrack's rsync service"
@@ -65,11 +54,7 @@ namespace :update do
       system "sh #{Rails.root}/bin/daily/govtrack-rsync.sh #{Settings.data_path}"
       OCLogger.log "rsync with govtrack finished.\n\n"
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error rsyncing govtrack data!").deliver
-      else
-        puts "Error rsyncing govtrack data!"
-      end
+      Emailer.rake_error(e, "Error rsyncing govtrack data!").deliver
       throw e
     end
   end
@@ -83,7 +68,7 @@ namespace :update do
     begin
       system "bash #{Rails.root}/bin/daily/govtrack-photo-rsync.sh #{Settings.data_path}"
       unless (['production', 'staging'].include?(Rails.env))
-        system "ln -s -i -F #{Settings.data_path}/govtrack/photos #{Rails.root}/public/images/photos"
+        system "ln -s -f -i -F #{Settings.data_path}/govtrack/photos #{Rails.root}/public/images/photos"
       end
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
@@ -122,41 +107,12 @@ namespace :update do
     end
   end
 
-  desc "DEPRECATED: Loads legislator information from govtrack"
-  task :people => :environment do
-    begin
-      begin
-        data = IO.popen("sha1sum -c /tmp/people.sha1").read
-      rescue
-        data = "XXX"
-      end
-
-      unless data.match(/OK\n$/)
-        Person.transaction {
-          load 'bin/daily/daily_parse_people.rb'
-        }
-      else
-        OCLogger.log "Legislator data file people.xml has not been updated since last parse. Skipping."
-      end
-    rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing people!").deliver
-      else
-        puts "Error parsing people!"
-      end
-    end
-  end
-
   desc "Loads bills from United States repo"
   task :bills => :environment do
     begin 
       load 'bin/import_bills.rb'
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing bills!").deliver
-      else
-        puts "Error parsing bills!"
-      end
+      Emailer.rake_error(e, "Error importing bills!").deliver
       throw e
     end
   end
@@ -167,11 +123,7 @@ namespace :update do
     begin
       load 'bin/daily/daily_parse_bill_text.rb'
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing bill text!").deliver
-      else
-        puts "Error parsing bill text!"
-      end
+      Emailer.rake_error(e, "Error parsing bill text!").deliver
       throw e
     end
   end
@@ -188,11 +140,7 @@ namespace :update do
     begin
       load 'bin/daily/daily_gpo_billtext_timestamps.rb'
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing GPO timestamps!").deliver
-      else
-        puts "Error parsing GPO timestamps!"
-      end
+      Emailer.rake_error(e, "Error parsing GPO timestamps!").deliver
       throw e
     end
   end
@@ -203,11 +151,7 @@ namespace :update do
         load 'bin/daily/daily_parse_amendments.rb'
       }
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing amendments!").deliver
-      else
-        puts "Error parsing amendments!"
-      end
+      Emailer.rake_error(e, "Error parsing amendments!").deliver
       throw e
     end
   end
@@ -219,11 +163,7 @@ namespace :update do
         load 'bin/thomas_parse_committee_reports.rb'
       }
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing committee reports!").deliver
-      else
-        puts "Error parsing committee reports!"
-      end
+      Emailer.rake_error(e, "Error parsing committee reports!").deliver
       throw e
     end
   end
@@ -231,30 +171,22 @@ namespace :update do
   task :committee_reports => :environment do
     begin
       CommitteeReport.transaction {
-        load 'bin/thomas_fetch_committee_reports.rb'
-        load 'bin/thomas_parse_committee_reports.rb'
+        load 'bin/import_committee_reports.rb'
       }
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing committee reports!").deliver
-      else
-        puts "Error parsing committee reports!"
-      end
+      Emailer.rake_error(e, "Error parsing committee reports!").deliver
       throw e
     end
   end
 
-  task :committee_schedule => :environment do
+  desc "Updates committee meetings."
+  task :committee_meetings => :environment do
     begin
       CommitteeMeeting.transaction {
-        load 'bin/govtrack_parse_committee_schedules.rb'
+        load 'bin/import_committee_meetings.rb'
       }
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing committee schedule!").deliver
-      else
-        puts "Error parsing committee schedule!"
-      end
+      Emailer.rake_error(e, "Error parsing committee schedule!").deliver
       throw e
     end
   end
@@ -265,24 +197,16 @@ namespace :update do
         load 'bin/parse_today_in_congress.rb'
       }
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing today in Congress!").deliver
-      else
-        puts "Error parsing today in Congress!"
-      end
+      Emailer.rake_error(e, "Error parsing today in Congress!").deliver
       throw e
     end
   end
 
   task :roll_calls => :environment do
     begin
-      load 'bin/daily/daily_parse_rolls.rb'
+      load 'bin/import_roll_calls.rb'
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing roll calls!").deliver
-      else
-        puts "Error parsing roll calls!"
-      end
+      Emailer.rake_error(e, "Error parsing roll calls!").deliver
       throw e
     end
   end
@@ -291,24 +215,16 @@ namespace :update do
     begin
       load 'bin/daily/person_voting_similarities.rb'
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error compiling voting similarities!").deliver
-      else
-        puts "Error compiling voting similarities!"
-      end
+      Emailer.rake_error(e, "Error compiling voting similarities!").deliver
       throw e
     end
   end
 
   task :sponsored_bill_stats => :environment do
     begin
-      load 'bin/daily/create_bill_leg_stats.rb' # new file for United States data
+      load 'bin/daily/sponsored_bill_stats.rb' # new file for United States data
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error compiling sponsored bill stats!").deliver
-      else
-        puts "Error compiling sponsored bill stats!"
-      end
+      Emailer.rake_error(e, "Error compiling sponsored bill stats!").deliver
       throw e
     end
   end
@@ -317,11 +233,7 @@ namespace :update do
     begin
       load 'bin/daily/drumbone_realtime_api.rb'
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing Drumbone realtime API!").deliver
-      else
-        puts "Error parsing Drumbone realtime API!"
-      end
+      Emailer.rake_error(e, "Error parsing Drumbone realtime API!").deliver
       throw e
     end
   end
@@ -330,11 +242,7 @@ namespace :update do
     begin
       load 'bin/daily/project_vote_smart.rb'
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error parsing PVS data!").deliver
-      else
-        puts "Error parsing PVS data!"
-      end
+      Emailer.rake_error(e, "Error parsing PVS data!").deliver
       throw e
     end
   end
@@ -357,11 +265,7 @@ namespace :update do
         end
       }
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error running gossip!").deliver
-      else
-        puts "Error running gossip!"
-      end
+      Emailer.rake_error(e, "Error running gossip!").deliver
       throw e
     end
   end
@@ -379,11 +283,7 @@ namespace :update do
         b.send :expire_govtrack_fragments
       end
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error expiring cached bill fragments!").deliver
-      else
-        puts "Error expiring cached bill fragments!"
-      end
+      Emailer.rake_error(e, "Error expiring cached bill fragments!").deliver
       throw e
     end
   end
@@ -399,11 +299,7 @@ namespace :update do
         p.send :expire_govtrack_fragments
       end
     rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error expiring cached person fragments!").deliver
-      else
-        puts "Error expiring cached person fragments!"
-      end
+      Emailer.rake_error(e, "Error expiring cached person fragments!").deliver
       throw e
     end
   end
@@ -436,7 +332,17 @@ namespace :update do
     end
   end
 
-  task :all => [:rsync, :photos, :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule, :person_voting_similarities, :sponsored_bill_stats, :expire_cached_bill_fragments, :expire_cached_person_fragments]
+
+  desc "Updates all congressional information in the proper order."
+  task :all => [
+    :unitedstates_rsync, :rsync, :congress_legislators, :photos,
+    :import_legislators, :bills,
+    # Amendments are not handled yet
+    #:amendments,
+    :roll_calls, :committee_reports,
+    :committee_meetings, :person_voting_similarities, :sponsored_bill_stats,
+    :expire_cached_bill_fragments, :expire_cached_person_fragments
+  ]
   task :parse_all => [ :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule]
   task :govtrack => [ :rsync, :bills, :bill_text ] #:amendments, :roll_calls, :expire_cached_bill_fragments, :expire_cached_person_fragments]
   task :committee_info => [:committee_reports, :committee_schedule]

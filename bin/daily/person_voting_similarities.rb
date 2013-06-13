@@ -1,11 +1,5 @@
 #!/usr/bin/env ruby
 
-if __FILE__ == $0
-  require File.dirname(__FILE__) + '/../../config/environment'
-else
-  puts "Running from #{$0}"
-end
-
 people = Person.all_voting
 i = 0
 people.each do |p|
@@ -52,7 +46,7 @@ people.each do |p|
       end
     end
   
-    p.person_stats.save
+    p.stats.save
   }
 end
 

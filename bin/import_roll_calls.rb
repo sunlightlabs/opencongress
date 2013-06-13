@@ -9,7 +9,7 @@ congress_dir_path = File.join(Settings.data_path,
                               "unitedstates",
                               cong_num.to_s)
 
-if ARGV.length > 0
+if ARGV.length > 0 and File.exist?(ARGV[0])
   roll_call_file_paths = ARGV
 else
   roll_call_file_paths = Dir.glob(File.join(Settings.data_path,

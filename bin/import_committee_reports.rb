@@ -4,7 +4,7 @@ require 'unitedstates'
 if ARGV.length > 0 and File.exist?(ARGV[0])
   rpt_file_paths = [ARGV[0]]
 else
-  if ARGV.length > 0
+  if (ARGV.length > 0) and (/^\d+$/.match(ARGV[0]).nil? == false)
     cong_num = ARGV[0].to_i
   else
     cong_num = Settings.available_congresses.sort.last

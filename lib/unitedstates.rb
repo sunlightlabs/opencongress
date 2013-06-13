@@ -497,6 +497,22 @@ module UnitedStates
 
       if rpt_attrs[:committee_id]
         rpt.committee = Committee.find_by_thomas_id(rpt_attrs[:committee_id])
+      elsif rpt_attrs[:committee_name]
+        cmte_name = rpt_attrs[:committee_name].gsub(/^(HOUSE|SENATE|JOINT)/, '').strip.downcase
+        if rpt_attrs[:chamber] == 'house'
+          cmte_name = "House #{cmte_name}"
+        elsif rpt_attrs[:chamber] == 'senate'
+          cmte_name = "Senate #{cmte_name}"
+        end
+
+        cmte_name = cmte_name.titlecase
+        cmte = Committee.where(:subcommittee_name => cmte_name).first
+        if cmte
+          rpt.committee = cmte
+        else
+          cmte = Committee.where(:name => cmte_name).first
+          rpt.committee = cmte
+        end
       end
 
       if rpt_attrs[:submitted_by]
@@ -522,9 +538,12 @@ module UnitedStates
 
     def self.extract_from_report_doc (mods)
       ident = element_guard mods, '/mods/recordInfo/recordIdentifier'
-      committee = element_guard mods, '/mods/extension/congCommittee[@authorityId]'
       title = element_guard mods, '/mods/titleInfo/title/text()'
       date_issued = element_guard mods, '/mods/originInfo/dateIssued'
+
+      committee1 = mods.xpath('/mods/extension/congCommittee[@authorityId]').to_a
+      committee2 = mods.xpath('/mods/relatedItem[@type="constituent"]/extension/congCommittee[@authorityId]').to_a
+      committee = committee1.concat(committee2).first
 
       ident_match = /^CRPT-(\d+)(.*rpt)(\d+)$/.match(ident.text)
       ident_match or raise DataValidationError.new("Invalid value in recordInfo/recordIdentifier: #{ident}")
@@ -538,6 +557,24 @@ module UnitedStates
                  end
 
       committee &&= committee['authorityId'].gsub(/00$/, '').upcase
+      if committee.nil?
+        
+        cmte_name_matches = [
+          '//recommendation/text()',
+          '/mods/titleInfo/title/text()',
+          '/mods/abstract/text()',
+          '/mods/relatedItem[@type="constituent"]/extension/congCommittee',
+          '/mods/extension/searchTitle/text()'
+        ].flat_map do |sel|
+          mods.xpath(sel).map do |txt|
+            /(?:(?:JOINT|HOUSE|SENATE) )?((?:SELECT )?COMMITTEE ON(?: THE)? .+?)(?:(?:,|(?:[\s\b](?:during|on|of|for|the|submitted|covering|UNITED STATES|$)))[\s\b])/i.match(txt)
+          end
+        end
+        cmte_name_matches.select! {|m| not m.nil?}
+        cmte_name_matches.map! {|m| m.captures}
+        committee_name = cmte_name_matches.first
+        committee_name &&= committee_name.first.strip
+      end
 
       # Some reports (e.g. legislative activities reports) don't have primary submitters
       # or primary bills associated, so these are optional.
@@ -562,6 +599,7 @@ module UnitedStates
         :chamber => chamber,
         :submitted_by => submitted_by,
         :committee_id => committee,
+        :committee_name => committee_name,
         :title => title.text,
         :date_issued => Date.parse(date_issued.text)
       }

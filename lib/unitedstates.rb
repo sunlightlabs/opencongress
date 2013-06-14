@@ -7,6 +7,15 @@ require 'time'
 # @unitedstates repositories.
 module UnitedStates
 
+  class Error < StandardError
+  end
+
+  class DataValidationError < Error
+  end
+
+  class MissingRequiredElement < DataValidationError
+  end
+
   class Bills
     def self.Abbreviations
       {
@@ -73,7 +82,9 @@ module UnitedStates
         #     last_speech
         #
         bill.introduced = bill_hash['+introduced_at'].to_i
-        bill.lastaction = bill_hash['actions'].last['+acted_at'].to_i
+        if bill_hash['actions'].length > 0
+          bill.lastaction = bill_hash['actions'].last['+acted_at'].to_i
+        end
         topresident = bill_hash['actions'].select do |action|
           action['type'] == 'topresident'
         end .first
@@ -180,6 +191,54 @@ module UnitedStates
             end
           end
         end
+      end
+    end
+
+    def self.parse_amendment_file (path)
+      decode_amendment_hash(JSON.parse(File.read(path)))
+    end
+
+    def self.decode_amendment_hash (amdt_hash)
+      amdt_hash['+status_at'] = Time.parse(amdt_hash['status_at'])
+      amdt_hash['+updated_at'] = Time.parse(amdt_hash['updated_at'])
+      amdt_hash['actions'].each do |action|
+        action['+acted_at'] = Time.parse(action['acted_at'])
+      end
+      amdt_hash
+    end
+
+    def self.import_amendment (amdt_hash)
+      bill_ident = {
+        :session => amdt_hash['amends_bill']['congress'],
+        :number => amdt_hash['amends_bill']['number'],
+        :bill_type => amdt_hash['amends_bill']['bill_type']
+      }
+      bill = Bill.where(bill_ident).first
+      if bill
+        abbr_amdt_id = "#{amdt_hash['chamber']}#{amdt_hash['number']}"
+        amdt_ident = {
+          :number => abbr_amdt_id,
+          :bill_id => bill.id
+        }
+        amdt = Amendment.where(amdt_ident).first
+        if amdt
+          OCLogger.log "Updating amendment #{amdt_hash['amendment_id']}"
+        else
+          OCLogger.log "Creating record for amendment #{amdt_hash['amendment_id']}"
+          amdt = Amendment.new
+          amdt.number = abbr_amdt_id
+        end
+        amdt.status = amdt_hash['status']
+        amdt.status_date = amdt_hash['+status_at'].to_i
+        amdt.status_datetime = amdt_hash['+status_at']
+        amdt.offered_date = amdt_hash['+introduced_at'].to_i
+        amdt.offered_datetime = amdt_hash['+introduced_at']
+        amdt.bill_id = bill.id
+        amdt.purpose = amdt_hash['purpose']
+        amdt.updated = amdt_hash['+updated_at']
+        amdt.save!
+      else
+        OCLogger.log "Amendment #{amdt_hash['amendment_id']} references unrecognized bill #{amdt_hash['amends_bill']['bill_id']}"
       end
     end
   end
@@ -303,7 +362,9 @@ module UnitedStates
 
     def self.active_committee_id_cache_guard ()
       if @@ActiveCommitteeIds.size == 0
-        cmtes_file_path = File.join(Settings.unitedstates_legislators_clone_path, 'committees-current.yaml')
+        cmtes_file_path = File.join(Settings.data_path,
+                                    'congress-legislators',
+                                    'committees-current.yaml')
         cmtes = YAML.load_file(cmtes_file_path)
         cmtes.each do |cmte|
           @@ActiveCommitteeIds.add cmte['thomas_id']
@@ -351,6 +412,197 @@ module UnitedStates
         name_rec.name = name
         name_rec.save!
       end
+    end
+
+    def self.import_membership (cmte_thomas_id, mem_hash)
+      cmte = Committee.find_by_thomas_id cmte_thomas_id
+      legislator = Person.find_by_bioguideid(mem_hash['bioguide'])
+      if cmte and legislator
+        membership = CommitteePerson.find_by_committee_id_and_person_id(cmte.id, legislator.id)
+        if not membership
+          membership = CommitteePerson.new
+          membership.person_id = legislator.id
+          membership.committee_id = cmte.id
+        end
+        membership.role = mem_hash['title']
+        membership.session = nil
+        membership.save!
+      end
+    end
+
+    def self.decode_meeting_hash (mtg_hash)
+      mtg_hash['+occurs_at'] = Time.parse(mtg_hash['occurs_at'])
+      if mtg_hash['subcommittee']
+        mtg_hash['+committee_id'] = "#{mtg_hash['committee']}#{mtg_hash['subcommittee']}"
+      else
+        mtg_hash['+committee_id'] = "#{mtg_hash['committee']}"
+      end
+      mtg_hash
+    end
+
+    def self.import_meeting (mtg_hash)
+      mtg_hash = decode_meeting_hash(mtg_hash)
+      OCLogger.log "Considering meeting for committee #{mtg_hash['+committee_id']} @ #{mtg_hash['+occurs_at']}"
+      cmte = Committee.find_by_thomas_id(mtg_hash['+committee_id'])
+      if cmte
+        meeting = cmte.meetings.find_by_meeting_at(mtg_hash['+occurs_at'])
+        unless meeting
+          meeting = cmte.meetings.new
+          OCLogger.log "Creating new meeting for committee #{mtg_hash['+committee_id']} @ #{mtg_hash['+occurs_at']}"
+        end
+        meeting.meeting_at = mtg_hash['+occurs_at']
+        meeting.subject = mtg_hash['topic']
+        meeting.where = case mtg_hash['chamber']
+                        when 'house'
+                          'h'
+                        when 'senate'
+                          's'
+                        else
+                          nil
+                        end
+        meeting.save!
+      else
+        OCLogger.log "No such committee #{mtg_hash['+committee_id']} referenced by meeting @ #{mtg_hash['+occurs_at']}"
+      end
+    end
+
+    def self.import_committee_report_mods_file (rpt_path)
+      begin
+        mods = Nokogiri::XML(File.open(rpt_path))
+        # We need to remove the namespaces because the XML doesn't properly
+        # declare certain elements (e.g. congMember).
+        mods.remove_namespaces!
+      rescue Exception => e
+        OCLogger.log "Cannot parse file #{rpt_path}: #{e.to_s}"
+        return
+      end
+
+      rpt_attrs = extract_from_report_doc(mods)
+
+      rpt_ident = {
+        :number => rpt_attrs[:number],
+        :kind => rpt_attrs[:kind],
+        :congress => rpt_attrs[:congress]
+      }
+      rpt = CommitteeReport.where(rpt_ident).first
+      if rpt.nil?
+        OCLogger.log "Creating new committee report record for #{rpt_ident}"
+        rpt = CommitteeReport.new
+        rpt.update_attributes(rpt_ident)
+      end
+
+      if rpt_attrs[:bill]
+        rpt.bill = Bill.where(rpt_attrs[:bill]).first
+      end
+
+      if rpt_attrs[:committee_id]
+        rpt.committee = Committee.find_by_thomas_id(rpt_attrs[:committee_id])
+      elsif rpt_attrs[:committee_name]
+        cmte_name = rpt_attrs[:committee_name].gsub(/^(HOUSE|SENATE|JOINT)/, '').strip.downcase
+        if rpt_attrs[:chamber] == 'house'
+          cmte_name = "House #{cmte_name}"
+        elsif rpt_attrs[:chamber] == 'senate'
+          cmte_name = "Senate #{cmte_name}"
+        end
+
+        cmte_name = cmte_name.titlecase
+        cmte = Committee.where(:subcommittee_name => cmte_name).first
+        if cmte
+          rpt.committee = cmte
+        else
+          cmte = Committee.where(:name => cmte_name).first
+          rpt.committee = cmte
+        end
+      end
+
+      if rpt_attrs[:submitted_by]
+        rpt.person = Person.find_by_bioguideid(rpt_attrs[:submitted_by])
+      end
+
+      rpt.chamber = rpt_attrs[:chamber]
+      rpt.gpo_id = rpt_attrs[:ident]
+      rpt.reported_at = rpt_attrs[:date_issued]
+      rpt.title = rpt_attrs[:title]
+      rpt.save!
+    end
+
+    ##
+    # Accepts a Nokogiri::XML::Document and an XPath expression (as a
+    # string). Searches the document for the expression, returning the
+    # first matching element or raising an exception.
+    def self.element_guard (doc, expr)
+      matches = doc.xpath(expr)
+      (matches.length > 0) or raise MissingRequiredElement.new(expr)
+      matches.first
+    end
+
+    def self.extract_from_report_doc (mods)
+      ident = element_guard mods, '/mods/recordInfo/recordIdentifier'
+      title = element_guard mods, '/mods/titleInfo/title/text()'
+      date_issued = element_guard mods, '/mods/originInfo/dateIssued'
+
+      committee1 = mods.xpath('/mods/extension/congCommittee[@authorityId]').to_a
+      committee2 = mods.xpath('/mods/relatedItem[@type="constituent"]/extension/congCommittee[@authorityId]').to_a
+      committee = committee1.concat(committee2).first
+
+      ident_match = /^CRPT-(\d+)(.*rpt)(\d+)$/.match(ident.text)
+      ident_match or raise DataValidationError.new("Invalid value in recordInfo/recordIdentifier: #{ident}")
+      cong_num, rpt_kind, rpt_number = ident_match.captures
+      chamber = case rpt_kind
+                 when 'erpt'
+                 when 'srpt'
+                   'senate'
+                 when 'hrpt'
+                   'house'
+                 end
+
+      committee &&= committee['authorityId'].gsub(/00$/, '').upcase
+      if committee.nil?
+        
+        cmte_name_matches = [
+          '//recommendation/text()',
+          '/mods/titleInfo/title/text()',
+          '/mods/abstract/text()',
+          '/mods/relatedItem[@type="constituent"]/extension/congCommittee',
+          '/mods/extension/searchTitle/text()'
+        ].flat_map do |sel|
+          mods.xpath(sel).map do |txt|
+            /(?:(?:JOINT|HOUSE|SENATE) )?((?:SELECT )?COMMITTEE ON(?: THE)? .+?)(?:(?:,|(?:[\s\b](?:during|on|of|for|the|submitted|covering|UNITED STATES|$)))[\s\b])/i.match(txt)
+          end
+        end
+        cmte_name_matches.select! {|m| not m.nil?}
+        cmte_name_matches.map! {|m| m.captures}
+        committee_name = cmte_name_matches.first
+        committee_name &&= committee_name.first.strip
+      end
+
+      # Some reports (e.g. legislative activities reports) don't have primary submitters
+      # or primary bills associated, so these are optional.
+      submitted_by = mods.xpath('/mods/extension/congMember[@bioGuideId and @role="SUBMITTEDBY"]').first
+      submitted_by &&= submitted_by['bioGuideId']
+
+      primary_bill = mods.xpath('/mods/extension/bill[@congress and @number and @type and @context="PRIMARY"]').first
+      if primary_bill
+        primary_bill = {
+          :number => primary_bill['number'],
+          :session => primary_bill['congress'],
+          :bill_type => primary_bill['type'].downcase
+        }
+      end
+
+      {
+        :bill => primary_bill,
+        :ident => ident.text,
+        :kind => rpt_kind,
+        :number => rpt_number,
+        :congress => cong_num,
+        :chamber => chamber,
+        :submitted_by => submitted_by,
+        :committee_id => committee,
+        :committee_name => committee_name,
+        :title => title.text,
+        :date_issued => Date.parse(date_issued.text)
+      }
     end
   end
 end

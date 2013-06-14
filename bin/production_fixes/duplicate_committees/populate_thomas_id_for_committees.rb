@@ -1,4 +1,4 @@
-cmtes = YAML.load_file(File.join(Settings.unitedstates_legislators_clone_path, 'committees-historical.yaml'))
+cmtes = YAML.load_file(File.join(Settings.data_path, "congress-legislators", "committees-historical.yaml"))
 
 def serial_comma_apocalypse (name)
   with_comma = name.gsub(/(\w) and/, '\1, and')

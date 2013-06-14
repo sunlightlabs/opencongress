@@ -986,7 +986,19 @@ class Bill < ActiveRecord::Base
     def ident(bill_id)
       pattern = /(hconres|hjres|hr|hres|s|sconres|sjres|sres)(\d+)-(\d+)/
       match = pattern.match(bill_id)
-      match ? match.captures : [nil, nil, nil]
+      if match
+        match.captures
+      else
+        pattern = /(\d+)-(hconres|hjres|hr|hres|s|sconres|sjres|sres)(\d+)/
+        match = pattern.match(bill_id)
+        if match
+          [match.captures[1],
+           match.captures[2],
+           match.captures[0]]
+        else
+          [nil, nil, nil]
+        end
+      end
     end
   end # class << self
 

@@ -8,4 +8,12 @@ class CommitteeMeeting < ActiveRecord::Base
 
   has_many :committee_meetings_bills 
   has_many :bills, :through => :committee_meetings_bills
+
+  def self.after (date)
+    where(['meeting_at > ?', date])
+  end
+
+  def self.future
+    after(Date.today)
+  end
 end

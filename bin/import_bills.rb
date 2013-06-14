@@ -5,15 +5,11 @@ require 'unitedstates'
 
 cong_num = Settings.available_congresses.sort.last
 
-congress_dir_path = File.join(Settings.data_path,
-                              "unitedstates",
-                              cong_num.to_s)
-
-bill_file_paths = Dir.glob(File.join(Settings.data_path,
-                                     'unitedstates',
+bill_file_paths = Dir.glob(File.join(Settings.unitedstates_data_path,
                                      cong_num.to_s,
                                      'bills',
-                                     '**',
+                                     '*',
+                                     '*',
                                      'data.json'))
 
 bill_file_paths.each_with_index do |bill_file_path, idx|

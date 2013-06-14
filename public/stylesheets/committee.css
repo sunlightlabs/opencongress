@@ -68,11 +68,6 @@ font-weight: bold;
 clear: both;
 }
 
-
-#committee h3{
-float: left;
-}
-
 .homepage{
 float: right;
 }
@@ -247,3 +242,28 @@ font-size: 13px;
 padding-top: 0px;
 }
 
+#committee .calendar_schedule {
+  padding-bottom: 40px;
+}
+
+#committee .calendar_schedule li {
+  margin: 0 0 6px 0;
+}
+
+#committee .calendar_date {
+  display: inline-block;
+  margin-right: 20px;
+  margin-left 20px;
+  width: 160px;
+}
+
+#committee .calendar_summary {
+  width: 400px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#committee ul.calendar li.heading span {
+  font-weight: bold;
+  text-align: center;
+}

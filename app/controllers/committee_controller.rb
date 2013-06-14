@@ -31,7 +31,15 @@ class CommitteeController < ApplicationController
       redirect_to :action => 'nodata' 
       return
     end
-    @reports = @committee.reports.sort_by { |r| r.index }.reverse.first(5)
+    @reports = @committee.reports.sort do |a, b|
+      if a.reported_at.nil?
+        -1
+      elsif b.reported_at.nil?
+        1
+      else
+        (a.reported_at - b.reported_at).to_i
+      end
+    end.reverse.first(5)
 
     @chair = @committee.chair
     @ranking_member = @committee.ranking_member
@@ -84,12 +92,11 @@ class CommitteeController < ApplicationController
     @page_title = "Most Viewed Committees"
     @title_class = "sort"
     @title_desc = SiteText.find_title_desc('committee_index')
-
   end
   
   def report
     #This way things show up in our logs.
-    redirect_to CommitteeReport.find(params[:id]).thomas_url
+    redirect_to CommitteeReport.find(params[:id]).gpo_url
   end
 
   def atom

@@ -1,11 +1,5 @@
 #!/usr/bin/env ruby
 
-if __FILE__ == $0
-  require File.dirname(__FILE__) + '/../../config/environment'
-else
-  puts "Running from #{$0}"
-end
-
 def do_stats_for_person(s)
   s.person_stats.sponsored_bills = s.bills.count
   s.person_stats.cosponsored_bills = s.bills_cosponsored.count

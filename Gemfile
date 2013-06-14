@@ -11,6 +11,8 @@ gem 'mysql'
 
 gem "settingslogic"
 
+gem 'titlecase'
+
 # HAML support
 gem "haml", "~> 3.1.8"
 gem "haml-rails"

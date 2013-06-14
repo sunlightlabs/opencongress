@@ -22,7 +22,7 @@ usage unless ['current', 'historical'].include? ARGV[0]
 
 
 mode = ARGV[0]
-legislators_file_path = File.join(Settings.unitedstates_legislators_clone_path, "legislators-#{mode}.yaml")
+legislators_file_path = File.join(Settings.data_path, "congress-legislators", "legislators-#{mode}.yaml")
 if not File.exists? legislators_file_path
   OCLogger.log "No such file: #{legislators_file_path}"
   exit

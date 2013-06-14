@@ -2,7 +2,7 @@ class CommitteeReport < ActiveRecord::Base
   validates_uniqueness_of :number,   :scope => [:kind, :congress]
   validates_uniqueness_of :kind,     :scope => [:congress, :number]
   validates_uniqueness_of :congress, :scope => [:number, :kind]
-  validates_uniqueness_of :gpo_id
+  #validates_uniqueness_of :gpo_id
 
   belongs_to :bill
   belongs_to :person

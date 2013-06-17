@@ -6,21 +6,34 @@ module Authable
 
   extend ActiveSupport::Concern
 
-  def included(base)
+  def self.included(base)
     base.extend(ClassMethods)
-    attr_accessible :login, :password, :password_confirmation, :remember_token
-    attr_accessor :password, :remember_token_expires_at
-    ##
-    # Further, the following fields should be defined in your AR model
-    #
-    # attr_accessor :status, :activated_at, :activation_code, :remember_token,
-    #               :crypted_password, :password_reset_code, :email
+    base.class_eval do
+      apply_simple_captcha
+
+      attr_accessible :login, :password, :password_confirmation, :remember_token,
+                      :captcha, :captcha_key
+      attr_accessor :password, :remember_token_expires_at
+      ##
+      # Further, the following fields should be defined in your AR model
+      #
+      # attr_accessor :status, :activated_at, :activation_code, :remember_token,
+      #               :crypted_password, :password_reset_code, :email
+
+      before_create :make_activation_code
+      before_save   :encrypt_password
+
+      scope :unconfirmed, :conditions => {:status => STATUSES[:unconfirmed]}
+      scope :authorized, :conditions => ["status > 0 and status < ?", STATUSES[:deleted]]
+      scope :banned, :conditions => {:status => STATUSES[:banned]}
+      scope :deleted, :conditions => {:status => STATUSES[:deleted]}
+    end
   end
 
   module ClassMethods
     # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
     def authenticate(login, password)
-      u = find :first, :conditions => ['LOWER(login) = ? and activated_at IS NOT NULL and enabled = true AND is_banned != true', login.downcase]
+      u = User.authorized.where(["lower(login) = ?", login.downcase]).first
       if u && u.authenticated?(password)
         # u.update_attribute(:previous_login_date, u.last_login ? u.last_login : Time.now)
         # u.update_attribute(:last_login, Time.now)
@@ -44,12 +57,30 @@ module Authable
     :banned => 6
   }
 
+  def status_display
+    STATUSES.invert[status].to_s
+  end
+
+  def status_explanation
+    case status_display
+    when 'deleted'
+      'This user has deleted their account.'
+    when 'banned'
+      'This user has been banned.'
+    else nil
+    end
+  end
+
   def is_unconfirmed?
     status == STATUSES[:unconfirmed]
   end
 
+  def is_authorized?
+    status < STATUSES[:deleted]
+  end
+
   def is_active?
-    status && status < STATUSES[:deleted]
+    status && is_authorized?
   end
   alias_method :activated?, :is_active?
 
@@ -75,19 +106,20 @@ module Authable
     if status < STATUSES[:banned]
       self.login = get_unique_login_for_status(:banned)
       self.status = STATUSES[:banned]
-      save
+      save :validate => false
     end
   end
 
   def unban!
-    try_to_recover_login
+    recover_login!
     self.status = STATUSES[:active]
     save
-  rescue e
-    self.errors << e
+  rescue Exception => e
+    errors.add :base, e
     false
   end
 
+  # for legacy compat
   def is_banned=(val)
     if !!val
       ban!
@@ -104,7 +136,7 @@ module Authable
     if self.status < STATUSES[:deleted]
       self.login = get_unique_login_for_status(:deleted)
       self.status = STATUSES[:deleted]
-      save
+      save :validate => false
     end
   end
 
@@ -134,13 +166,13 @@ module Authable
   def remember_me
     self.remember_token_expires_at = 8.weeks.from_now.utc
     self.remember_token            = encrypt("#{email}--#{remember_token_expires_at}")
-    save(false)
+    save(:validate => false)
   end
 
   def forget_me
     self.remember_token_expires_at = nil
     self.remember_token            = nil
-    save(false)
+    save(:validate => false)
   end
 
   def forgot_password
@@ -170,7 +202,6 @@ module Authable
     self.password_reset_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
   end
 
-  # before filter
   def encrypt_password
      return if password.blank?
      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?

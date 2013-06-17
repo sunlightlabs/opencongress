@@ -1,5 +1,14 @@
 module ProfileHelper
 
+  def avatar_for(user, options = {:size => :main, :alt => "Photo of"})
+    if user.send("#{options[:size]}_picture".to_sym)
+      pic = user.picture_path(options[:size])
+    else
+      pic = "anon-img-ex1.gif"
+    end
+    image_tag(pic, :alt => options[:alt])
+  end
+
   def draw_edit_in_place(field, rows = 1)
       @user == current_user ? editable_content(
          :content => {
@@ -66,6 +75,49 @@ module ProfileHelper
 
   def link_to_report(report)
     link_to report.title.capitalize, :action => :report, :id => report
+  end
+
+  def private_img
+    image_tag("private.png", :alt => "private", :title => "Private")
+  end
+
+  # Takes an object or a valid type and a user via options hash,
+  # returns the appropriate rating for the passed-in object's type, if available
+  def rating_for(object, options = {})
+    u = options[:rater]
+    score = nil
+    if object.is_a? Person
+      score = u.person_approvals.where(:id => object.id).first.rating rescue nil
+    elsif object.is_a? Bill
+      vote = u.bill_votes.where(:id => object.id).first
+      if vote
+        score = vote.support ? "<div class='nay'></div>" : "<div class='aye'></div>"
+      end
+    end
+    if !score
+      "&mdash;".html_safe
+    end
+  end
+
+  # Takes a symbol privacy attribute and, at a minimum, subject via options hash,
+  # and returns the queried attribute, or a default or not-allowed value
+  def privileged(attribute, options = {})
+    options = {
+      :not_allowed => private_img,
+      :observer => current_user,
+      :default => "&mdash;".html_safe
+    }.merge options
+    user = options[:subject]
+    obs = options[:observer]
+    default = options[:default]
+    na = options[:not_allowed]
+    perm = options[:permission]
+    if user.can_view(perm, obs)
+      val = user.send(attribute)
+      return val unless val.nil?
+      return default
+    end
+    na
   end
 
   def profile_image_for(user=nil, options={})

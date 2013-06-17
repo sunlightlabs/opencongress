@@ -1,39 +1,28 @@
 require 'digest/sha1'
-require 'authable'
+require_dependency 'authable'
+require_dependency 'visible_by_privacy_option_query'
 
 # this model expects a certain database layout and its based on the name/login pattern.
 class User < ActiveRecord::Base
-  # acts_as_solr :fields => [:placeholder, {:definitive_district => :integer},:public_actions,:my_committees_tracked, :my_bills_supported,
-  #                          :my_people_tracked, :my_bills_opposed, :login, :username, :full_name, :email,
-  #                          :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens,
-  #                          {:my_state => :string}, {:my_district => :string},
-  #                          {:total_number_of_actions => :range_integer}, :my_bills_tracked, :public_tracking,
-  #                          :my_issues_tracked, :my_state_f, :my_district_f, {:last_login => :date}],
-  #              :facets => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed,
-  #                          :my_committees_tracked, :my_bills_tracked, :my_people_tracked, :my_issues_tracked,
-  #                          :my_approved_reps, :my_approved_sens, :my_disapproved_reps,
-  #                          :my_disapproved_sens, :my_state_f, :my_district_f], :auto_commit => false
+  include Authable
 
-  apply_simple_captcha
-
-  #FIXME: Why do :accept_terms and :accepted_tos both exist?
-  attr_accessible :login, :password, :password_confirmation, :captcha, :captcha_key,
-                  :full_name, :email, :remember_token, :accepted_tos,
+  # Note that some attrs are defined in authable_model
+  # accept_tos is an unpersisted accessor for validation only
+  attr_accessible :full_name, :email, :accept_tos, :accepted_tos_at,
                   :remember_created_at, :location, :homepage, :subscribed,
-                  :show_email, :show_homepage, :zipcode, :mailing, :accept_terms, :about, :main_picture, :small_picture,
-                  :chat_aim, :chat_yahoo, :chat_msn, :chat_icq, :chat_gtalk, :show_aim, :show_full_name, :default_filter,
-                  :representative_id, :zip_four, :district, :state, :partner_mailing, :privacy_option_attributes
+                  :show_email, :show_homepage, :zipcode, :mailing,
+                  :about, :main_picture, :small_picture,
+                  :chat_aim, :chat_yahoo, :chat_msn, :chat_icq, :chat_gtalk,
+                  :show_aim, :show_full_name, :default_filter,
+                  :representative_id, :zip_four, :district, :state,
+                  :partner_mailing, :privacy_option_attributes
 
-  attr_accessor :password
-
-  # the following is so acts_as_autheticated doesn't bomb since we added devise compatibility
-  attr_accessor :remember_token_expires_at
-
+  attr_accessor :accept_tos
   serialize :possible_states
   serialize :possible_districts
 
   validates_presence_of       :login, :email, :unless => :openid?
-  validates_acceptance_of     :accept_tos, :on => :create
+  validates_acceptance_of     :accept_tos,                 :unless => :openid?
   validates_presence_of       :password,                   :if => :password_required?
   # validates_presence_of       :password_confirmation,      :if => :password_required?
   validates_length_of         :password, :within => 4..40, :if => :password_required?
@@ -57,105 +46,63 @@ class User < ActiveRecord::Base
     :partner_mailing => "Partner mailing preference"
   }
 
-  before_create :make_activation_code
   before_create :update_state_and_district
   after_create  :make_feed_key
-  after_create  :make_privacy_options
-  before_save   :encrypt_password
+  after_create  :create_privacy_option
+  after_save Proc.new {
+    privatize!
+    destroy_comments!
+    destroy_friendships!
+    destroy_friend_invites!
+    destroy_group_invites!
+    destroy_group_memberships!
+    reassign_groups!
+    disable_mailing_list!
+    destroy_notebook_items!
+    destroy_political_notebook!
+    destroy_twitter_config!
+  }, :if => Proc.new {|i| (i.is_banned? || i.is_deactivated?) && i.status_changed? }
   # before_save :update_state_and_district, :if => Proc.new {|instance|
   #   instance.district_needs_update or !instance.district_is_definitive
   # }
 
-  has_many :owned_groups, :class_name => 'Group'
-  has_many :group_members
-  has_many :groups, :through => :group_members
+  delegate :privatize!, :to => :privacy_option
 
-  has_many :api_hits
-  has_many :comments, :dependent => :destroy
   has_one  :privacy_option
   has_one  :user_mailing_list
   has_one  :twitter_config
-  has_many :person_approvals
-  has_many :commentary_ratings
-  has_many :bill_votes
-  has_many :comment_scores
-  has_many :bookmarks
-  has_many :user_ip_addresses
   has_one  :latest_ip_address, :class_name => "UserIpAddress", :order => "created_at DESC"
+
+  has_many :owned_groups, :class_name => 'Group'
+  has_many :group_members
+  has_many :groups, :through => :group_members
+  has_many :group_invites
+  has_many :api_hits
+  has_many :comments, :dependent => :destroy
+  has_many :commentary_ratings
+  has_many :comment_scores
+  has_many :user_ip_addresses
   has_many :friends
   has_many :friend_invites, :foreign_key => "inviter_id"
   has_many :fans, :class_name => "Friend", :foreign_key => "friend_id", :conditions => ["confirmed = ?", false]
+  has_many :person_approvals
+  has_many :bookmarks
   has_many :senator_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person], :conditions => ["people.name like ?", "Sen.%"]
   has_many :representative_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person], :conditions => ["people.name like ?", "Rep.%"]
   has_many :bill_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Bill'"
   has_many :issue_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Subject'"
   has_many :committee_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Committee'"
-
   has_many :watched_districts, :class_name => "WatchDog"
-
-
-  has_many :bookmarked_bills, :class_name => "Bill",
-                              :finder_sql => 'select bills.*, bm.bookmarkers FROM bills
-                                 INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
-             bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = bills.id
-                                 LEFT JOIN (select count(user_id) as bookmarkers, bookmarkable_id
-                                 from bookmarks WHERE bookmarkable_type = \'Bill\'
-                                 group by bookmarkable_id) bm ON bm.bookmarkable_id = bills.id
-                           WHERE b.bookmarkable_type = \'Bill\' AND b.user_id = #{id}
-                           ORDER BY b.created_at'
-
-
-  has_many :bills_supported, :class_name => "Bill",
-                              :finder_sql => 'select bills.* FROM bills
-                                 INNER JOIN (select bill_votes.support, bill_votes.user_id,
-                                    bill_votes.created_at, bill_votes.bill_id FROM bill_votes WHERE bill_votes.support = 0
-                                    AND bill_votes.user_id = #{id}) b ON b.bill_id = bills.id
-                                 ORDER BY b.created_at'
-
-
-  has_many :bills_opposed, :class_name => "Bill",
-                              :finder_sql => 'select bills.* FROM bills
-                                  INNER JOIN (select bill_votes.support, bill_votes.user_id,
-                                   bill_votes.created_at, bill_votes.bill_id FROM bill_votes WHERE bill_votes.support = 1
-                                  AND bill_votes.user_id = #{id}) b ON b.bill_id = bills.id
-                                  ORDER BY b.created_at'
-
-  has_many :bookmarked_senators, :class_name => "Person",
-                              :finder_sql => 'select people.* FROM people
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
-                                                  bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = people.id
-                                                WHERE people.name like \'Sen.%\' AND b.bookmarkable_type = \'Person\' AND b.user_id = #{id}
-                                                ORDER BY b.created_at'
-
-
-
-  has_many :bookmarked_representatives, :class_name => "Person",
-                              :finder_sql => 'select people.* FROM people
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
-                                                  bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = people.id
-                                                WHERE people.name like \'Rep.%\' AND b.bookmarkable_type = \'Person\' AND b.user_id = #{id}
-                                                ORDER BY b.created_at'
-
-  has_many :bookmarked_people, :class_name => "Person",
-                              :finder_sql => 'select people.* FROM people
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
-                                                  bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = people.id
-                                                WHERE b.bookmarkable_type = \'Person\' AND b.user_id = #{id}
-                                                ORDER BY b.created_at'
-
-  has_many :bookmarked_issues, :class_name => "Subject",
-                              :finder_sql => 'select subjects.* FROM subjects
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
-                                                  bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = subjects.id
-                                                WHERE b.bookmarkable_type = \'Subject\' AND b.user_id = #{id}
-                                                ORDER BY b.created_at'
-
-  has_many :bookmarked_committees, :class_name => "Committee",
-                              :finder_sql => 'select committees.* FROM committees
-                                                INNER JOIN (select bookmarks.bookmarkable_type, bookmarks.user_id,
-                                                  bookmarks.bookmarkable_id, bookmarks.created_at FROM bookmarks) b ON b.bookmarkable_id = committees.id
-                                                WHERE b.bookmarkable_type = \'Committee\' AND b.user_id = #{id}
-                                                ORDER BY b.created_at'
+  has_many :bill_votes
+  # TODO: The original implementation included the number of people who have bookmarked the bill, which should be done differently
+  has_many :bookmarked_bills, :class_name => "Bill", :through => :bookmarks, :source => :bill, :order => "bookmarks.created_at DESC"
+  has_many :bills_voted_on, :class_name => "Bill", :through => :bill_votes, :source => :bill, :order => "bill_votes.created_at DESC"
+  # Support = 0 for support, 1 for oppose. Not even kidding.
+  has_many :bills_supported, :class_name => "Bill", :through => :bill_votes, :source => :bill, :conditions => ["bill_votes.support = 0"], :order => "bill_votes.created_at DESC"
+  has_many :bills_opposed, :class_name => "Bill", :through => :bill_votes, :source => :bill, :conditions => ["bill_votes.support = 1"], :order => "bill_votes.created_at DESC"
+  has_many :bookmarked_people, :class_name => "Person", :through => :bookmarks, :source => :person, :order => "bookmarks.created_at DESC"
+  has_many :bookmarked_issues, :class_name => "Subject", :through => :bookmarks, :source => :subject, :order => "bookmarks.created_at DESC"
+  has_many :bookmarked_committees, :class_name => "Committee", :through => :bookmarks, :source => :committee, :order => "bookmarks.created_at DESC"
 
   belongs_to :representative, :class_name => "Person", :foreign_key => "representative_id"
   belongs_to :user_role
@@ -167,260 +114,38 @@ class User < ActiveRecord::Base
 
   has_many   :contact_congress_letters
 
+  alias_attribute :username, :login
+
+  # These are just here for some consistency in naming patterns
+  alias_method :voted_bills, :bills_voted_on
+  alias_method :supported_bills, :bills_supported
+  alias_method :opposed_bills, :bills_opposed
+
+  # These are LoD helpers that just pass on AR relations from Person
+  def bookmarked_senators; bookmarked_people.sen; end
+  def bookmarked_representatives; bookmarked_people.rep; end
+
   accepts_nested_attributes_for :privacy_option
 
   scope :for_state, lambda { |state| where("state = ?", state.upcase) }
   scope :for_district, lambda { |state, district| for_state(state).where("district = ?", district.to_i) }
   scope :active, lambda { where("created_at >= ?", 2.months.ago) }
-
-  include ::Authable
-
-  alias_attribute :username, :login
+  scope :tracking_bill, lambda {|bill| includes(:bookmarked_bills).where("bills.id" => bill.id) }
+  scope :voted_on_bill, lambda {|bill| includes(:bills_voted_on).where("bills.id" => bill.id) }
+  scope :supporting_bill, lambda {|bill| includes(:bills_supported).where("bills.id" => bill.id) }
+  scope :opposing_bill, lambda {|bill| includes(:bills_opposed).where("bills.id" => bill.id) }
+  scope :supporting_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
+  scope :opposing_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
+  scope :ranking_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating is not null")}
+  scope :tracking_person, lambda {|person| includes(:bookmarked_people).where("person.id" => person.id) }
+  scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subject.id" => subject.id) }
+  scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committee.id" => committee.id) }
 
   class << self
-  #   def find_users_in_districts_tracking(districts, object, limit)
-  #     query = "my_district:(#{districts.join(' OR ')})"
-  #     case object.class.to_s
-  #     when 'Person'
-  #       User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_people_tracked:#{object.id}"]}, :limit => limit)
-  #     when 'Bill'
-  #       User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_bills_tracked:#{object.ident}"]}, :limit => limit)
-  #     when 'Subject'
-  #       User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_issues_tracked:#{object.id}"]}, :limit => limit)
-  #     when 'Committee'
-  #       User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_committees_tracked:#{object.id}"]}, :limit => limit)
-  #     end
-  #   end
-
-  #   def find_users_in_districts_supporting(districts, object, limit)
-  #     query = "my_district:(#{districts.join(' OR ')})"
-  #     case object.class.to_s
-  #       when 'Person'
-  #         case object.title
-  #           when 'Rep.'
-  #             User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_approved_reps:#{object.id}"]}, :limit => limit)
-  #           when 'Sen.'
-  #             User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_approved_sens:#{object.id}"]}, :limit => limit)
-  #         end
-  #       when 'Bill'
-  #         User.find_id_by_solr(query, :facets => {:browse => ["public_actions:true", "my_bills_supported:#{object.id}"]}, :limit => limit)
-  #     end
-  #   end
-
-  #   def find_users_in_districts_opposing(districts, object, limit)
-  #     query = "my_district:(#{districts.join(' OR ')})"
-  #     case object.class.to_s
-  #       when 'Person'
-  #         case object.title
-  #           when 'Rep.'
-  #             User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_disapproved_reps:#{object.id}"]}, :limit => limit)
-  #           when 'Sen.'
-  #             User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_disapproved_sens:#{object.id}"]}, :limit => limit)
-  #         end
-  #       when 'Bill'
-  #         User.find_id_by_solr(query, :facets => {:browse => ["public_actions:true", "my_bills_opposed:#{object.id}"]}, :limit => limit)
-  #     end
-  #   end
-
-  #   def find_users_in_states_supporting(states, object, limit)
-  #     query = "my_state:(\"#{states.join('" OR "')}\")"
-  #     case object.class.to_s
-  #       when 'Person'
-  #         case object.title
-  #           when 'Rep.'
-  #             User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_approved_reps:#{object.id}"]}, :limit => limit)
-  #           when 'Sen.'
-  #             User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_approved_sens:#{object.id}"]}, :limit => limit)
-  #         end
-  #       when 'Bill'
-  #         User.find_id_by_solr(query, :facets => {:browse => ["public_actions:true", "my_bills_supported:#{object.id}"]}, :limit => limit)
-  #     end
-  #   end
-
-  #   def find_users_in_states_opposing(states, object, limit)
-  #     query = "my_state:(\"#{states.join('" OR "')}\")"
-  #     case object.class.to_s
-  #       when 'Person'
-  #         case object.title
-  #           when 'Rep.'
-  #             User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_disapproved_reps:#{object.id}"]}, :limit => limit)
-  #           when 'Sen.'
-  #             User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_disapproved_sens:#{object.id}"]}, :limit => limit)
-  #         end
-  #       when 'Bill'
-  #         User.find_id_by_solr(query, :facets => {:browse => ["public_actions:true", "my_bills_opposed:#{object.id}"]}, :limit => limit)
-  #     end
-  #   end
-
-  #   def find_users_in_states_tracking(states, object, limit)
-  #     query = "my_state:(\"#{states.join('" OR "')}\")"
-  #     case object.class.to_s
-  #     when 'Person'
-  #       User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_people_tracked:#{object.id}"]}, :limit => limit)
-  #     when 'Bill'
-  #       User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_bills_tracked:#{object.ident}"]}, :limit => limit)
-  #     when 'Subject'
-  #       User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_issues_tracked:#{object.id}"]}, :limit => limit)
-  #     when 'Committee'
-  #       User.find_id_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_committees_tracked:#{object.id}"]}, :limit => limit)
-  #     end
-  #   end
-
-  #   def find_users_tracking_bill(bill)
-  #     #find(:all, :include => [:bookmarks, :privacy_option], :conditions => ["bookmarkable_type = 'Bill' AND bookmarkable_id = ? AND privacy_options.my_tracked_items = ?", bill.id, 2], :order => "users.login")
-  #      find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["my_bills_tracked:#{bill.ident}", "public_tracking:true"]}, :limit => 1000)
-  #   end
-
-  #   def find_users_tracking_person(person)
-  # #    find(:all, :include => [:bookmarks, :privacy_option], :conditions => ["bookmarkable_type = 'Person' AND bookmarkable_id = ? AND privacy_options.my_tracked_items = ?", person.id, 2], :order => "users.login")
-  #      find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["my_people_tracked:#{person.id}","public_tracking:true"]}, :limit => 1000)
-  #   end
-
-  #   def find_users_tracking_issue(issue)
-  # #    find(:all, :include => [:bookmarks, :privacy_option], :conditions => ["bookmarkable_type = 'Subject' AND bookmarkable_id = ? AND privacy_options.my_tracked_items = ?", issue.id, 2], :order => "users.login")
-  #      find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["my_issues_tracked:#{issue.id}","public_tracking:true"]}, :limit => 1000)
-  #   end
-
-  #   def find_users_opposing_bill(bill)
-  #         find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_actions:true", "my_bills_opposed:#{bill.id}"]}, :limit => 1000)
-  #   end
-
-  #   def find_users_supporting_bill(bill)
-  #         find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_actions:true", "my_bills_supported:#{bill.id}"]}, :limit => 1000)
-  #   end
-
-  #   def find_users_supporting_person(person)
-  #     case person.title
-  #       when 'Rep.'
-  #         User.find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_tracking:true", "my_approved_reps:#{person.id}"]}, :limit => 1000)
-  #       when 'Sen.'
-  #         User.find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_tracking:true", "my_approved_sens:#{person.id}"]}, :limit => 1000)
-  #     end
-  #   end
-
-  #   def find_users_opposing_person(person)
-  #     case person.title
-  #       when 'Rep.'
-  #         User.find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_tracking:true", "my_disapproved_reps:#{person.id}"]}, :limit => 1000)
-  #       when 'Sen.'
-  #         User.find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["public_tracking:true", "my_disapproved_sens:#{person.id}"]}, :limit => 1000)
-  #     end
-  #   end
-
-  #   def find_users_tracking_committee(committee)
-  # #    find(:all, :include => [:bookmarks, :privacy_option], :conditions => ["bookmarkable_type = 'Subject' AND bookmarkable_id = ? AND privacy_options.my_tracked_items = ?", issue.id, 2], :order => "users.login")
-  #      find_id_by_solr('placeholder:placeholder', :facets => {:browse => ["my_committees_tracked:#{committee.id}","public_tracking:true"]}, :limit => 1000)
-  #   end
-
     def highest_rated_commenters
       cs = CommentScore.calculate(:count, :score, :include => "comment", :group => "comments.user_id", :order => "count_score DESC").collect {|p| p[1] > 3 && p[0] != nil ? p[0] : nil}.compact
       CommentScore.calculate(:avg, :score, :include => "comment", :group => "comments.user_id", :conditions => ["comments.user_id in (?)", cs], :order => "avg_score DESC").each do |k|
         puts "#{User.find_by_id(k[0]).login} - Average Rating: #{k[1]}"
-      end
-    end
-
-    # state, district, location_allowed (permissions options), total site actions ( votes, comments, friends )
-    # user_vote, user_approval
-    def find_for_tracking_table(logged_in_user, object, ids)
-      this_user = nil
-      this_user = logged_in_user.id if logged_in_user
-      case object.class.to_s
-      when 'Person'
-        find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed,
-                            COALESCE(comments2.tc,0) as total_comments, COALESCE(bill_votes_agg.tc, 0) + COALESCE(user_votes.tc, 0) + COALESCE(user_votes2.tc,0) + COALESCE(comments.tc,0) + COALESCE(friends.tc,0) as total_actions,
-                            person_approvals.rating as object_rating, fri.friend_id as is_friend, fri.confirmed as is_friend_confirmed FROM users
-                             LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions,
-                             privacy_options.user_id from privacy_options where privacy_options.user_id in (?))
-                                 po ON po.user_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
-                                 user_votes ON user_votes.user_id = users.id
-                             LEFT OUTER JOIN ( select person_approvals.user_id, count(person_approvals.id) as tc from person_approvals WHERE person_approvals.user_id in (?)
-                                 group by person_approvals.user_id)
-                                 user_votes2 ON user_votes2.user_id = users.id
-                             LEFT OUTER JOIN ( select comments.user_id, count(comments.id) as tc from comments WHERE comments.user_id in (?) group by comments.user_id)
-                                 comments ON comments.user_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
-                                 bill_votes_agg ON bill_votes_agg.user_id = users.id
-                             LEFT OUTER JOIN ( select friends.user_id, count(friends.user_id) as tc from friends WHERE friends.user_id in (?) AND friends.confirmed = ? group by friends.user_id)
-                                 friends ON friends.user_id = users.id
-                             LEFT OUTER JOIN ( select count(id) as tc, user_id FROM comments WHERE user_id IN (?) AND commentable_type = 'Person' AND commentable_id = ? group by comments.user_id)
-                                 comments2 ON comments2.user_id = users.id
-                             LEFT OUTER JOIN ( select friends.user_id, friends.friend_id, friends.confirmed from friends WHERE friends.friend_id in (?) AND friends.user_id = (?))
-                                 fri ON fri.friend_id = users.id
-                             LEFT OUTER JOIN ( select person_approvals.rating, person_approvals.user_id FROM person_approvals WHERE person_approvals.user_id in (?) AND person_approvals.person_id = ?)
-                                 person_approvals ON person_approvals.user_id = users.id
-                             WHERE users.id in (?)", ids, ids, ids, ids, ids, ids, true, ids, object.id, ids, this_user, ids, object.id, ids])
-      when 'Bill'
-        find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed,
-                            COALESCE(comments2.tc,0) as total_comments, COALESCE(bill_votes_agg.tc, 0) + COALESCE(user_votes.tc, 0) + COALESCE(user_votes2.tc,0) + COALESCE(comments.tc,0) + COALESCE(friends.tc,0) as total_actions,
-                            bill_votes.support as support, fri.friend_id as is_friend, fri.confirmed as is_friend_confirmed FROM users
-                             LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions,
-                             privacy_options.user_id from privacy_options where privacy_options.user_id in (?))
-                                 po ON po.user_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
-                                 user_votes ON user_votes.user_id = users.id
-                             LEFT OUTER JOIN ( select person_approvals.user_id, count(person_approvals.id) as tc from person_approvals WHERE person_approvals.user_id in (?)
-                                 group by person_approvals.user_id)
-                                 user_votes2 ON user_votes2.user_id = users.id
-                             LEFT OUTER JOIN ( select comments.user_id, count(comments.id) as tc from comments WHERE comments.user_id in (?) group by comments.user_id)
-                                 comments ON comments.user_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
-                                 bill_votes_agg ON bill_votes_agg.user_id = users.id
-                             LEFT OUTER JOIN ( select friends.user_id, count(friends.user_id) as tc from friends WHERE friends.user_id in (?) AND friends.confirmed = ? group by friends.user_id)
-                                 friends ON friends.user_id = users.id
-                             LEFT OUTER JOIN ( select count(id) as tc, user_id FROM comments WHERE user_id IN (?) AND commentable_type = 'Bill' AND commentable_id = ? group by comments.user_id)
-                                 comments2 ON comments2.user_id = users.id
-                             LEFT OUTER JOIN ( select friends.user_id, friends.friend_id, friends.confirmed from friends WHERE friends.friend_id in (?) AND friends.user_id = (?))
-                                 fri ON fri.friend_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.support, bill_votes.user_id FROM bill_votes WHERE bill_votes.user_id in (?) AND bill_votes.bill_id = ?)
-                                 bill_votes ON bill_votes.user_id = users.id
-                             WHERE users.id in (?)", ids, ids, ids, ids, ids, ids, true, ids, object.id, ids, this_user, ids, object.id, ids])
-      when 'Subject'
-        find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed,
-                            COALESCE(comments2.tc,0) as total_comments, COALESCE(bill_votes_agg.tc, 0) + COALESCE(user_votes.tc, 0) + COALESCE(user_votes2.tc,0) + COALESCE(comments.tc,0) + COALESCE(friends.tc,0) as total_actions,
-                            fri.friend_id as is_friend, fri.confirmed as is_friend_confirmed FROM users
-                             LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions,
-                             privacy_options.user_id from privacy_options where privacy_options.user_id in (?))
-                                 po ON po.user_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
-                                 user_votes ON user_votes.user_id = users.id
-                             LEFT OUTER JOIN ( select person_approvals.user_id, count(person_approvals.id) as tc from person_approvals WHERE person_approvals.user_id in (?)
-                                 group by person_approvals.user_id)
-                                 user_votes2 ON user_votes2.user_id = users.id
-                             LEFT OUTER JOIN ( select comments.user_id, count(comments.id) as tc from comments WHERE comments.user_id in (?) group by comments.user_id)
-                                 comments ON comments.user_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
-                                 bill_votes_agg ON bill_votes_agg.user_id = users.id
-                             LEFT OUTER JOIN ( select friends.user_id, count(friends.user_id) as tc from friends WHERE friends.user_id in (?) AND friends.confirmed = ? group by friends.user_id)
-                                 friends ON friends.user_id = users.id
-                             LEFT OUTER JOIN ( select count(id) as tc, user_id FROM comments WHERE user_id IN (?) AND commentable_type = 'Subject' AND commentable_id = ? group by comments.user_id)
-                                 comments2 ON comments2.user_id = users.id
-                             LEFT OUTER JOIN ( select friends.user_id, friends.friend_id, friends.confirmed from friends WHERE friends.friend_id in (?) AND friends.user_id = (?))
-                                 fri ON fri.friend_id = users.id
-                             WHERE users.id in (?)", ids, ids, ids, ids, ids, ids, true, ids, object.id, ids, this_user, ids])
-      when 'Committee'
-        find_by_sql(["select users.*, po.my_location as location_allowed, po.my_actions as actions_allowed, po.my_congressional_district, po.my_last_login_date as last_login_allowed,
-                            COALESCE(comments2.tc,0) as total_comments, COALESCE(bill_votes_agg.tc, 0) + COALESCE(user_votes.tc, 0) + COALESCE(user_votes2.tc,0) + COALESCE(comments.tc,0) + COALESCE(friends.tc,0) as total_actions,
-                            fri.friend_id as is_friend, fri.confirmed as is_friend_confirmed FROM users
-                             LEFT OUTER JOIN ( select privacy_options.my_congressional_district, privacy_options.my_last_login_date, privacy_options.my_location, privacy_options.my_actions,
-                             privacy_options.user_id from privacy_options where privacy_options.user_id in (?))
-                                 po ON po.user_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
-                                 user_votes ON user_votes.user_id = users.id
-                             LEFT OUTER JOIN ( select person_approvals.user_id, count(person_approvals.id) as tc from person_approvals WHERE person_approvals.user_id in (?)
-                                 group by person_approvals.user_id)
-                                 user_votes2 ON user_votes2.user_id = users.id
-                             LEFT OUTER JOIN ( select comments.user_id, count(comments.id) as tc from comments WHERE comments.user_id in (?) group by comments.user_id)
-                                 comments ON comments.user_id = users.id
-                             LEFT OUTER JOIN ( select bill_votes.user_id, count(bill_votes.id) as tc from bill_votes WHERE bill_votes.user_id in (?) group by bill_votes.user_id)
-                                 bill_votes_agg ON bill_votes_agg.user_id = users.id
-                             LEFT OUTER JOIN ( select friends.user_id, count(friends.user_id) as tc from friends WHERE friends.user_id in (?) AND friends.confirmed = ? group by friends.user_id)
-                                 friends ON friends.user_id = users.id
-                             LEFT OUTER JOIN ( select count(id) as tc, user_id FROM comments WHERE user_id IN (?) AND commentable_type = 'Committee' AND commentable_id = ? group by comments.user_id)
-                                 comments2 ON comments2.user_id = users.id
-                             LEFT OUTER JOIN ( select friends.user_id, friends.friend_id, friends.confirmed from friends WHERE friends.friend_id in (?) AND friends.user_id = (?))
-                                 fri ON fri.friend_id = users.id
-                             WHERE users.id in (?)", ids, ids, ids, ids, ids, ids, true, ids, object.id, ids, this_user, ids])
       end
     end
 
@@ -441,12 +166,21 @@ class User < ActiveRecord::Base
     "placeholder"
   end
 
-  def make_privacy_options
-    PrivacyOption.create({:user_id => self.id})
+  def picture_path(size=:main)
+    filename = send("#{size}_picture".to_sym)
+    "users/#{filename}"
+  end
+
+  def action_count
+    comments.count + friends.count + bill_votes.count + person_approvals.count + bookmarks.count
+  end
+
+  def accepted_tos?
+    accepted_tos_at.present?
   end
 
   # permissions method
-  def can_view(option,viewer)
+  def can_view(option, viewer)
     res = false
     if viewer.nil? or (viewer == :false)
       #logger.info "tis nil"
@@ -469,7 +203,7 @@ class User < ActiveRecord::Base
     return res
   end
 
-  # use only on the users tracking x are also tracking y friends pages /friends/tracking_person, etc.
+  # DEPRECATED: use only on the users tracking x are also tracking y friends pages /friends/tracking_person, etc.
   def can_view_special(field)
     if self[field] == '2' || ( self[field] == '1' && (self['is_friend'] && self['is_friend_confirmed'] == 't'))
       return true
@@ -496,10 +230,6 @@ class User < ActiveRecord::Base
         district_group.group_members.create(:user_id => id, :status => 'MEMBER')
       end
     end
-  end
-
-  def total_number_of_actions
-    comments.count + friends.count + bill_votes.count + person_approvals.count + bookmarks.count
   end
 
   def update_state_and_district(params = {})
@@ -804,6 +534,52 @@ class User < ActiveRecord::Base
 
   def make_feed_key
     self.check_feed_key
+  end
+
+  private
+
+  def destroy_comments!
+    self.comments.destroy_all
+  end
+
+  def privatize_contact_congress_letters!
+    self.contact_congress_letters.update_all(:is_public => false)
+  end
+
+  def destroy_friendships!
+    self.friends.destroy_all
+  end
+
+  def destroy_friend_invites!
+    self.friend_invites.destroy_all
+  end
+
+  def destroy_group_invites!
+    self.group_invites.destroy_all
+  end
+
+  def destroy_group_memberships!
+    self.groups = []
+  end
+
+  def disable_mailing_list!
+    self.user_mailing_list.update_attribute(:status, UserMailingList::DISABLED)
+  end
+
+  def reassign_groups!
+    # TODO: this should get managed at the controller layer, leaving it here as a reminder.
+  end
+
+  def destroy_notebook_items!
+    self.political_notebook.notebook_items.destroy_all rescue nil
+  end
+
+  def destroy_political_notebook!
+    self.political_notebook.destroy rescue nil
+  end
+
+  def destroy_twitter_config!
+    self.twitter_config.destroy rescue nil
   end
 
 end

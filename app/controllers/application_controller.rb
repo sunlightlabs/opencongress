@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   before_filter :has_accepted_tos?
   before_filter :has_district?
   before_filter :get_site_text_page
-  before_filter :is_banned?
+  before_filter :is_authorized?
   before_filter :set_simple_comments
 
   def facebook_check
@@ -67,7 +67,7 @@ class ApplicationController < ActionController::Base
 
       if oc_user
         # if, for some reason, we don't have these fields, require them
-        if oc_user.login.blank? or oc_user.zipcode.blank? or !oc_user.accepted_tos
+        if oc_user.login.blank? or oc_user.zipcode.blank? or !oc_user.accepted_tos?
           redirect_to :controller => 'account', :action => 'facebook_complete' unless params[:action] == 'facebook_complete'
           return
         end
@@ -125,7 +125,7 @@ class ApplicationController < ActionController::Base
 
   def has_accepted_tos?
     if logged_in?
-      unless current_user.accepted_tos == true
+      unless current_user.accepted_tos?
         redirect_to :controller => 'account', :action => 'accept_tos'
       end
     end
@@ -143,11 +143,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def is_banned?
+  def is_authorized?
     if logged_in?
-      if current_user.is_banned == true
-        redirect_to logout_url
-      end
+      redirect_to logout_url and return unless current_user.is_authorized?
     end
   end
 

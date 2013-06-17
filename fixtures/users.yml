@@ -6,7 +6,6 @@ users_001:
   activated_at: 2008-01-14 04:19:05.480086
   location: Chesterfield, MA
   created_at: 2008-01-13 23:18:44.867131
-  accepted_tos: t
   default_filter: "5"
   mailing: f
   last_login: 2010-04-02 08:49:05.425035
@@ -31,7 +30,6 @@ users_001:
   user_role_id: "2"
   show_aim: t
   chat_icq: ""
-  accept_terms: t
   homepage: www.participatorypolitics.org
   show_homepage: t
   remember_token:
@@ -42,9 +40,8 @@ users_001:
   state: MA
 
   identity_url:
-  status:
+  status: 1
   login: donnyshaw
-  is_banned: f
   district: 1
 
   chat_aim: donaldwarnershaw
@@ -57,7 +54,6 @@ users_002:
   activated_at: 2010-01-13 16:50:45.022104
   location:
   created_at: 2010-01-13 10:48:47.772348
-  accepted_tos: t
   default_filter: "5"
   mailing: t
   last_login: 2010-04-06 14:26:56.149317
@@ -82,7 +78,6 @@ users_002:
   user_role_id: "2"
   show_aim: f
   chat_icq:
-  accept_terms:
   homepage:
   show_homepage: f
   remember_token:
@@ -95,19 +90,19 @@ users_002:
   state: DC
 
   identity_url:
-  status:
+  status: 1
   login: enaing
-  is_banned: f
   district: 0
-
   chat_aim:
   email: enaing@gmail.com
   blog_author: f
 users_003:
+  status: 1
   login: dan
   email: dan@example.com
+  crypted_password: abcdefg
   zipcode: 22204
   state: 'VA'
   district: 8
+  accepted_tos_at: <%= 10.minutes.ago %>
   activated_at: <%= 10.minutes.ago %>
-  accepted_tos: true

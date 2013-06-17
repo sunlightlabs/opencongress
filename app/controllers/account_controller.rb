@@ -6,7 +6,7 @@ class AccountController < ApplicationController
 
   skip_before_filter :store_location
   skip_before_filter :has_accepted_tos?, :only => [:accept_tos, :logout]
-  skip_before_filter :is_banned?, :only => [:logout]
+  skip_before_filter :is_authorized?, :only => [:logout]
 
   include OpenIdAuthentication
 
@@ -93,7 +93,6 @@ class AccountController < ApplicationController
     if request.post?
       user = User.find_by_id(current_user.id)
       if params[:accept_tos] == "1"
-        user.accepted_tos = true
         user.accepted_tos_at = Time.now
         user.save!
         self.current_user = User.find_by_id(user.id)
@@ -220,8 +219,7 @@ class AccountController < ApplicationController
 
     return unless request.post?
 
-    @user.accepted_tos = true
-    @user.accepted_tos_at = Time.now
+    @user.accepted_tos_at = Time.now if @user.accept_tos
 
     # FIXME: Use different tooling for this, namely the district and state fields on the user.
     # Also, why the eff were we storing a rep id but not state/district... wot.
@@ -397,33 +395,33 @@ class AccountController < ApplicationController
   end
 
   def new_openid
-   @page_title = "New OpenID Account"
-   identity_url = session[:idurl]
-   if request.post? && identity_url
-     begin
-       @user = User.new(params[:user])
-       @user.identity_url = identity_url
-       @user.email = session[:invite].invitee_email unless session[:invite].nil? or request.post?
+    @page_title = "New OpenID Account"
+    identity_url = session[:idurl]
+    if request.post? && identity_url
+      begin
+        @user = User.new(params[:user])
+        @user.identity_url = identity_url
+        @user.email = session[:invite].invitee_email unless session[:invite].nil? or request.post?
 
-       @user.accepted_tos = true
-       @user.accepted_tos_at = Time.now
+        # TODO: Make sure this prompts for acceptance
+        # @user.accepted_tos_at = Time.now
 
-       if @user.zipcode
-         @senators, @reps = Person.find_current_congresspeople_by_zipcode(@user.zipcode, @user.zip_four)
-         @user.representative_id = @reps.first.id if (@reps && @reps.length == 1)
-       end
-       @user.save!
+        if @user.zipcode
+          @senators, @reps = Person.find_current_congresspeople_by_zipcode(@user.zipcode, @user.zip_four)
+          @user.representative_id = @reps.first.id if (@reps && @reps.length == 1)
+        end
+        @user.save!
 
-       # check for an invitation
-       if session[:invite]
-         Friend.create_confirmed_friendship(@user, session[:invite].inviter)
-         session[:invite] = nil
-       end
+        # check for an invitation
+        if session[:invite]
+          Friend.create_confirmed_friendship(@user, session[:invite].inviter)
+          session[:invite] = nil
+        end
 
-       redirect_to confirmation_path(@user.login)
-     rescue ActiveRecord::RecordInvalid
-       render :action => 'new_openid'
-     end
+        redirect_to confirmation_path(@user.login)
+      rescue ActiveRecord::RecordInvalid
+        render :action => 'new_openid'
+      end
     end
   end
 

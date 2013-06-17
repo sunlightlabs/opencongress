@@ -2,7 +2,7 @@ class BillController < ApplicationController
   include ActionView::Helpers::NumberHelper
 
   helper :roll_call
-	before_filter :page_view, :only => [:show, :text]
+  before_filter :page_view, :only => [:show, :text]
   before_filter :get_params, :only => [:index, :all, :popular, :pending, :hot, :most_commentary, :readthebill]
   #before_filter :bill_profile_shared, :only => [:show, :comments, :money, :votes, :actions, :amendments, :text, :actions_votes, :news_blogs, :videos, :news, :blogs, :news_blogs, :topnews, :topblogs, :letters]
   before_filter :bill_profile_shared, :only => [:show, :comments, :money, :votes, :actions, :amendments, :text, :actions_votes, :videos, :topnews, :topblogs, :letters]
@@ -519,8 +519,8 @@ class BillController < ApplicationController
       :order => ["datetime::date DESC, id DESC"]
     }
     @actions = @bill.actions.paginate(pagination_opts)
-  end 
-  
+  end
+
   def votes
     pagination_opts = {
       :page => @page,
@@ -807,7 +807,7 @@ private
 
   def page_view
     bill_type, number, session = Bill.ident params[:id]
-    
+
     if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => :actions })
       key = "page_view_ip:Bill:#{@bill.id}:#{request.remote_ip}"
       unless read_fragment(key)

@@ -15,7 +15,7 @@ class Admin::CommentsController < Admin::IndexController
       @teh_comments = Comment.where("censored=?", false).order("created_at ASC").paginate(:page => params[:page], :per_page => 100)
     end
   end
-  
+
   def comments_search
     if request.post?
       @comments = Comment.find(:all, :conditions => ["comment LIKE ?", "%#{params[:q]}%"])
@@ -28,9 +28,9 @@ class Admin::CommentsController < Admin::IndexController
       end
     end
   end
-  
+
   def bulk_operation
-    
+
     if params[:ban_ip]
     params[:ban_ip].each do |commentid|
       comment = Comment.find_by_id(params[:id])
@@ -40,7 +40,7 @@ class Admin::CommentsController < Admin::IndexController
       comment = nil
     end
     end
-    
+
     if params[:warn_user]
       params[:warn_user].each do |commentid|
         comment = Comment.find_by_id(commentid)
@@ -50,13 +50,14 @@ class Admin::CommentsController < Admin::IndexController
         end
       end
     end
-    
+
     unless params[:ban_user].nil? || params[:ban_user].empty?
       comments = Comment.find_all_by_id(params[:ban_user])
-      users = comments.collect {|p| p.user_id}.compact.uniq.flatten
+      ban_user_ids = comments.collect {|p| p.user_id}.compact.uniq.flatten
+      ban_users = User.all :conditions => ["id in(?)", user_ids]
       Comment.update_all("censored = true", ["id in (?)", params[:ban_user]])
-      User.update_all("is_banned = true", ["id in (?)", users]) unless users.empty?
-    end    
+      ban_users.each(&:ban!)
+    end
 
     unless params[:censor].nil? || params[:censor].empty?
       Comment.update_all("censored = true", ["id in (?)", params[:censor]])
@@ -68,11 +69,11 @@ class Admin::CommentsController < Admin::IndexController
       comments.each do |c|
         c.false_positive! if c.is_spam?
       end
-      
+
       Comment.update_all("ok = true", ["id in (?)", params[:ok]])
       Comment.update_all("flagged = false", ["id in (?)", params[:ok]])
     end
-    
+
 
     unless params[:unflag].nil? || params[:unflag].empty?
       Comment.update_all("flagged = false", ["id in (?)", params[:unflag]])
@@ -90,20 +91,20 @@ class Admin::CommentsController < Admin::IndexController
       page.hide("comment#{c.id}")
     end
   end
-  
+
   def warn_user
     @c = Comment.find_by_id(params[:id])
     @user = c.user
     @user.comment_warn(@c, current_user)
   end
-  
+
   def unflag
     @tis_admin = true
     c = Comment.find_by_id(params[:id])
     c.update_attribute(:flagged, false)
     render :update do |page|
       page.hide("comment#{c.id}")
-    end    
+    end
   end
 
   def censor

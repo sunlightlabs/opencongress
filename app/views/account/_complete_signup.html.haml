@@ -10,7 +10,7 @@
     %p
       = f.label :password, 'Password'
       = f.password_field :password, :class => 'field'
-  
+
     %p
       = f.label :password_confirmation, 'Re-type password'
       = f.password_field :password_confirmation, :class => 'field'
@@ -22,7 +22,7 @@
       = f.text_field :zipcode, :class => 'field'
 
   %p
-    = f.check_box :accepted_tos
+    = f.check_box :accept_tos
     I agree to the <a href="/about/terms_of_service">Terms of Service</a> and <a href="/about/privacy_policy">Privacy Policy.</a>
 
   %p
@@ -30,6 +30,6 @@
     - if group_invite_id
       = hidden_field_tag 'group_invite_id', group_invite_id
     = f.submit 'Finish Sign-up', :class => 'large button silver'
-    
+
     - if action == 'facebook_complete'
       = link_to 'Cancel Facebook Connect', '/?fbcancel=true', :class => 'large button yellow margin-left'

@@ -3,48 +3,48 @@
 
    <%= error_messages_for :user %>
 
-		<label for="new_user_login">Choose a Username</label>
-  		<%= f.text_field :login, :id => 'new_user_login', :class => 'field', :size => 30 %>
-  		<p class="zip_tell">(no spaces or special characters)</p>
+    <label for="new_user_login">Choose a Username</label>
+      <%= f.text_field :login, :id => 'new_user_login', :class => 'field', :size => 30 %>
+      <p class="zip_tell">(no spaces or special characters)</p>
 
-  		<label for="new_user_password">Choose a Password</label>
-		<%= f.password_field :password, :id => 'new_user_password', :class => 'field', :size => 30 %>
+      <label for="new_user_password">Choose a Password</label>
+    <%= f.password_field :password, :id => 'new_user_password', :class => 'field', :size => 30 %>
 
-		<label for="user_password_confirmation">Confirm Password</label>
-  		<%= f.password_field :password_confirmation, :class => 'field', :size => 30 %>
+    <label for="user_password_confirmation">Confirm Password</label>
+      <%= f.password_field :password_confirmation, :class => 'field', :size => 30 %>
 
-		<label for="user_email">Email</label>
-  		<%= f.text_field :email, :class => 'field', :size => 30 %>
+    <label for="user_email">Email</label>
+      <%= f.text_field :email, :class => 'field', :size => 30 %>
 
-  		<label>Zip Code</label>
-  		<%= f.text_field :zipcode, :class => 'field', :size => 5, :maxlength => 5 %>
-  		<p class="zip_tell">(required, to find your Members of Congress)</p>
+      <label>Zip Code</label>
+      <%= f.text_field :zipcode, :class => 'field', :size => 5, :maxlength => 5 %>
+      <p class="zip_tell">(required, to find your Members of Congress)</p>
 
-  		<%= f.simple_captcha :label => "Spam check" %>
-  		<p class="zip_tell">(enter the text on the right in the field above)</p>
-  		<script>
-    		$j(document).ready(function() {
+      <%= f.simple_captcha :label => "Spam check" %>
+      <p class="zip_tell">(enter the text on the right in the field above)</p>
+      <script>
+        $j(document).ready(function() {
           $j('#user_captcha').addClass("field");
         });
       </script>
 
-  		<div class="clear margintop floatleft behave">	<br/>
-			<%= f.check_box :mailing, :style => "margin-top:-6px;", :class => "tick" %>
-			<label class="send" for="user_mailling">Send me major updates about OpenCongress <em>(optional, about one email per month)</em></label>
-		</div>
+      <div class="clear margintop floatleft behave"><br/>
+      <%= f.check_box :mailing, :style => "margin-top:-6px;", :class => "tick" %>
+      <label class="send" for="user_mailling">Send me major updates about OpenCongress <em>(optional, about one email per month)</em></label>
+    </div>
 
-  		<div class="clear margintop floatleft behave">	<br/>
-			<%= f.check_box :partner_mailing, :class => "tick" %>
-			<label class="send" for="user_mailling">Join the Participatory Politics Foundation and Sunlight Foundation email lists<em>(optional, hear about our new projects)</em></label>
-		</div>
+      <div class="clear margintop floatleft behave"><br/>
+      <%= f.check_box :partner_mailing, :class => "tick" %>
+      <label class="send" for="user_mailling">Join the Participatory Politics Foundation and Sunlight Foundation email lists<em>(optional, hear about our new projects)</em></label>
+    </div>
 
- 	<div class="clear margintop floatleft behave"><%= f.check_box :accept_tos, :class => "tick" %>
- 		<label class="toss" for "user_accept_tos" %>I agree to the <a href="/about/terms_of_service">Terms of Service</a> and <a href="/about/privacy_policy">Privacy Policy.</a></label>
-	</div>
+  <div class="clear margintop floatleft behave"><%= f.check_box :accept_tos, :class => "tick" %>
+    <label class="toss" for "user_accept_tos" %>I agree to the <a href="/about/terms_of_service">Terms of Service</a> and <a href="/about/privacy_policy">Privacy Policy.</a></label>
+  </div>
 
-	<input type="image" value="Register" class="floatright margintop behave clear" src="<%= image_path 'register.png' %>" />
+  <input type="image" value="Register" class="floatright margintop behave clear" src="<%= image_path 'register.png' %>" />
 
-	<div class="clear"><em>We will not share your email address with anyone for any reason.</em></div>
+  <div class="clear"><em>We will not share your email address with anyone for any reason.</em></div>
 
 </div>
 <% end %>

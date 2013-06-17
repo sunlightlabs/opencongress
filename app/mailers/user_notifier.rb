@@ -1,4 +1,5 @@
 class UserNotifier < ActionMailer::Base
+
   def signup_notification(user)
     setup_email(user)
     @subject    += 'Confirm Your OpenCongress Login'
@@ -21,7 +22,7 @@ class UserNotifier < ActionMailer::Base
     setup_email(user)
     @subject    += 'Your password has been reset'
   end
-  
+
   def comment_warning(user, comment)
     setup_email(user)
     @from = "\"OpenCongress Editors\" <writeus@opencongress.org>"

@@ -4960,6 +4960,9 @@ table.simple-table th, table.simple-table td {
   text-align: left;
 }
 
+.centered {
+  text-align: center;
+}
 
 .facebook_like {
   border:none;

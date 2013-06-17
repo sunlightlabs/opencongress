@@ -50,7 +50,7 @@
       <%= field_set_tag "Privacy Settings", {:id => "privacy_settings", :class => "tab-pane"} do %>
         <%= f.simple_fields_for :privacy_option, @user.privacy_option,
                                 :defaults => {:as => :select,
-                                              :collection => {"Private" => 0, "Friends" => 1, "Public" => 2 },
+                                              :collection => PrivacyOption::PRIVACY_OPTIONS,
                                               :prompt => nil,
                                               :input_html => { :class => 'select' } } do |p| %>
           <%= p.input :my_full_name, :label => "My name" %>

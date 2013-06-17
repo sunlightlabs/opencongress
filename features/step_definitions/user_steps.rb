@@ -13,9 +13,8 @@ Given /^an active non-tos user is logged in as "(.*)"$/ do |login|
       :password_confirmation => 'generic',
       :email => "dshettler-#{login}@gmail.com",
       :enabled => true,
-      :is_banned => false,
+      :status => 1,
       :accept_tos => false,
-      :accept_terms => true
     )
 
     # :create syntax for restful_authentication w/ aasm. Tweak as needed.
@@ -64,10 +63,11 @@ Given /^an active user is logged in as "(.*)"$/ do |login|
       :email => "dshettler-#{login}@gmail.com",
       :zipcode => '22204',
       :enabled => true,
-      :is_banned => false,
-      :accepted_tos => true,
-      :accept_terms => true
+      :accept_tos => "1"
     )
+    @current_user.accepted_tos_at = 10.minutes.ago
+    @current_user.status = 1
+    @current_user.save
 
     # :create syntax for restful_authentication w/ aasm. Tweak as needed.
     @current_user.activate!

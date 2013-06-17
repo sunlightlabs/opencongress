@@ -1,6 +1,11 @@
 class Bookmark < ActiveRecord::Base
   belongs_to :bookmarkable, :polymorphic => true
-  
+
+  scope :bills, includes(:bill).where(:bookmarkable_type => "Bill")
+  scope :committees, includes(:committee).where(:bookmarkable_type => "Committee")
+  scope :people, includes(:person).where(:bookmarkable_type => "Person")
+  scope :subjects, includes(:subject).where(:bookmarkable_type => "Subject")
+
   with_options :foreign_key => "bookmarkable_id" do |b|
     b.belongs_to :person, :include => :roles
     b.belongs_to :bill
@@ -33,8 +38,8 @@ class Bookmark < ActiveRecord::Base
   end
 
   def self.find_bookmarks_by_user_and_person_role(user,role)
-#      find_all_by_user_id(User.find_by_login(user).id, 
-#            :include => [:person => :roles], 
+#      find_all_by_user_id(User.find_by_login(user).id,
+#            :include => [:person => :roles],
 #            :conditions => ["bookmarkable_type = ? AND roles.role_type = ?", "Person", role])
       with_scope(:find => {:conditions => ["bookmarkable_type = 'Person' AND user_id = ?", user]}) do
          find(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", role])

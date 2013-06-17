@@ -14,10 +14,9 @@ describe Comment do
         :email => "commenttest@opencongress.org",
         :zipcode => '90039',
         :enabled => true,
-        :is_banned => false,
+        :status => 1,
         :accept_tos => true
       )
-      @user.accepted_tos = true
       @user.accepted_tos_at = Time.now
 
       @user.save

@@ -384,11 +384,11 @@ EOT
       if f.nil? && friend != current_user
         link_to_remote("Add #{friend_login} to Friends", options)
       elsif f.nil? && friend == current_user
-        ""
+        "This is you"
       elsif f.confirmed == true
-        "#{friend_login} is my friend"
+        "#{friend_login} is your friend"
       else
-        "#{friend_login} has yet to approve me"
+        "#{friend_login} has yet to approve you"
       end
     else
        link_to("Login", login_url) + " to add friends"

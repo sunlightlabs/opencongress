@@ -174,4 +174,235 @@ http_interactions:
       string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
     http_version: 
   recorded_at: Mon, 20 May 2013 20:37:26 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:55762/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Wed, 19 Jun 2013 20:58:45 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Wed, 19 Jun 2013 20:58:45 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:55762/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Wed, 19 Jun 2013 20:58:47 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Wed, 19 Jun 2013 20:58:47 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:55882/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Wed, 19 Jun 2013 21:03:29 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Wed, 19 Jun 2013 21:03:29 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:56091/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Wed, 19 Jun 2013 21:16:33 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Wed, 19 Jun 2013 21:16:33 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:56091/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Wed, 19 Jun 2013 21:16:34 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Wed, 19 Jun 2013 21:16:34 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:56240/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Wed, 19 Jun 2013 21:18:59 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Wed, 19 Jun 2013 21:18:59 GMT
+- request: 
+    method: get
+    uri: http://api.bit.ly/shorten?apiKey=<BITLY_KEY>&login=arossoc&longUrl=http://127.0.0.1:56240/articles/view/1466-House-Dems-take-on-Wall-Street-Bonuses
+    body: 
+      encoding: US-ASCII
+      string: ""
+    headers: 
+      Accept: 
+      - "*/*"
+      User-Agent: 
+      - Ruby
+  response: 
+    status: 
+      code: 200
+      message: OK
+    headers: 
+      Server: 
+      - nginx
+      Date: 
+      - Wed, 19 Jun 2013 21:19:00 GMT
+      Content-Type: 
+      - application/json; charset=utf-8
+      Connection: 
+      - keep-alive
+      Content-Length: 
+      - "86"
+      Etag: 
+      - "\"57f1f43314f868ec6dd816839010840abf696e4a\""
+    body: 
+      encoding: US-ASCII
+      string: "{\"errorCode\": 500, \"errorMessage\": \"INVALID_LOGIN\", \"results\": null, \"statusCode\": \"\"}"
+    http_version: 
+  recorded_at: Wed, 19 Jun 2013 21:19:00 GMT
 recorded_with: VCR 2.4.0

@@ -21,24 +21,24 @@
 </div>
 
 <div id="linkcontent">
-		<div class="my_left">
+    <div class="my_left">
 
 <h3 class="dark"><%= user_name("My", &:possessive) %> Letters to Congress</h3>
 
 <%= render :partial => 'contact_congress_letters/letters_list', :object => @user.contact_congress_letters %>
 
 
-		<h3 class="dark"><%= user_name("My", &:possessive) %> Comments</h3>
-		<p style="text-align:center;clear:both;"><%= will_paginate(@my_comments) %></p>
-		  <% if @my_comments.empty? %>
-		   <p style="clear:both;">No comments yet. You can add a comment on pages for any bill, Member of Congress, issues, and more. If you're looking to share your comments and votes with other people, they can easily track your actions on OpenCongress by subscribing to your personal RSS feed above.</p>
-		  <% end %>
-    	    <% logged_in? ? myscores = current_user.comment_scores.find(:all) : myscores = Array.new %>
+    <h3 class="dark"><%= user_name("My", &:possessive) %> Comments</h3>
+    <p style="text-align:center;clear:both;"><%= will_paginate(@my_comments) %></p>
+      <% if @my_comments.empty? %>
+       <p style="clear:both;">No comments yet. You can add a comment on pages for any bill, Member of Congress, issues, and more. If you're looking to share your comments and votes with other people, they can easily track your actions on OpenCongress by subscribing to your personal RSS feed above.</p>
+      <% end %>
+          <% logged_in? ? myscores = current_user.comment_scores.find(:all) : myscores = Array.new %>
 
-		  <% @my_comments.each do |com| %>
-           <%= render :partial => 'shared/comments_comment', :locals => {:object => com.commentable_type, :comment => com, :myscores => myscores } %>
-		<% end %>
-		<br />
+      <% @my_comments.each do |com| %>
+           <%= render :partial => 'shared/comments_comment', :locals => {:object => com.commentable, :comment => com, :myscores => myscores } %>
+    <% end %>
+    <br />
 
 <table style="width:250px;">
   <tr>
@@ -54,13 +54,13 @@
     <td><%= number_with_precision((@user.comments.length.to_f / (((((Time.now.to_i - @user.created_at.to_i) / 60 ) / 60 ) / 24) + 1).to_f), :precision => 2) %></td>
   </tr>
 </table>
-		</div>
-		<hr />
-	    <h3 class="dark"><%= user_name("My", &:possessive) %> Supported Bills</h3>
-	    <% if @bills_supported.empty? %>
-	      <p>No supported bills yet. You can vote "aye" at the top of any bill's page.</p>
-			<% else %>
-	    <p style="text-align:center;"><%= will_paginate(@bills_supported, {:param_name => "s_page"}) %> </p>
+    </div>
+    <hr />
+      <h3 class="dark"><%= user_name("My", &:possessive) %> Supported Bills</h3>
+      <% if @bills_supported.empty? %>
+        <p>No supported bills yet. You can vote "aye" at the top of any bill's page.</p>
+      <% else %>
+      <p style="text-align:center;"><%= will_paginate(@bills_supported, {:param_name => "s_page"}) %> </p>
     <table style="width:100%;" class="simple-table2" cellspacing="0">
       <tr>
         <th scope="col" align="left">Bill</th>
@@ -68,28 +68,28 @@
         <th scope="col" align="left">Last Action</th>
         <th scope="col"></th>
       </tr>
-			<% @bills_supported.each do |bill| %>
+      <% @bills_supported.each do |bill| %>
       <tr>
         <td>
           <%= link_to bill.typenumber, bill_path(bill) %>
           <%= bill.title_common %> <span class='date'>(<%= bill.session.ordinalize %> congress)</span>
         </td>
         <td><%= temp_url_strip(bill.status) %></td>
-				<td><%= bill.last_action.formatted_date %></td>
-				<td><%= button_to("Remove", :action => 'remove_vote', :id => bill.id) if current_user == @user %></td>
-			</tr>
+        <td><%= bill.last_action.formatted_date %></td>
+        <td><%= button_to("Remove", :action => 'remove_vote', :id => bill.id) if current_user == @user %></td>
+      </tr>
       <% end %>
 
     <% end %>
 
-	  <tr><td><h3 class="dark"><%= user_name("My", &:possessive) %> Opposed Bills</h3></td></tr>
-	    <% if @bills_opposed.empty? %>
-	      <tr><td><p>No opposed bills yet. You can vote "nay" at the top of any bill's page.</p></td></tr>
-			<% else %>
-				<% if @bills_supported.empty? %>
-					<table style="width:100%;" class="simple-table2" cellspacing="0">
-				<% end %>
-	    <tr><td style="border-bottom:none;"><%= will_paginate(@bills_supported, {:param_name => "s_page"}) %></td></tr>
+    <tr><td><h3 class="dark"><%= user_name("My", &:possessive) %> Opposed Bills</h3></td></tr>
+      <% if @bills_opposed.empty? %>
+        <tr><td><p>No opposed bills yet. You can vote "nay" at the top of any bill's page.</p></td></tr>
+      <% else %>
+        <% if @bills_supported.empty? %>
+          <table style="width:100%;" class="simple-table2" cellspacing="0">
+        <% end %>
+      <tr><td style="border-bottom:none;"><%= will_paginate(@bills_supported, {:param_name => "s_page"}) %></td></tr>
       <tr>
         <th scope="col" align="left">Bill</th>
         <th scope="col" align="left">Status</th>
@@ -107,9 +107,9 @@
         <td><%= button_to("Remove", :action => 'remove_vote', :id => bill.id) if current_user == @user %></td>
       </tr>
       <% end %>
-			<% end %>
+      <% end %>
            </table>
-			<br />
+      <br />
 
       <% end %>
     <hr />

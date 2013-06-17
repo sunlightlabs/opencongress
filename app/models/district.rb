@@ -57,7 +57,12 @@ class District < ActiveRecord::Base
         csv << ['STATE', 'DISTRICT', 'LOGIN', 'LAST LOGIN','TOTAL ACTIONS']
         District.find(:all, :order => ["state_id, district_number asc"]).each do |d|
            d.all_active_users.results.each do |u|
-             csv << [d.state.abbreviation,d.district_number,u.login,u.last_login.to_date.to_s,u.total_number_of_actions]
+             csv << [d.state.abbreviation,
+                     d.district_number,
+                     u.login,
+                     u.last_login.to_date.to_s,
+                     u.action_count
+                    ]
            end
         end
     end

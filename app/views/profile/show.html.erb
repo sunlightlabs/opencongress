@@ -15,7 +15,11 @@
 
     <div class="clear space">&nbsp;</div>
 
-    <%= link_to("Edit your profile", edit_profile_path(current_user), :class => "button small blue") if current_user == @user%>
+    <%= link_to("Edit your profile", edit_profile_path(current_user.login), :class => "button small blue") if current_user == @user %>
+    <%= button_to("Delete your account", destroy_profile_path(current_user.login), :method => :delete,
+                  :confirm => "Are you sure? This will irreversably delete your account and all of your shared content!",
+                  :class => "button small red",
+                  :style => "margin:14px 0 0") if current_user == @user %>
 
     <div id="about_me">
       <% if @user.can_view(:about_me, current_user) %>

@@ -44,6 +44,9 @@ class ProfileController < ApplicationController
   end
 
   def destroy
+    current_user.deactivate!
+    flash[:success] = 'Your profile has been deleted.'
+    redirect_to "/"
   end
 
   def howtouse
@@ -74,10 +77,7 @@ class ProfileController < ApplicationController
                       ORDER BY b.created_at", :per_page=>20, :page => params[:o_page])
 
     @title_class = "tab-nav"
-
     @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login.possessive} Actions"}
-
-
     @my_comments = Comment.paginate(:conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => params[:page])
   end
 
@@ -448,8 +448,8 @@ class ProfileController < ApplicationController
   end
 
   def delete_images
-    File.delete("public/images/users/#{current_user.main_picture}") if current_user.main_picture.present? rescue nil
-    File.delete("public/images/users/#{current_user.small_picture}") if current_user.small_picture.present? rescue nil
+    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.main_picture}") if current_user.main_picture.present? rescue nil
+    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.small_picture}") if current_user.small_picture.present? rescue nil
     current_user.main_picture = current_user.small_picture = nil
     current_user.save(:validate => false)
     if request.xhr?

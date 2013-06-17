@@ -14,7 +14,7 @@
   - def_fil = 5
   - def_fil = ( current_user.default_filter ? current_user.default_filter : 5 ) if logged_in?
   .commentfl{ :id => "comfl#{comment.id.to_s}", :style => "clear:both;float:none;#{'display:none;' if (def_fil <= comment.average_rating)}"}
-    %p 
+    %p
       Filtered Comment [
       = link_to_function "show", "new Effect.Appear('com#{comment.id.to_s}');Element.hide('comfl#{comment.id.to_s}');"
       ]
@@ -67,9 +67,9 @@
               })
             });
         - unless @simple_comments
-          = link_to '<span>Link</span>'.html_safe, preview ? '#' : url_for(comment.commentable_link.merge({:goto_comment => comment.id})), { :class => 'small_button' }
+          = link_to '<span>Link</span>'.html_safe, ((preview) ? '#' : url_for(comment.commentable_link.merge({:goto_comment => comment.id}))), { :class => 'small_button' }
         = link_to_remote "<span>Reply</span>".html_safe, :url => preview ? '#' : {:controller => 'comments', :action => 'showcomfield', :parent_id => comment.id, :object => object.id, :type => object.class.to_s}, :update => "com_" + comment.id.to_s, :complete => "Element.toggle('com_" + comment.id.to_s + "');", :html => { :class => 'small_button' }
-            
+
         .rate_comm{ :id => "rate_comment_#{comment.id.to_s}" }
           - if logged_in?
             - comment_score = myscores.select{ |s| s.comment_id == comment.id }.first
@@ -100,10 +100,10 @@
 
       .comm_comm_more
         = link_to_function "&darr;", "Element.hide('rates_show_#{comment.id}');new Effect.BlindDown('rates_more_#{comment.id}');off_#{comment.id.to_s}=true", :id => "rates_show_#{comment.id}", :class => "comm_more_tab"
-      
+
     .comm_rating{ :id => "rates_more_#{comment.id}", :style => "display:none;" }
       .comm_rating_inner
-        = link_to_function "&uarr;", "new Effect.BlindUp('rates_more_#{comment.id}');Element.show('rates_show_#{comment.id}');off_#{comment.id.to_s}=false", :class => "comm_more_tab less" 
+        = link_to_function "&uarr;", "new Effect.BlindUp('rates_more_#{comment.id}');Element.show('rates_show_#{comment.id}');off_#{comment.id.to_s}=false", :class => "comm_more_tab less"
         %span{ :id => "comm_overall_#{comment.id}" }
           Overall Rating:
           = number_with_precision(comment.average_rating,:precision => 1)
@@ -135,4 +135,3 @@
             = submit_tag "Spam", :value => "Spam"
           = submit_tag "Censor+BanIP", :value => "Censor+BanIP"
           = submit_tag "BanIP+Destroy User", :value => "BanIP+Destroy User"
-          

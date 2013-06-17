@@ -15,6 +15,7 @@
   .blue (associated with bills)
   .yellow (associated with senators)
   .orange (associated with reps)
+  .red (associated with scary actions)
 
   .tiny
 
@@ -294,9 +295,76 @@ border: 1px solid #f5e8d5;
   }
 
 
+/* Red */
 
+.red{
+  border: 1px solid #e26565;
+  background: #f89191;
+  background: rgba(255,51,51,0.3);
+  }
 
+.button.red{
+  border: 1px solid #e26565;
+  border-top: 1px solid #efa9a9;
+  border-bottom: 1px solid #e67a7a;
 
+  color: #490e0e;
+
+  -moz-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #fff5f5;
+  -webkit-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #fff5f5;
+  box-shadow:  0 1px 0px #e2e2e2, inset 0 1px 0px #fff5f5;
+
+  background: #e68f8f; /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffe5e5', endColorstr='#f2caca'); /* for IE */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffe5e5), to(#f2caca)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #ffe5e5,  #f2caca); /* for firefox 3.6+ */
+
+  text-shadow: 0 1px 0px #fff5f5;
+
+}
+
+.red a{
+  color: #490e0e;
+  }
+
+.button.red:hover{
+  border: 1px solid #cd5c5e;
+  border-top: 1px solid #de9ea0;
+  border-bottom: 1px solid #d67274;
+
+  color: #3b0b0c;
+
+  -moz-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #f2e9e9;
+  -webkit-box-shadow: 0 1px 0px #e2e2e2, inset 0 1px 0px #f2e9e9;
+  box-shadow:  0 1px 0px #e2e2e2, inset 0 1px 0px #f2e9e9;
+
+  background: #e68f8f; /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fbd7d9', endColorstr='#de9999'); /* for IE */
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#fbd7d9), to(#de9999)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #fbd7d9,  #de9999); /* for firefox 3.6+ */
+
+  text-shadow: 0 1px 0px #f5eded;
+  }
+
+.button.red:active,
+.active .button.red{
+  border: 1px solid #9fc9e5;
+  border-top: 1px solid #de9ea0;
+  border-bottom: 1px solid #d67274;
+
+  color: #3b0b0c;
+
+  -moz-box-shadow: 0 1px 0px #fff, inset 0 1px 1px #666;
+  -webkit-box-shadow: 0 1px 0px #fff, inset 0 1px 2px #666;
+  box-shadow:  0 1px 0px #fff, inset 0 1px 1px #666;
+
+  background: #e68f8f; /* for non-css3 browsers */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#de9999', endColorstr='#fbd7d9'); /* for IE */
+  background: -webkit-gradient(linear, left top, left bottom, from(#de9999), to(#fbd7d9)); /* for webkit browsers */
+  background: -moz-linear-gradient(top,  #de9999,  #fbd7d9); /* for firefox 3.6+ */
+
+  text-shadow: 0 1px 0px #f5eded;
+  }
 
 /* Removes text decoration /////////////////////////////////////////////////////////////*/
 

@@ -12,6 +12,7 @@ class BounceHandler < ActionMailer::Base
     end
   end
   private
+
   # Status codes starting with 5 are permanent errors
   def handle_permanent_failure(email)
     address = original_to(email)

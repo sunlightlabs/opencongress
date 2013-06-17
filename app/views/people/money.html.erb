@@ -39,7 +39,7 @@
       <%= render :partial => 'fundraiser', :object => f %>
     <% end %>
 
-    <div class="fundraiser_more_button"><p><%= link_to "<span>See all events (#{@fundraisers.size})</span>", { :controller => 'people', :action => 'fundraisers', :id => @person }, :class => 'med_button' %></p></div>
+    <div class="fundraiser_more_button"><p><span><%= link_to "See all events (#{@fundraisers.size})", { :controller => 'people', :action => 'fundraisers', :id => @person }, :class => 'med_button' %></span></p></div>
 
     <div class="partner_logo">
     <%= link_to image_tag('partners/opensecrets.png'), "http://opensecrets.org" %>

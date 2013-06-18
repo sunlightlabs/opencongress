@@ -22,8 +22,15 @@ defaults: &defaults
   govtrack_billtext_diff_path: /data/govtrack/bills.text.cmp
   oc_billtext_path: /data/opencongress/bills.text
   committee_reports_path: /data/committee_reports
-  unitedstates_legislators_repo_url: 'git://github.com/unitedstates/congress-legislators.git'
-  unitedstates_legislators_clone_path: '/data/unitedstates-legislators'
+  # The following two paths should contain a trailing slash
+  # If you run the unitedstates scrapers locally then leave
+  # the unitedstates_rsync_source blank and point unitedstates_data_path
+  # at the data directory for the scrapers.
+  # If the scrapers are run remotely then set unitedstates_rsync_source
+  # to the rsync URL for the data and set unitedstates_data_path to the
+  # directory to download the data to.
+  unitedstates_rsync_source: usdata@localhost:congress/data/
+  unitedstates_data_path: '/path/to/data/of/unitedstates/scrapers/'
 
   base_url: http://www.opencongress.org/
   api_host: api.opencongress.org

@@ -1,4 +1,0 @@
-div_id = "sector_contributions#{@id}"
-page.replace_html div_id, :partial => 'person_sector_list',
-  :object => @person_sector_list
-page.visual_effect :highlight, div_id, :duration => 1.5

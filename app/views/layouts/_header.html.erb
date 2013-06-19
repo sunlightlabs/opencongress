@@ -101,49 +101,51 @@
 
 <div id="nav" class="un">
 	<div class="left">
-		<div class="right">
-			<ul>
-				<li id="bill_nav"><%= link_to '<span>Bills</span>'.html_safe, :controller => 'bill', :action => :all  %></li>
-				<li id="sens_nav"><%= link_to '<span>Senators</span>'.html_safe, :controller => 'people', :action => :senators  %></li>
-				<li id="reps_nav"><%= link_to '<span>Representatives</span>'.html_safe, :controller => 'people', :action => :representatives  %></li>
-				<li id="vote_nav"><%= link_to '<span>Votes</span>'.html_safe, :controller => 'roll_call' %></li>		
-				<li id="ishu_nav"><%= link_to '<span>Issues</span>'.html_safe, :controller => 'issue' %></li>
-				<li id="comm_nav"><%= link_to '<span>Committees</span>'.html_safe, :controller => 'committee' %></li>
-				<li id="muny_nav"><%= link_to '<span>The Money Trail</span>'.html_safe, :controller => 'money_trail' %></li>
-				<li id="blog_nav" class="sub"><%= link_to '<span>Blog</span>'.html_safe, blogs_url %></li>
-        <li id="groups_nav" class="sub">
-          <%= link_to ('<span>Groups ' + image_tag('tool_arrow-trans.png', :alt => '&gt;') + '</span>').html_safe, groups_url %>
-          <ul class="sub">
-            <% if logged_in? %>
-              <% unless current_user.active_groups.empty? %>
-                <% current_user.active_groups.each do |g| %>
-                  <% group_link = "<span class='groupname'>#{g.name}</span>" %>
-                  <% group_link += "<span class='inline-count'>#{g.unviewed_posts(current_user)}</span>" if g.unviewed_posts(current_user) > 0 %>
-                  <li><%= link_to group_link.html_safe, group_path(g) %></li>
-                <% end %>
-                <li><%= link_to "<span>View all my groups</span>".html_safe, user_groups_path(current_user.login) %></li>
-              <% end %>
+    <ul>
+      <li id="bill_nav"><%= link_to '<span>Bills</span>'.html_safe, :controller => 'bill', :action => :all  %></li>
+      <li id="sens_nav"><%= link_to '<span>Senators</span>'.html_safe, :controller => 'people', :action => :senators  %></li>
+      <li id="reps_nav"><%= link_to '<span>Representatives</span>'.html_safe, :controller => 'people', :action => :representatives  %></li>
+      <li id="vote_nav"><%= link_to '<span>Votes</span>'.html_safe, :controller => 'roll_call' %></li>		
+      <li id="ishu_nav"><%= link_to '<span>Issues</span>'.html_safe, :controller => 'issue' %></li>
+      <li id="comm_nav"><%= link_to '<span>Committees</span>'.html_safe, :controller => 'committee' %></li>
+    </ul>
+  </div>
+  <div class="right">
+    <ul>
+      <li id="blog_nav" class="sub"><%= link_to '<span>Blog</span>'.html_safe, blogs_url %></li>
+      <li id="groups_nav" class="sub">
+      <%= link_to ('<span>Groups ' + image_tag('tool_arrow-trans.png', :alt => '&gt;') + '</span>').html_safe, groups_url %>
+      <ul class="sub">
+        <% if logged_in? %>
+          <% unless current_user.active_groups.empty? %>
+            <% current_user.active_groups.each do |g| %>
+              <% group_link = "<span class='groupname'>#{g.name}</span>" %>
+              <% group_link += "<span class='inline-count'>#{g.unviewed_posts(current_user)}</span>" if g.unviewed_posts(current_user) > 0 %>
+              <li><%= link_to group_link.html_safe, group_path(g) %></li>
             <% end %>
-            <li><%= link_to "<span>Start a New Group</span>".html_safe, new_group_path %></li>
-          </ul>
-        </li>
-				<li id="tool_nav" class="sub">		
-				<%= link_to ('<span>Resources ' + image_tag('tool_arrow-trans.png', :alt => '&gt;') + '</span>').html_safe, tools_path %>
-				<ul class="sub">
-  				<li id="wiki_nav"><%= link_to '<span>Wiki</span>'.html_safe, Settings.wiki_base_url  %></li>		
-					<li id="compare_nav"><%= link_to '<span>Vote Comparison</span>'.html_safe, :controller => 'people', :action => 'compare' %></li> 
-					<li id="widget_nav"><a href="/widgets"><span>Site Widgets</span></a></li>
-					<li id="states_nav"><%= link_to '<span>States</span>'.html_safe, states_path %></li>
-					<li id="howitworks_nav"><a href="/about/howtouse"><span>How-to Use OpenCongress</span></a></li>
-					<li id="twitter_nav"><a href="http://twitter.com/opencongress"><span>Follow Our Twitter</span></a></li>
-					<li id="allresources_nav"><%= link_to '<span><strong>All Resources</strong></span>'.html_safe, tools_path(:anchor => 'all') %></li>
-				</ul>
-				</li>
+            <li><%= link_to "<span>View all my groups</span>".html_safe, user_groups_path(current_user.login) %></li>
+          <% end %>
+        <% end %>
+        <li><%= link_to "<span>Start a New Group</span>".html_safe, new_group_path %></li>
+      </ul>
+      </li>
+      <li id="tool_nav" class="sub">		
+      <%= link_to ('<span>Resources ' + image_tag('tool_arrow-trans.png', :alt => '&gt;') + '</span>').html_safe, tools_path %>
+      <ul class="sub">
+        <li id="wiki_nav"><%= link_to '<span>Wiki</span>'.html_safe, Settings.wiki_base_url  %></li>		
+        <li id="compare_nav"><%= link_to '<span>Vote Comparison</span>'.html_safe, :controller => 'people', :action => 'compare' %></li> 
+        <li id="widget_nav"><a href="/widgets"><span>Site Widgets</span></a></li>
+        <li id="states_nav"><%= link_to '<span>States</span>'.html_safe, states_path %></li>
+        <li id="howitworks_nav"><a href="/about/howtouse"><span>How-to Use OpenCongress</span></a></li>
+        <li id="twitter_nav"><a href="http://twitter.com/opencongress"><span>Follow Our Twitter</span></a></li>
+        <li id="allresources_nav"><%= link_to '<span><strong>All Resources</strong></span>'.html_safe, tools_path(:anchor => 'all') %></li>
+      </ul>
+      </li>
 
-				<!--<li id="battle_nav" class="sub"><%= link_to '<span>Battle Royale</span>', :controller => 'battle_royale' %></li> -->
+      <!--<li id="battle_nav" class="sub"><%= link_to '<span>Battle Royale</span>', :controller => 'battle_royale' %></li> -->
 
-			</ul>
-		</div>
+    </ul>
 	</div>
+  <div class="clearfix"></div>
 </div>
 

@@ -893,10 +893,12 @@ a.small_button.small_arrow:active span{
 
 #nav .left{
   padding-left:3px;
+  float: left;
 
   }
 
 #nav .right{
+    float: right;
   }
 
 #nav ul{

@@ -1422,13 +1422,17 @@ class Person < ActiveRecord::Base
     LEFT JOIN
       (SELECT crp_interest_group_osid, SUM(crp_contrib_individual_to_candidate.amount)::integer as ind_contrib_total
       FROM crp_contrib_individual_to_candidate
-      WHERE cycle=? AND recipient_osid=? AND crp_contrib_individual_to_candidate.contrib_type IN ('10', '11', '15 ', '15', '15E', '15J', '22Y')
+      WHERE cycle=?
+        AND recipient_osid=?
+        AND crp_contrib_individual_to_candidate.contrib_type IN ('10', '11', '15 ', '15', '15E', '15J', '22Y')
       GROUP BY crp_interest_group_osid)
         top_ind_igs ON crp_interest_groups.osid=top_ind_igs.crp_interest_group_osid
     LEFT JOIN
       (SELECT crp_interest_group_osid, SUM(crp_contrib_pac_to_candidate.amount)::integer as pac_contrib_total
       FROM crp_contrib_pac_to_candidate
-      WHERE cycle=? AND recipient_osid=?
+      WHERE cycle=?
+        AND recipient_osid=?
+        AND contrib_type IN ('24K', '24R', '24Z')
       GROUP BY crp_interest_group_osid)
         top_pac_igs ON crp_interest_groups.osid=top_pac_igs.crp_interest_group_osid
     ORDER BY contrib_total DESC
@@ -1451,7 +1455,9 @@ class Person < ActiveRecord::Base
       FROM crp_industries
       INNER JOIN crp_interest_groups ON crp_industries.id=crp_interest_groups.crp_industry_id
       INNER JOIN crp_contrib_pac_to_candidate ON crp_interest_groups.osid=crp_contrib_pac_to_candidate.crp_interest_group_osid
-      WHERE crp_contrib_pac_to_candidate.cycle=? AND crp_contrib_pac_to_candidate.recipient_osid=?
+      WHERE crp_contrib_pac_to_candidate.cycle=?
+        AND crp_contrib_pac_to_candidate.recipient_osid=?
+        AND crp_contrib_pac_to_candidate.contrib_type IN ('24K', '24R', '24Z')
       GROUP BY crp_industries.id)
         top_pac_is ON crp_industries.id=top_pac_is.id
     ORDER BY contrib_total DESC

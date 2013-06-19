@@ -931,13 +931,17 @@ class Bill < ActiveRecord::Base
       LEFT JOIN 
         (SELECT recipient_osid, SUM(crp_contrib_individual_to_candidate.amount) as ind_contrib_total 
          FROM crp_contrib_individual_to_candidate
-         WHERE crp_interest_group_osid IN (?) AND cycle=? AND crp_contrib_individual_to_candidate.contrib_type IN ('10', '11', '15 ', '15', '15E', '15J', '22Y')
+         WHERE crp_interest_group_osid IN (?)
+           AND cycle=?
+           AND crp_contrib_individual_to_candidate.contrib_type IN ('10', '11', '15 ', '15', '15E', '15J', '22Y')
          GROUP BY recipient_osid) 
         top_recips_ind ON people.osid=top_recips_ind.recipient_osid
       LEFT JOIN
         (SELECT recipient_osid, SUM(crp_contrib_pac_to_candidate.amount) as pac_contrib_total 
          FROM crp_contrib_pac_to_candidate
-         WHERE crp_contrib_pac_to_candidate.crp_interest_group_osid IN (?) AND crp_contrib_pac_to_candidate.cycle=?
+         WHERE crp_contrib_pac_to_candidate.crp_interest_group_osid IN (?)
+           AND crp_contrib_pac_to_candidate.cycle=?
+           AND contrib_type IN ('24K', '24R', '24Z')
          GROUP BY crp_contrib_pac_to_candidate.recipient_osid) 
         top_recips_pac ON people.osid=top_recips_pac.recipient_osid
      WHERE people.title=?

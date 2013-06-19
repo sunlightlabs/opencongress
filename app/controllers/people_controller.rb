@@ -666,7 +666,7 @@ class PeopleController < ApplicationController
         ["Overview",{:action => 'show', :id => @person}],
         ["Wiki","#{@wiki_url}"],
         ["Votes",{:action => 'voting_history', :id => @person}],
-        ["Money Trail",{:action => 'money', :id => @person}],
+        ["Campaign Finance",{:action => 'money', :id => @person}],
         ["News <span>(#{news_blog_count(@person.news_article_count)})</span> & Blogs <span>(#{news_blog_count(@person.blog_article_count)})</span>",{:action => 'news_blogs', :id => @person}],
         ["Videos <span>(#{number_with_delimiter(@person.videos.size)})</span>",{:action => 'videos', :id => @person}],
         ["Comments <span>(#{@person.comments.size})</span>",{:action => 'comments', :id => @person}]

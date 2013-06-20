@@ -114,7 +114,6 @@ class AccountController < ApplicationController
 
       if current_user.state.present? and current_user.district.present?
         flash[:notice] = "Your Congressional District (#{new_district}) has been saved."
-        current_user.join_default_groups
         activate_redirect(user_profile_path(:login => current_user.login))
         return
       else
@@ -234,8 +233,6 @@ class AccountController < ApplicationController
         Friend.create_confirmed_friendship(@user, session[:invite].inviter)
         session[:invite] = nil
       end
-
-      @user.join_default_groups
 
       redirect_to(:controller => 'account', :action => 'confirm', :login => @user.login)
     else

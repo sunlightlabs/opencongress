@@ -49,6 +49,13 @@ class User < ActiveRecord::Base
   before_create :update_state_and_district
   after_create  :make_feed_key
   after_create  :create_privacy_option
+  after_save :join_default_groups, :if => Proc.new{|i|
+    i.state.present? && (
+      (i.is_active? && i.status_changed?) ||
+      (i.state_changed? || i.district_changed?)
+    )
+  }
+  # on ban or delete, clean up this user's associations with various parts of the site
   after_save Proc.new {
     privatize!
     destroy_comments!
@@ -218,14 +225,14 @@ class User < ActiveRecord::Base
 
   def join_default_groups
     if state.present?
-      state_group = State.find_by_abbreviation(state).group
+      state_group = State.find_by_abbreviation(state).group rescue nil
       unless state_group.nil? or state_group.users.include?(self)
         state_group.group_members.create(:user_id => id, :status => 'MEMBER')
       end
     end
 
     if district.present?
-      district_group = District.find_by_district_tag(district_tag).group
+      district_group = District.find_by_district_tag(district_tag).group rescue nil
       unless district_group.nil? or district_group.users.include?(self)
         district_group.group_members.create(:user_id => id, :status => 'MEMBER')
       end
@@ -563,7 +570,7 @@ class User < ActiveRecord::Base
   end
 
   def disable_mailing_list!
-    self.user_mailing_list.update_attribute(:status, UserMailingList::DISABLED)
+    self.user_mailing_list.update_attribute(:status, UserMailingList::DISABLED) rescue nil
   end
 
   def reassign_groups!

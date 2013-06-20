@@ -1,24 +1,26 @@
-#!/usr/bin/env ruby
-require 'dbi'
+require 'o_c_logger'
 
-dbh = DBI.connect("dbi:Pg:opencongress_development:localhost", "opencongress", "pcf123")
-
-lines = File.open("words.txt").readlines.map { |w| w.chomp }
-
-lines.shift
-
-
-fields = lines.map { |l| l.split(/,\s*/).map { |s| s.to_i } }
-
-count = 0
-
-dbh.do("BEGIN;")
-sth = dbh.prepare("INSERT INTO subject_relations (subject_id, related_subject_id, relation_count) values (?,?,?);")
-fields.each do |triple|
-  word, other_word, relation_count = triple
-  next if word == other_word
-  count += 1
-  puts "done with #{count}" if count % 1000 == 0
-    sth.execute(word,other_word,relation_count)
+if not File.exist?('words.txt')
+  OCLogger.log "Cannot find words.txt. I think you need to run find_related_words.rb"
+  exit
 end
-dbh.do("COMMIT;")
+
+SubjectRelation.transaction do
+  CSV(File.open('words.txt', 'r')).each_with_index do |record, idx|
+    if idx > 0
+      a, b, cnt = record
+
+      rel_ident = { :subject_id => a.to_i,
+                    :related_subject_id => b.to_i }
+      rel = SubjectRelation.where(rel_ident).first
+      if rel.nil?
+        rel = SubjectRelation.new(rel_ident)
+      end
+      rel.relation_count = cnt
+      rel.save!
+
+      OCLogger.log "Processed #{idx}" if idx % 10000 == 0
+    end
+  end
+end
+

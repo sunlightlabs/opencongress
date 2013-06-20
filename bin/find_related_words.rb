@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 
-require File.dirname(__FILE__) + '/../config/environment'
-
-grouped = BillSubject.find_all.map { |c| [c.subject_id, c.bill_id] }.group_by{|i| i[1]} #subject ids grouped into a hash by bill_id
+grouped = BillSubject.all.map { |c| [c.subject_id, c.bill_id] }.group_by{|i| i[1]} #subject ids grouped into a hash by bill_id
 
 hash = {}
 count = 0

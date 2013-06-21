@@ -107,6 +107,10 @@ group :production do
   gem 'newrelic_rpm'
 end
 
+group :production, :staging do
+  gem 'unicorn'
+end
+
 group :test, :development do
   gem 'pry'
   gem 'pry-nav'

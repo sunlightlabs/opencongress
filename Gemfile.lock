@@ -214,6 +214,7 @@ GEM
       jsmin (>= 1.0.1)
     jsmin (1.0.1)
     json (1.8.0)
+    kgio (2.8.0)
     launchy (2.3.0)
       addressable (~> 2.3)
     listen (1.1.2)
@@ -321,6 +322,7 @@ GEM
       rake (>= 0.8.7)
       rdoc (~> 3.4)
       thor (~> 0.14.4)
+    raindrops (0.11.0)
     rake (0.9.6)
     rash (0.4.0)
       hashie (~> 2.0.0)
@@ -380,6 +382,10 @@ GEM
       unf_ext
     unf_ext (0.0.6)
     unicode_utils (1.4.0)
+    unicorn (4.6.2)
+      kgio (~> 2.6)
+      rack
+      raindrops (~> 0.7)
     validates_captcha (0.9.7)
       actionpack (>= 2.3.2)
       activerecord (>= 2.3.2)
@@ -469,6 +475,7 @@ DEPENDENCIES
   thin
   titlecase
   unicode_utils
+  unicorn
   validates_captcha
   vcr
   webmock (~> 1.9.0)

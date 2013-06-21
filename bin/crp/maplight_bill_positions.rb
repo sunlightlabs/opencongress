@@ -3,13 +3,6 @@
 require 'hpricot'
 require 'open-uri'
 
-if __FILE__ == $0
-  require File.dirname(__FILE__) + '/../../config/environment'
-else
-  puts "Running from #{$0}"
-end
-
-
 begin
   response = nil;
   http = Net::HTTP.new('maplight.org')

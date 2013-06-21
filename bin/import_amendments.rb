@@ -1,5 +1,5 @@
 require 'o_c_logger'
-require 'unitedstates'
+require 'united_states'
 
 cong_num = Settings.available_congresses.sort.last
 amdt_file_paths = Dir.glob(File.join(Settings.unitedstates_data_path,

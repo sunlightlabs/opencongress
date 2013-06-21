@@ -1,5 +1,5 @@
 require 'o_c_logger'
-require 'unitedstates'
+require 'united_states'
 
 cmte_members_file_path = File.join(Settings.data_path,
                                    "congress-legislators",

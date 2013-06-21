@@ -12,7 +12,7 @@ module BillHelper
     when 'sconres' then '<div>Concurrent Resolution</div> <span>Senate</span>'
     end
   end
-  
+
   def bill_type_page_title(bill_type)
     case bill_type
     when 'hres' then 'Resolutions: House of Representatives'
@@ -27,7 +27,7 @@ module BillHelper
   end
 
   def bill_name(bill_type, number)
-    abbr = UnitedStates::Bills.Abbreviations[bill_type]
+    abbr = UnitedStates::Bills.abbreviation_for bill_type
     "#{abbr}#{number}"
   end
 
@@ -50,7 +50,7 @@ module BillHelper
       out += "<li><strong>#{bt.title_type.capitalize}:</strong> " +
              " #{bt.title}" + (bt.as != '' ? "<em> as #{bt.as}.</em>" : ".") + "</li>"
     end
-    
+
     out.html_safe
   end
 
@@ -71,13 +71,13 @@ module BillHelper
     %Q{<a href="#" id="bill_related_link" onclick="change_vis_text('bill_related_bills', 'bill_related_link', 'Show related bills', 'Hide related bills');return false">Show related bills</a>}
   end
 
-	def bill_related_list 
+	def bill_related_list
 		bill_limit = 6
 		text = partial_list(@bill.related_bills, :title_full_common, bill_limit,
 		"#{@bill.related_bills.size - bill_limit} more", "bill_related_extra",
 		"bill_related_more", "show", "bill", true, 75)
 	end
-	
+
   def bill_subject_list
     # item_limit is the initial number of items to show
     item_limit = 2
@@ -90,7 +90,7 @@ module BillHelper
 
   def bill_summary_with_more
     return "" if @bill.summary.blank?
-    
+
     summary_no_html = @bill.summary.gsub(/<\/?[^>]*>/, "")
     summary_no_html.gsub!(/"/, "\\\"")
     summary_no_html.gsub!(/'/, "&apos;")
@@ -105,13 +105,13 @@ module BillHelper
       else
         summary.gsub!(/"/, "\\\"")
         summary.gsub!(/'/, "&apos;")
-      
+
         out = "<script type='text/javascript'>
         $j().ready(function() {
         	$j('#bill_summary_extra').jqm({trigger: 'a.summary_trigger'});
         });
         </script>"
-        
+
         out += summary_no_html[0..290] + %Q{<span id="bill_summary_extra" class='jqmWindow scrolling'><div class="ie"><a href="#" class="jqmClose"><span>Close</span></a></div><h3>Official Summary</h3>#{summary}<br /><br /></span>...<a href="#" class="summary_trigger more"><strong>Read the Rest</strong></a>}
       end
     end
@@ -130,7 +130,7 @@ module BillHelper
     text += "</ul>"
 		return text
   end
-	
+
 	def issue_list(start,stop)
 		text = "<ul class='lined_list'>"
 		@bill.subjects[start..stop].each do |s|
@@ -141,7 +141,7 @@ module BillHelper
     text += "</ul>"
 		return text
 	end
-	
+
 	def committee_list(start,stop)
 		text = "<ul class='lined_list'>"
 		@bill.committees[start..stop].each do |c|
@@ -152,7 +152,7 @@ module BillHelper
     text += "</ul>"
 		return text
 	end
-    
+
   def bill_full_text_link
     #"http://thomas.loc.gov/cgi-bin/query/z?c#{@bill.session}:#{@bill.typenumber}:"
     url_for :controller => 'bill', :action => 'text', :id => @bill.ident
@@ -169,16 +169,16 @@ module BillHelper
       "#{@bill.summary.slice(0..299)} ... <a "
     end
   end
-  
+
   def action
     "Latest action: <span class='bill_action'>#{@bill.action}</span>."
   end
-  
+
   def sponsor
     "Sponsored by <span class='person_name'>#{@bill.sponsor.name}</span>."
   end
-  
-  
+
+
 	def bill_status_table(bill = @bill)
 		status_hash = bill.bill_status_hash
 		text = "<table border='0' cellpadding='0' cellspacing='0' id='bill-status'>"
@@ -199,7 +199,7 @@ module BillHelper
         text += %Q{<td class="divide #{s['class']}#{current}"><span>&nbsp;</span></td><td class="#{s['class']}">}
         unless s['roll_id'].blank?
           text += %Q{<a href="/roll_call/show/#{s['roll_id']}">}
-        end  
+        end
         text += %Q{<table class="info" cellpadding="0" cellspacing="0"><tr><td>#{s['text'].gsub(/\s/, "<br/>")}</td></tr>}
         text += "</table>"
         unless s['roll_id'].blank?
@@ -234,7 +234,7 @@ module BillHelper
   		end
   	end
     text += "</tr></table><br />"
-    
+
     return text
   end
 

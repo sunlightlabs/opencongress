@@ -1,8 +1,8 @@
 require 'o_c_logger'
 require 'json'
 require 'date'
-require 'unitedstates'
-  
+require 'united_states'
+
 ARGV.each do |path|
   if File.exist? path
     OCLogger.log "Importing bill from #{path}"

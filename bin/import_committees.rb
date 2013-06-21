@@ -1,5 +1,5 @@
 require 'o_c_logger'
-require 'unitedstates'
+require 'united_states'
 
 $latest_congress = Settings.available_congresses.sort.last
 

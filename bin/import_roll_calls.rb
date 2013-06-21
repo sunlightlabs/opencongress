@@ -1,7 +1,7 @@
 require 'o_c_logger'
 require 'json'
 require 'date'
-require 'unitedstates'
+require 'united_states'
 
 cong_num = Settings.available_congresses.sort.last
 

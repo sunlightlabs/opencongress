@@ -1,14 +1,14 @@
+require_dependency 'wiki_connection'
+require_dependency 'united_states'
+
 class Bill < ActiveRecord::Base
   include ViewableObject
-  
-  require 'wiki_connection'
-  require 'unitedstates'
-  
+
   # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
   #              :facets => [:bill_type, :session], :auto_commit => false
 
   belongs_to :sponsor, :class_name => "Person", :foreign_key => :sponsor_id
-  has_many :bill_titles  
+  has_many :bill_titles
   has_many :bill_cosponsors
   has_many :co_sponsors, :through => :bill_cosponsors, :source => :person, :order => 'lastname'
   has_many :actions, :order => 'actions.datetime ASC'
@@ -28,9 +28,9 @@ class Bill < ActiveRecord::Base
   has_one  :last_action, :class_name => "Action", :order => "actions.date DESC"
   has_many :most_recent_actions, :class_name => "Action", :order => "actions.date DESC", :limit => 5
   has_many :talking_points, :as => :talking_pointable
-  
+
   has_many :bill_text_versions
-  
+
   with_options :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC' do |c|
     c.has_many :news, :as => :commentariable, :conditions => "commentaries.is_ok = 't' AND commentaries.is_news='t'"
     c.has_many :blogs, :as => :commentariable, :conditions => "commentaries.is_ok = 't' AND commentaries.is_news='f'"
@@ -47,41 +47,41 @@ class Bill < ActiveRecord::Base
   has_many :committee_meetings, :through => :committee_meetings_bills
 
   has_many :committee_reports
-  
+
   has_one :bill_stats
   has_one :bill_fulltext
-  
+
   has_many :friend_emails,
         :as => :emailable,
         :order => 'created_at'
-  
+
   belongs_to :hot_bill_category, :class_name => "PvsCategory", :foreign_key => :hot_bill_category_id
   belongs_to :key_vote_category, :class_name => "PvsCategory", :foreign_key => :key_vote_category_id
-  
+
   has_many :bill_interest_groups,
         :include => :crp_interest_group,
         :order => 'crp_interest_groups.order',
         :dependent => :destroy
   has_many :bill_position_organizations, :dependent => :destroy
-  
+
   has_one :wiki_link, :as => "wikiable"
-  
+
   has_many :contact_congress_letters, :as => :contactable
-  
+
   alias :blog :blogs
-  
+
   attr_accessor :search_relevancy
   attr_accessor :tmp_search_desc
-  
+
   attr_accessor :wiki_summary_holder
 
   @@DISPLAY_OBJECT_NAME = 'Bill'
-  
+
   #Added these back in to make govtrack bill import work to get the bill text that is marked up with the right paragraph ids
   @@TYPES = {"h" => "H.R.", "s" => "S.", "hj" => "H.J.Res.", "sj" => "S.J.Res.", "hc" => "H.Con.Res.", "sc" => "S.Con.Res.", "hr" => "H.Res.", "sr" => "S.Res."}
   @@TYPES_ORDERED = [ "s", "sj",  "sc",  "sr", "h", "hj", "hc", "hr" ]
 
-  def reverse_abbrev_lookup  
+  def reverse_abbrev_lookup
       lookup =  {
         "hconres" => "hc",
         "hjres" => "hj",
@@ -95,33 +95,33 @@ class Bill < ActiveRecord::Base
     return lookup[self.bill_type]
   end
 
-#This can also be removed when we completely get rid of GovTrack 
+#This can also be removed when we completely get rid of GovTrack
   def Bill.get_types_ordered
     return @@TYPES_ORDERED
   end
- 
-  def Bill.get_types_ordered_new 
-    return UnitedStates::Bills.Abbreviations
+
+  def Bill.get_types_ordered_new
+    return UnitedStates::Bills::ABBREVIATIONS
   end
-               
+
   class << self
     def all_types
-      UnitedStates::Bills.Abbreviations.keys
+      UnitedStates::Bills::ABBREVIATIONS.keys
     end
-  
+
     def all_types_ordered
-      sorted_pairs = UnitedStates::Bills.Abbreviations.sort_by do |k, v|
+      sorted_pairs = UnitedStates::Bills::ABBREVIATIONS.sort_by do |k, v|
         v.length
       end
       Hash[sorted_pairs].keys
     end
-  
+
     def in_senate
-      UnitedStates::Bills.Abbreviations.keys[4..7]
+      UnitedStates::Bills::ABBREVIATIONS.keys[4..7]
     end
 
     def in_house
-      UnitedStates::Bills.Abbreviations.keys[0..3]
+      UnitedStates::Bills::ABBREVIATIONS.keys[0..3]
     end
   end
 
@@ -130,7 +130,7 @@ class Bill < ActiveRecord::Base
   end
 
 #  before_save :update_bill_fulltext_search_table
- 
+
   def update_bill_fulltext_search_table
     if self.id
       # when the bill is new, the bill titles will have just been added to the DB.
@@ -138,18 +138,18 @@ class Bill < ActiveRecord::Base
       # option on the association does not seem to work.)  if there is a better way
       # if should be implemented
       bts = BillTitle.find_by_sql(["SELECT bill_titles.* FROM bill_titles WHERE bill_id=?", id])
-  
+
       stripped_type = type_name_govtrack.gsub(/[\.\/]+/,"").downcase # ie, 'hconres'
-     
-      self.build_bill_fulltext if self.bill_fulltext.nil? 
+
+      self.build_bill_fulltext if self.bill_fulltext.nil?
       self.bill_fulltext.fulltext = "#{type_name_govtrack}#{number} #{type_name_govtrack} #{number} #{bill_type}#{number} #{stripped_type}#{number} #{stripped_type} #{number} #{bts.collect(&:title).join(" ")} #{plain_language_summary}"
       self.bill_fulltext.save
-    
+
       # also, set the lastaction field unless it's a brand new record
       self.lastaction = last_action.date if last_action
     end
   end
-  
+
   def display_object_name
     @@DISPLAY_OBJECT_NAME
   end
@@ -159,34 +159,34 @@ class Bill < ActiveRecord::Base
     if versions.empty?
       return nil
     end
-        
+
     v = bill_text_versions.find(:first, :conditions => ["bill_text_versions.previous_version=?", versions.first.version])
     until v.nil?
       versions << v
       v = bill_text_versions.find(:first, :conditions => ["bill_text_versions.previous_version=?", v.version])
     end
-    
+
     versions.last
   end
-  
+
   def current_cosponsor_count
     bill_cosponsors.where("bills_cosponsors.date_withdrawn IS NULL").size
   end
-  
+
   def top_rated_news_items
-     ids = CommentaryRating.count(:id, :group => "commentaries.id", 
-                            :include => "commentary", 
+     ids = CommentaryRating.count(:id, :group => "commentaries.id",
+                            :include => "commentary",
                             :conditions => ["commentaries.commentariable_id = ? AND commentaries.commenariable_type='Bill' AND commentaries.is_news = ?", self.id, true], :order => "count_id DESC").collect {|p| p[1] > 1 ? p[0] : nil }.compact
-     coms = CommentaryRating.calculate(:avg, :rating, 
+     coms = CommentaryRating.calculate(:avg, :rating,
                                        :include => "commentary", :conditions => ["commentary_id in (?)", ids],
                                        :group => "commentaries.id", :order => "avg_rating DESC")
   end
 
   def top_rated_blog_items
-     ids = CommentaryRating.count(:id, :group => "commentaries.id", 
-                            :include => "commentary", 
+     ids = CommentaryRating.count(:id, :group => "commentaries.id",
+                            :include => "commentary",
                             :conditions => ["commentaries.commentariable_id = ? AND commentaries.commenariable_type='Bill' AND commentaries.is_news = ?", self.id, false], :order => "count_id DESC").collect {|p| p[1] > 1 ? p[0] : nil }.compact
-     coms = CommentaryRating.calculate(:avg, :rating, 
+     coms = CommentaryRating.calculate(:avg, :rating,
                                        :include => "commentary", :conditions => ["commentary_id in (?)", ids],
                                        :group => "commentaries.id", :order => "avg_rating DESC")
   end
@@ -195,11 +195,11 @@ class Bill < ActiveRecord::Base
     ids = CommentaryRating.count(:id, :group => "commentaries.commentariable_id", :include => "commentary", :conditions => "commentaries.commentariable_type='Bill'", :order => "count_id DESC").collect {|p| p[0]}
     find_all_by_id(ids)
   end
-  
+
   def is_house_bill?
     bill_type.include? "h"
   end
-  
+
   def is_senate_bill?
     bill_type.include? "s"
   end
@@ -214,7 +214,7 @@ class Bill < ActiveRecord::Base
 
   def wiki_url
     link = ""
-    
+
     unless self.wiki_link
       # check for the link in the wiki DB
       wiki_link = Wiki.wiki_link_for_bill(self.session, "#{self.bill_type.upcase}#{self.number}")
@@ -227,7 +227,7 @@ class Bill < ActiveRecord::Base
     else
       link = "#{Settings.wiki_base_url}/#{self.wiki_link.name}"
     end
-    
+
     return link
 
   end
@@ -242,27 +242,27 @@ class Bill < ActiveRecord::Base
         wiki_summary_holder = w
       end
     end
-    
+
     return wiki_summary_holder
   end
 
   def text_comments_count
-    Bill.count_by_sql(["SELECT count(*) FROM bill_text_versions INNER JOIN bill_text_nodes ON bill_text_nodes.bill_text_version_id=bill_text_versions.id 
-                  INNER JOIN comments ON comments.commentable_id=bill_text_nodes.id 
+    Bill.count_by_sql(["SELECT count(*) FROM bill_text_versions INNER JOIN bill_text_nodes ON bill_text_nodes.bill_text_version_id=bill_text_versions.id
+                  INNER JOIN comments ON comments.commentable_id=bill_text_nodes.id
                   WHERE bill_text_versions.bill_id=? AND comments.commentable_type='BillTextNode'", self.id])
   end
-  
+
   def recent_activity(since = nil)
     items = []
     actions.find(:all, :conditions => ["created_at >= ?", since], :order => "datetime desc")
     items = actions
     items
   end
-  
+
   def recent_activity_mini_list(since = nil)
     host = "dev.opencongress.org"
     host = "www.opencongress.org" if Rails.env.production?
-    
+
     items = []
     self.recent_activity(since).each do |i|
         items << {:sort_date => i.datetime.to_date, :content => i.to_s, :link => {:host => host, :only_path => false, :controller => 'bill', :action => 'show', :id => self.ident}}
@@ -280,8 +280,8 @@ class Bill < ActiveRecord::Base
     my_trackers = 0
 
     begin
-      users = User.find_by_solr('placeholder:placeholder', :facets => {:fields => [:my_people_tracked, :my_issues_tracked, :my_bills_tracked], 
-                                                        :browse => ["my_bills_tracked:#{self.ident}"], 
+      users = User.find_by_solr('placeholder:placeholder', :facets => {:fields => [:my_people_tracked, :my_issues_tracked, :my_bills_tracked],
+                                                        :browse => ["my_bills_tracked:#{self.ident}"],
                                                         :limit => 6, :zeros => false, :sort =>  true}, :limit => 1)
       facets = users.facets
     rescue
@@ -293,10 +293,10 @@ class Bill < ActiveRecord::Base
 
     facet_results_ff = facets['facet_fields']
     if facet_results_ff && facet_results_ff != []
-      
+
       facet_results_ff.each do |fkey, fvalue|
         facet_results = facet_results_ff[fkey]
-      
+
         #solr running through acts as returns as a Hash, or an array if running through tomcat...hence this stuffs
         facet_results_temp_hash = Hash[*facet_results] unless facet_results.class.to_s == "Hash"
         facet_results_temp_hash = facet_results if facet_results.class.to_s == "Hash"
@@ -313,50 +313,50 @@ class Bill < ActiveRecord::Base
             end
           end
         end
-      end      
+      end
     else
       return [my_trackers,{}]
     end
- 
+
     unless facet_results_hsh.empty?
       #sort the hashes
       facet_results_hsh[:my_people_tracked_facet].sort!{|a,b| b[:trackers]<=>a[:trackers] }
       facet_results_hsh[:my_issues_tracked_facet].sort!{|a,b| b[:trackers]<=>a[:trackers] }
       facet_results_hsh[:my_bills_tracked_facet].sort!{|a,b| b[:trackers]<=>a[:trackers] }
-  
+
       return [my_trackers, facet_results_hsh]
     else
       return [my_trackers,{}]
     end
   end
-  
+
   def support_suggestions
     # temporarily removing solr for now - June 2012
     return [0, {}]
-    
+
     begin
       users = User.find_by_solr('placeholder:placeholder',
-        :facets => {:fields => [:my_bills_supported, :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens, :my_bills_opposed], 
-        :browse => ["my_bills_supported:#{self.id}"], 
+        :facets => {:fields => [:my_bills_supported, :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens, :my_bills_opposed],
+        :browse => ["my_bills_supported:#{self.id}"],
         :limit => 6, :zeros => false, :sort =>  true}, :limit => 1)
         logger.debug users.to_yaml
     rescue
       return [0, {}] unless Rails.env == 'production'
       raise
     end
-                                                      
+
     return parse_facets(users.facets, "my_bills_supported_facet", ["my_approved_reps_facet","my_approved_sens_facet","my_disapproved_reps_facet","my_disapproved_sens_facet",
                                                                    "my_bills_supported_facet", "my_bills_opposed_facet"])
-    
+
   end
-  
+
   def oppose_suggestions
     # temporarily removing solr for now - June 2012
     return [0, {}]
-    
+
     begin
-      users = User.find_by_solr('placeholder:placeholder', :facets => {:fields => [:my_bills_supported, :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens, :my_bills_opposed], 
-            :browse => ["my_bills_opposed:#{self.id}"], 
+      users = User.find_by_solr('placeholder:placeholder', :facets => {:fields => [:my_bills_supported, :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens, :my_bills_opposed],
+            :browse => ["my_bills_opposed:#{self.id}"],
             :limit => 6, :zeros => false, :sort =>  true}, :limit => 1)
             logger.debug users.to_yaml
     rescue
@@ -364,10 +364,10 @@ class Bill < ActiveRecord::Base
       raise
     end
 
-                                                      
+
     return parse_facets(users.facets, "my_bills_opposed_facet", ["my_approved_reps_facet","my_approved_sens_facet","my_disapproved_reps_facet","my_disapproved_sens_facet",
                                                                  "my_bills_supported_facet", "my_bills_opposed_facet"])
-        
+
   end
 
   def parse_facets(facets, primary_facet, selected_facets)
@@ -379,7 +379,7 @@ class Bill < ActiveRecord::Base
     facet_results_ff = facets['facet_fields']
 
     if facet_results_ff && facet_results_ff != []
-      
+
       facet_results_ff.each do |fkey, fvalue|
         facet_results = facet_results_ff[fkey]
         #solr running through acts as returns as a Hash, or an array if running through tomcat...hence this stuffs
@@ -397,37 +397,37 @@ class Bill < ActiveRecord::Base
             end
           end
         end
-      end      
+      end
     else
       return [my_trackers,{}]
     end
- 
+
     unless facet_results_hsh.empty?
       #sort the hashes
       selected_facets.each do |s|
         facet_results_hsh[s.to_sym].sort!{|a,b| b[:trackers]<=>a[:trackers] }
       end
-  
+
       return [my_trackers, facet_results_hsh]
     else
       return [my_trackers,{}]
-    end    
+    end
   end
 
   def to_light_xml(options = {})
     default_options = {:except => [:rolls, :hot_bill_category_id, :summary, :fti_titles,:bookmark_count_2,
-                                   :fti_names,:current_support_pb, :support_count_1, :rolls, :hot_bill_category_id, 
-                                   :support_count_2, :vote_count_2], 
+                                   :fti_names,:current_support_pb, :support_count_1, :rolls, :hot_bill_category_id,
+                                   :support_count_2, :vote_count_2],
                                 :methods => [:title_full_common, :status, :ident]
                                 }
     self.to_xml(default_options.merge(options))
   end
 
   def to_medium_xml(options = {})
-    default_options = {:except => [:rolls, :hot_bill_category_id, :summary, :fti_titles], 
-                                :methods => [:title_full_common, :status, :ident], 
-                                :include => {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]}, 
-                                             :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]}, 
+    default_options = {:except => [:rolls, :hot_bill_category_id, :summary, :fti_titles],
+                                :methods => [:title_full_common, :status, :ident],
+                                :include => {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]},
+                                             :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]},
                                              :bill_titles => {},
                                              :most_recent_actions => {}
                                              }
@@ -444,35 +444,35 @@ class Bill < ActiveRecord::Base
        find_by_sql(["select bills.*, total_actions.action_count as actionn_count,
                         total_blogs.blog_count as blogss_count, total_news.news_count as newss_count,
                         total_comments.comments_count as commentss_count from bills
-                    LEFT OUTER JOIN (select count(actions.id) as action_count, 
-                        actions.bill_id as bill_id_1 FROM actions WHERE 
-                        actions.datetime > '#{time_since.to_s(:db)}' 
+                    LEFT OUTER JOIN (select count(actions.id) as action_count,
+                        actions.bill_id as bill_id_1 FROM actions WHERE
+                        actions.datetime > '#{time_since.to_s(:db)}'
                         AND actions.bill_id in (#{ids.join(",")})
-                        group by bill_id_1) total_actions ON 
-                        total_actions.bill_id_1 = bills.id 
+                        group by bill_id_1) total_actions ON
+                        total_actions.bill_id_1 = bills.id
                     LEFT OUTER JOIN (select count(commentaries.id) as blog_count,
                         commentaries.commentariable_id as bill_id_2 FROM commentaries WHERE
                         commentaries.commentariable_id IN (#{ids.join(",")}) AND
                         commentaries.commentariable_type='Bill' AND
                         commentaries.is_ok = 't' AND commentaries.is_news='f' AND
-                        commentaries.date > '#{time_since.to_s(:db)}' 
-                        group by commentaries.commentariable_id) 
-                        total_blogs ON total_blogs.bill_id_2 = bills.id 
+                        commentaries.date > '#{time_since.to_s(:db)}'
+                        group by commentaries.commentariable_id)
+                        total_blogs ON total_blogs.bill_id_2 = bills.id
                     LEFT OUTER JOIN (select count(commentaries.id) as news_count,
                         commentaries.commentariable_id as bill_id_3 FROM commentaries WHERE
                         commentaries.commentariable_id IN (#{ids.join(",")}) AND
                         commentaries.commentariable_type='Bill' AND
                         commentaries.is_ok = 't' AND commentaries.is_news='t' AND
-                        commentaries.date > '#{time_since.to_s(:db)}' 
+                        commentaries.date > '#{time_since.to_s(:db)}'
                         group by commentaries.commentariable_id)
-                        total_news ON total_news.bill_id_3 = bills.id 
+                        total_news ON total_news.bill_id_3 = bills.id
                     LEFT OUTER JOIN (select count(comments.id) as comments_count,
                         comments.commentable_id as bill_id_4 FROM comments WHERE
                         comments.created_at > '#{time_since.to_s(:db)}' AND
                         comments.commentable_id in (#{ids.join(",")}) AND
                         comments.commentable_type = 'Bill' GROUP BY comments.commentable_id)
                         total_comments ON total_comments.bill_id_4 = bills.id WHERE bills.id IN (?)", current_user.bill_bookmarks.collect{|p| p.bookmarkable_id}])
-    end 
+    end
 
     # return bill actions since last X
     def find_user_data_for_tracked_bill(bill, current_user)
@@ -480,38 +480,38 @@ class Bill < ActiveRecord::Base
        time_since = 200.days.ago if Rails.env.development?
        find_by_id(bill.id,
                       :select => "bills.*, (select count(actions.id) from actions where actions.datetime > '#{time_since.to_s(:db)}' AND bill_id = #{bill.id} ) as action_count,
-                          (select count(commentaries.id) FROM commentaries 
+                          (select count(commentaries.id) FROM commentaries
                                WHERE commentaries.commentariable_id = #{bill.id}
                                  AND commentaries.commentariable_type='Bill'
-                                 AND commentaries.is_ok = 't' 
+                                 AND commentaries.is_ok = 't'
                                  AND commentaries.is_news='f'
                                  AND commentaries.date > '#{time_since.to_s(:db)}') as blog_count,
-                          (select count(commentaries.id) FROM commentaries 
+                          (select count(commentaries.id) FROM commentaries
                                WHERE commentaries.commentariable_id = #{bill.id}
                                   AND commentaries.commentariable_type='Bill'
-                                  AND commentaries.is_ok = 't' 
+                                  AND commentaries.is_ok = 't'
                                   AND commentaries.is_news='t'
                                   AND commentaries.date > '#{time_since.to_s(:db)}') as newss_count,
                           (select count(comments.id) FROM comments
                                WHERE comments.created_at > '#{time_since.to_s(:db)}'
                                  AND comments.commentable_type='Bill'
                                  AND comments.commentable_id = #{bill.id}) as comment_count")
-    end                          
-    
+    end
+
     def find_all_by_most_user_votes_for_range(range, options)
       range = 2.years.to_i if range.nil?
-      possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc", 
-                         "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc", 
+      possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
+                         "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
                          "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
       logger.debug options.to_yaml
       order = options[:order] ||= "vote_count_1 desc"
       search = options[:search]
       if possible_orders.include?(order)
-    
+
         limit = options[:limit] ||= 20
         offset = options[:offset] ||= 0
         not_null_check = order.split(' ').first
-    
+
         query = "
             SELECT
               bills.*,
@@ -523,80 +523,80 @@ class Bill < ActiveRecord::Base
               comments_total.total_comments as total_comments,
               current_period_book.bookmark_count_1 as bookmark_count_1,
               previous_period.vote_count_2 as vote_count_2,
-              previous_period.support_count_2 as support_count_2, 
+              previous_period.support_count_2 as support_count_2,
               total_supported.total_support as total_opposed,
               total_counted.total_count as total_count
             FROM
               #{search ? "bill_fulltext," : ""}
-              bills 
+              bills
             INNER JOIN (
-              select bill_votes.bill_id  as bill_id_1, 
-              count(bill_votes.bill_id) as vote_count_1, 
+              select bill_votes.bill_id  as bill_id_1,
+              count(bill_votes.bill_id) as vote_count_1,
               sum(bill_votes.support) as support_count_1,
-              (count(bill_votes.bill_id) - sum(bill_votes.support)) as current_support_pb  
-              FROM bill_votes 
+              (count(bill_votes.bill_id) - sum(bill_votes.support)) as current_support_pb
+              FROM bill_votes
               WHERE created_at > ? group by bill_id_1)
             current_period ON bills.id = current_period.bill_id_1
             LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_3, 
-              sum(bill_votes.support) as total_support 
-              FROM bill_votes 
-              GROUP BY bill_votes.bill_id) 
+              select bill_votes.bill_id as bill_id_3,
+              sum(bill_votes.support) as total_support
+              FROM bill_votes
+              GROUP BY bill_votes.bill_id)
             total_supported ON bills.id = total_supported.bill_id_3
             LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_4, 
-              count(bill_votes.support) as total_count 
-              FROM bill_votes 
-              GROUP BY bill_votes.bill_id) 
+              select bill_votes.bill_id as bill_id_4,
+              count(bill_votes.support) as total_count
+              FROM bill_votes
+              GROUP BY bill_votes.bill_id)
             total_counted ON bills.id = total_counted.bill_id_4
             LEFT OUTER JOIN (
               select comments.commentable_id as bill_id_5,
-              count(comments.id) as total_comments 
-              FROM comments 
-              WHERE created_at > ? AND 
-              comments.commentable_type = 'Bill' 
-              GROUP BY comments.commentable_id) 
-            comments_total ON bills.id = comments_total.bill_id_5 
+              count(comments.id) as total_comments
+              FROM comments
+              WHERE created_at > ? AND
+              comments.commentable_type = 'Bill'
+              GROUP BY comments.commentable_id)
+            comments_total ON bills.id = comments_total.bill_id_5
             LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_2, 
-              count(bill_votes.bill_id) as vote_count_2, 
-              sum(bill_votes.support) as support_count_2 
-              FROM bill_votes 
-              WHERE created_at > ? AND 
-              created_at <= ? 
-              GROUP BY bill_id_2) 
+              select bill_votes.bill_id as bill_id_2,
+              count(bill_votes.bill_id) as vote_count_2,
+              sum(bill_votes.support) as support_count_2
+              FROM bill_votes
+              WHERE created_at > ? AND
+              created_at <= ?
+              GROUP BY bill_id_2)
             previous_period ON bills.id = previous_period.bill_id_2
             LEFT OUTER JOIN (
-              select bookmarks.bookmarkable_id as bill_id_1, 
-               count(bookmarks.bookmarkable_id) as bookmark_count_1 
+              select bookmarks.bookmarkable_id as bill_id_1,
+               count(bookmarks.bookmarkable_id) as bookmark_count_1
                FROM bookmarks
                    WHERE created_at > ?
-               GROUP BY bill_id_1) 
+               GROUP BY bill_id_1)
             current_period_book ON bills.id = current_period_book.bill_id_1
             WHERE #{not_null_check} IS NOT NULL
             #{search ? "AND bill_fulltext.fti_names @@ to_tsquery('english', ?)
             AND bills.id = bill_fulltext.bill_id" : ""}
-            ORDER BY #{order} 
-            LIMIT #{limit} 
+            ORDER BY #{order}
+            LIMIT #{limit}
             OFFSET #{offset}"
-    
+
         query_params = [range.seconds.ago,range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, range.seconds.ago]
-    
+
         if search
           # Plug the search parameters into the query parmaeters
           query_params.unshift(search)
           query_params.push(search)
         end
-    
+
         Bill.find_by_sql([query, *query_params])
-      else 
+      else
         return []
       end
     end
 
     def count_all_by_most_user_votes_for_range(range, options)
-      possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc", 
-                         "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc", 
+      possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
+                         "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
                          "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
       logger.debug options.to_yaml
       order = options[:order] ||= "vote_count_1 desc"
@@ -608,15 +608,15 @@ class Bill < ActiveRecord::Base
           when "bookmark_count_1"
             join_query = "INNER JOIN (select bookmarks.bookmarkable_id as bill_id
                    FROM bookmarks
-                  WHERE created_at > ? GROUP BY bookmarkable_id) 
+                  WHERE created_at > ? GROUP BY bookmarkable_id)
                current_period_book ON bills.id=current_period_book.bill_id"
             join_query_bind = [range.seconds.ago]
           when "total_comments"
             join_query = "INNER JOIN (select comments.commentable_id as bill_id
-                FROM comments 
-                   WHERE created_at > ? AND 
+                FROM comments
+                   WHERE created_at > ? AND
                          comments.commentable_type = 'Bill'
-                GROUP BY comments.commentable_id) 
+                GROUP BY comments.commentable_id)
             comments_total ON bills.id=comments_total.bill_id"
             join_query_bind = [range.seconds.ago]
         end
@@ -624,7 +624,7 @@ class Bill < ActiveRecord::Base
         query = "SELECT count(bills.*)
             FROM
               #{search ? "bill_fulltext," : ""}
-              bills 
+              bills
              INNER JOIN (select bill_votes.bill_id
                  FROM bill_votes WHERE created_at > ?
                  GROUP BY bill_votes.bill_id) current_period
@@ -639,7 +639,7 @@ class Bill < ActiveRecord::Base
 
         k = Bill.count_by_sql([query, *query_params])
         return k
-      else 
+      else
         return []
       end
     end
@@ -680,7 +680,7 @@ class Bill < ActiveRecord::Base
       "senate"
     end
   end
-  
+
   def other_chamber
     if bill_type.starts_with? "h"
       "senate"
@@ -688,7 +688,7 @@ class Bill < ActiveRecord::Base
       "house"
     end
   end
-  
+
   class << self
     def find_by_ident(ident_string, find_options = {})
       bill_type, number, session = Bill.ident ident_string
@@ -709,7 +709,7 @@ class Bill < ActiveRecord::Base
       Bill.find(:all, :conditions => ["#{the_bill_conditions.join(' OR ')}", the_bill_params], :limit => find_options[:limit])
   #    Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, find_options)
     end
-  
+
     def long_type_to_short(type)
       raise RuntimeError, "long_type_to_short must be killed!"
     end
@@ -728,69 +728,69 @@ class Bill < ActiveRecord::Base
       end
       return nil
     end
-  
+
     def find_hot_bills(order = 'pvs_categories.name', options = {})
       # not used right now.  more efficient to loop through categories
       # probably just need to add an index to hot_bill_category_id
-      Bill.find(:all, :conditions => ["bills.session = ? AND bills.hot_bill_category_id IS NOT NULL", Settings.default_congress], 
+      Bill.find(:all, :conditions => ["bills.session = ? AND bills.hot_bill_category_id IS NOT NULL", Settings.default_congress],
                 :include => :hot_bill_category, :order => order, :limit => options[:limit])
     end
-  
+
     def top20_viewed
       bills = ObjectAggregate.popular('Bill')
-      
+
       (bills.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
         bv.stats.entered_top_viewed = Time.now
         bv.save
       end
-    
+
       (bills.sort { |b1, b2| b2.stats.entered_top_viewed <=> b1.stats.entered_top_viewed })
     end
 
     def top5_viewed
       bills = ObjectAggregate.popular('Bill', Settings.default_count_time, 5)
-      
+
       (bills.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
         bv.stats.entered_top_viewed = Time.now
         bv.save
       end
-    
+
       (bills.sort { |b1, b2| b2.stats.entered_top_viewed <=> b1.stats.entered_top_viewed })
     end
 
     def top20_commentary(type = 'news')
       bills = Bill.find_by_most_commentary(type, num = 20)
-    
+
       date_method = :"entered_top_#{type}"
       (bills.select {|b| b.stats.send(date_method).nil? }).each do |bv|
         bv.stats.send("#{date_method}=", Time.now)
         bv.save
       end
-    
+
       (bills.sort { |b1, b2| b2.stats.send(date_method) <=> b1.stats.send(date_method) })
     end
-  
+
     def random(limit)
       Bill.find_by_sql ["SELECT * FROM (SELECT random(), bills.* FROM bills ORDER BY 1) as bs LIMIT ?;", limit]
     end
   end # class << self
-  
+
   def log_referrer(referrer)
     unless (referrer.blank? || BillReferrer.no_follow?(referrer))
       self.bill_referrers.find_or_create_by_url(referrer[0..253])
     end
   end
-  
+
   def unique_referrers(since = 2.days)
-    ref_views = PageView.find(:all, 
+    ref_views = PageView.find(:all,
                               :select => "DISTINCT(page_views.referrer)",
-                              :conditions => ["page_views.referrer IS NOT NULL AND 
+                              :conditions => ["page_views.referrer IS NOT NULL AND
                                                page_views.viewable_id = ? AND
                                                page_views.viewable_type = 'Bill' AND
                                                page_views.created_at > ?", id, since.ago])
     ref_views.collect { |v| v.referrer }
   end
-  
+
   def related_articles
     Article.tagged_with(subject_terms, :any => true).order('created_at DESC').limit(5)
   end
@@ -798,11 +798,11 @@ class Bill < ActiveRecord::Base
   def subject_terms
     subjects.collect{|s| s.term }
   end
-  
+
   def subject
     #most popular subject that is not in the top X
     num = 8
-    
+
     if subjects.empty?
       Subject.find_by_term("Congress")
     else
@@ -813,19 +813,19 @@ class Bill < ActiveRecord::Base
 
   def commentary_count(type = 'news', since = Settings.default_count_time)
     return @attributes['article_count'] if @attributes['article_count']
-    
+
     if type == 'news'
       self.news.find(:all, :conditions => [ "commentaries.date > ?", since.ago]).size
     else
       self.blogs.find(:all, :conditions => [ "commentaries.date > ?", since.ago]).size
     end
   end
-  
+
   def stats
     self.build_bill_stats unless self.bill_stats
     self.bill_stats
   end
-  
+
   # returns a float between 0 and 1 corresponding to the percentage of it's blog and news
   # articles that are less than a week old
   def commentary_freshness
@@ -839,7 +839,7 @@ class Bill < ActiveRecord::Base
       return 0
     end
   end
-  
+
   # returns a float between 0 and 1 corresponding to the percentage of it's actions
   # that are less than a month old
   def activity_freshness
@@ -854,65 +854,65 @@ class Bill < ActiveRecord::Base
     def cosponsor_count
       Bill.count(:all, :include => [:bill_cosponsors], :conditions => ["bills.session = ?", Settings.default_congress], :group => "bills_cosponsors.person_id").sort {|a,b| b[1]<=>a[1]}
     end
-  
+
     def find_by_most_commentary(type = 'news', num = 5, since = Settings.default_count_time, congress = Settings.default_congress, bill_types = ["h", "hc", "hj", "hr", "s", "sc", "sj", "sr"])
 
       is_news = (type == "news") ? true : false
-    
+
       Bill.find_by_sql(["SELECT bills.*, top_bills.article_count AS article_count FROM bills
                          INNER JOIN
                          (SELECT commentaries.commentariable_id, count(commentaries.commentariable_id) AS article_count
-                          FROM commentaries 
+                          FROM commentaries
                           WHERE commentaries.commentariable_type='Bill' AND
                                 commentaries.date > ? AND
                                 commentaries.is_news=? AND
-                                commentaries.is_ok='t'                             
+                                commentaries.is_ok='t'
                           GROUP BY commentaries.commentariable_id
                           ORDER BY article_count DESC) top_bills
                          ON bills.id=top_bills.commentariable_id
                          WHERE bills.session = ? AND bills.bill_type IN (?)
-                         ORDER BY article_count DESC LIMIT ?", 
+                         ORDER BY article_count DESC LIMIT ?",
                         since.ago, is_news, congress, bill_types, num])
     end
 
     def find_rushed_bills(congress = Settings.default_congress, rushed_time = 259200, show_resolutions = false)
       resolution_condition = show_resolutions ? "" : " AND (bills.bill_type = 'h' OR bills.bill_type = 's')"
-    
-      Bill.find_by_sql(["SELECT * FROM bills INNER JOIN 
-                         (SELECT actions.date AS intro_date, actions.bill_id AS intro_id 
+
+      Bill.find_by_sql(["SELECT * FROM bills INNER JOIN
+                         (SELECT actions.date AS intro_date, actions.bill_id AS intro_id
                           FROM actions WHERE actions.action_type='introduced') intro_action
                          ON intro_action.intro_id=bills.id INNER JOIN
-                         (SELECT actions.date AS vote_date, actions.bill_id AS vote_id 
+                         (SELECT actions.date AS vote_date, actions.bill_id AS vote_id
                           FROM actions WHERE actions.action_type='vote' AND vote_type='vote' GROUP BY vote_id, vote_date) vote_action
                          ON vote_action.vote_id=bills.id
                          WHERE bills.session=? AND vote_action.vote_date - intro_action.intro_date < ? #{resolution_condition}
                          ORDER BY vote_date DESC", congress, rushed_time])
     end
-    
+
     def find_stalled_in_second_chamber(original_chamber = 's', session = Settings.default_congress, num = :all)
-      Bill.find_by_sql(["SELECT bills.* FROM bills 
-                          INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass') 
+      Bill.find_by_sql(["SELECT bills.* FROM bills
+                          INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass')
                         WHERE bills.bill_type=? AND bills.session=?
-                        EXCEPT 
-                          (SELECT bills.* FROM bills 
-                            INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass') 
-                            INNER JOIN actions a_v2 ON (bills.id=a_v2.bill_id AND (a_v2.vote_type='vote2' OR a_v2.vote_type='conference')) 
+                        EXCEPT
+                          (SELECT bills.* FROM bills
+                            INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass')
+                            INNER JOIN actions a_v2 ON (bills.id=a_v2.bill_id AND (a_v2.vote_type='vote2' OR a_v2.vote_type='conference'))
                             WHERE bills.bill_type=? AND bills.session=?);", original_chamber, session, original_chamber, session])
     end
-    
+
 
     def find_gpo_consideration_rushed_bills(congress = Settings.default_congress, rushed_time = 259200, show_resolutions = false)
       # rushed time not working correctly for some reason (adapter is changing...)
- 
+
       resolution_condition = show_resolutions ? "" : " AND (bills.bill_type = 'h' OR bills.bill_type = 's')"
-    
-      Bill.find_by_sql(["SELECT * FROM bills INNER JOIN 
+
+      Bill.find_by_sql(["SELECT * FROM bills INNER JOIN
                          (SELECT gpo_billtext_timestamps.created_at AS gpo_date, gpo_billtext_timestamps.session AS gpo_session,
                                  gpo_billtext_timestamps.bill_type AS gpo_bill_type, gpo_billtext_timestamps.number AS gpo_number
                           FROM gpo_billtext_timestamps WHERE version='ih' OR version='is') gpo_action
                          ON (gpo_action.gpo_session=bills.session AND gpo_action.gpo_bill_type=bills.bill_type AND gpo_action.gpo_number=bills.number)
                          INNER JOIN
-                         (SELECT MIN(actions.datetime) AS consideration_date, actions.bill_id AS consideration_id 
+                         (SELECT MIN(actions.datetime) AS consideration_date, actions.bill_id AS consideration_id
                           FROM actions, action_references WHERE actions.action_type='action' AND actions.id=action_references.action_id AND action_references.label='consideration' AND actions.text NOT LIKE '%Committee%' GROUP BY actions.bill_id) consideration_action
                          ON consideration_action.consideration_id=bills.id
                          WHERE bills.session=? AND ((consideration_action.consideration_date - gpo_action.gpo_date < '259200 seconds'::interval) OR gpo_action.gpo_date IS NULL OR bills.id = 54463)
@@ -922,33 +922,33 @@ class Bill < ActiveRecord::Base
   end
 
   def top_recipients_for_all_interest_groups(disposition = 'support', chamber = 'house', num = 10)
-    
+
     groups = self.bill_interest_groups.select{|g| g.disposition == disposition}
     groups_ids = groups.collect { |g| g.crp_interest_group.osid }
-    
+
     title = (chamber == 'house') ? 'Rep.' : 'Sen.'
     Person.find_by_sql(["SELECT people.*, top_recips_ind.ind_contrib_total, top_recips_pac.pac_contrib_total, (COALESCE(top_recips_ind.ind_contrib_total, 0) + COALESCE(top_recips_pac.pac_contrib_total, 0)) AS contrib_total FROM people
-      LEFT JOIN 
-        (SELECT recipient_osid, SUM(crp_contrib_individual_to_candidate.amount) as ind_contrib_total 
+      LEFT JOIN
+        (SELECT recipient_osid, SUM(crp_contrib_individual_to_candidate.amount) as ind_contrib_total
          FROM crp_contrib_individual_to_candidate
          WHERE crp_interest_group_osid IN (?)
            AND cycle=?
            AND crp_contrib_individual_to_candidate.contrib_type IN ('10', '11', '15 ', '15', '15E', '15J', '22Y')
-         GROUP BY recipient_osid) 
+         GROUP BY recipient_osid)
         top_recips_ind ON people.osid=top_recips_ind.recipient_osid
       LEFT JOIN
-        (SELECT recipient_osid, SUM(crp_contrib_pac_to_candidate.amount) as pac_contrib_total 
+        (SELECT recipient_osid, SUM(crp_contrib_pac_to_candidate.amount) as pac_contrib_total
          FROM crp_contrib_pac_to_candidate
          WHERE crp_contrib_pac_to_candidate.crp_interest_group_osid IN (?)
            AND crp_contrib_pac_to_candidate.cycle=?
            AND contrib_type IN ('24K', '24R', '24Z')
-         GROUP BY crp_contrib_pac_to_candidate.recipient_osid) 
+         GROUP BY crp_contrib_pac_to_candidate.recipient_osid)
         top_recips_pac ON people.osid=top_recips_pac.recipient_osid
      WHERE people.title=?
      ORDER BY contrib_total DESC
      LIMIT ?", groups_ids, Settings.current_opensecrets_cycle, groups_ids, Settings.current_opensecrets_cycle, title, num])
   end
-  
+
   def bill_position_organizations_support
     bill_position_organizations.where("bill_position_organizations.disposition='support'")
   end
@@ -960,14 +960,14 @@ class Bill < ActiveRecord::Base
       return self.hot_bill_category.crp_industries
     else
       ind = []
-      self.subjects.each { |s| 
+      self.subjects.each { |s|
         ind.concat(s.pvs_categories.collect{ |c| c.crp_industries })
       }
-      
+
       return ind.flatten.uniq
     end
   end
-  
+
   class << self
     def client_id_to_url(client_id)
       client_id.slice!(/\d+_/)
@@ -982,7 +982,7 @@ class Bill < ActiveRecord::Base
       num = md.captures[2].to_i
       (id || t | num) ? [id, t, num] : [nil, nil, nil]
     end
-    
+
     def canonical_name(name)
       "#{name.gsub(/[\.\s\/]+/,"").downcase}"
     end
@@ -1009,7 +1009,7 @@ class Bill < ActiveRecord::Base
   def ident
     "#{bill_type}#{number}-#{session}"
   end
- 
+
   def to_param
     self.ident
   end
@@ -1032,11 +1032,11 @@ class Bill < ActiveRecord::Base
   end
 
   def last_action_at
-    Time.at(self.lastaction) if self.lastaction   
+    Time.at(self.lastaction) if self.lastaction
   end
 
   def introduced_at
-    Time.at(self.introduced) if self.introduced   
+    Time.at(self.introduced) if self.introduced
   end
 
   def last_5_actions
@@ -1056,30 +1056,30 @@ class Bill < ActiveRecord::Base
 
   def next_step
     status_hash = self.bill_status_hash
-    return status_hash['steps'][status_hash['current_step'] + 1] ? 
+    return status_hash['steps'][status_hash['current_step'] + 1] ?
            status_hash['steps'][status_hash['current_step'] + 1]['text'] : nil
   end
-  
+
   def hours_to_first_attempt_to_pass
     (originating_chamber_vote.date - introduced_action.date) / 3600
   end
-  
+
   ## bill title methods
 
   #Legacy method to fix govtrack import of full bill text with right paragraph ids --KBD
   def type_name_govtrack
     @@TYPES[bill_type]
-  end 
- 
+  end
+
   def type_name
-    UnitedStates::Bills.Abbreviations[bill_type]
+    UnitedStates::Bills.abbreviation_for bill_type
   end
 
   def title_short
     title = short_title
     title ? "#{title.title}" : "#{type_name}#{number}"
   end
-  
+
   def typenumber # just the type and number, ie H.R.1591
     "#{type_name}#{number}"
   end
@@ -1087,30 +1087,30 @@ class Bill < ActiveRecord::Base
   def title_official # just the official title
     official_title ? "#{official_title.title}" : ""
   end
-  
+
   def title_popular_only # popular or short, returns empty string if one doesn't exist
     title = default_title || popular_title || short_title
-    
+
     title ? "#{title.title}" : ""
   end
-  
+
   def title_common # popular or short or official, returns empty string if one doesn't exist
     title = default_title || popular_title || short_title || official_title
-    
+
     title ? "#{title.title}" : ""
   end
-  
+
   def title_full_common # bill type, number and popular, short or official title
     title = default_title || popular_title || short_title || official_title
-   
+
     if title.nil?
       ""
     else
-      prefix = UnitedStates::Bills.Abbreviations[bill_type]
+      prefix = UnitedStates::Bills.abbreviation_for bill_type
       "#{prefix}#{number} #{title.title}"
     end
   end
-  
+
   def title_for_share
     typenumber
   end
@@ -1119,35 +1119,35 @@ class Bill < ActiveRecord::Base
   def introduced_action
     actions.select { |a| a.action_type == 'introduced' }.first
   end
-  
+
   def originating_chamber_vote
     actions.select { |a| (a.action_type == 'vote' and a.vote_type == 'vote') }.last
   end
-  
+
   def other_chamber_vote
     actions.select { |a| (a.action_type == 'vote' and a.vote_type == 'vote2') }.last
   end
-  
+
   def presented_to_president_action
     actions.select { |a| a.action_type == 'topresident' }.first
   end
-  
+
   def signed_action
     actions.select { |a| a.action_type == 'signed' }.first
   end
-  
+
   def vetoed_action
     actions.select { |a| a.action_type == 'vetoed' }.first
   end
-  
+
   def override_vote
     actions.select { |a| (a.action_type == 'vote' and a.vote_type == 'override') }.first
   end
-  
+
   def enacted_action
     actions.select { |a| a.action_type == 'enacted' }.last
   end
-  
+
   # returns a hash with info on each step of the bill's progress
   def bill_status_hash
     status_hash = { "steps" => [] }
@@ -1158,111 +1158,111 @@ class Bill < ActiveRecord::Base
     else
       status_hash['steps'] << { 'text' => 'Introduced', 'class' => 'pending' }
     end
-    
+
     status_hash['current_step'] = current_step
     current_step += 1
-    
+
     if a = self.originating_chamber_vote
       roll_id = a.roll_call ? a.roll_call.id : ""
 
       if a.result == 'pass'
-        status_hash['steps'] << { 'text' => "#{self.chamber.capitalize} Passed", 'result' => 'Passed', 
+        status_hash['steps'] << { 'text' => "#{self.chamber.capitalize} Passed", 'result' => 'Passed',
             'class' => 'passed', 'date' => a.datetime, 'roll_id' => roll_id }
          unless (self.bill_type == 'h' or self.bill_type == 's') # is resolution - is done
            status_hash['steps'] << { 'text' => 'Resolution<br/>Passed', 'result' => 'Passed', 'class' => 'is_res', 'date' => a.datetime, 'roll_id' => roll_id }
          end
       else
-        status_hash['steps'] << { 'text' => " #{self.chamber.capitalize} Defeats", 'result' => 'Failed', 
+        status_hash['steps'] << { 'text' => " #{self.chamber.capitalize} Defeats", 'result' => 'Failed',
                                   'class' => 'failed', 'date' => a.datetime, 'roll_id' => roll_id }
       end
-      
+
       status_hash['current_step'] = current_step
     else
-      status_hash['steps'] << { 'text' => "#{self.chamber.capitalize} Passes", 
+      status_hash['steps'] << { 'text' => "#{self.chamber.capitalize} Passes",
                                 'class' => 'pending', 'result' => 'Pending' }
       unless (self.bill_type == 'h' or self.bill_type == 's') # is resolution pending
            status_hash['steps'] << { 'text' => 'Resolution Passed', 'class' => 'becomes_res', 'result' => 'Pending' }
       end
     end
- 
+
     current_step += 1
-        
+
     if (self.bill_type == 'h' or self.bill_type == 's')
       if a = self.other_chamber_vote
         roll_id = a.roll_call ? a.roll_call.id : ""
         if a.result == 'pass'
-          status_hash['steps'] << { 'text' => "#{self.other_chamber.capitalize} Passed", 'result' => 'Passed', 
+          status_hash['steps'] << { 'text' => "#{self.other_chamber.capitalize} Passed", 'result' => 'Passed',
                                     'class' => 'passed', 'date' => a.datetime, 'roll_id' => roll_id }
         else
-          status_hash['steps'] << { 'text' => "#{self.other_chamber.capitalize} Defeats", 'result' => 'Failed', 
-                                    'class' => 'failed', 'date' => a.datetime, 'roll_id' => roll_id }                                    
+          status_hash['steps'] << { 'text' => "#{self.other_chamber.capitalize} Defeats", 'result' => 'Failed',
+                                    'class' => 'failed', 'date' => a.datetime, 'roll_id' => roll_id }
         end
-        
+
         status_hash['current_step'] = current_step
       else
-        status_hash['steps'] << { 'text' => "#{self.other_chamber.capitalize} Passes", 
+        status_hash['steps'] << { 'text' => "#{self.other_chamber.capitalize} Passes",
                                   'class' => 'pending', 'result' => 'Pending' }
       end
-         
+
       current_step += 1
-      
+
       if a = self.signed_action
         status_hash['steps'] << { 'text' => 'President Signed', 'result' => 'Passed', 'class' => 'passed', 'date' => a.datetime }
         status_hash['current_step'] = current_step
       elsif a = self.vetoed_action
         status_hash['steps'] << { 'text' => 'President Vetoed', 'result' => 'Failed', 'class' => 'failed', 'date' => a.datetime }
         status_hash['current_step'] = current_step
-        
+
         # check for overridden, otherwise, just return here
         if a = self.override_vote
           roll_id = a.roll_call ? a.roll_call.id : ""
-          current_step += 1          
-          status_hash['current_step'] = current_step     
-          
+          current_step += 1
+          status_hash['current_step'] = current_step
+
           if a.result == 'pass'
-            status_hash['steps'] << { 'text' => "Override Succeeds", 'result' => 'Passed', 
+            status_hash['steps'] << { 'text' => "Override Succeeds", 'result' => 'Passed',
                                       'class' => 'passed', 'date' => a.datetime, 'roll_id' => roll_id }
           else
-            status_hash['steps'] << { 'text' => "Override Defeated", 'result' => 'Failed', 
+            status_hash['steps'] << { 'text' => "Override Defeated", 'result' => 'Failed',
                                       'class' => 'failed', 'date' => a.datetime, 'roll_id' => roll_id }
-            return status_hash                              
-          end 
+            return status_hash
+          end
         else
           return status_hash
         end
       else
         status_hash['steps'] << { 'text' => 'President Signs', 'class' => 'pending', 'result' => 'Pending' }
       end
-      
+
       current_step += 1
-      
+
       if a = self.enacted_action
         status_hash['steps'] << { 'text' => 'Bill Is Law', 'result' => 'Passed', 'class' => 'is_law', 'date' => a.datetime }
-        status_hash['current_step'] = current_step          
+        status_hash['current_step'] = current_step
       else
         status_hash['steps'] << { 'text' => 'Bill Becomes Law', 'class' => 'becomes_law', 'result' => 'Pending' }
       end
-          
+
     end
-    
+
     return status_hash
   end
-    
+
   def vote_on_passage(person)
     if (chamber == 'house' and person.title == 'Rep.') or (chamber == 'senate' and person.title = 'Sen.')
       roll = originating_chamber_vote
     else
       roll = other_chamber_vote
     end
-    
+
     return "Not Voted Yet" if roll.nil? or roll.roll_call.nil?
-    
+
     roll.roll_call.vote_for_person(person)
   end
-  
+
   def self.full_text_search(q, options = {})
     congresses = options[:congresses] || Settings.default_congress
-    
+
     s_count = Bill.count_by_sql(["SELECT COUNT(*) FROM bills, bill_fulltext
           WHERE bills.session IN (?) AND
             bill_fulltext.fti_names @@ to_tsquery('english', ?) AND
@@ -1284,7 +1284,7 @@ class Bill < ActiveRecord::Base
         # use the symlink to find the current version of the text
         realpath = Pathname.new("#{path}/#{bill_type}#{number}.txt").realpath
         current_file = /\/([a-z0-9]*)\.txt/.match(realpath).captures[0]
-            
+
         @bill_text = File.open(realpath).read
       rescue
         @bill_text = nil
@@ -1293,8 +1293,8 @@ class Bill < ActiveRecord::Base
   end
 
   def self.b_rb
-    Bill.rebuild_solr_index(10) do |bill, options| 
-      bill.find(:all, options.merge({:conditions => ["session = ?", Settings.default_congress]})) 
+    Bill.rebuild_solr_index(10) do |bill, options|
+      bill.find(:all, options.merge({:conditions => ["session = ?", Settings.default_congress]}))
     end
   end
 
@@ -1303,42 +1303,42 @@ class Bill < ActiveRecord::Base
   def fragment_cache_key
     "bill_#{id}"
   end
-  
+
   def expire_govtrack_fragments
     fragments = []
-    
+
     fragments << "#{fragment_cache_key}_header"
-    
+
     FragmentCacheSweeper::expire_fragments(fragments)
   end
-  
+
   def self.expire_meta_govtrack_fragments
     fragments = []
-    
+
     fragments << "bill_all_index"
 
-    FragmentCacheSweeper::expire_fragments(fragments)    
+    FragmentCacheSweeper::expire_fragments(fragments)
   end
-  
+
   def expire_commentary_fragments(type)
     FragmentCacheSweeper::expire_commentary_fragments(self, type)
   end
-  
+
   # the following isn't called on an instance but rather, static-ly (sp?)
   def self.expire_meta_commentary_fragments
     commentary_types = ['news', 'blog']
-    
+
     fragments = []
 
     fragments << "frontpage_bill_mostnews"
     fragments << "frontpage_bill_mostblogs"
-    
+
     commentary_types.each do |ct|
       [7, 14, 30].each do |d|
         fragments << "bill_meta_most_#{ct}_#{d.days}"
       end
     end
-    
+
     FragmentCacheSweeper::expire_fragments(fragments)
   end
 
@@ -1351,7 +1351,7 @@ class Bill < ActiveRecord::Base
   def users_at_position(position = 'support')
     bill_votes.count(:all, :conditions => ["support = ?", position == 'support' ? 0 : 1])
   end
-  
+
   def users_percentage_at_position(position = 'support')
     vt = bill_votes.count
     if vt == 0
@@ -1371,7 +1371,7 @@ class Bill < ActiveRecord::Base
   def as_xml(ops = {})
     super(stylize_serialization(ops))
   end
-  
+
   private
 
   # different ways we may want to serialize json...
@@ -1394,18 +1394,18 @@ class Bill < ActiveRecord::Base
   def official_title
     bill_titles.select { |t| t.title_type == 'official' }.first
   end
-  
+
   def short_title
     bill_titles.select { |t| t.title_type == 'short' }.first
   end
-  
+
   def popular_title
     bill_titles.select { |t| t.title_type == 'popular' }.first
   end
-  
+
   def default_title
     bill_titles.select { |t| t.is_default == true }.first
   end
-    
-  
+
+
 end

@@ -1,5 +1,5 @@
 require 'o_c_logger'
-require 'unitedstates'
+require 'united_states'
 
 ['house', 'senate'].each do |chamber|
   path = File.join(Settings.unitedstates_data_path, "committee_meetings_#{chamber}.json")

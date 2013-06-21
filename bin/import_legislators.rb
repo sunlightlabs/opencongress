@@ -101,7 +101,7 @@ legislators.each do |leg|
 
   # TODO from where should the :email field be sourced?
   # TODO unaccented_name appears unused. Let's get rid of it.
-  leg_person.save!
+  leg_person.save! if leg_person.changed?
 
 
   leg['terms'].each do |term|
@@ -127,7 +127,7 @@ legislators.each do |leg|
     role.phone = term['phone']
     # TODO The previous script set :email too, but people.xml didn't contains email
     # addresses, so I think it was unused.
-    role.save!
+    role.save! if role.changed?
   end
 end
 

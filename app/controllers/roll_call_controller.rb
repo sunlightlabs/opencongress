@@ -258,7 +258,18 @@ class RollCallController < ApplicationController
   end
 
   def by_number
-    @roll_call = RollCall.find_by_ident("#{params[:year]}-#{params[:chamber]}#{params[:number]}")
+    chamber_name = case params[:chamber]
+                   when 'h'
+                     'house'
+                   when 's'
+                     'senate'
+                   else
+                     'unknown'
+                   end
+    @roll_call = RollCall.in_year(params[:year].to_i)
+                         .where(:where => chamber_name,
+                                :number => params[:number].to_i).first
+    @titles_by_person = Hash[ Person.on_date(@roll_call.date).collect{ |p| [p.id, p.role_type] } ]
 
     if params[:state] && State.for_abbrev(params[:state])
       @state_abbrev = params[:state]
@@ -278,7 +289,23 @@ class RollCallController < ApplicationController
   private
 
   def page_view
-    @roll_call = RollCall.find_by_id(params[:id]) || RollCall.find_by_ident("#{params[:year]}-#{params[:chamber]}#{params[:number]}")
+    if params[:id]
+      @roll_call = RollCall.find_by_id(params[:id])
+    elsif params[:year] and params[:chamber] and params[:number]
+      chamber_name = case params[:chamber]
+                     when 'h'
+                       'house'
+                     when 's'
+                       'senate'
+                     else
+                       'unknown'
+                     end
+      @roll_call = RollCall.in_year(params[:year].to_i)
+                           .where(:where => chamber_name,
+                                  :number => params[:number].to_i).first
+    else
+      notfound
+    end
 
     if @roll_call
       key = "page_view_ip:RollCall:#{@roll_call.id}:#{request.remote_ip}"

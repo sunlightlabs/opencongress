@@ -109,7 +109,7 @@ namespace :update do
 
   desc "Loads bills from United States repo"
   task :bills => :environment do
-    begin 
+    begin
       load 'bin/import_bills.rb'
     rescue Exception => e
       Emailer.rake_error(e, "Error importing bills!").deliver
@@ -332,8 +332,6 @@ namespace :update do
     end
   end
 
-
-  desc "Updates all congressional information in the proper order."
   task :all => [
     :unitedstates_rsync, :rsync, :congress_legislators, :photos,
     :import_legislators, :bills,
@@ -348,3 +346,6 @@ namespace :update do
   task :committee_info => [:committee_reports, :committee_schedule]
   task :people_meta_data => [:person_voting_similarities, :sponsored_bill_stats, :expire_cached_person_fragments]
 end
+
+desc "Updates all congressional information in the proper order."
+task :update => "update:all"

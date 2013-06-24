@@ -1,6 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!doctype html>
+
+<html lang="en">
   <head>
     <%= render :partial => 'shared/analytics_head' %>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -14,7 +14,7 @@
   	<link rel="shortcut icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <%= bookmarking_image.html_safe %>
-    
+
     <%= include_javascripts :defaults, :common  %>
     <script>
       var $j = jQuery.noConflict();
@@ -22,13 +22,13 @@
     <%= include_javascripts :frontpage  %>
     <%= csrf_meta_tag %>
     <%= remote_forgery_protection %>
-      
+
     <%= include_stylesheets :frontpage, :media => 'all' %>
 
     <!--[if lt IE 7]><style type="text/css">@import url("/stylesheets/ie6.css");</style><![endif]-->
 
     <!--[if IE 7]><style type="text/css">@import url("/stylesheets/ie7.css");</style><![endif]-->
-  
+
    	<!--[if lt IE 7]>
   	<%= javascript_include_tag 'ie8/IE8' %>
   	<![endif]-->
@@ -46,6 +46,9 @@
     </div>
 
   <div class="top_bar">
+    <%= render :partial => 'layouts/top_bar' %>
+  </div>
+
     <div id="wrapper">
 
   	  <%= render :partial => 'layouts/header' %>
@@ -56,11 +59,15 @@
     <!-- // wrapper -->
     <div class="clear">&nbsp;</div>
     </div> <!-- // top bar -->
-  
+
       <% cache("layout_footer", :expires_in => 3.hours) do %>
-        <%= render :partial => 'layouts/footer' %>
+      <%= render :partial => 'layouts/footer_old' %>
+
       <% end %>
 
       <%= render :partial => 'shared/analytics_foot' %>
+
+</div>
+
   </body>
 </html>

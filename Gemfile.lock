@@ -333,7 +333,7 @@ GEM
       ffi (>= 0.5.0)
     rdoc (3.12.2)
       json (~> 1.4)
-    rmagick (2.13.1)
+    rmagick (2.13.2)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
       rspec-expectations (~> 2.13.0)
@@ -461,7 +461,7 @@ DEPENDENCIES
   rails (~> 3.0.19)
   rails_best_practices
   rake (~> 0.9.1)
-  rmagick (= 2.13.1)
+  rmagick (~> 2.13.1)
   rspec-rails (~> 2.4)
   ruby-openid
   sass

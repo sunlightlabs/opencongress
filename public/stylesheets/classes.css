@@ -428,6 +428,8 @@ ul.tiny li{
 .small.button{
   padding: 5px 10px;
   cursor: pointer;
+  position: absolute;
+  left: 676px;
   }
 
 .small.floatleft,
@@ -502,10 +504,10 @@ ul.huge li{
 
 
 .cap{
-  -moz-border-radius-topleft: 0px;
-  -moz-border-radius-bottomleft: 0px;
-  -webkit-border-bottom-left-radius: 0px;
-  -webkit-border-top-left-radius: 0px;
+  -moz-border-radius-topleft: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -webkit-border-top-left-radius: 3px;
   margin: 0 !important;
   float: left;
   padding: 7px 12px;
@@ -703,6 +705,7 @@ margin: 0;
   margin: 0;
   border: 0 !important;
   padding: 7px 8px 6px;
+  height: 11px;
 
   letter-spacing: .06em;
 
@@ -710,9 +713,9 @@ margin: 0;
 	font-family:  Helvetica, Arial, sans-serif;
   font-weight: normal !important;
 
-  -moz-box-shadow: inset 0 1px 2px #333;
-  -webkit-box-shadow:inset 0 1px 2px #333;
-  box-shadow: inset 0 1px 2px #333;
+  -moz-box-shadow: inset 0 1px 1px #333;
+  -webkit-box-shadow:inset 0 1px 1px #999;
+  box-shadow: inset 0 1px 1px #999;
 
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -734,10 +737,10 @@ margin: 0;
   }
 
 .field.cap{
-  -moz-border-radius-topright: 0px;
-  -moz-border-radius-bottomright: 0px;
-  -webkit-border-bottom-right-radius: 0px;
-  -webkit-border-top-right-radius: 0px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-bottomright: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+  -webkit-border-top-right-radius: 3px;
   margin: 0 !important;
   float: left;
   }
@@ -1034,3 +1037,52 @@ background: rgba(54,205,143, .2);
 .tab-pane { display: none; }
 .tab-pane.active { display: block; }
 .img-polaroid { border: 1px solid #ddd; padding: 2px; display: block; }
+
+
+/* tn edits */
+
+.footer-wrapper-old button.btn-sunlight{
+  border: 1px solid #aaa;
+  border-top: 1px solid #dbdbdb;
+  border-bottom: 1px solid #777;
+
+  -moz-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
+  -webkit-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
+  box-shadow:  0 1px 0px #ddd, inset 0 1px 0px #fff;
+
+  background: #537486;
+  display: inline-block;
+  text-shadow:none;
+  width: 85px;
+  height: 23px;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 12px;
+  color: #fff;
+  }
+
+.footer-wrapper-old button.btn-sunlight:hover {
+  color: rgb(238,238,238);
+}
+
+.footer-wrapper-old input.signUpEmail {
+  border: 2px solid rgba(126, 141, 150, 0.6);
+  width: 162px;
+  height: 18px;
+  font-family: arial, sans-serif;
+  font-size: 1em;
+}
+
+.footer-wrapper-old input.signUpZip {
+  border: 2px solid rgba(126, 141, 150, 0.6);
+  width: 85px;
+  height: 18px;
+  font-family: arial, sans-serif;
+  margin-right: 4px;
+  margin-left: 4px;
+  font-size: 1em;
+}
+
+.footer-wrapper-old input[type="text"] {
+  padding: 1px 6px;
+}

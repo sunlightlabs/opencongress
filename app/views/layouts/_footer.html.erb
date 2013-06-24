@@ -1,87 +1,67 @@
 
-    	<div id="footer-wrapper">
-				<div class="left">
-					<div class="right">
-      		<div id="footer" class="clearfix">
-					<h5><b>Find Your Way:</b></h5>
-        		<div class="footlist first">
-        			<b>OpenCongress</b>
-        				<ul>
-          				<li><a href="/search">Search</a></li>
-			            <li><%= link_to 'About OpenCongress', { :controller => 'about' }, 
+        <div id="footer-wrapper">
+                <div class="left">
+                    <div class="right">
+            <div id="footer" class="clearfix">
+                    <h5><b>Find Your Way:</b></h5>
+                <div class="footlist first">
+
+                        <ul>
+                        <li><a href="/search">Search</a></li>
+                        <li><%= link_to 'About OpenCongress', { :controller => 'about' },
                                       { :title => "Find out more about who and what is Open Congress" } %></li>
-                  <li><%= link_to 'Help FAQ', { :controller => 'about'}, 
+                  <li><%= link_to 'Help FAQ', { :controller => 'about'},
                                       { :title => "" } %></li>
-									<li><%= link_to 'RSS Feeds', :controller => 'about', :action => 'rss' %></li>
-									<li><%= link_to 'Widgets', widgets_path %>																			
-  								<li><%= link_to 'Developers/API', :controller => 'about', :action => 'code' %></li>
-									<li><%= link_to 'Our Staff', :controller => 'about', :action => 'staff' %></li>																			
+                                    <li><%= link_to 'RSS Feeds', :controller => 'about', :action => 'rss' %></li>
+                        </ul>
+                </div>
+                <div class="footlist">
+                    <b>Go to</b>
+                        <ul>
+                          <li><%= link_to 'Widgets', widgets_path %>
+                          <li><%= link_to 'Developers/API', :controller => 'about', :action => 'code' %></li>
+                          <li><a href="/contact/">Contact Us</a></li>
+                        </ul>
+                </div>
+                <div class="footlist">
+                    <ul>
+                      <li><%= link_to 'Wiki', '/wiki' %></li>
+                      <li><%= link_to 'Blog', :controller => 'blog' %></li>
+                      <li><%= link_to 'Resources', :controller => 'resources' %></li>
+                      <!-- ><li><%= link_to 'Battle Royale', :controller => 'battle_royale' %></li> -->
+                    </ul>
+                </div>
 
-									<li><a href="/contact/">Contact Us</a></li>
-        				</ul>
-        		</div>
-      			<div class="footlist">
-      				<b>Go to</b>
-      					<ul>
-							 		<li><%= link_to 'Bills', :controller => 'bill', :action => :all  %></li>
-									<li><%= link_to 'Senators', :controller => 'people', :action => :senators  %></li>
-									<li><%= link_to 'Representatives', :controller => 'people', :action => :representatives  %></li>
-									<li><%= link_to 'Votes', :controller => 'roll_call' %></li>		
-									<li><%= link_to 'Issues', :controller => 'issue' %></li>
-      					</ul>
-      			</div>
-      			<div class="footlist">
-      				<b>Go to</b>
-      				<ul>
+                <div class="footlist last">
 
-								<li><%= link_to 'Wiki', '/wiki' %></li>		
-								<li><%= link_to 'Blog', :controller => 'blog' %></li>
-								<li><%= link_to 'Video', :controller => 'video' %></li>
-								<li><%= link_to 'Resources', :controller => 'resources' %></li>
-								<!-- ><li><%= link_to 'Battle Royale', :controller => 'battle_royale' %></li> -->
-					</ul>
-      			</div>		
-      			
-      			<div class="footlist last">
-      				<b>My OpenCongress</b>
-      					<ul>
+                        <ul>
 
-									<% if logged_in? %>
-									<li><%= link_to "Tracked Items", :controller => 'profile', :action => 'items_tracked', :login => current_user.login %></li>
-									<li><%= link_to "Actions", :controller => 'profile', :action => 'actions', :login => current_user.login %></li>
-									<li><%= link_to "Friends", friends_path(current_user.login)%></li>
-									<li><%= link_to "My Political Notebook", political_notebook_path(current_user.login) %></li>
-									<li><%= link_to "My Profile", user_profile_path(:login => current_user.login) %></li>
-									<li><%= link_to "Logout", logout_path %></li>
-									<% else %>
-									<li><%= link_to "Login", login_path %></li>
-									<% end %>
-						</ul>
-					</div>
-					</div>
-				 	</div>
+                                    <% if logged_in? %>
+                                    <li><%= link_to "Tracked Items", :controller => 'profile', :action => 'items_tracked', :login => current_user.login %></li>
+                                    <li><%= link_to "Actions", :controller => 'profile', :action => 'actions', :login => current_user.login %></li>
+                                    <li><%= link_to "Friends", friends_path(current_user.login)%></li>
+                                    <li><%= link_to "My Political Notebook", political_notebook_path(current_user.login) %></li>
+                                    <li><%= link_to "My Profile", user_profile_path(:login => current_user.login) %></li>
+                                    <li><%= link_to "Logout", logout_path %></li>
+                                    <% else %>
+                                    <li><%= link_to "Login", login_path %></li>
+                                    <% end %>
+                        </ul>
+                    </div>
+                    </div>
+                    </div>
       </div> <!-- // footer  -->
-    </div>	<!-- // footer-wrapper -->
+    </div>  <!-- // footer-wrapper -->
 
 
-    	<div id="subfoot">
-			 <% if @stats_object %>
-	     <%= render :partial => 'shared/stats_box', :object => @stats_object %>
-			<% else %> 
-			<% end %>
-			<p>
-			OpenCongress is a free and open-source project of the <a target="_blank" href="http://participatorypolitics.org/">Participatory Politics Foundation</a>, a 501(c)3 non-profit organization with a mission to increase civic engagement. The non-profit <a target="_blank" href="http://www.sunlightfoundation.com/">Sunlight Foundation</a> is the Founding and Primary Supporter of OpenCongress.
-			</p>
-	
-		</div> <!-- // end subfoot -->
+        <div id="subfoot">
+             <% if @stats_object %>
+         <%= render :partial => 'shared/stats_box', :object => @stats_object %>
+            <% else %>
+            <% end %>
+
+        </div> <!-- // end subfoot -->
 
 
-			
-	<ul id="badges">
-		<li class="cc"><a href="http://creativecommons.org/licenses/by-sa/3.0/us/">Creative Commons</a></li>
-		<li class="opensecrets"><a href="http://www.theopenhouseproject.com/">The Open House Project</a></li>
-		<li class="govtrack"><a href="http://www.govtrack.us">GovTrack</a></li>
-		<li class="contact_us"><a href="/contact">Questions? Comments? Contact Us</a></li>
-	</ul>
 
 

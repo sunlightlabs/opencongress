@@ -1,6 +1,6 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!doctype html>
+<html lang="en">
+
 <head>
   <%= render :partial => 'shared/analytics_head' %>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -68,10 +68,10 @@
   </div>
 
 <div class="top_bar">
+  <%= render :partial => 'layouts/top_bar' %>
 
   <div id="wrapper">
     <%= render :partial => 'layouts/header' %>
-
 
     <div id="content" class="clearfix">
       <%= render :partial => 'shared/notices' %>
@@ -80,35 +80,35 @@
       <%= info_box %>
       <div class="inner">
 
-      <% if @user_object || @related_bills || @related_people || @related_issues || 
+      <% if @user_object || @related_bills || @related_people || @related_issues ||
             @related_industries || @related_gossip || @custom_sidebar %>
         <div id="content-main">
       <% end %>
 
-			<% if @topic %>
-				<div id="topic">
-			    <%= render :partial => "#{@topic.class.to_s.underscore}/topic", :object => @topic %>
-				</div>
-			<% end %>
+      <% if @topic %>
+        <div id="topic">
+          <%= render :partial => "#{@topic.class.to_s.underscore}/topic", :object => @topic %>
+        </div>
+      <% end %>
 
-			<% if @profile_nav %>
-				<%= render :partial => "profile/logged_in_profile_nav", :locals => {:user => @profile_nav} %>
-			<% end %>
+      <% if @profile_nav %>
+        <%= render :partial => "profile/logged_in_profile_nav", :locals => {:user => @profile_nav} %>
+      <% end %>
 
-			<% if @content_for_sortby || @content_for_timeframe %>
+      <% if @content_for_sortby || @content_for_timeframe %>
 
         <%= @content_for_sortby %>
         <%= @content_for_timeframe %>
 
-     	<% end %>
+      <% end %>
 
 
-			<%= yield %>
-   
-      <% if @user_object || @related_bills || @related_people || @related_issues || 
+      <%= yield %>
+
+      <% if @user_object || @related_bills || @related_people || @related_issues ||
             @related_industries || @related_gossip || @custom_sidebar %>
-	  
-	  </div> <!-- // content-main --> 
+
+    </div> <!-- // content-main -->
       <% end %>
 
 
@@ -118,25 +118,26 @@
       <%= render :partial => 'bill/related_bills_panel', :locals => { :related_bills => @related_bills }%>
 
     <% elsif @related_issues %>
-	    <%= render :partial => 'issue/related_issues_panel', :locals => { :related_issues => @related_issues }%>
+      <%= render :partial => 'issue/related_issues_panel', :locals => { :related_issues => @related_issues }%>
 
-  	<% elsif @related_industries %>
-  	  <%= render :partial => 'industry/related_industries_panel', :locals => { :related_industries => @related_industries }%>
-  	<% elsif @related_gossip %>
-  	  <%= render :partial => 'gossip/related_gossip_panel', :locals => { :related_gossip => @related_gossip }%>
+    <% elsif @related_industries %>
+      <%= render :partial => 'industry/related_industries_panel', :locals => { :related_industries => @related_industries }%>
+    <% elsif @related_gossip %>
+      <%= render :partial => 'gossip/related_gossip_panel', :locals => { :related_gossip => @related_gossip }%>
     <% elsif @custom_sidebar %>
       <%= render :partial => 'shared/custom_sidebar_panel', :locals => { :sidebar => @custom_sidebar }%>
-	  <% end %>
+    <% end %>
 
-	<div class="clearfix"></div>
+  <div class="clearfix"></div>
 
-	</div> <!-- // inner -->
+  </div> <!-- // inner -->
 
     </div> <!-- // content -->
 
 
-	  <%# cache("layout_footer", :expires_in => 3.hours) do %>
-	    <%= render :partial => 'layouts/footer' %>
+    <%# cache("layout_footer", :expires_in => 3.hours) do %>
+      <%= render :partial => 'layouts/footer_old' %>
+
     <%# end %>
 
   </div> <!-- // wrapper -->

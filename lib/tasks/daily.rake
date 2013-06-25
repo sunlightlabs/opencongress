@@ -333,7 +333,9 @@ namespace :update do
   end
 
   task :all => [
-    :unitedstates_rsync, :rsync, :congress_legislators, :photos,
+    :unitedstates_rsync, :rsync,
+    :congress_legislators, :sunlightlabs,
+    :photos,
     :import_legislators, :bills,
     # Amendments are not handled yet
     #:amendments,

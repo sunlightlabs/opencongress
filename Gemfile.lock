@@ -115,6 +115,7 @@ GEM
       sexp_processor
     coderay (1.0.9)
     colored (1.2)
+    columnize (0.3.6)
     congress (0.1.0)
       faraday (~> 0.8.7)
       faraday_middleware (~> 0.9.0)
@@ -135,6 +136,12 @@ GEM
     daemons (1.1.9)
     database_cleaner (1.0.1)
     debug_inspector (0.0.2)
+    debugger (1.6.0)
+      columnize (>= 0.3.1)
+      debugger-linecache (~> 1.2.0)
+      debugger-ruby_core_source (~> 1.2.1)
+    debugger-linecache (1.2.0)
+    debugger-ruby_core_source (1.2.2)
     defender (2.0.3)
       activemodel (>= 3.0.0)
       defensio (~> 0.9.1)
@@ -419,6 +426,7 @@ DEPENDENCIES
   cucumber
   cucumber-rails
   database_cleaner
+  debugger
   defender
   defensio!
   delayed_job (~> 2.1)

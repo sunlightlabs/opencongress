@@ -116,6 +116,7 @@ group :test, :development do
   gem 'pry-nav'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
+  gem 'debugger'
   gem 'rails_best_practices'
   gem 'simplecov',            :require => false
   gem 'rspec-rails',          '~> 2.4'

@@ -3,132 +3,88 @@
 require 'rails'
 require 'yaml'
 require 'date'
+require 'united_states'
 
 require 'o_c_logger'
 
 def usage
   program = File.basename($0)
   $stderr.puts <<-USAGE
-    Unrecognized mode: #{ARGV[0]}
     Usage:
     #{program} current
-    #{program} historical
+    #{program} all
+    #{program} from-date to-date
+    #{program} govtrack_id [govtrack_ids ...]
+
+    Date ranges refer to the start or end of a term in congress.
+    The default ('current') behavior is to include members with
+    a term overlapping the current congress, subsuming the current
+    congress, or being subsumed by the current congress.
 USAGE
     exit
 end
 
-usage unless ARGV.length == 1
-usage unless ['current', 'historical'].include? ARGV[0]
+filter_proc = nil
+if ARGV.length == 0 or (ARGV.length == 1 and ARGV[0] == 'current')
+  current_congress_year = UnitedStates::Congress.year_for_congress(Settings.default_congress)
+  cong_day1 = Date.new(current_congress_year, 1, 3)
+  cong_day2 = cong_day1.tomorrow
+  cong_last_day = Date.new(current_congress_year + 2, 1, 3)
+  cong_2nd_last_day = cong_last_day.yesterday
+  filter_proc = proc do |l|
+    terms_in_this_congress = l['terms'].select do |t|
+      starts_inside_current = t['+start'].between?(cong_day1, cong_2nd_last_day)
+      ends_inside_current = t['+end'].between?(cong_day2, cong_last_day)
+      starts_before_current = t['+start'] < cong_day1
+      ends_after_current = t['+end'] > cong_last_day
 
+      (starts_inside_current or
+       ends_inside_current or
+       (starts_before_current and ends_after_current))
+    end
+    terms_in_this_congress.length > 0
+  end
+    
+elsif ARGV.length == 1 and ARGV[0] == 'all'
+  filter_proc = proc { |l| true }
 
-mode = ARGV[0]
-legislators_file_path = File.join(Settings.data_path, "congress-legislators", "legislators-#{mode}.yaml")
-if not File.exists? legislators_file_path
-  OCLogger.log "No such file: #{legislators_file_path}"
-  exit
+elsif ARGV.length == 2
+  begin
+    d1 = Date.strptime(ARGV[0], '%Y-%m-%d')
+    d2 = Date.strptime(ARGV[1], '%Y-%m-%d')
+    filter_proc = proc do |l|
+      l['terms'].select { |t| t['+start'].between?(d1, d2) or t['+end'].between?(d1, d2) }.length > 0
+    end
+  rescue ArgumentError => e
+    puts "The first two arguments don't look like dates. No date filter."
+  end
 end
 
-OCLogger.log "Parsing All Legislators from #{legislators_file_path}"
-govtrack_id_to_title_mapping = {
-  400629 => 'Pres.',
-  400295 => 'Del.'
-}
-
-term_type_to_title_mapping = {
-  'sen' => 'Sen.',
-  'rep' => 'Rep.'
-}
-
-legislators = YAML.load_file(legislators_file_path)
-legislators.each do |leg|
-  latest_term = leg['terms'].sort_by { |t| Date.parse(t['start']) } .last
-  current_term = leg['terms'].select do |t|
-    start_date = Date.parse(t['start'])
-    end_date = Date.parse(t['end'])
-    Date.today.between? start_date, end_date
-  end .first
-  title = govtrack_id_to_title_mapping[leg['id']['govtrack']]
-  title = term_type_to_title_mapping[current_term['type']] unless current_term.nil?
-
-  begin
-    leg_person = Person.find leg['id']['govtrack']
-    OCLogger.log "Updating Legislator: #{leg['id']['govtrack']}"
-  rescue ActiveRecord::RecordNotFound
-    leg_person = Person.new
-    leg_person.id = leg['id']['govtrack']
-    OCLogger.log "Adding Legislator: #{leg['id']['govtrack']}"
+if filter_proc.nil?
+  not_govtrack_ids = ARGV.select { |arg| /^\d{6}$/.match(arg).nil? }
+  not_govtrack_ids.each do |arg|
+    puts "This doesn't look like a govtrack ID: #{arg}"
+    usage
   end
+  govtrack_ids = ARGV.select { |arg| not /^\d{6}$/.match(arg).nil? }
+  filter_proc = proc { |l| govtrack_ids.include?(l['id']['govtrack'].to_s) }
+end
 
-  leg_person.govtrack_id = leg['id']['govtrack']
-  leg_person.thomas_id = leg['id']['thomas']
-  leg_person.fec_id = leg['id']['fec']
-  leg_person.lis_id = leg['id']['lis']
-  leg_person.cspan_id = leg['id']['cspan']
-  leg_person.bioguideid = leg['id']['bioguide']
-  leg_person.osid = leg['id']['opensecrets']
-  # leg_person.youtube_id came from govtrack's people.xml
-  # but the unitedstates repo stores it in legislators-social-media.yml
-  leg_person.lastname = leg['name']['last']
-  leg_person.firstname = leg['name']['first']
-  leg_person.nickname = leg['name']['nickname']
-  if leg['name']['official_full']
-    leg_person.name = leg['name']['official_full']
-  else
-    leg_person.name = "#{leg_person.firstname} #{leg_person.lastname}".strip
+
+legislators = ['current', 'historical'].flat_map do |mode|
+  legislators_file_path = File.join(Settings.data_path,
+                                    "congress-legislators",
+                                    "legislators-#{mode}.yaml")
+  legislators = YAML.load_file(legislators_file_path)
+  legislators.map do |leg_hash| 
+    UnitedStates::Legislators.decode_legislator_hash(leg_hash)
   end
-  leg_person.title = title
-  if leg['bio']
-    leg_person.gender = leg['bio']['gender']
-    leg_person.religion = leg['bio']['religion']
-    if not leg['bio']['birthday'].nil?
-      leg_person.birthday = Date.parse(leg['bio']['birthday'])
-    end
-  end
+end
 
-  if latest_term.nil?
-    puts "No term records for #{leg['id']['govtrack']}"
-  else
-    leg_person.state = latest_term['state']
-    leg_person.district = latest_term['district']
-    if current_term.nil?
-      leg_person.url = nil
-      leg_person.party = nil
-    else
-      leg_person.url = current_term['url']
-      leg_person.party = current_term['party']
-    end
-  end
-
-  # TODO from where should the :email field be sourced?
-  # TODO unaccented_name appears unused. Let's get rid of it.
-  leg_person.save! if leg_person.changed?
-
-
-  leg['terms'].each do |term|
-    start_date = Date.parse(term['start'])
-    end_date = Date.parse(term['end'])
-
-    role = leg_person.roles.where(:startdate => start_date,
-                                  :enddate => end_date) .last
-    if role.nil?
-      OCLogger.log "Added #{term['type']} Role from #{start_date} to #{end_date}"
-      role = leg_person.roles.new(:startdate => start_date,
-                                  :enddate => end_date)
-    else
-      OCLogger.log "Updating #{term['type']} Role from #{start_date} to #{end_date}"
-    end
-
-    role.role_type = term['type']
-    role.party = term['party']
-    role.district = term['district']
-    role.state = term['state']
-    role.address = term['address']
-    role.url = term['url']
-    role.phone = term['phone']
-    # TODO The previous script set :email too, but people.xml didn't contains email
-    # addresses, so I think it was unused.
-    role.save! if role.changed?
-  end
+legislators.select!(&filter_proc)
+legislators.each_with_index do |leg_hash, idx|
+  OCLogger.log "Updating Legislator: #{leg_hash['id']['govtrack']} (#{idx + 1} of #{legislators.count})"
+  UnitedStates::Legislators.import_legislator leg_hash
 end
 
 num_sens = Person.sen.count
@@ -136,7 +92,7 @@ num_reps = Person.rep.count
 if num_sens != 100
   OCLogger.log "After importing legislators there should be 100 senators but there are #{num_sens}"
 end
-if num_reps != 439
-  OCLogger.log "After importing legislators there should be 439 reprentatives but there are #{num_reps}"
+if num_reps != 441
+  OCLogger.log "After importing legislators there should be 441 reprentatives but there are #{num_reps}"
 end
 

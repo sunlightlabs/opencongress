@@ -42,9 +42,11 @@ namespace :update do
   end
 
   desc "Import legislators."
-  task :import_legislators do
-    OCLogger.log "Importing legislators"
-    `rails runner bin/import_legislators.rb current`
+  task :import_legislators => :environment do
+    old_ARGV = ARGV.clone
+    ARGV = ARGV.slice(1, ARGV.length)
+    require File.expand_path 'bin/import_legislators.rb', Rails.root
+    ARGV = old_ARGV
   end
 
   desc "Fetches data from govtrack's rsync service"

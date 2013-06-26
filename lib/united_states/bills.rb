@@ -39,15 +39,20 @@ module UnitedStates
     end
 
     ##
+    # Gets a where-able set of params for the given result of decode_bill_hash
+    # TODO Guard against loading bills from other congresses
+    def bill_ident (bill_hash)
+      { :session => bill_hash['congress'],
+        :bill_type => bill_hash['bill_type'],
+        :number => bill_hash['number'] }
+    end
+
+    ##
     # Creates Bill and BillCommittee models to reflect
     # data in the given hash. It's assumed that the hash
     # has decoded fields.
     def import_bill (bill_hash)
-      # TODO Guard against loading bills from other congresses
-      bill_ident = { :session => bill_hash['congress'],
-                     :bill_type => bill_hash['bill_type'],
-                     :number => bill_hash['number'] }
-      bill = Bill.where(bill_ident) .first
+      bill = Bill.where(bill_ident(bill_hash)).first
       if bill.nil?
         bill = Bill.new bill_ident
         OCLogger.log "Added bill #{bill_hash['bill_id']}"
@@ -56,15 +61,17 @@ module UnitedStates
       end
 
       if bill.updated.nil? or bill_hash['+updated_at'] > bill.updated
+        # Assign sponsor
         sponsor_id = bill_hash['sponsor'] and bill_hash['sponsor']['thomas_id']
-        if not sponsor_id.nil?
+        unless sponsor_id.nil?
           sponsor = Person.find_by_thomas_id bill_hash['sponsor']['thomas_id']
-          if not sponsor.nil?
-            bill.sponsor_id = sponsor.id
-          else
+          if sponsor.nil?
             OCLogger.log "Bill data contains a sponsor id (#{sponsor_id}) that does not exist in our database."
+          else
+            bill.sponsor_id = sponsor.id
           end
         end
+
         # TODO: What is the `pl` field for?
         # Where does rolls get set?
         # TODO: Fields I think we can drop because I can't find
@@ -72,6 +79,8 @@ module UnitedStates
         #     last_vote_where #     last_vote_roll
         #     last_speech
         #
+
+        # Bill actions
         bill.introduced = bill_hash['+introduced_at'].to_i
         if bill_hash['actions'].length > 0
           bill.lastaction = bill_hash['actions'].last['+acted_at'].to_i
@@ -79,11 +88,12 @@ module UnitedStates
         topresident = bill_hash['actions'].select do |action|
           action['type'] == 'topresident'
         end .first
-        if not topresident.nil?
+        unless topresident.nil?
           bill.topresident_date = topresident['+acted_at'].to_i
           bill.topresident_datetime = topresident['+acted_at']
         end
 
+        # Summary
         bill.summary = bill_hash['summary'] and bill_hash['summary']['text']
         bill.updated = bill_hash['+updated_at']
         bill.save!
@@ -107,7 +117,7 @@ module UnitedStates
           if bill_cmte.nil?
             OCLogger.log "Associating #{bill.bill_id} with committee #{cmte['committee_id']}"
             committee = Committee.find_by_thomas_id cmte['committee_id']
-            if not committee.nil?
+            unless committee.nil?
               bill.committees << committee
             end
           end
@@ -115,17 +125,15 @@ module UnitedStates
 
         import_amendments bill_hash
         import_bill_actions bill_hash
+        assign_subjects bill_hash
       else
         OCLogger.log "#{bill_hash['bill_id']} is already up-to-date."
       end
     end
 
     def import_bill_actions (bill_hash)
-      bill_ident = { :session => bill_hash['congress'],
-                     :bill_type => bill_hash['bill_type'],
-                     :number => bill_hash['number'] }
-      bill = Bill.where(bill_ident) .first
-      if not bill.nil?
+      bill = Bill.where(bill_ident(bill_hash)).first
+      unless bill.nil?
         intro = bill.actions.find_by_action_type 'introduced'
         if intro.nil?
           intro = bill.actions.new :action_type => 'introduced'
@@ -149,13 +157,36 @@ module UnitedStates
     end
 
     def import_amendments (bill_hash)
-      bill_ident = { :session => bill_hash['congress'],
-                     :bill_type => bill_hash['bill_type'],
-                     :number => bill_hash['number'] }
-      bill = Bill.where(bill_ident) .first
-      if not bill.nil?
+      bill = Bill.where(bill_ident(bill_hash)).first
+      unless bill.nil?
         bill_hash['amendments'].each do |amdt|
           bill.amendments.find_or_create_by_number(amdt['number'])
+        end
+      end
+    end
+
+    def assign_subjects (bill_hash)
+      bill = Bill.where(bill_ident(bill_hash)).first
+      existing_subjects = bill.subjects.collect(&:term).sort
+      to_remove = existing_subjects - bill_hash['subjects'].sort
+      to_remove.each do |term|
+        subj = Subject.find_by_term term
+        unless subj.nil?
+          OCLogger.log "De-associating invalid subject '#{term}' from #{bill.bill_id} (This is NOT normal)."
+          BillSubject.where(:bill_id => bill.id, :subject_id => subj.id).each(&:destroy)
+        end
+      end
+      bill_hash['subjects'].each do |term|
+        subj = Subject.find_by_term term
+        if subj.nil?
+          OCLogger.log "Creating new Subject '#{term}'"
+          subj = Subject.create(:term => term)
+        end
+        bs = BillSubject.new(:bill_id => bill.id, :subject_id => subj.id)
+        if bs.save
+          OCLogger.log "Associating #{bill.bill_id} with subject '#{term}'"
+        # else
+        #   OCLogger.log "Didn't associate #{bill.bill_id} with subject '#{term}': #{bs.errors.full_messages.to_sentence}"
         end
       end
     end
@@ -163,18 +194,15 @@ module UnitedStates
     def link_related_bills (bill_hash)
       bill_hash['related_bills'].each do |related|
         r_type, r_number, r_session = Bill.ident(related['bill_id'])
-        if not (r_type.nil? or r_number.nil? or r_session.nil?)
-          bill_ident = { :session => bill_hash['congress'],
-                         :bill_type => bill_hash['bill_type'],
-                         :number => bill_hash['number'] }
+        unless (r_type.nil? or r_number.nil? or r_session.nil?)
           related_ident = { :session => r_session,
                             :bill_type => r_type,
                             :number => r_number }
-          bill = Bill.where(bill_ident) .first
-          related_bill = Bill.where(related_ident) .first
+          bill = Bill.where(bill_ident(bill_hash)).first
+          related_bill = Bill.where(related_ident).first
           if related_bill.nil?
             OCLogger.log "Cannot relate #{bill_hash['bill_id']} to #{related['bill_id']} because #{related['bill_id']} is not yet in the datebase."
-          elsif not bill.nil?
+          elsif bill.present?
             relation = BillRelation.find_by_bill_id_and_related_bill_id(bill.id, related_bill.id)
             if relation.nil?
               OCLogger.log "Relating bill #{bill_hash['bill_id']} to #{related['bill_id']}"
@@ -199,12 +227,7 @@ module UnitedStates
     end
 
     def import_amendment (amdt_hash)
-      bill_ident = {
-        :session => amdt_hash['amends_bill']['congress'],
-        :number => amdt_hash['amends_bill']['number'],
-        :bill_type => amdt_hash['amends_bill']['bill_type']
-      }
-      bill = Bill.where(bill_ident).first
+      bill = Bill.where(bill_ident(amdt_hash['amends_bill'])).first
       if bill
         abbr_amdt_id = "#{amdt_hash['chamber']}#{amdt_hash['number']}"
         amdt_ident = {

@@ -1355,11 +1355,11 @@ class Person < ActiveRecord::Base
   end
 
   def stats
-    unless self.person_stats
-      self.person_stats = PersonStats.new :person => self
+    unless person_stats
+      create_person_stats
     end
 
-    self.person_stats
+    person_stats
   end
 
   def sectors_for_cycle(cycle = Settings.current_opensecrets_cycle)

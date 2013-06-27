@@ -26,7 +26,7 @@ gem 'rabl'
 gem 'delayed_job', '~> 2.1'
 
 # RMagick
-gem 'rmagick', '~> 2.13.1'
+gem 'rmagick', '~> 2.13.1', :require => "RMagick"
 gem "galetahub-simple_captcha", '0.1.3', :require => "simple_captcha"
 
 # Image uploads

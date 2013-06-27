@@ -158,14 +158,26 @@ namespace :update do
     end
   end
 
-  desc "Parse committee reports from Thomas"
-  task :committee_reports_parse => :environment do
+  desc "Import committees"
+  task :committees => :environment do
     begin
-      CommitteeReport.transaction {
-        require File.expand_path 'bin/thomas_parse_committee_reports', Rails.root
+      Committee.transaction {
+        require File.expand_path 'bin/import_committees', Rails.root
       }
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing committee reports!").deliver
+      Emailer.rake_error(e, "Error parsing committees!").deliver
+      throw e
+    end
+  end
+
+  desc "Import committee memberships"
+  task :committee_memberships => :environment do
+    begin
+      Committee.transaction {
+        require File.expand_path 'bin/import_committee_memberships', Rails.root
+      }
+    rescue Exception => e
+      Emailer.rake_error(e, "Error parsing committee memberships!").deliver
       throw e
     end
   end
@@ -342,8 +354,10 @@ namespace :update do
     :import_legislators, :bills,
     # Amendments are not handled yet
     #:amendments,
-    :roll_calls, :committee_reports,
-    :committee_meetings, :person_voting_similarities, :sponsored_bill_stats,
+    :roll_calls,
+    :committees, :committee_memberships,
+    :committee_reports, :committee_meetings,
+    :person_voting_similarities, :sponsored_bill_stats,
     :expire_cached_bill_fragments, :expire_cached_person_fragments
   ]
   task :parse_all => [ :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule]

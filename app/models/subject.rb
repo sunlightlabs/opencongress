@@ -1,7 +1,6 @@
 #class Subject < ViewableObject
 class Subject < ActiveRecord::Base
   include ViewableObject
-  require 'will_paginate'
 
   has_many :bill_subjects
   has_many :bills, :through => :bill_subjects, :order => "bills.introduced DESC"

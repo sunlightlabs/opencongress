@@ -150,7 +150,7 @@ namespace :update do
   task :amendments => :environment do
     begin
       Amendment.transaction {
-        require File.expand_path 'bin/daily/daily_parse_amendments', Rails.root
+        require File.expand_path 'bin/import_amendments', Rails.root
       }
     rescue Exception => e
       Emailer.rake_error(e, "Error parsing amendments!").deliver
@@ -182,6 +182,7 @@ namespace :update do
     end
   end
 
+  desc "Import committee reports."
   task :committee_reports => :environment do
     begin
       CommitteeReport.transaction {
@@ -352,8 +353,7 @@ namespace :update do
     :congress_legislators, :sunlightlabs,
     :photos,
     :import_legislators, :bills,
-    # Amendments are not handled yet
-    #:amendments,
+    :amendments,
     :roll_calls,
     :committees, :committee_memberships,
     :committee_reports, :committee_meetings,

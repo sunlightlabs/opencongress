@@ -235,9 +235,7 @@ module UnitedStates
           :bill_id => bill.id
         }
         amdt = Amendment.where(amdt_ident).first
-        if amdt
-          OCLogger.log "Updating amendment #{amdt_hash['amendment_id']}"
-        else
+        if amdt.nil?
           OCLogger.log "Creating record for amendment #{amdt_hash['amendment_id']}"
           amdt = Amendment.new
           amdt.number = abbr_amdt_id

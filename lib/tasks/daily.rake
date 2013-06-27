@@ -22,6 +22,11 @@ namespace :update do
     end
   end
 
+  desc "Sets the in-session status of both chambers of congress for today"
+  task :in_session => :environment do
+    require File.expand_path 'bin/parse_today_in_congress', Rails.root
+  end
+
   desc "Fetches unitedstates scraper output."
   task :unitedstates_rsync => :environment do
     begin
@@ -358,6 +363,7 @@ namespace :update do
     :committees, :committee_memberships,
     :committee_reports, :committee_meetings,
     :person_voting_similarities, :sponsored_bill_stats,
+    :in_session,
     :expire_cached_bill_fragments, :expire_cached_person_fragments
   ]
   task :parse_all => [ :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule]

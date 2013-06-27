@@ -428,9 +428,7 @@ ul.tiny li{
 .small.button{
   padding: 5px 10px;
   cursor: pointer;
-  position: absolute;
-  left: 676px;
-  }
+}
 
 .small.floatleft,
 .small.floatright,
@@ -502,16 +500,24 @@ ul.huge li{
 
 /* Extra border styles /////////////////////////////////////////////////////////////*/
 
-
-.cap{
+#subscribe_email_cap{
   -moz-border-radius-topleft: 3px;
   -moz-border-radius-bottomleft: 3px;
   -webkit-border-bottom-left-radius: 3px;
   -webkit-border-top-left-radius: 3px;
-  margin: 0 !important;
+  float: left;
+  }
+
+  .cap{
+  -moz-border-radius-topleft: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -webkit-border-top-left-radius: 0px;
+   margin: 0 !important;
   float: left;
   padding: 7px 12px;
   }
+
 
 .no_sides{
   border-right: 0 !important;

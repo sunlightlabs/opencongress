@@ -5776,9 +5776,11 @@ border-radius:0px !important;
   bottom: 0;
 }
 
+/*
 #right {
   background: url('../images/new_assets/footerbg.png') center top repeat-x;
 }
+*/
 
 #footerstars_wrapper {
   overflow: visible;
@@ -5789,11 +5791,13 @@ border-radius:0px !important;
   bottom: 0;
 }
 
-.stars {
+/*
+.stars_bottom {
   float: left;
   padding-bottom: 200px;
   z-index: -1;
 }
+*/
 
 .sign_up {
   float: right;

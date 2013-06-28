@@ -10,7 +10,6 @@ OpenCongress::Application.configure do
 
   # Send mail with postmark
   config.action_mailer.delivery_method = :postmark
-  config.action_mailer.postmark_settings = { :api_key => ApiKeys.postmark }
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"

@@ -94,8 +94,11 @@ gem 'acts-as-taggable-on', '~> 2.3.3'
 
 gem 'simple_form'
 
+
+# Mail
 gem 'mechanize'
 gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'
+gem 'postmark-rails'
 
 group :deployment do
   gem 'capistrano'
@@ -105,11 +108,12 @@ end
 group :production do
   # new relic RPM
   gem 'newrelic_rpm'
-  gem 'sentry-raven'
 end
 
 group :production, :staging do
   gem 'unicorn'
+  gem 'sentry-raven'
+  gem 'postmark-rails'
 end
 
 group :test, :development do

@@ -11,7 +11,9 @@ OpenCongress::Application.configure do
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.perform_deliveries = false
+  # config.action_mailer.perform_deliveries = false
+  config.action_mailer.delivery_method = :postmark
+  config.action_mailer.postmark_settings = { :api_key => ApiKeys.postmark }
 
   # Enable threaded mode
   # config.threadsafe!

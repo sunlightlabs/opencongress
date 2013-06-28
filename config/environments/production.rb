@@ -8,17 +8,21 @@ OpenCongress::Application.configure do
   # In production, Apache or nginx will already do this
   config.serve_static_assets = false
 
+  # Send mail with postmark
+  config.action_mailer.delivery_method = :postmark
+  config.action_mailer.postmark_settings = { :api_key => ApiKeys.postmark }
+
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
 
   # Use the git revision of this release
   # RELEASE_NUMBER = %x{cat REVISION | cut -c -7}.rstrip
-  
+
   # Enable serving of images, stylesheets, and javascripts from CloudFront
-  config.action_controller.asset_host = Proc.new {
-     |source, request| "#{request.ssl? ? 'https' : 'http'}://d1f0ywl7f2vxwh.cloudfront.net/r-RELEASE_NUMBER"
-  }
-  
+  # config.action_controller.asset_host = Proc.new {
+  #    |source, request| "#{request.ssl? ? 'https' : 'http'}://d1f0ywl7f2vxwh.cloudfront.net/r-RELEASE_NUMBER"
+  # }
+
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
 
@@ -31,8 +35,8 @@ OpenCongress::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
-  
+
   Paperclip.options[:command_path] = "/usr/local/bin"
-  
+
   GC.enable_stats if defined?(GC) && GC.respond_to?(:enable_stats)
 end

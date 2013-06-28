@@ -362,6 +362,11 @@ GEM
     ruby-progressbar (1.0.2)
     sass (3.2.9)
     selenium-client (1.2.18)
+    sentry-raven (0.4.8)
+      faraday (>= 0.7.6)
+      hashie (>= 1.1.0)
+      multi_json (~> 1.0)
+      uuidtools
     settingslogic (2.0.9)
     sexp_processor (4.2.1)
     silent-postgres (0.1.1)
@@ -393,6 +398,7 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
+    uuidtools (2.1.4)
     validates_captcha (0.9.7)
       actionpack (>= 2.3.2)
       activerecord (>= 2.3.2)
@@ -474,6 +480,7 @@ DEPENDENCIES
   ruby-openid
   sass
   selenium-client
+  sentry-raven
   settingslogic
   silent-postgres
   simple-rss

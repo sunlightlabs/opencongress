@@ -105,6 +105,7 @@ end
 group :production do
   # new relic RPM
   gem 'newrelic_rpm'
+  gem 'sentry-raven'
 end
 
 group :production, :staging do

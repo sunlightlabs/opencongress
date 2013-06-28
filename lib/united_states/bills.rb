@@ -54,7 +54,7 @@ module UnitedStates
     def import_bill (bill_hash)
       bill = Bill.where(bill_ident(bill_hash)).first
       if bill.nil?
-        bill = Bill.new bill_ident
+        bill = Bill.new bill_ident(bill_hash)
         OCLogger.log "Added bill #{bill_hash['bill_id']}"
       else
         OCLogger.log "Updating bill #{bill_hash['bill_id']}"

@@ -26,7 +26,8 @@ module UnitedStates
                 congress.to_s,
                 'bills',
                 bill_type,
-                "#{bill_type}#{number}")
+                "#{bill_type}#{number}",
+                "data.json")
     end
 
     def parse_bill_file (path)

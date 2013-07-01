@@ -112,7 +112,7 @@ end
 
 group :production, :staging do
   gem 'unicorn'
-  gem 'sentry-raven'
+  gem 'sentry-raven', :git => "git://github.com/getsentry/raven-ruby.git"
   gem 'postmark-rails'
 end
 

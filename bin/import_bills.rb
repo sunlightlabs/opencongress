@@ -23,3 +23,4 @@ bill_file_paths.each_with_index do |bill_file_path, idx|
   OCLogger.log "Linking bill #{bill_hash['bill_id']} to related bills."
   UnitedStates::Bills.link_related_bills bill_hash
 end
+

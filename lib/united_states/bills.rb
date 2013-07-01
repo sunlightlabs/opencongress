@@ -21,6 +21,14 @@ module UnitedStates
       ABBREVIATIONS.invert[abbr.to_s]
     end
 
+    def file_path (congress, bill_type, number)
+      File.join(Settings.unitedstates_data_path,
+                congress.to_s,
+                'bills',
+                bill_type,
+                "#{bill_type}#{number}")
+    end
+
     def parse_bill_file (path)
       decode_bill_hash(JSON.parse(File.read(path)))
     end

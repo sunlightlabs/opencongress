@@ -1,0 +1,12 @@
+<h2 class="icon"><%= bill_type_name(bill_type).html_safe %><%= dbox_trigger(bill_type).html_safe %></h2>
+<div class="dboxed">
+  <%= dbox_content(bill_type) %>
+</div>
+<%= render(:partial => "bill/related_bills_list",
+  :locals => { :related_bills_list => bills } )
+%>
+
+<% if bill_counts[bill_type] > 5 %>
+  <%= link_to "<span>and #{number_with_delimiter(bill_counts[bill_type] - 5)} more...</span>".html_safe, 
+    { :action => 'list_bill_type', :bill_type => bill_type }, :class => 'med_button med_arrow' %>
+<% end %>

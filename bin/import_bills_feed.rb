@@ -22,7 +22,7 @@ $stdin.each_line do |ln|
     end
     
     OCLogger.log "Importing bill from #{bill_file_path}"
-    bill_hash = UnitedStates::Bills.parse_bill_file bill_file_path
+    bill_hash = UnitedStates::Bills.parse_bill_file file_path
     UnitedStates::Bills.import_bill bill_hash
     imported_bills.push(bill_hash)
 

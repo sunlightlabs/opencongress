@@ -675,8 +675,7 @@ class PeopleController < ApplicationController
       @atom = {'link' => url_for(:only_path => false, :controller => 'people', :id => @person, :action => 'atom'), 'title' => "#{@person.popular_name} activity"}
       @bookmarking_image = @person.photo_path
     else
-      flash[:warning] = "Invalid person URL."
-      redirect_to :action => 'all'
+      render_404
     end
 
   end

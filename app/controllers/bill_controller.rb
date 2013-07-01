@@ -625,13 +625,9 @@ class BillController < ApplicationController
 
   def money
     bill_type, number, session = Bill.ident params[:id]
-    if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
-      respond_to do |format|
-        format.html
-      end
-    else
-      flash[:error] = "Invalid bill URL."
-      redirect_to :action => 'all'
+    @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
+    respond_to do |format|
+      format.html
     end
   end
 
@@ -745,17 +741,17 @@ private
 
   def get_params
     case params[:types]
-      when "house"
-        @types_from_params = Bill.in_house
-        @types = "house"
-      when "senate"
-        @types_from_params = Bill.in_senate
-        @types = "senate"
-      else
-        @types_from_params = Bill.all_types_ordered
-        @types = "all"
-      end
-      @carousel = [Bill.find_hot_bills('bills.page_views_count desc',{:limit => 12})]
+    when "house"
+      @types_from_params = Bill.in_house
+      @types = "house"
+    when "senate"
+      @types_from_params = Bill.in_senate
+      @types = "senate"
+    else
+      @types_from_params = Bill.all_types_ordered
+      @types = "all"
+    end
+    @carousel = [Bill.find_hot_bills('bills.page_views_count desc',{:limit => 12})]
   end
 
   def bill_profile_shared
@@ -793,8 +789,7 @@ private
       @bookmarking_image = "/images/fb-bill.jpg"
       @atom = {'link' => url_for(:only_path => false, :controller => 'bill', :id => @bill.ident, :action => 'atom'), 'title' => "#{@bill.typenumber} activity"}
     else
-      flash[:error] = "Invalid bill URL. (#{params[:id]})"
-      redirect_to :action => 'all'
+      render_404
     end
   end
 

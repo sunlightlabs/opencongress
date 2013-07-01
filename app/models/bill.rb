@@ -75,6 +75,8 @@ class Bill < ActiveRecord::Base
 
   attr_accessor :wiki_summary_holder
 
+  scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
+
   @@DISPLAY_OBJECT_NAME = 'Bill'
 
   #Added these back in to make govtrack bill import work to get the bill text that is marked up with the right paragraph ids
@@ -105,8 +107,13 @@ class Bill < ActiveRecord::Base
   end
 
   class << self
+
+    def available_sessions(relation = Bill.scoped)
+      relation.select("DISTINCT session").map(&:session).uniq.sort
+    end
+
     def all_types
-      UnitedStates::Bills::ABBREVIATIONS.keys
+      UnitedStates::Bills::ABBREVIATIONS
     end
 
     def all_types_ordered

@@ -1,4 +1,4 @@
-if @success 
+if @success
   if @group
     page.replace_html :activity_stream_container, :partial => 'groups/activity_stream'
     page << "$j('#group_post').jqmHide();"
@@ -12,5 +12,5 @@ if @success
     end
   end
 else
-  page.alert("All fields marked with an * are required.")
+  page.alert(@item.errors.full_messages.to_sentence)
 end

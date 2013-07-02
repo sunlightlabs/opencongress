@@ -12,7 +12,7 @@ if @success
     end
   end
 else
-  page.alert("All fields marked with an * are required.")
+  page.alert(@item.errors.full_messages.to_sentence)
   if @group
     page << "$j('.add-spinner').hide();"
   end

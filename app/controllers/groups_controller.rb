@@ -30,13 +30,15 @@ class GroupsController < ApplicationController
   
   def show 
     # we got the @group object in check_membership
-    
-    @simple_comments = true
-    
-    @page_title = "#{@group.name} - MyOC Groups"
-    
-    respond_with(@group) do |format|
-      format.xml { redirect_to feed_group_political_notebook_notebook_items_path(@group) }
+    if not @group.user.is_banned?
+      @simple_comments = true
+      @page_title = "#{@group.name} - MyOC Groups"
+      respond_with(@group) do |format|
+        format.xml { redirect_to feed_group_political_notebook_notebook_items_path(@group) }
+      end
+    else
+      flash[:notice] = "The #{@group.name} group has been disabled because it's creator was banned."
+      redirect_to(:action => 'index') and return
     end
   end
 
@@ -152,7 +154,7 @@ class GroupsController < ApplicationController
     if current_user == :false
       @last_view = Time.now
     else
-      membership = @group.group_members.where(["group_members.user_id=?", current_user.id]).first
+      membership = @group.group_members.where(:group_members => { :user_id => current_user.id}).first
       
       if membership.nil?
         @last_view = Time.now

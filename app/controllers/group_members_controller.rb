@@ -1,8 +1,20 @@
 class GroupMembersController < ApplicationController
   before_filter :login_required, :except => [ :index ]
-  
-  def index
+  before_filter :find_by_group_id
+  before_filter :disabled_groups_guard
+
+  def find_by_group_id
     @group = Group.find(params[:group_id])
+  end
+
+  def disabled_groups_guard
+    if @group.user.is_banned?
+      flash[:notice] = "The #{@group.name} group has been disabled because it's creator was banned."
+      redirect_to(:controller => 'groups', :action => 'index') and return
+    end
+  end
+
+  def index
     @page_title = "Members of #{@group.name}"
     
     # if there's a status param, they probably got redirected here while trying to join
@@ -24,8 +36,6 @@ class GroupMembersController < ApplicationController
   end
   
   def update
-    @group = Group.find(params[:group_id])
-    
     unless params[:status].blank?
       if (params[:status] == 'MODERATOR' and @group.is_owner?(current_user)) or
          (params[:status] != 'MODERATOR' and @group.can_moderate?(current_user))
@@ -44,7 +54,6 @@ class GroupMembersController < ApplicationController
     end
     
     unless params[:receive_owner_emails].blank?
-      @group = Group.find(params[:group_id])
       @group_member = GroupMember.find(params[:id])
       
       @group_member.receive_owner_emails = !@group_member.receive_owner_emails?
@@ -55,8 +64,6 @@ class GroupMembersController < ApplicationController
   end
   
   def create
-    @group = Group.find(params[:group_id])
-    
     # the only create action is to join a group (for now) so just set status if they can join
     if logged_in? and @group.can_join?(current_user)
       @group.group_members.create(:user_id => current_user.id, :status => 'MEMBER')
@@ -68,8 +75,6 @@ class GroupMembersController < ApplicationController
   end
   
   def destroy
-    @group = Group.find(params[:group_id])
-    
     membership = GroupMember.find(params[:id])
     
     if (membership.user == current_user && membership.status != 'BOOTED')

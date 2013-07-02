@@ -220,7 +220,7 @@ class User < ActiveRecord::Base
   end
 
   def active_groups
-    owned_groups + groups.where("group_members.status != 'BOOTED'")
+    owned_groups + groups.includes(:user).where("group_members.status != 'BOOTED'").select{ |g| not g.user.is_banned? }
   end
 
   def join_default_groups

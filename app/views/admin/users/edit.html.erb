@@ -3,10 +3,10 @@
 <%= link_to 'Show', :action => 'show', :id => @user %> |
 <%= link_to 'Back', :action => 'list' %>
 
-<% form_tag ({:action => 'update', :id => @user}, :multipart => true) do -%>
+<% form_tag :action => 'update', :id => @user, :multipart => true do -%>
   <br/>
   Role: <select id="user_user_role_id" name="user[user_role_id]">
-    <%= options_from_collection_for_select(UserRole.find(:all), "id", "name", @user.user_role_id) %>
+    <%= options_from_collection_for_select(UserRole.order(:name).all, "id", "name", @user.user_role_id) %>
   </select><br/>
   Enabled? :<%= check_box 'user', 'enabled' %>
   <br/>

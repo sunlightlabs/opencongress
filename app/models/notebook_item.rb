@@ -32,13 +32,15 @@ class NotebookItem < ActiveRecord::Base
   protected
 
   def embed_doesnt_contain_scripts
-    errors.add(:embed, "can't contain script tags") if embed =~ /<script/i
-    errors.add(:embed, "can't include onload scripts") if embed =~ /onload=/i
-    iframe_count = embed.match(/<iframe/i).length
-    src_count = embed.match(/<iframe[^>]*src=/i).length
-    valid_src_count = embed.match(/<iframe[^>]*src=("|')https?:\/\/[^>]+("|')/i).length
-    errors.add(:embed, "should reference only iframes with a valid url") if iframe_count > valid_src_count || src_count > valid_src_count
-    errors.add(:embed, "can't include css behaviors") if embed =~ /<style.*behavior[\s]*:[\s]*('|")/im
+    if embed
+      errors.add(:embed, "can't contain script tags") if embed =~ /<script/i
+      errors.add(:embed, "can't include onload scripts") if embed =~ /onload=/i
+      iframe_count = embed.match(/<iframe/i).length
+      src_count = embed.match(/<iframe[^>]*src=/i).length
+      valid_src_count = embed.match(/<iframe[^>]*src=("|')https?:\/\/[^>]+("|')/i).length
+      errors.add(:embed, "should reference only iframes with a valid url") if iframe_count > valid_src_count || src_count > valid_src_count
+      errors.add(:embed, "can't include css behaviors") if embed =~ /<style.*behavior[\s]*:[\s]*('|")/im
+    end
   end
 
 end

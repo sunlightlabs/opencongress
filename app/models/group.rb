@@ -57,7 +57,9 @@ class Group < ActiveRecord::Base
     return false if u == :false
 
     membership = group_members.where(["group_members.user_id=?", u.id]).first
-    return (membership && membership.status != 'BOOTED')
+    return false if membership.nil?
+    return false if membership.status == 'BOOTED'
+    return true
   end
 
   def membership(u)

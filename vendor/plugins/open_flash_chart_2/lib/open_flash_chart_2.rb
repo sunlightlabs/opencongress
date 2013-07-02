@@ -217,7 +217,7 @@ module OFC2
   }
 
   CLASSES.each_key do |class_name|
-    _class_name =class_name.to_s.camelize
+    _class_name = class_name.to_s.camelize
     new_class = Class.new do
       include OWJSON
 
@@ -269,7 +269,7 @@ module OFC2
     end
 
     def initialize
-      @title = Title.new( "Graph" )
+      @title = Title.new( :text => "Graph" )
       @elements = []
     end
 

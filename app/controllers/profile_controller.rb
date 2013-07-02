@@ -11,6 +11,7 @@ class ProfileController < ApplicationController
 
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])
+    return render_404 if @user.nil?
     @page_title = "#{@user.login.possessive} Profile"
     @title_class = "tab-nav"
     @profile_nav = @user

@@ -30,7 +30,7 @@ class GroupInvitesController < ApplicationController
       end
       
       if @group.can_join?(invite_user)
-        membership = @group.group_members.find_or_create_by_user_id(invite_user)
+        membership = @group.group_members.find_or_create_by_user_id(invite_user.id)
         membership.status = 'MEMBER'
         membership.save
         

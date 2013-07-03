@@ -222,6 +222,25 @@ module UnitedStates
       end
     end
 
+    def parse_amendment_ident_string (amdt_id)
+      pattern = /([sh]amdt)(\d+)-(\d+)/
+      match = pattern.match(amdt_id)
+      if match
+        match.captures
+      else
+        [nil, nil, nil]
+      end
+    end
+
+    def amendment_file_path (congress, amdt_type, number)
+      File.join(Settings.unitedstates_data_path,
+                congress.to_s,
+                'amendments',
+                amdt_type,
+                "#{amdt_type}#{number}",
+                "data.json")
+    end
+
     def parse_amendment_file (path)
       decode_amendment_hash(JSON.parse(File.read(path)))
     end

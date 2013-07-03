@@ -2,6 +2,27 @@ module UnitedStates
   module Votes
     extend self
 
+    ##
+    # s1-113.2013 => ['s', '1', '113', '2013']
+    def parse_ident_string (s)
+      pattern = /([sh])(\d+)-(\d+)[.](\d+)/
+      match = pattern.match(s)
+      if match
+        return match.captures
+      else
+        return [nil, nil, nil, nil]
+      end
+    end
+
+    def roll_call_file_path (congress, year, chamber_prefix, number)
+      File.join(Settings.unitedstates_data_path,
+                congress.to_s,
+                'votes',
+                year.to_s,
+                "#{chamber_prefix}#{number}",
+                "data.json")
+    end
+
     def parse_roll_call_file (path)
       decode_roll_call_hash(JSON.parse(File.read(path)))
     end

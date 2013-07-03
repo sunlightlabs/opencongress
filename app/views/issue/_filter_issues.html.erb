@@ -1,0 +1,14 @@
+<ul id="sort">
+  <h4>Display</h4>
+  <li id="active" class="<%= is_active? @filter_by, :active %>"><%= link_to "<span>Issues with Bills this Congress</span>".html_safe, issues_path %></li>
+  <!--<li id="hotbills" class="<%= is_active? @filter_by, :views %>"><%= link_to "<span>Most Viewed</span>".html_safe, most_viewed_issues_path %></li>-->
+  <li id="all" class="<%= is_active? @filter_by, :all %>"><%= link_to "<span>All Issues</span>".html_safe, all_issues_path %></li>
+</ul>
+<% if @filter_by == :all %>
+<ul id="jump">
+  <h4>Jump</h4>
+  <% ('A'..'Z').each do |letter| %>
+    <li><%= link_to letter, all_issues_path(letter) %></li>
+  <% end %>
+ </ul>
+<% end %>

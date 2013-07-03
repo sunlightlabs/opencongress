@@ -23,7 +23,7 @@ class Subject < ActiveRecord::Base
 
   acts_as_bookmarkable
 
-  scope :active, includes(:bills).where("bills.session" => Settings.default_congress)
+  scope :active, includes(:bills).where("bills.session" => Bill.available_sessions.last)
 
   @@DISPLAY_OBJECT_NAME = 'Issue'
 

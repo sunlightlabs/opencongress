@@ -3,3 +3,9 @@
 <% else %>
   <%= render :partial => 'issue_list', :locals => {:subjects => @subjects } %>
 <% end %>
+<script>
+  (function($){
+    $('#sort li').removeClass('active');
+    $('#jump').hide();
+  })(jQuery);
+</script>

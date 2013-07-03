@@ -130,7 +130,9 @@ OpenCongress::Application.routes.draw do
     match ':id/atom', :action => 'article_atom'
   end
 
-  match 'issues' => 'issue#index'
+  match 'issues' => 'issue#index', :as => :issues
+  match 'issues/all/(:id)' => 'issue#all', :as => :all_issues
+  match 'issues/most_viewed' => 'issue#most_viewed', :as => :most_viewed_issues
 
   scope 'issues', :controller => 'issue' do
     match 'show/:id', :action => 'show', :as => :issue

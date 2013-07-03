@@ -81,6 +81,12 @@ module ApplicationHelper
     end
   end
 
+  # Classname helper, returns opts[:classname] || 'active' if input values are equal
+  def is_active?(a, b, opts = {})
+    opts = { :classname => 'active' }.merge(opts)
+    opts[:classname] if a == b
+  end
+
   def oc_pagination_links_each(paginator, options)
     options = DEFAULT_OPTIONS.merge(options)
     link_to_current_page = options[:link_to_current_page]

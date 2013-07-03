@@ -1,7 +1,12 @@
-<%= render :partial => 'sort_issues', :locals => { :sort => @sort }  %>
-<%= render :partial => 'shared/timeframe_select' if @sort == :by_most_viewed %>
-<%= will_paginate @subjects %>
-</div> <!-- // sort_nav -->
-<%= render :partial => 'issue_list', :locals => {:subjects => @subjects } %>
-<%= will_paginate @subjects %>
-</div> <!-- // views -->
+<%= render :partial => 'heading' %>
+<div id="views">
+    <%= render :partial => 'sidebar' %>
+    <div id="contain_issues" class="contain_list">
+        <div id="sort_nav">
+            <%= render :partial => 'filter_issues' %>
+            <%= will_paginate @subjects if @subjects.respond_to? :total_pages %>
+        </div>
+        <%= render :partial => 'issue_list', :locals => {:subjects => @subjects} %>
+        <%= will_paginate @subjects if @subjects.respond_to? :total_pages %>
+    </div>
+</div>

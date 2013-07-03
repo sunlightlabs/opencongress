@@ -367,7 +367,7 @@ namespace :update do
     :expire_cached_bill_fragments, :expire_cached_person_fragments
   ]
   task :parse_all => [ :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule]
-  task :govtrack => [ :rsync, :bills, :bill_text ] #:amendments, :roll_calls, :expire_cached_bill_fragments, :expire_cached_person_fragments]
+  task :govtrack => [ :rsync, :bill_text ]
   task :committee_info => [:committee_reports, :committee_schedule]
   task :people_meta_data => [:person_voting_similarities, :sponsored_bill_stats, :expire_cached_person_fragments]
 end

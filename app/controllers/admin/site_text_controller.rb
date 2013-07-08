@@ -10,7 +10,7 @@ class Admin::SiteTextController < Admin::IndexController
          :redirect_to => { :action => :list }
 
   def list
-    @site_texts = SiteText.paginate(:all, :per_page => 30, :page => params[:page])
+    @site_texts = SiteText.paginate(:per_page => 30, :page => params[:page])
   end
 
   def show
@@ -57,7 +57,7 @@ class Admin::SiteTextController < Admin::IndexController
     SiteText.find(params[:id]).destroy
     redirect_to :action => 'list'
   end
-  
+
   def manage
     logger.warn "HERE's the params: #{params[:pageparams].to_s}"
   end

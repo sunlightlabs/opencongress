@@ -1,6 +1,6 @@
 class Admin::FeaturedPeopleController < Admin::IndexController
 #  cache_sweeper :featured_person_sweeper, :only => [ :destroy, :create, :update ]
-  
+
   def index
     list
     render :action => 'list'
@@ -11,7 +11,7 @@ class Admin::FeaturedPeopleController < Admin::IndexController
          :redirect_to => { :action => :list }
 
   def list
-    @featured_people = FeaturedPerson.paginate(:all, :per_page => 30, :order => "created_at DESC", :page => params[:page]) 
+    @featured_people = FeaturedPerson.paginate(:per_page => 30, :order => "created_at DESC", :page => params[:page])
   end
 
   def show

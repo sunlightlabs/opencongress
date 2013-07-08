@@ -6,11 +6,11 @@
       <th>Bill or Person</th>
       <th>Article</th>
       <th>Action</th>
-  
+
       <% @commentaries.each do |c| %>
         <tr>
           <td>
-            <%= c.commentariable.title_for_share %>
+            <%= c.commentariable.title_for_share rescue nil %>
           </td>
           <td>
             <b><%= link_to c.title, c.url, :target => '_blank' %></b> - <%= c.date.strftime("%B %d, %Y") %><br>
@@ -18,7 +18,7 @@
             <% if c.status == 'PENDING' %>
               <span style="color: red;">MARKED QUESTIONABLE BY PARSER</span>
             <% elsif c.status == 'FLAGGED' %>
-              <span style="color: red;">FLAGGED BY USER</span>        
+              <span style="color: red;">FLAGGED BY USER</span>
             <% end %>
           </td>
           <td width="120">
@@ -33,13 +33,15 @@
       <%= hidden_field_tag :commentariable_type, @commentariable.class.to_s %>
       <%= hidden_field_tag :commentariable_id, @commentariable.id %>
     <% end %>
-    
+
     <p class="behave"><% if @total_commentaries > 30 %></p>
       <%= submit_tag 'Continue >>' %>
     <% else %>
       <%= submit_tag 'Finish!' %>
     <% end %>
-    
-    <%= link_to "Go to #{@commentariable.title_for_share}", :controller => "/#{@commentariable.class.to_s.downcase}", :action => 'show', :id => @commentariable %>
-  <% end %>        
+
+    <% if @commentariable %>
+      <%= link_to "Go to #{@commentariable.title_for_share}", :controller => "/#{@commentariable.class.to_s.downcase}", :action => 'show', :id => @commentariable %>
+    <% end %>
+  <% end %>
 </div>

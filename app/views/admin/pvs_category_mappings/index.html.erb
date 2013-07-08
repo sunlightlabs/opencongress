@@ -1,6 +1,10 @@
 <div class="padding">
   <h1>Listing PVS Category Mappings</h1>
 
+  <p>
+    <%= link_to 'New Mapping', new_admin_pvs_category_mapping_path, :class => 'button blue huge' %>
+  </p>
+  <br/>
   <table>
     <tr>
       <th>Mapping</th>
@@ -13,8 +17,9 @@
     </tr>
   <% end %>
   </table>
+  <br/>
+  <p>
+    <%= link_to 'New Mapping', new_admin_pvs_category_mapping_path, :class => 'button blue huge' %>
+  </p>
 
-  <br />
-
-  <%= link_to 'New Mapping', new_admin_pvs_category_mapping_path, :class => 'button blue huge' %>
 </div>

@@ -484,7 +484,7 @@ DEPENDENCIES
   rabl
   rack-contrib
   rack-openid
-  rails (~> 3.0.19)
+  rails (~> 3.0.20)
   rails_best_practices
   rake (~> 0.9.1)
   rmagick (~> 2.13.1)

@@ -2,11 +2,11 @@
 <%= will_paginate(@teh_comments) %>
 <% form_tag '/admin/comments/bulk_operation' do %>
 <table style="border-collapse: separate;">
-  <tr><th>Comment</th><th>By</th><th>On</th><th>At</th><th>Action</th></tr>
+  <tr><th>Comment</th><th>By</th><th>On</th><th>At</th><th width="12%">Action</th></tr>
 <% @teh_comments.each do |c| %>
   <tr class="<%= cycle("odd","even") %>" id="comment<%= c.id %>">
 
-    <td style="width:400px;font-size:10px;"><%=h c.comment %></td>
+    <td style="width:35%;font-size:10px;word-wrap:break-word;"><%=h c.comment %></td>
     <% if c.user %>
     <td><%= c.user.login %>
      <% if c.user.user_warnings.count > 0 %>
@@ -16,7 +16,6 @@
     <% else %>
     <td>Anonymous</td>
     <% end %>
-    <td><%= c.user ? c.user.login : "Anonymous" %></td>
     <td><%= Object.const_get(c.commentable_type).find_by_id(c.commentable_id).ident %></td>
     <td><%= link_to c.created_at, url_for(c.page_link_admin).gsub('admin/', '') %></td>
     <td>
@@ -31,7 +30,7 @@
        <%= check_box_tag "ok[]", c.id %> Set OK<br/>
        <% end %>
       <%= check_box_tag "censor[]", c.id %> Censor<br/>
-       
+
     </td>
 
   </tr>

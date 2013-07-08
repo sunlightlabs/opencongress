@@ -1,4 +1,4 @@
-class Admin::CommentaryController < Admin::IndexController    
+class Admin::CommentaryController < Admin::IndexController
   before_filter :can_moderate, :only => ["pending", "update_pending"]
   def index
     list
@@ -18,72 +18,71 @@ class Admin::CommentaryController < Admin::IndexController
 
   def pending
     @page_title = "Pending News and Blog Articles"
-
-    unless params[:commentary_type].blank? and params[:commentary_id].blank?
+    if params[:commentary_type].blank? || params[:commentary_id].blank?
       @commentaries = Commentary.find_all_by_status('PENDING', :limit => 30, :order => 'date DESC')
       @total_commentaries = Commentary.count_by_sql("SELECT count(*) FROM commentaries WHERE status='PENDING'")
     else
-      @commentaries = Commentary.find(:all, 
+      @commentaries = Commentary.find(:all,
                                       :conditions => ["status='PENDING' AND commentariable_type=? AND commentariable_id=?", params[:commentariable_type], params[:commentariable_id]],
                                       :limit => 30, :order => 'date DESC')
       @total_commentaries = Commentary.count_by_sql("SELECT count(*) FROM commentaries WHERE status='PENDING' AND commentariable_type='#{params[:commentariable_type]}' AND commentariable_id='#{params[:commentariable_id]}'")
       klass = Object.const_get params[:commentariable_type]
       @commentariable = klass.find_by_id(params[:commentariable_id])
-      
+
       @page_title += " for #{@commentariable.title_for_share}"
     end
   end
-  
+
   def clear_cache
     Rails.cache.clear
 
     flash[:notice] = "memcache cleared."
-    
+
     redirect_to :controller => "/admin/index"
   end
-  
+
   def update_pending
     statuses = params[:commentary]
-    
+
     if statuses
       statuses.keys.each do |k|
         c = Commentary.find_by_id(k)
-        
+
         if c
           if statuses[k] == 'OK'
             c.status = statuses[k]
-            c.is_ok = 'true' 
+            c.is_ok = 'true'
             c.save
-          
+
             c.commentariable.increment!(c.is_news ? :news_article_count : :blog_article_count)
           else
             BadCommentary.create(:commentariable_type => c.commentariable_type, :commentariable_id => c.commentariable_id, :url => c.url, :date => c.date)
-            
+
             c.destroy
           end
         end
       end
-      
+
       flash[:notice] = "Commentaries have been updated"
     end
 
     redirect_to :action => 'pending', :commentariable_type => params[:commentariable_type], :commentariable_id => params[:commentariable_id]
   end
-  
+
   def add
     @people = (Person.representatives << Person.senators).flatten
     @page_title = "Add a News/Blog Article"
   end
-  
+
   def show
     @commentary = Commentary.find(params[:id])
   end
 
   def new
     @commentary = Commentary.new
-    
+
     if params[:commentariable_type].blank? && params[:commentariable_id].blank?
-      redirect_to :action => 'add'     
+      redirect_to :action => 'add'
     else
       klass = Object.const_get params[:commentariable_type]
       @commentary.commentariable = klass.find_by_id(params[:commentariable_id])
@@ -98,9 +97,9 @@ class Admin::CommentaryController < Admin::IndexController
     if @commentary.save
       flash[:notice] = 'Commentary was successfully created.'
       @commentary.commentariable.expire_commentary_fragments(@commentary.is_news? ? 'news' : 'blog')
-      
+
       @commentary.commentariable.increment!(@commentary.is_news ? :news_article_count : :blog_article_count)
-      
+
       case @commentary.commentariable_type
       when 'Bill', 'Person'
         redirect_to polymorphic_url([@commentary.commentariable])
@@ -120,7 +119,7 @@ class Admin::CommentaryController < Admin::IndexController
 
   def update
     @commentary = Commentary.find(params[:id])
-    
+
     if @commentary.update_attributes(params[:commentary])
       flash[:notice] = 'Commentary was successfully updated.'
       case @commentary.commentariable_type
@@ -138,7 +137,7 @@ class Admin::CommentaryController < Admin::IndexController
 
   def mass_delete
     @commentary_ids = params[:mass_delete_ids]
-    
+
     c = nil
     object = nil
     @commentary_ids.each do |c_id|
@@ -162,14 +161,14 @@ class Admin::CommentaryController < Admin::IndexController
       { :controller => 'bill', :action => 'upcoming', :id => c.commentariable }
     end
   end
-  
+
   def destroy
     @commentary = Commentary.find(params[:id])
     bc = BadCommentary.new(:url => @commentary.url, :commentariable_id => @commentary.commentariable_id, :commentariable_type => @commentary.commentariable_type, :date => @commentary.date)
     bc.save
     @commentary.destroy
     @commentary.commentariable.decrement!(@commentary.is_news ? :news_article_count : :blog_article_count)
-    flash[:notice] = 'Commentary was deleted.'    
+    flash[:notice] = 'Commentary was deleted.'
     redirect_to case @commentary.commentariable_type
     when 'Bill', 'Person'
       polymorphic_url([@commentary.commentariable])
@@ -178,15 +177,15 @@ class Admin::CommentaryController < Admin::IndexController
     end
 
   end
-  
+
   def person_cleanup
     @person = Person.find_by_id(params[:person_id])
 
     deleted = @person.cleanup_commentaries
-    
+
     flash[:notice] = "Commentaries cleaned up. #{deleted} articles deleted."
 
     redirect_to :controller => '/people', :action => 'show', :id => @person
   end
-  
+
 end

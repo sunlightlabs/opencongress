@@ -136,7 +136,8 @@ class User < ActiveRecord::Base
 
   scope :for_state, lambda { |state| where("state = ?", state.upcase) }
   scope :for_district, lambda { |state, district| for_state(state).where("district = ?", district.to_i) }
-  scope :active, lambda { where("created_at >= ?", 2.months.ago) }
+  scope :active, lambda { where("previous_login_date >= ?", 1.months.ago) }
+  scope :inactive, lambda { where("previous_login_date < ? OR previous_login_date IS NULL", 3.months.ago)}
   scope :tracking_bill, lambda {|bill| includes(:bookmarked_bills).where("bills.id" => bill.id) }
   scope :voted_on_bill, lambda {|bill| includes(:bills_voted_on).where("bills.id" => bill.id) }
   scope :supporting_bill, lambda {|bill| includes(:bills_supported).where("bills.id" => bill.id) }

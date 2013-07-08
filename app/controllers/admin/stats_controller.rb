@@ -5,26 +5,29 @@ class Admin::StatsController < Admin::IndexController
     @page_title = 'Top 100 Search Terms'
   end
 
-  def referrers
-    @top_referrers = PageView.find_by_sql("SELECT referrer, count(referrer) as count
-                                           FROM page_views
-                                           WHERE REFERRER IS NOT NULL
-                                           GROUP BY referrer
-                                           ORDER BY count DESC
-                                           LIMIT 20")
-    @referred_bills = PageView.find_by_sql("SELECT viewable_id, COUNT(viewable_id) as count
-                                            FROM page_views
-                                            WHERE referrer IS NOT NULL AND
-                                                  viewable_type='Bill'
-                                            GROUP BY viewable_id ORDER BY count DESC LIMIT 20")
+  ## DEPRECATED: This method references an undefined PageView model, this data should come
+  ##             from google analytics.
+  ##
+  # def referrers
+  #   @top_referrers = PageView.find_by_sql("SELECT referrer, count(referrer) as count
+  #                                          FROM page_views
+  #                                          WHERE REFERRER IS NOT NULL
+  #                                          GROUP BY referrer
+  #                                          ORDER BY count DESC
+  #                                          LIMIT 20")
+  #   @referred_bills = PageView.find_by_sql("SELECT viewable_id, COUNT(viewable_id) as count
+  #                                           FROM page_views
+  #                                           WHERE referrer IS NOT NULL AND
+  #                                                 viewable_type='Bill'
+  #                                           GROUP BY viewable_id ORDER BY count DESC LIMIT 20")
 
-    @referred_people = PageView.find_by_sql("SELECT viewable_id, COUNT(viewable_id) as count
-                                            FROM page_views
-                                            WHERE referrer IS NOT NULL AND
-                                                  viewable_type='Person'
-                                            GROUP BY person_id ORDER BY count DESC LIMIT 20")
-    @page_title = "Referrer Stats"
-  end
+  #   @referred_people = PageView.find_by_sql("SELECT viewable_id, COUNT(viewable_id) as count
+  #                                           FROM page_views
+  #                                           WHERE referrer IS NOT NULL AND
+  #                                                 viewable_type='Person'
+  #                                           GROUP BY person_id ORDER BY count DESC LIMIT 20")
+  #   @page_title = "Referrer Stats"
+  # end
 
   def panel
     @referrers = PanelReferrer.find(:all, :order => 'views DESC', :limit => 50)
@@ -215,31 +218,14 @@ class Admin::StatsController < Admin::IndexController
     @total_comments = Comment.count
     @total_friendships = Friend.count / 2
 
-    @inactive_users = User.count(:conditions => ["users.previous_login_date < ? OR users.previous_login_date IS NULL", 3.months.ago])
-    @active_users = User.count(:conditions => ["users.previous_login_date > ?", 1.months.ago])
+    @inactive_users = User.inactive.count
+    @active_users = User.active.count
 
-    @state_users = User.find_by_sql("SELECT state, count(*) as cnt FROM users GROUP BY state ORDER BY state")
-    all_district_users = User.find_by_sql("SELECT state, district, count(*) as cnt FROM users GROUP BY state, district ORDER BY district")
+    @state_users = User.select('DISTINCT(state), count(*) as cnt').group(:state).order(:state)
+    @district_users = User.select('DISTINCT(state, district), state, district, count(*) as cnt').group([:state, :district]).order([:state, :district])
     @multiple_dist = 0
-    @district_users = []
-    all_district_users.each do |du|
-      if du.district.size > 1
-        @multiple_dist += du.cnt.to_i
-      else
-        @district_users << du
-      end
-    end
-    @district_users.sort! { |a,b|
-      if a.district.nil?
-        1
-      elsif b.district.nil?
-        -1
-      elsif a.state == b.state
-        a.district <=> b.district
-      else
-        a.state <=> b.state
-      end
-    }
+    @no_dist = 0
+
 
     # @users = open_flash_chart_object(700,250, '/admin/stats/userstats_data', false, '/')
     # @bill_bookmarks = open_flash_chart_object(700,250, '/admin/stats/bill_bookmarks_data', false, '/')

@@ -11,7 +11,7 @@
     <% end %>
 
     <title>OpenCongress - <%= Settings.default_congress %>th Congress - Track bills, votes, senators, and representatives in the U.S. Congress</title>
-  	<link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <%= bookmarking_image.html_safe %>
 
@@ -29,9 +29,9 @@
 
     <!--[if IE 7]><style type="text/css">@import url("/stylesheets/ie7.css");</style><![endif]-->
 
-   	<!--[if lt IE 7]>
-  	<%= javascript_include_tag 'ie8/IE8' %>
-  	<![endif]-->
+    <!--[if lt IE 7]>
+    <%= javascript_include_tag 'ie8/IE8' %>
+    <![endif]-->
 
     <script type="text/javascript">
      // Disable and pause carousel autoscrolling
@@ -41,33 +41,25 @@
   </head>
 
   <body id="home">
+
     <div style="display:none;" id="loading">
       <div><%= image_tag 'throbber.gif', :border=> '0', :alt => 'Loading' %></div>
     </div>
 
-  <div class="top_bar">
-    <%= render :partial => 'layouts/top_bar' %>
-  </div>
+    <div class="top_bar">
+      <%= render :partial => 'layouts/top_bar' %>
+    </div>
 
     <div id="wrapper">
-
-  	  <%= render :partial => 'layouts/header' %>
+      <%= render :partial => 'layouts/header' %>
 
       <%= yield %>
 
-    </div>
-    <!-- // wrapper -->
+    </div> <!-- // wrapper -->
     <div class="clear">&nbsp;</div>
-    </div> <!-- // top bar -->
-
-      <% cache("layout_footer", :expires_in => 3.hours) do %>
-      <%= render :partial => 'layouts/footer_old' %>
-
-      <% end %>
-
-      <%= render :partial => 'shared/analytics_foot' %>
-
-</div>
+    <%= render :partial => 'layouts/footer_old' %>
+    <%= render :partial => 'shared/analytics_foot' %>
+    <%= javascript_include_tag "//assets.sunlightfoundation.com.s3.amazonaws.com/social/scripts/simple-socialite-pack.min.js" %>
 
   </body>
 </html>

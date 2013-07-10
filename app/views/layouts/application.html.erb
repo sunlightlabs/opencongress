@@ -67,8 +67,9 @@
     <div><%= image_tag 'throbber.gif', :border=> '0', :alt => 'Loading' %></div>
   </div>
 
-<div class="top_bar">
-  <%= render :partial => 'layouts/top_bar' %>
+  <div class="top_bar">
+    <%= render :partial => 'layouts/top_bar' %>
+  </div>
 
   <div id="wrapper">
     <%= render :partial => 'layouts/header' %>
@@ -80,74 +81,63 @@
       <%= info_box %>
       <div class="inner">
 
-      <% if @user_object || @related_bills || @related_people || @related_issues ||
-            @related_industries || @related_gossip || @custom_sidebar %>
-        <div id="content-main">
-      <% end %>
+        <% if @user_object || @related_bills || @related_people || @related_issues ||
+              @related_industries || @related_gossip || @custom_sidebar %>
+          <div id="content-main">
+        <% end %>
 
-      <% if @topic %>
-        <div id="topic">
-          <%= render :partial => "#{@topic.class.to_s.underscore}/topic", :object => @topic %>
-        </div>
-      <% end %>
+          <% if @topic %>
+            <div id="topic">
+              <%= render :partial => "#{@topic.class.to_s.underscore}/topic", :object => @topic %>
+            </div>
+          <% end %>
 
-      <% if @profile_nav %>
-        <%= render :partial => "profile/logged_in_profile_nav", :locals => {:user => @profile_nav} %>
-      <% end %>
+          <% if @profile_nav %>
+            <%= render :partial => "profile/logged_in_profile_nav", :locals => {:user => @profile_nav} %>
+          <% end %>
 
-      <% if @content_for_sortby || @content_for_timeframe %>
+          <% if @content_for_sortby || @content_for_timeframe %>
+            <%= @content_for_sortby %>
+            <%= @content_for_timeframe %>
+          <% end %>
 
-        <%= @content_for_sortby %>
-        <%= @content_for_timeframe %>
+          <%= yield %>
 
-      <% end %>
+        <% if @user_object || @related_bills || @related_people || @related_issues ||
+              @related_industries || @related_gossip || @custom_sidebar %>
+          </div> <!-- // content-main -->
+        <% end %>
 
+        <% if @user_object %>
+          <%= render :partial => 'shared/user_content', :locals => {:object => @user_object} %>
+        <% elsif @related_bills %>
+          <%= render :partial => 'bill/related_bills_panel', :locals => { :related_bills => @related_bills }%>
+        <% elsif @related_issues %>
+          <%= render :partial => 'issue/related_issues_panel', :locals => { :related_issues => @related_issues }%>
+        <% elsif @related_industries %>
+          <%= render :partial => 'industry/related_industries_panel', :locals => { :related_industries => @related_industries }%>
+        <% elsif @related_gossip %>
+          <%= render :partial => 'gossip/related_gossip_panel', :locals => { :related_gossip => @related_gossip }%>
+        <% elsif @custom_sidebar %>
+          <%= render :partial => 'shared/custom_sidebar_panel', :locals => { :sidebar => @custom_sidebar }%>
+        <% end %>
+        <div class="clearfix"></div>
 
-      <%= yield %>
-
-      <% if @user_object || @related_bills || @related_people || @related_issues ||
-            @related_industries || @related_gossip || @custom_sidebar %>
-
-    </div> <!-- // content-main -->
-      <% end %>
-
-
-    <% if @user_object %>
-      <%= render :partial => 'shared/user_content', :locals => {:object => @user_object} %>
-    <% elsif @related_bills %>
-      <%= render :partial => 'bill/related_bills_panel', :locals => { :related_bills => @related_bills }%>
-
-    <% elsif @related_issues %>
-      <%= render :partial => 'issue/related_issues_panel', :locals => { :related_issues => @related_issues }%>
-
-    <% elsif @related_industries %>
-      <%= render :partial => 'industry/related_industries_panel', :locals => { :related_industries => @related_industries }%>
-    <% elsif @related_gossip %>
-      <%= render :partial => 'gossip/related_gossip_panel', :locals => { :related_gossip => @related_gossip }%>
-    <% elsif @custom_sidebar %>
-      <%= render :partial => 'shared/custom_sidebar_panel', :locals => { :sidebar => @custom_sidebar }%>
-    <% end %>
-
-  <div class="clearfix"></div>
-
-  </div> <!-- // inner -->
-
+      </div> <!-- // inner -->
     </div> <!-- // content -->
-
-
-    <%# cache("layout_footer", :expires_in => 3.hours) do %>
-      <%= render :partial => 'layouts/footer_old' %>
-
-    <%# end %>
-
   </div> <!-- // wrapper -->
-
-
-
   <div class="clear">&nbsp;</div>
-  </div> <!-- // top bar -->
-
+  <%= render :partial => 'layouts/footer_old' %>
   <%= render :partial => 'shared/analytics_foot' %>
+  <%#= javascript_include_tag "//assets.sunlightfoundation.com.s3.amazonaws.com/social/scripts/simple-socialite-pack.min.js" %>
+  <%= javascript_include_tag "simple-socialite-pack.js" %>
+  <%= javascript_include_tag "socialite/socialite.opencongress.js" %>
+  <script>
+  SimpleSocialite.ShareBar.registerButton({
+    name: 'opencongress-email',
+    displayName: 'Email'
+  });
+  </script>
 
 </body>
 </html>

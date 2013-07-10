@@ -238,6 +238,15 @@ class ResourcesController < ApplicationController
     render :partial => 'shared/email_friend_form', :locals => { :item => item }, :layout => false
   end
 
+  def email_friend_form_popup
+    object_type = params[:object_class]
+    id = params[:object_id]
+
+    klass = Object.const_get object_type
+    item = klass.find_by_id(id)
+    render :partial => 'shared/email_friend_form_popup', :locals => { :item => item }, :layout => 'popup'
+  end
+
   def email_friend_send
     @success = false
     if !simple_captcha_valid?

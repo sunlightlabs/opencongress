@@ -1,0 +1,16 @@
+<% if content_for?(:social_options) %>
+    <div class="share-buttons" <%= yield(:social_options) %>></div>
+<% else %>
+    <%
+    opts = {
+        'class' => 'share-buttons',
+        'data-socialite' => 'auto',
+        'data-services' => 'facebook-like, twitter-share',
+        'data-options' => {},
+    }
+    opts = opts.deep_merge(social_options) if defined?(social_options)
+    opts.each { |k, v| opts[k] = v.to_query if v.is_a?(Hash)}
+    %>
+    <%= content_tag :div, '', opts %>
+<% end %>
+<%= yield(:social_extra) %>

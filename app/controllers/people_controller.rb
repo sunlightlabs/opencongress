@@ -664,14 +664,14 @@ class PeopleController < ApplicationController
 
       @tabs = [
         ["Overview",{:action => 'show', :id => @person}],
-        ["Wiki","#{@wiki_url}"],
+        # ["Wiki","#{@wiki_url}"],
         ["Votes",{:action => 'voting_history', :id => @person}],
         ["Campaign Finance",{:action => 'money', :id => @person}],
-        ["News <span>(#{news_blog_count(@person.news_article_count)})</span> & Blogs <span>(#{news_blog_count(@person.blog_article_count)})</span>",{:action => 'news_blogs', :id => @person}],
+        # ["News <span>(#{news_blog_count(@person.news_article_count)})</span> & Blogs <span>(#{news_blog_count(@person.blog_article_count)})</span>",{:action => 'news_blogs', :id => @person}],
         ["Videos <span>(#{number_with_delimiter(@person.videos.size)})</span>",{:action => 'videos', :id => @person}],
-        ["Comments <span>(#{@person.comments.size})</span>",{:action => 'comments', :id => @person}]
+        # ["Comments <span>(#{@person.comments.size})</span>",{:action => 'comments', :id => @person}]
       ]
-      @top_comments = @person.comments.find(:all,:include => [:user], :order => "comments.plus_score_count - comments.minus_score_count DESC", :limit => 2)
+      @top_comments = @person.comments.top.limit(2)
       @atom = {'link' => url_for(:only_path => false, :controller => 'people', :id => @person, :action => 'atom'), 'title' => "#{@person.popular_name} activity"}
       @bookmarking_image = @person.photo_path
     else

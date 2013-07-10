@@ -1,217 +1,184 @@
 <div id="tertiary-content">
 
-	<% if object.class.to_s == "Bill" %>
+  <% if object.class.to_s == "Bill" %>
+
     <% if @bill_text %>
       <div id="bill-text" class="un">
         <%= link_to "View Bill Overview <span>Official info, comments, more</span>".html_safe, {:action => 'show'}, :class => 'overview_button' %>
       </div>
     <% end %>
-  
-		<script type="text/javascript">
-		$j().ready(function() {
-			$j('#learn').jqm({trigger:'a.learn_trigger'});
-		});
-		</script>
-		
-		
-		
-  	<% unless @bill.sidebar_box.nil? %>	
-  	  <div class="sidebar_editorial">
-  	    <% unless @bill.sidebar_box.image_url.blank? %>
-  	      <div class="sidebar_editorial_image">
-  	        <img src='<%= @bill.sidebar_box.image_url %>' />
-  	      </div>
-  	    <% end %>
-  	    
-  	    <% unless @bill.sidebar_box.box_html.blank? %>
-  	      <div class="sidebar_editorial_content">
-  	        <%= @bill.sidebar_box.box_html %>
-  	      </div>
-  	    <% end %>
-  	  </div>
-  	<% end %>
-  				  	
-		<div id="vote">
-		  <h2>Vote on This Bill</h2>
-					
-			
 
-			<div class="uc-box">
-			
-			
-				<script type="text/javascript">
-			$j().ready(function() {
-				$j('#login_vote').jqm({ajax:'@href', trigger: 'a.vote_trigger'});
-			});
-			</script>	
-			
-				
-				<%= user_bill_result(@bill) %>
-				<% if logged_in? %>
-				<!-- <%= my_congresspeople_votes(@bill) %> -->
-				<% end %>
-			
-			<div class="results" id="vote_results_<%= @bill.id %>">
-			  <%= draw_inline_user_bill_vote(@bill) %>
-			</div>
+    <script type="text/javascript">
+    $j().ready(function() {
+        $j('#learn').jqm({trigger:'a.learn_trigger'});
+    });
+    </script>
 
-				
-						<div id="message-login">
-				<p id="vote_message_<%= @bill.id %>" style="display:none;border:2px solid #48A100;padding:3px;"></p>
-			</div>
-    <span class="pointer"></span>
+    <% unless @bill.sidebar_box.nil? %>
+      <div class="sidebar_editorial">
+        <% unless @bill.sidebar_box.image_url.blank? %>
+          <div class="sidebar_editorial_image">
+            <img src='<%= @bill.sidebar_box.image_url %>' />
+          </div>
+        <% end %>
 
-			</div>
+        <% unless @bill.sidebar_box.box_html.blank? %>
+          <div class="sidebar_editorial_content">
+            <%= @bill.sidebar_box.box_html %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
 
-			
-			
-			
-		</div>  
-					<div class="clear">&nbsp;</div>
+    <div id="vote">
+      <h2>Vote on This Bill</h2>
+      <div class="uc-box constrained">
+        <script type="text/javascript">
+          $j().ready(function() {
+              $j('#login_vote').jqm({ajax:'@href', trigger: 'a.vote_trigger'});
+          });
+        </script>
 
-		
-			<!--
-					<div id="learn" class="jqmWindow scrolling">
-						<h3>Learn More About this Bill</h3>
-						<div class="ie"><a href="#" class="jqmClose">Close</a></div>
-					</div>
-			-->
+        <%= user_bill_result(@bill) %>
+        <% if logged_in? %>
+          <!-- <%= my_congresspeople_votes(@bill) %> -->
+        <% end %>
 
-		
+        <div class="results" id="vote_results_<%= @bill.id %>">
+          <%= draw_inline_user_bill_vote(@bill) %>
+        </div>
+
+        <div id="message-login">
+          <p id="vote_message_<%= @bill.id %>" style="display:none;border:2px solid #48A100;padding:3px;"></p>
+        </div>
+        <span class="pointer"></span>
+      </div>
+    </div>
+    <div class="clear">&nbsp;</div>
+
+    <!--
+    <div id="learn" class="jqmWindow scrolling">
+        <h3>Learn More About this Bill</h3>
+        <div class="ie"><a href="#" class="jqmClose">Close</a></div>
+    </div>
+    -->
+
     <div class='contact_congress'>
-    <span class="pointer"></span>
+      <span class="pointer"></span>
       <h2>Send Your <%= @bill.chamber == 'house' ? 'Rep' : 'Senator' %> a Letter</h2>
       <span>about this bill</span>
-
-      <a href='/contact_congress_letters/new?bill=<%= @bill.ident %>&position=support' class='button medium silver'><span>Support</span></a>
-      <a href='/contact_congress_letters/new?bill=<%= @bill.ident %>&position=oppose' class='button medium silver'><span>Oppose</span></a>
-      <a href='/contact_congress_letters/new?bill=<%= @bill.ident %>&position=tracking' class='button medium silver'><span>Tracking</span></a>
+      <a href='/contact_congress_letters/new?bill=<%= @bill.ident %>&amp;position=support' class='button medium silver'><span>Support</span></a>
+      <a href='/contact_congress_letters/new?bill=<%= @bill.ident %>&amp;position=oppose' class='button medium silver'><span>Oppose</span></a>
+      <a href='/contact_congress_letters/new?bill=<%= @bill.ident %>&amp;position=tracking' class='button medium silver'><span>Tracking</span></a>
     </div>
-    	
-    	 <div id="login_vote" class="jqmWindow"></div>    
 
-	  
-	 
-<% elsif object.class.to_s == "Person" %>
-  <div class="rep_info">
-    <% unless object.website.blank? %>
-      Official website: <a href="<%= object.website %>" target="_new"><%= object.website %></a><br />
-    <% end %>
+    <div id="login_vote" class="jqmWindow"></div>
 
-    <% unless object.congress_office.blank? %>
-  
-    	<div class="address">
-    		<strong>Address:</strong><br />
-    		<%= object.congress_office %><br />
-      	Washington, DC <%= object.office_zip %><br />
-    	</div>
-    <% end %>
+  <% elsif object.class.to_s == "Person" %>
+    <div class="rep_info">
+      <% unless object.website.blank? %>
+        Official website: <a href="<%= object.website %>" target="_new"><%= object.website %></a><br />
+      <% end %>
 
-    <% unless object.phone.blank? and object.fax.blank? %>
-    	<div class="phone">
-      	<%= "<strong>Phone:</strong> #{object.phone}".html_safe unless object.phone.blank? %><br />
-      	<%= "<strong>Fax:</strong> #{object.fax}".html_safe unless object.fax.blank? %>
+      <% unless object.congress_office.blank? %>
+        <div class="address">
+          <strong>Address:</strong><br />
+          <%= object.congress_office %><br />
+          Washington, DC <%= object.office_zip %><br />
+        </div>
+      <% end %>
+
+      <% unless object.phone.blank? and object.fax.blank? %>
+        <div class="phone">
+          <%= "<strong>Phone:</strong> #{object.phone}".html_safe unless object.phone.blank? %><br />
+          <%= "<strong>Fax:</strong> #{object.fax}".html_safe unless object.fax.blank? %>
+        </div>
+        <br />
+      <% end %>
+    </div>
+
+    <div class="uc-box-bottom">
+      <div class="uc-box">
+        <%= render :partial => 'people/approval', :locals => {:person => @person, :user_approval => @user_approval} %>
       </div>
-      <br />
+    </div>
+  <% end %>
+
+  <% if logged_in? %>
+    <% if object.bookmarks.find_by_user_id(current_user.id) == nil %>
+      <%= link_to_remote("<span id='b_myoc_txt'>Track With MyOC</span>".html_safe,
+                         :url => {:controller => 'profile',
+                                  :action => 'track',
+                                  :id => object.id,
+                                  :type => object.class.to_s},
+                         :html => { :class => 'large_track', :id => "b_myoc"})
+      %>
+    <% else %>
+      <a href="<%= url_for :controller => 'profile', :action => "remove_#{object.class.to_s.downcase}_bookmark", :login => current_user.login, :id => object.id %>" id='b_myoc' class='large_track tracking' onmouseover="this.firstChild.innerHTML='Stop Tracking';" onmouseout="this.firstChild.innerHTML='Tracking Now';"><span id='b_myoc_txt'>Tracking Now</span></a>
     <% end %>
-  </div>
- 	 	
-	<div class="uc-box-bottom">
-		<div class="uc-box">
-  		<%= render :partial => 'people/approval', :locals => {:person => @person, :user_approval => @user_approval} %>
-  	</div>
-  </div> 
-<% end %>
+  <% else %>
+    <script type="text/javascript">
+      $j().ready(function() {
+        $j('#login_track').jqm({ajax:'@href', trigger: 'a.track_trigger'});
+      });
+    </script>
+    <%= link_to("<span id='b_myoc_txt'>Track with MyOC</span>".html_safe, login_url(:modal => true, :login_action => 'track'), :class => 'large_track track_trigger', :id => "b_myoc" ) %>
+    <div id="login_track" class="jqmWindow"></div>
+  <% end %>
 
-<% if logged_in? %>
-	<% if object.bookmarks.find_by_user_id(current_user.id) == nil %>
+  <!-- Save & Share actions -->
+  <ul class="action-list">
+    <!-- subscribe -->
+    <li class="side-button">
+      <a href="<%= @atom['link'] %>" class="icon rss">Subscribe To This <%= object.display_object_name %></a>
+    </li>
+    <!-- share -->
+    <li class="side-button">
+      <h4 class="icon social">Share This <%= object.display_object_name %></h4>
+      <%= render :partial => 'shared/social', :locals => {
+             :social_options => {
+                 'data-services' => 'facebook, twitter, opencongress-email',
+                 'data-opencongress-email-options' => {
+                   'object-id' => object.id,
+                   'object-class' => object.display_object_name,
+                   'dev' => true,
+                   'image' => '/images/email.png'
+                 }.to_query
+             }
+      } %>
+    </li>
+    <!-- My Political Notebook -->
+    <%= render :partial => 'notebook_items/add_to_mypn', :object => object %>
+    <!-- Bill Widget -->
+    <% if @bill %>
+    <li>
+      <a href="/resources/bill_status?bill_id=<%= @bill.ident %>" class="bill_widget">Make A Bill Widget</a>
+    </li>
+    <% end %>
+    <!-- Email Feedback -->
+    <li>
+      <!-- TODO: Feedback form -->
+    </li>
+  </ul>
 
-		<%= link_to_remote("<span id='b_myoc_txt'>Track With MyOC</span>".html_safe, :url => {:controller => 'profile', 
-			:action => 'track', 
-			:id => object.id, 
-			:type => object.class.to_s},
-			:html => { :class => 'large_track', :id => "b_myoc"}) %>
-			<% else %>
-			<a href="<%= url_for :controller => 'profile', :action => "remove_#{object.class.to_s.downcase}_bookmark", :login => current_user.login, :id => object.id %>" id='b_myoc' class='large_track tracking' onmouseover="this.firstChild.innerHTML='Stop Tracking';" onmouseout="this.firstChild.innerHTML='Tracking Now';"><span id='b_myoc_txt'>Tracking Now</span></a>
-			<% end %>
-			<% else %>
-			<script type="text/javascript">
-			$j().ready(function() {
-				$j('#login_track').jqm({ajax:'@href', trigger: 'a.track_trigger'});
-			});
-			</script>
-			<%= link_to("<span id='b_myoc_txt'>Track with MyOC</span>".html_safe, login_url(:modal => true, :login_action => 'track'), :class => 'large_track track_trigger', :id => "b_myoc" ) %>
-			<div id="login_track" class="jqmWindow"></div>
-	<% end %>
+  <% if @top_comments.any? %>
+    <h3 class="small_comment_title">Top-Rated Comments</h3>
+    <ul id="small_comments">
+      <% @top_comments.each do |c| %>
+      <li>
+        <a href="<%= url_for c.page_link %>" class="comment">
+            <span class="text">&#8220;<%= truncate(c.comment, :length => 75) %>&#8221;</span>
+            <span class="user"><%= c.user.nil? ? 'Anonymous' : c.user.login %></span>
+        </a>
+      </li>
+      <% end %>
+    </ul>
+  <% end %>
 
+  <!-- <iframe src="http://www.facebook.com/plugins/like.php?href=<%= url_for(:only_path => false, :controller => params[:controller], :action => 'show', :id => object.kind_of?(Bill) ? object.ident : object) %>&amp;layout=standard&amp;show_faces=true&amp;width=197&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" allowTransparency="true" class="facebook_like"></iframe> -->
 
-				
-	<ul class="share_buttons small_box">
-		<div class="small_box_top">
-			<%= render :partial => 'shared/subscribe', :locals => { :message => "Subscribe To This #{object.display_object_name}", :subscribe_url => @atom['link'], :object => @bill} %>
-			<li><%= render :partial => 'mailing_list_items/add_to_alerts', :locals =>  { :object => object } %></li>
-		</div>
-		
-	</ul>
-	
-		
-		<ul class="share_buttons small_box">
-			<div class="small_box_top">
-				<li>
-					<%= render :partial => 'shared/share', 
-					:locals => { :message => "Share This #{object.display_object_name}", 
-					:url => url_for(:only_path => false, 
-					  :controller => params[:controller], :action => 'show', 
-					  :id => object.kind_of?(Bill) ? object.ident : object),
-					:title => "Check out #{object.title_for_share} on OpenCongress",
-					:item => object
-					} %>
-				</li>
+  <%= render :partial => 'bill/related_oc_blog_articles' if object.class.to_s == "Bill" %>
 
-			</div>
-		</ul>
-
-
-			<%= render :partial => 'notebook_items/add_to_mypn', :object => object %>
-		
-		<% if @bill %>
-			<a href="/resources/bill_status?bill_id=<%= @bill.ident %>" class="bill_widget">Make A Bill Widget</a>
-		<% end %>
-		
-
-	<script type='text/javascript'>
-	$j().ready(function() {
-		$j('#email_feedback').jqm({ajax:'@href',trigger:'a.feedback'});
-		});
-	</script>
-  
-
-			<a href="/resources/email_feedback_form?subject=<%= request.url %>" class="feedback">Send us Feedback</a>
-
-
-	<div id="email_feedback" class="jqmWindow">
-		<%# render :partial => 'shared/email_feedback_form' %>
-	</div>
-	
-	<% unless @top_comments.empty? %>
-	<h3 class="small_comment_title">Top-Rated Comments</h3>
-
-	<ul id="small_comments">
-	<% @top_comments.each do |c| %>
-	<li>
-		<a href="<%= url_for c.page_link %>" class="comment">
-			<span class="text">&#8220;<%= truncate(c.comment, :length => 75) %>&#8221;</span>
-			<span class="user"><%= c.user.nil? ? 'Anonymous' : c.user.login %></span>
-		</a>
-	</li>
-	<% end %>
-	</ul>             
-<% end %>
-
-<iframe src="http://www.facebook.com/plugins/like.php?href=<%= url_for(:only_path => false, :controller => params[:controller], :action => 'show', :id => object.kind_of?(Bill) ? object.ident : object) %>&amp;layout=standard&amp;show_faces=true&amp;width=197&amp;action=like&amp;colorscheme=light&amp;height=80" scrolling="no" frameborder="0" allowTransparency="true" class="facebook_like"></iframe>
-
-<%= render :partial => 'bill/related_oc_blog_articles' if object.class.to_s == "Bill" %>
-
-<%= render :partial => 'shared/recent_oc_blog_articles' %>
+  <%= render :partial => 'shared/recent_oc_blog_articles' %>
 
 </div> <!-- // tertiary-content -->

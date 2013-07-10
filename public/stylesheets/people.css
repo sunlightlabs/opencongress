@@ -4,11 +4,11 @@
 .blogs #tabs ul li#news_blogs,
 .blogs #tabs ul li#news_blogs span a {
   background-position:right -844px;
-}                             
+}
 .news #tabs ul li#news_blogs span,
 .blogs #tabs ul li#news_blogs span  {
   background-position:0 -844px;
-}  
+}
 .sidebar {
 width: 384px;
 float: left;
@@ -18,7 +18,7 @@ background: #fff;
 }
 #name{
 float: left;
-padding-bottom: 20px;	
+padding-bottom: 20px;
 }
 #term{
 float: right;
@@ -48,7 +48,7 @@ height: 600px;
 background: url(../images/sen-sort.png) left top repeat-x;
    _background: url(../images/sen-sort.gif) left top repeat-x;
 }
-     
+
 div#voting_history{
 clear: both;
 float: left;
@@ -212,7 +212,7 @@ height: 45px;
 .representatives #heading{
 background: url(../images/rep_heading_orange.png);
    _background: url(../images/rep_heading_orange.gif);
-border-bottom: 1px solid #e7cdbc;	
+border-bottom: 1px solid #e7cdbc;
 height: 45px;
 }
 .representatives #heading h2, .senators #heading h2{
@@ -227,7 +227,7 @@ font-weight: normal;
 font-size: 12px;
 }
 .representatives #heading p{
-color: #b97d59;	
+color: #b97d59;
 }
 #heading p{
 float: left;
@@ -250,7 +250,7 @@ _margin-top: -100px;*/
 background: url(../images/zip_arrow.png) 0 -71px no-repeat;
    _background: url(../images/zip_arrow.gif) 0 -71px no-repeat;
 }
-               
+
 ul#people_list li{
 list-style: none;
 display: block;
@@ -402,14 +402,14 @@ background: url(../images/headtohead.png) 0 -84px repeat-x;
 }
 #zipcode_lookup{
 float: left;
-width: 385px; 
+width: 385px;
 height: 65px;
 background: url(../images/zip_lookup.jpg) -2px 0 no-repeat;
 padding: 31px 0 0 0;
 }
 #zipcode_lookup h3{
 color: #4e6426;
-font-size: 14px;   
+font-size: 14px;
 float: left;
 line-height: 2em;
 margin: 0 18px 0 26px;
@@ -487,7 +487,7 @@ border-top:1px solid #e1ded5;
 border-bottom:1px solid #e1ded5;
 clear: both;
 padding: 10px 0 4px;
-}         
+}
 #sponsor_stats.clearfix:after {
   clear:left;
 }
@@ -498,7 +498,7 @@ padding: 10px 0 4px;
   background: url(../images/sprites.png) -308px -93px no-repeat;
    _background: url(../images/sprites.gif) -308px -93px no-repeat;
 margin-bottom: 6px;
-}                        
+}
 #voting-similarities {
   min-height:115px;
 }
@@ -522,11 +522,11 @@ border: 10px solid #444 !important;
 padding: 50px;
 float: left;
 }
-#people.show .inner, 
-#people.comments .inner, 
-#people.bills .inner, 
+#people.show .inner,
+#people.comments .inner,
+#people.bills .inner,
 #people.videos .inner,
-#people.voting_history .inner, 
+#people.voting_history .inner,
 #people.news_blogs .inner,
 #people.news .inner,
 #people.blogs .inner,
@@ -536,7 +536,7 @@ background: url(../images/sen_profile_bg.png) right top repeat-y;
 float: left;
 width: 100%;
 }
-#people.show #topic, 
+#people.show #topic,
 #people.news_blogs #topic,
 #people.voting_history #topic,
 #people.bills #topic,
@@ -548,39 +548,39 @@ width: 100%;
 background: url(../images/brown_bg.png) left top repeat;
    _background: url(../images/brown_bg.gif) left top repeat;
 }
-#people.show #content-main, 
-#people.bills #content-main, 
-#people.comments #content-main, 
-#people.videos #content-main, 
-#people.news_blogs #content-main, 
+#people.show #content-main,
+#people.bills #content-main,
+#people.comments #content-main,
+#people.videos #content-main,
+#people.news_blogs #content-main,
 #people.voting_history #content-main{
 width: 745px;
 float: left;
 overflow: hidden;
 }
-/*#people.show #tertiary-content, 
-#people.show #tertiary-content, 
-#people.bills #tertiary-content, 
-#people.comments #tertiary-content, 
-#people.videos #tertiary-content, 
-#people.news_blogs #tertiary-content, 
+/*#people.show #tertiary-content,
+#people.show #tertiary-content,
+#people.bills #tertiary-content,
+#people.comments #tertiary-content,
+#people.videos #tertiary-content,
+#people.news_blogs #tertiary-content,
 #people.voting_history #tertiary-content{
 width: 220px;
 float: left;
 }
 */
-#people.show .pagination, 
-#people.bills .pagination, 
-#people.comments .pagination, 
-#people.videos .pagination, 
-#people.news_blog .pagination, 
+#people.show .pagination,
+#people.bills .pagination,
+#people.comments .pagination,
+#people.videos .pagination,
+#people.news_blog .pagination,
 #people.voting_history .pagination{
 padding: 20px 35px 0;
 }
-#people.bills .bills_list, 
-#people.comments .bills_list, 
-#people.videos .bills_list, 
-#people.news_blog .bills_list, 
+#people.bills .bills_list,
+#people.comments .bills_list,
+#people.videos .bills_list,
+#people.news_blog .bills_list,
 #people.voting_history .bills_list{
 padding: 35px ;
 }
@@ -772,7 +772,7 @@ float: left;
 
 .explains ul{
 	list-style: circle;
-	padding-left: 17px;	
+	padding-left: 17px;
 }
 
 .explains2{
@@ -782,7 +782,7 @@ padding-left: 28px;
 }
 
 #compopts{
-clear: both;	
+clear: both;
 padding-top: 10px;
 }
 
@@ -1023,7 +1023,7 @@ _background: url('/images/brown_bg.gif');
   margin:38px 0 35px 0;
 }
 #people.zipcodelookup .no_results {
-  float: left !important; 
+  float: left !important;
   margin-left: 50px !important;
 }
 .zip_search table td {
@@ -1085,16 +1085,13 @@ margin-top: 10px;
 padding: 3px 0;
 }
 
-.uc-box {
-  width:152px;
-}
 #approval-container h3#person_rating,
 #approval-container h3#state_rating  {
   float:right;
 }
 #tertiary-content .uc-box #approval-container h4 {
   margin-bottom:8px;
-}                                    
+}
 .my_rating {
   border-top:1px solid #E1DED5;
   padding-top:0px;

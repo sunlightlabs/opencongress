@@ -3216,6 +3216,12 @@ background: url('../images/notebook.png') 1px 4px no-repeat;
 _background: url('../images/notebook.gif') 1px 4px no-repeat;
 }
 
+.action-list .mypn {
+  float: none;
+  margin: 0;
+  padding: 3px 0 3px 25px;
+}
+
 .new_mailing_list_item{
 padding: 4px 0 3px 29px;
 display: block;
@@ -3229,12 +3235,12 @@ _background: url('../images/email_alerts.gif') left 5px no-repeat;
   width:177px;
   padding: 12px 15px 15px;
   text-align:left;
-  height: 30px;
+  /*height: 30px;*/
 
-background: #e7ecdf;
-background: rgba(231,236,223, .7);
+  background: #e7ecdf;
+  background: rgba(231,236,223, .7);
 
-  margin: 10px 10px 90px 25px;
+  margin: 10px 10px 30px 25px;
   float: left;
 
   -moz-box-shadow: 0 1px 0px #ddd, inset 0 1px 0px #fff;
@@ -3246,7 +3252,9 @@ background: rgba(231,236,223, .7);
 position: relative;
 }
 
-
+.uc-box.constrained {
+  height: 30px;
+}
 
 .uc-box .pointer{
 
@@ -3263,6 +3271,34 @@ position: absolute;
  padding-top: 15px;
  margin: 0;
 font-size: 12px;
+}
+
+.action-list {
+  /*background: #e7ecdf;*/
+  /*background: rgba(255, 255, 255, 0.625);*/
+  clear: both;
+  float: none;
+  margin: 20px;
+  /*border: 1px solid rgba(162, 166, 157, 0.5);*/
+  /*border-top-color: rgba(255, 255, 255, 0.8);*/
+  border-radius: 6px;
+  /*box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);*/
+}
+
+.action-list li {
+  padding: 10px 20px;
+  font-weight: bold;
+  border-top: 1px solid rgba(162, 166, 157, 0.5);
+}
+.action-list li:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.action-list li:first-child {
+  border-top: none;
+}
+.action-list li a {
+  display: block;
+  text-decoration: none;
 }
 
 
@@ -3416,6 +3452,19 @@ padding-top: 14px;
 padding-bottom: 5px;
 }
 
+/* socialite share-buttons (as opposed to share_buttons, kill me.) */
+.action-list .share-buttons {
+  margin-left: 27px;
+}
+
+.share-buttons .socialite {
+  padding: 0 5px;
+}
+
+.share-buttons td:first-child .socialite {
+  padding-left: 0;
+}
+
 .share_title, .subscribe_title{
 color: #666;
 text-align: left;
@@ -3432,7 +3481,7 @@ margin: 20px 0 7px 0px;
 clear: both;
 }
 
-.subscribe a, .share_icons a{
+.subscribe a, .share_icons a, .icon:before{
 width: 19px;
 height: 0px ;
 padding-top: 21px;
@@ -3441,6 +3490,25 @@ overflow: hidden;
 background:url('../images/sprites.png') 0 0 no-repeat;
 _background:url('../images/sprites.gif') 0 0 no-repeat;
 }
+
+/* FIXME: the following is terrible. */
+.action-list a.rss { margin-right: 0;}
+.icon:before {
+  content: "";
+  display: inline-block;
+  height: 21px;
+  vertical-align: middle;
+  padding-top: 0;
+  margin-right: 6px;
+}
+.icon.rss:before {
+  background-position: -163px -21px;
+}
+
+.icon.social:before {
+  background: url('../images/send_email.png') left 50% no-repeat;
+}
+
 
 li.subscribe ul li{
 float: left !important;

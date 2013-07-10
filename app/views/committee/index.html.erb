@@ -1,10 +1,12 @@
 <div id="heading">
 <h2>Congressional Committees</h2>
 </div>
-<% if @carousel %>
+<% if defined? @carousel %>
   <%= render :partial => 'committee/carousel' %>
 <% end %>
-<%= render :partial => 'sort_committees', :locals => { :sort => :all } %>
+<div class="clearfix">
+  <%= render :partial => 'sort_committees', :locals => { :sort => :all } %>
+</div>
 
 <ul id="house">
  <li>

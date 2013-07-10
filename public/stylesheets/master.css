@@ -3204,6 +3204,13 @@ float: left;
 color: #333;
 }
 
+.action-list .bill_widget{
+  float: none;
+  margin: 0;
+  padding: 1px 0 0 26px;
+
+}
+
 .mypn{
 display: block;
 padding: 3px 0 5px 29px;

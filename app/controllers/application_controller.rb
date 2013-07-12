@@ -245,6 +245,16 @@ class ApplicationController < ActionController::Base
     @simple_comments = false
   end
 
+  def comment_env
+    {
+      :referrer => request.referer,
+      :ip_address => request.remote_ip,
+      :user_agent => request.user_agent,
+      :permalink => request.env['HTTP_REFERER'],
+      :user => current_user
+    }
+  end
+
   def news_blog_count(count)
     return nil if count.blank?
     if count >= 1000
@@ -253,7 +263,6 @@ class ApplicationController < ActionController::Base
       count
     end
   end
-
 
   def random_key
     Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )

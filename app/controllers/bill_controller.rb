@@ -532,7 +532,7 @@ class BillController < ApplicationController
 
   def comms
     @bill = Bill.find_by_ident(params[:ident])
-    @comms = @bill.comments.paginate(:all, :order => ["created_at DESC"])
+    @comms = @bill.comments.paginate(:order => ["created_at DESC"])
   end
 
   def wiki

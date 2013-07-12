@@ -1,27 +1,18 @@
 GIT
-  remote: git://github.com/drinks/defensio-ruby.git
-  revision: a644fa58f3290edf7173dc590b0e0050ccf0d84d
-  specs:
-    defensio (0.9.2)
-      httparty (>= 0.5.0)
-      multi_json (~> 1.3.7)
-
-GIT
   remote: git://github.com/getsentry/raven-ruby.git
-  revision: 1ddda159f1e68b9b72fca11c9e2b364fa8572980
+  revision: eb1a0072af1132594c574cc6a64618cf900e4810
   specs:
-    sentry-raven (0.4.8)
+    sentry-raven (0.5.0)
       faraday (>= 0.7.6)
       hashie (>= 1.1.0)
-      multi_json (~> 1.0)
       uuidtools
 
 GIT
   remote: git://github.com/martinciu/fuubar-cucumber.git
-  revision: 6690a0e4bc5b9e0e9fe2deb35f4da71c91ac00e7
+  revision: 0a9ad5abbfac22db802a8fc691adc04dbd3201f4
   specs:
-    fuubar-cucumber (0.0.19)
-      cucumber (~> 1.2.0)
+    fuubar-cucumber (0.0.20)
+      cucumber (~> 1.3.0)
       ruby-progressbar (~> 1.0.0)
 
 GIT
@@ -55,7 +46,7 @@ GEM
   remote: http://rubygems.org/
   specs:
     RedCloth (4.2.9)
-    ZenTest (4.9.1)
+    ZenTest (4.9.2)
     abstract (1.0.0)
     actionmailer (3.0.20)
       actionpack (= 3.0.20)
@@ -85,7 +76,7 @@ GEM
     activesupport (3.0.20)
     acts-as-taggable-on (2.3.3)
       rails (~> 3.0)
-    addressable (2.3.4)
+    addressable (2.3.5)
     airbrake (3.1.12)
       activesupport
       builder
@@ -96,11 +87,11 @@ GEM
     awesome_nested_set (2.1.6)
       activerecord (>= 3.0.0)
     awesome_print (1.1.0)
-    binding_of_caller (0.7.1)
+    binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     bluecloth (2.2.0)
     builder (2.1.2)
-    capistrano (2.15.4)
+    capistrano (2.15.5)
       highline
       net-scp (>= 1.0.0)
       net-sftp (>= 2.0.0)
@@ -118,25 +109,27 @@ GEM
       activesupport (~> 3.0)
     climate_control (0.0.3)
       activesupport (>= 3.0)
-    closure-compiler (1.1.8)
+    closure-compiler (1.1.10)
     cocaine (0.5.1)
       climate_control (>= 0.0.3, < 1.0)
-    code_analyzer (0.3.1)
+    code_analyzer (0.3.2)
       sexp_processor
     coderay (1.0.9)
     colored (1.2)
     columnize (0.3.6)
-    congress (0.1.0)
+    congress (0.1.1)
       faraday (~> 0.8.7)
       faraday_middleware (~> 0.9.0)
       hashie (~> 2.0)
+      json (~> 1.8)
       rash (~> 0.4)
-    crack (0.3.2)
+    crack (0.4.0)
+      safe_yaml (~> 0.9.0)
     cssmin (1.0.3)
-    cucumber (1.2.5)
+    cucumber (1.3.2)
       builder (>= 2.1.2)
       diff-lcs (>= 1.1.3)
-      gherkin (~> 2.11.7)
+      gherkin (~> 2.12.0)
       multi_json (~> 1.3)
     cucumber-rails (1.3.1)
       capybara (>= 1.1.2)
@@ -146,20 +139,17 @@ GEM
     daemons (1.1.9)
     database_cleaner (1.0.1)
     debug_inspector (0.0.2)
-    debugger (1.6.0)
+    debugger (1.6.1)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.2.1)
+      debugger-ruby_core_source (~> 1.2.3)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.2.2)
-    defender (2.0.3)
-      activemodel (>= 3.0.0)
-      defensio (~> 0.9.1)
+    debugger-ruby_core_source (1.2.3)
     delayed_job (2.1.4)
       activesupport (~> 3.0)
       daemons
     diff-lcs (1.2.4)
-    domain_name (0.5.11)
+    domain_name (0.5.12)
       unf (>= 0.0.5, < 1.0.0)
     em-websocket (0.5.0)
       eventmachine (>= 0.12.9)
@@ -167,7 +157,7 @@ GEM
     erubis (2.6.6)
       abstract (>= 1.0.0)
     eventmachine (1.0.3)
-    excon (0.21.0)
+    excon (0.23.0)
     facebooker2 (0.0.17)
       mogli (>= 0.0.33)
       ruby-hmac
@@ -178,26 +168,26 @@ GEM
     fastercsv (1.5.5)
     faye-websocket (0.4.7)
       eventmachine (>= 0.12.0)
-    ffi (1.8.1)
-    fog (1.11.1)
+    ffi (1.9.0)
+    fog (1.12.1)
       builder
-      excon (~> 0.20)
+      excon (~> 0.23.0)
       formatador (~> 0.2.0)
-      json (~> 1.7)
       mime-types
+      multi_json (~> 1.0)
       net-scp (~> 1.1)
       net-ssh (>= 2.1.3)
       nokogiri (~> 1.5.0)
       ruby-hmac
     formatador (0.2.4)
-    fuubar (1.1.0)
+    fuubar (1.1.1)
       rspec (~> 2.0)
       rspec-instafail (~> 0.2.0)
-      ruby-progressbar (~> 1.0.0)
+      ruby-progressbar (~> 1.0)
     galetahub-simple_captcha (0.1.3)
-    gherkin (2.11.8)
+    gherkin (2.12.0)
       multi_json (~> 1.3)
-    guard (1.8.0)
+    guard (1.8.1)
       formatador (>= 0.2.4)
       listen (>= 1.0.0)
       lumberjack (>= 1.0.2)
@@ -220,6 +210,8 @@ GEM
     httmultiparty (0.3.10)
       httparty (>= 0.7.3)
       multipart-post
+    http-cookie (1.0.1)
+      domain_name (~> 0.5)
     http_parser.rb (0.5.3)
     httparty (0.11.0)
       multi_json (~> 1.0)
@@ -234,18 +226,19 @@ GEM
     kgio (2.8.0)
     launchy (2.3.0)
       addressable (~> 2.3)
-    listen (1.1.2)
+    listen (1.2.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
       rb-kqueue (>= 0.2)
-    lumberjack (1.0.3)
+    lumberjack (1.0.4)
     mail (2.2.20)
       activesupport (>= 2.3.6)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    mechanize (2.6.0)
+    mechanize (2.7.1)
       domain_name (~> 0.5, >= 0.5.1)
+      http-cookie (~> 1.0.0)
       mime-types (~> 1.17, >= 1.17.2)
       net-http-digest_auth (~> 1.1, >= 1.1.1)
       net-http-persistent (~> 2.5, >= 2.5.2)
@@ -262,25 +255,25 @@ GEM
       httparty (>= 0.4.3)
       multi_json (>= 1.0.3, < 1.4)
     multi_json (1.3.7)
-    multi_xml (0.5.3)
+    multi_xml (0.5.4)
     multipart-post (1.2.0)
     mysql (2.9.1)
     net-http-digest_auth (1.3)
     net-http-persistent (2.8)
-    net-scp (1.1.1)
+    net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (2.6.7)
+    net-ssh (2.6.8)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    newrelic_rpm (3.6.2.96)
-    nokogiri (1.5.9)
+    newrelic_rpm (3.6.5.130)
+    nokogiri (1.5.10)
     ntlm-http (0.1.1)
     oauth (0.4.7)
     okkez-open_id_authentication (1.0.1)
       ruby-openid (>= 2.0.4)
-    paperclip (3.4.1)
+    paperclip (3.4.2)
       activemodel (>= 3.0.0)
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -296,8 +289,8 @@ GEM
     postmark (1.0.0)
       json
       rake
-    postmark-rails (0.5.0)
-      actionmailer
+    postmark-rails (0.5.1)
+      actionmailer (>= 3.0.0)
       postmark (~> 1.0)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
@@ -311,7 +304,7 @@ GEM
     pry-stack_explorer (0.4.9)
       binding_of_caller (>= 0.7)
       pry (~> 0.9.11)
-    rabl (0.8.4)
+    rabl (0.8.6)
       activesupport (>= 2.3.14)
     rack (1.2.8)
     rack-contrib (1.1.0)
@@ -331,7 +324,7 @@ GEM
       activesupport (= 3.0.20)
       bundler (~> 1.0)
       railties (= 3.0.20)
-    rails_best_practices (1.13.5)
+    rails_best_practices (1.13.8)
       activesupport
       awesome_print
       code_analyzer
@@ -347,6 +340,7 @@ GEM
       thor (~> 0.14.4)
     raindrops (0.11.0)
     rake (0.9.6)
+    rakismet (1.3.0)
     rash (0.4.0)
       hashie (~> 2.0.0)
     rb-fsevent (0.9.3)
@@ -357,25 +351,26 @@ GEM
     rdoc (3.12.2)
       json (~> 1.4)
     rmagick (2.13.2)
-    rspec (2.13.0)
-      rspec-core (~> 2.13.0)
-      rspec-expectations (~> 2.13.0)
-      rspec-mocks (~> 2.13.0)
-    rspec-core (2.13.1)
-    rspec-expectations (2.13.0)
+    rspec (2.14.1)
+      rspec-core (~> 2.14.0)
+      rspec-expectations (~> 2.14.0)
+      rspec-mocks (~> 2.14.0)
+    rspec-core (2.14.2)
+    rspec-expectations (2.14.0)
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-instafail (0.2.4)
-    rspec-mocks (2.13.1)
-    rspec-rails (2.13.1)
+    rspec-mocks (2.14.1)
+    rspec-rails (2.14.0)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       railties (>= 3.0)
-      rspec-core (~> 2.13.0)
-      rspec-expectations (~> 2.13.0)
-      rspec-mocks (~> 2.13.0)
+      rspec-core (~> 2.14.0)
+      rspec-expectations (~> 2.14.0)
+      rspec-mocks (~> 2.14.0)
     ruby-hmac (0.4.0)
     ruby-openid (2.2.3)
     ruby-progressbar (1.0.2)
+    safe_yaml (0.9.4)
     sass (3.2.9)
     selenium-client (1.2.18)
     settingslogic (2.0.9)
@@ -397,7 +392,7 @@ GEM
       rack (>= 1.0.0)
     thor (0.14.6)
     titlecase (0.1.1)
-    treetop (1.4.12)
+    treetop (1.4.14)
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.37)
@@ -405,7 +400,7 @@ GEM
       unf_ext
     unf_ext (0.0.6)
     unicode_utils (1.4.0)
-    unicorn (4.6.2)
+    unicorn (4.6.3)
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
@@ -413,7 +408,7 @@ GEM
     validates_captcha (0.9.7)
       actionpack (>= 2.3.2)
       activerecord (>= 2.3.2)
-    vcr (2.4.0)
+    vcr (2.5.0)
     webmock (1.9.3)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
@@ -444,8 +439,6 @@ DEPENDENCIES
   cucumber-rails
   database_cleaner
   debugger
-  defender
-  defensio!
   delayed_job (~> 2.1)
   facebooker2
   fog
@@ -487,6 +480,7 @@ DEPENDENCIES
   rails (~> 3.0.20)
   rails_best_practices
   rake (~> 0.9.1)
+  rakismet
   rmagick (~> 2.13.1)
   rspec-rails (~> 2.4)
   ruby-openid

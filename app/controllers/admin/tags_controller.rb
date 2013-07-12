@@ -1,11 +1,11 @@
-class Admin::TagsController < Admin::IndexController   
+class Admin::TagsController < Admin::IndexController
   def index
     list
     render :action => 'list'
   end
 
   def list
-    @tags = Tagg.paginate(:all, :per_page => 30, :page => params[:page])
+    @tags = Tagg.paginate(:per_page => 30, :page => params[:page])
   end
 
   def show

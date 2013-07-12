@@ -11,7 +11,7 @@ class Admin::UpcomingBillsController < Admin::IndexController
          :redirect_to => { :action => :list }
 
   def list
-    @upcoming_bills = UpcomingBill.paginate(:all, :per_page => 30, :page => params[:page])
+    @upcoming_bills = UpcomingBill.paginate(:per_page => 30, :page => params[:page])
   end
 
   def show

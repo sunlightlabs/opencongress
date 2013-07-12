@@ -78,8 +78,7 @@ gem 'nokogiri'
 gem 'possessive'
 
 # spam protection
-gem "defensio", :git => 'git://github.com/drinks/defensio-ruby.git'  # this forces :json api format
-gem "defender"
+gem 'rakismet'
 
 # oauth
 gem 'oauth'

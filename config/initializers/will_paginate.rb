@@ -1,3 +1,4 @@
+require 'will_paginate/view_helpers'
 require 'will_paginate/array'
 
 WillPaginate::ViewHelpers.pagination_options[:renderer] = 'SpanLinkRenderer'

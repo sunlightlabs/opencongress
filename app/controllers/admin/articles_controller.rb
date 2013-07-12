@@ -1,20 +1,20 @@
 class Admin::ArticlesController < Admin::IndexController
   before_filter :can_blog
-  
+
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
   verify :method => :post, :only => [ :create ],
          :redirect_to => { :action => :list }
-         
+
 #  cache_sweeper :article_sweeper, :only => [ :destroy, :update ]
-  
-  public         
+
+  public
     def index
       list
       render :action => 'list'
     end
-  
+
     def list
-      @articles = Article.paginate(:all, :order => "created_at desc", :per_page => 30, :page => params[:page])
+      @articles = Article.paginate(:order => "created_at desc", :per_page => 30, :page => params[:page])
     end
 
     def show
@@ -29,14 +29,14 @@ class Admin::ArticlesController < Admin::IndexController
       if @article = Article.create(params[:article])
         @article.user_id = current_user.id
         @article.save
-        
+
         expire_page :controller => 'blog'
         expire_page :controller => 'articles'
         expire_page :controller => 'index'
         expire_page :controller => 'articles', :action => 'view', :id => @article
-        
+
         expire_fragment 'recent_oc_blog_articles'
-        
+
         flash[:notice] = 'Article was successfully created.'
         redirect_to :action => 'list'
       else
@@ -58,17 +58,17 @@ class Admin::ArticlesController < Admin::IndexController
         redirect_to :action => 'list'
       end
     end
-    
+
     def update
       @article = Article.find(params[:id])
       if @article.update_attributes(params[:article])
-        
+
         expire_page :controller => 'blog'
         expire_page :controller => 'articles'
         expire_page :controller => 'index'
         expire_page :controller => 'articles', :action => 'view', :id => @article
         expire_fragment 'recent_oc_blog_articles'
-        
+
         flash[:notice] = 'Article was successfully updated.'
         redirect_to :action => 'show', :id => @article
       else
@@ -80,5 +80,5 @@ class Admin::ArticlesController < Admin::IndexController
       Article.find(params[:id]).destroy
       redirect_to :action => 'list'
     end
-  
+
 end

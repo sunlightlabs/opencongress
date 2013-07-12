@@ -381,9 +381,9 @@ class PeopleController < ApplicationController
     ## check if cache fragment exists
     unless read_fragment("#{@person.fragment_cache_key}_blogs_#{@sort}_page_#{@page}")
       if @sort == 'toprated'
-        @blogs = @person.blogs.paginate(:all, :order => 'commentaries.average_rating IS NOT NULL DESC', :page => @page)
+        @blogs = @person.blogs.paginate(:order => 'commentaries.average_rating IS NOT NULL DESC', :page => @page)
       elsif @sort == 'oldest'
-        @blogs = @person.blogs.paginate(:all, :order => 'commentaries.date ASC', :page => @page)
+        @blogs = @person.blogs.paginate(:order => 'commentaries.date ASC', :page => @page)
       else
         @blogs = @person.blogs.paginate :page => @page
       end
@@ -540,8 +540,8 @@ class PeopleController < ApplicationController
                                 :per_page => 30, :page => @page)
       @page_title = "Sponsored Bills Search #{@person.name}"
     else
-      @sponsored_bills = @person.bills.paginate(:all, :include => [:last_action], :per_page => 50, :page => @page)
-      @cosponsored_bills = @person.bills_cosponsored.paginate(:all, :include => [:last_action], :per_page => 50, :page => @page)
+      @sponsored_bills = @person.bills.paginate(:include => [:last_action], :per_page => 50, :page => @page)
+      @cosponsored_bills = @person.bills_cosponsored.paginate(:include => [:last_action], :per_page => 50, :page => @page)
     end
 
     @search_text = "<span class='none'>Search Sponsored Bills</span>"

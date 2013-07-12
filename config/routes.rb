@@ -38,8 +38,6 @@ OpenCongress::Application.routes.draw do
 
   resources :simple_captcha, :only => :show
 
-  match '/' => 'index#index', :as => :home
-
   # Allow downloading Web Service WSDL as a file with an extension
   # instead of a file named 'wsdl'
   # match ':controller/service.wsdl' => 'wsdl'
@@ -261,5 +259,7 @@ OpenCongress::Application.routes.draw do
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
   match '/donate' => redirect('http://sunlightfoundation.com/about/funding/')
+
+  root :to => 'index#index', :as => :home
 
 end

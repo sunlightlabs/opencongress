@@ -1,5 +1,5 @@
 class Comment < ActiveRecord::Base
-  include Defender::Spammable
+  include Rakismet::Model
 
   belongs_to :user
   belongs_to :commentable, :polymorphic => true
@@ -17,32 +17,39 @@ class Comment < ActiveRecord::Base
   end
   has_many :comment_scores
 
+  attr_accessible :comment, :name, :email, :homepage, :title
+
+  rakismet_attrs({
+    :author => :author_name,
+    :author_url => :homepage,
+    :author_email => :author_email,
+    :content => :comment,
+    :user_ip => :ip_address,
+    :user_agent => :user_agent,
+    :referrer => :referrer
+  })
+
+  acts_as_nested_set :scope => :root
+
   scope :uncensored, where("censored != ?", true)
   scope :users_only, uncensored.where("comments.user_id IS NOT NULL")
   scope :user_bill_support, includes(:user, {:bill => :bill_votes}).where("users.id = bill_votes.id AND users.id = comments.user_id AND bill_votes.support = 0")
   scope :user_bill_oppose, includes(:user, {:bill => :bill_votes}).where("users.id = bill_votes.id AND users.id = comments.user_id AND bill_votes.support = 1")
   scope :top, uncensored.includes(:user).order("comments.plus_score_count - comments.minus_score_count DESC")
-  scope :spamy, where("comments.spam = ? AND comments.defensio_sig <> ''", true)
+  scope :spamy, where("comments.spam = ?", true)
   scope :spammy, spamy
+  scope :not_spammy, where("comments.spam = ?", false)
   scope :useful, uncensored.where("comments.plus_score_count - comments.minus_score_count DESC > 0")
   scope :useless, uncensored.where("comments.plus_score_count - comments.minus_score_count DESC < 0")
   scope :most_useful, top.limit(3)
 
-
-  apply_simple_captcha
+  # apply_simple_captcha
   validates_presence_of :comment, :message => " : You must enter a comment."
   validates_length_of :comment, :in => 1..1000, :too_short => " : Your comment is not verbose enough, write more.", :too_long => " : Your comment is too verbose, keep it under 1000 characters."
 
-  acts_as_nested_set :scope => :root
+  before_save :check_for_spam, :unless => :"persisted?"
 
-  configure_defender :keys => {
-    'content' => :comment,
-    'author-ip' => :ip_address,
-    'author-name' => :author_name,
-    'author-email' => :author_email
-  }
-
-  # these methods are for defender to help with spam detection
+  # these methods are for spam detection
   def author_name
     user.nil? ? nil : user.login
   end
@@ -51,17 +58,28 @@ class Comment < ActiveRecord::Base
     user.nil? ? nil : user.email
   end
 
-  def is_spam?
-    (spam == true) and !defensio_sig.blank?
+  def check_for_spam
+    self.spam = self.censored = spam?
+    nil  # returning false here will interrupt save
+  end
+  alias_method :is_spam?, :spam?
+
+  def censor!(as=nil)
+    if as == :spam
+      self.spam = self.censored = spam!
+    else
+      self.censored = true
+    end
+    save
   end
 
-  def force_spam_detection!
-    _defender_before_create
-
-    # if the sig is blank, an error occurred
-    return if self.defensio_sig.blank?
-
-    self.save
+  def uncensor!(as=nil)
+    if as == :ham
+      self.spam = self.censored = ham!
+    else
+      self.censored = false
+    end
+    save
   end
 
   def score_count_sum

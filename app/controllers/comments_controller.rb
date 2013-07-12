@@ -178,7 +178,7 @@ class CommentsController < ApplicationController
     if params[:commit] == "BanIP+Destroy User"
       flash[:notice] = ""
       if comment && !comment.ip_address.blank? && comment.ip_address !=~ /^127./
-        noob = ApacheBan.create_by_ip(comment.ip_address)
+        noob = IPBan.create_by_ip(comment.ip_address)
         flash[:notice] = "IP #{comment.ip_address} banned, "
       end
       userlogin = comment.user.login
@@ -188,7 +188,7 @@ class CommentsController < ApplicationController
     else
       if params[:commit] == "Censor+BanIP"
         if comment && !comment.ip_address.blank? && comment.ip_address !=~ /^127./
-          noob = ApacheBan.create_by_ip(comment.ip_address)
+          noob = IPBan.create_by_ip(comment.ip_address)
           flash[:notice] = "IP #{comment.ip_address} banned"
 
         else

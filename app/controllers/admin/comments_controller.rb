@@ -35,7 +35,7 @@ class Admin::CommentsController < Admin::IndexController
     params[:ban_ip].each do |commentid|
       comment = Comment.find_by_id(params[:id])
       if comment && !comment.ip_address.blank? && comment.ip_address !=~ /^127./
-        noob = ApacheBan.create_by_ip(comment.ip_address)
+        noob = IPBan.create_by_ip(comment.ip_address)
       end
       comment = nil
     end

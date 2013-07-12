@@ -4,16 +4,17 @@ class RollCall < ActiveRecord::Base
   belongs_to :bill
   belongs_to :amendment
   has_one :action
-  has_many :roll_call_votes, :include => :person, :order => 'people.lastname'
+  has_many :roll_call_votes, :include => :person
   
   # TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
   scope :for_ident, lambda { |ident| {:conditions => ["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?", *Bill.ident(ident)]} }
   scope :in_year, lambda { |y| { :conditions => ["date_part('year', roll_calls.date) = :y", :y => y] } }
 
   with_options :class_name => 'RollCallVote' do |rc|
-    rc.has_many :aye_votes, :conditions => "roll_call_votes.vote='+'"
-    rc.has_many :nay_votes, :conditions => "roll_call_votes.vote='-'"
-    rc.has_many :abstain_votes, :conditions => "roll_call_votes.vote='0'"
+    rc.has_many :aye_votes, :conditions => { :roll_call_votes => { :vote => ['Aye', 'Yea', '+'] } }
+    rc.has_many :nay_votes, :conditions => { :roll_call_votes => { :vote => ['No', 'Nay', '-' ] } }
+    rc.has_many :present_votes, :conditions => { :roll_call_votes => { :vote => ['P', 'Present' ] } }
+    rc.has_many :non_votes, :conditions => { :roll_call_votes => { :vote => ['Not Voting', '0'] } }
   end
 
   with_options :class_name => 'RollCallVote', :include => :person do |rc|
@@ -103,7 +104,34 @@ class RollCall < ActiveRecord::Base
       ""
     end
   end
-  
+
+  def vote_counts
+    if @vote_counts.nil?
+      @vote_counts = roll_call_votes.group(:vote).count
+    end
+    @vote_counts
+  end
+
+  def top_vote_categories (n)
+    vote_counts.to_a.sort_by(&:second).reverse.slice(0, n)
+  end
+
+  def affirmative_type
+    Set['Aye', 'Yea', '+'].intersection(vote_counts.keys).first or 'Aye'
+  end
+
+  def negative_type
+    Set['No', 'Nay', '-'].intersection(vote_counts.keys).first or 'Nay'
+  end
+
+  def present_type
+    Set['P', 'Present'].intersection(vote_counts.keys).first or 'Present'
+  end
+
+  def non_vote_type
+    Set['Not Voting', '0'].intersection(vote_counts.keys).first or 'Not Voting'
+  end
+
   def RollCall.latest_votes_for_unique_bills(num = 3)
     RollCall.find_by_sql("SELECT * FROM roll_calls WHERE id IN 
                           (SELECT max(id) AS roll_id FROM roll_calls

@@ -1,54 +1,106 @@
 <div class="roll_call_details_info">
-  
-<div>
-   <div> <span class="date roll"><%= @roll_call.date.strftime("%B %d, %Y") %></span>  
-    
-    Roll call number <strong><%= @roll_call.number %></strong> 
-    
-    <% if @roll_call.amendment %>
-	    (Amendment number <%= @roll_call.amendment.display_number %>) 
-    <% end %> 
-    
-    in the <%= @roll_call.chamber %>
-    </div>
+
   <div>
-    <strong>Question<strong>
-    <em class="fontweightnormal"><%= @roll_call.question %></em>
+    <div>
+      <span class="date roll"><%= @roll_call.date.strftime("%B %d, %Y") %></span>  
 
-    
-    <% if @roll_call.amendment %>
-		Amendment purpose
-		<%= @roll_call.amendment.purpose %>
-    <% end %>
-</div>
-</div>
+      Roll call number <strong><%= @roll_call.number %></strong> 
 
-<div class="right">
+      <% if @roll_call.amendment %>
+        (Amendment number <%= @roll_call.amendment.display_number %>) 
+      <% end %> 
 
-    <div><span class="ayes"></span><em class="aye roll">Ayes: </em><span class="fontweightnormal"><%= @roll_call.ayes %> <%= aye_breakdown.html_safe %></span>  </div>  
-
-    <div><span class="nays"></span><em class="nay roll">Nays: </em><span class="fontweightnormal"><%= @roll_call.nays %> <%= nay_breakdown.html_safe %></span> </div>   
-
-    <div><span class="abs"></span><em class="abs roll">Abstained: </em><span class="fontweightnormal"><%= @roll_call.abstains %> <%= abstain_breakdown.html_safe %></span></div>
+      in the <%= @roll_call.chamber %>
+    </div>
+    <div>
+      <strong>Question</strong>
+      <em class="fontweightnormal"><%= @roll_call.question %></em>
 
 
-    <% if @roll_call.presents > 0 %>
-      <div><em class="present roll">Present: </em> <span class="fontweightnormal"><%= @roll_call.presents %></span></div>
+      <% if @roll_call.amendment %>
+        Amendment purpose
+        <%= @roll_call.amendment.purpose %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="right">
+    <% if count_for_affirmative_votes + count_for_negative_votes == 0 %>
+      <%# If there are neither ayes nor nays then this is probably speaker
+      election vote or an impeachment vote %>
+      <div>
+        <em class="abs roll">Vote</em>
+        <span class="vote_count">Total</span>
+        <span class="vote_count">Democrat</span>
+        <span class="vote_count">Republican</span>
+      </div>
+
+      <% @vote_counts.sort_by(&:second).reverse.each do |vote, cnt| %>
+        <div>
+          <em class="<%= singular_vote_css_class(vote) %> roll"><%= vote_name(vote) %> </em>
+          <span class="vote_count"><%= cnt.to_i %></span>
+          <span class="fontweightnormal">
+            <span class="vote_count party_count"><%= count_for_vote_and_party(vote, 'Democrat') %></span> 
+            <span class="vote_count party_count"><%= count_for_vote_and_party(vote, 'Republican') %></span> 
+          </span>
+        </div>
+      <% end %>
     <% else %>
+      <div>
+        <span class="no_icon"></span>
+        <em class="abs roll">Vote</em>
+        <span class="vote_count">Total</span>
+        <span class="vote_count">Democrat</span>
+        <span class="vote_count">Republican</span>
+      </div>
+      <div>
+        <span class="ayes"></span>
+        <em class="aye roll">Ayes</em>
+        <span class="vote_count"><%= count_for_affirmative_votes %></span>
+        <span class="fontweightnormal">
+          <span class="vote_count party_count"><%= count_for_affirmative_votes_by_party('Democrat') %></span> 
+          <span class="vote_count party_count"><%= count_for_affirmative_votes_by_party('Republican') %></span> 
+        </span>
+      </div>
 
+      <div>
+        <span class="nays"></span>
+        <em class="nay roll">Nays</em>
+        <span class="vote_count"><%= count_for_negative_votes %></span>
+        <span class="fontweightnormal">
+          <span class="vote_count party_count"><%= count_for_negative_votes_by_party('Democrat') %></span> 
+          <span class="vote_count party_count"><%= count_for_negative_votes_by_party('Republican') %></span> 
+        </span>
+      </div>
+
+      <div>
+        <span class="abs"></span>
+        <em class="abs roll">Present</em>
+        <span class="vote_count"><%= count_for_present_votes %></span>
+        <span class="fontweightnormal">
+          <span class="vote_count party_count"><%= count_for_present_votes_by_party('Democrat') %></span> 
+          <span class="vote_count party_count"><%= count_for_present_votes_by_party('Republican') %></span> 
+        </span>
+      </div>
+
+      <div>
+        <span class="abs"></span>
+        <em class="abs roll">Not Voting</em>
+        <span class="vote_count"><%= count_for_non_votes %></span>
+        <span class="fontweightnormal">
+          <span class="vote_count party_count"><%= count_for_non_votes_by_party('Democrat') %></span> 
+          <span class="vote_count party_count"><%= count_for_non_votes_by_party('Republican') %></span> 
+        </span>
+      </div>
+
+
+      <% if @roll_call.required %>
+        <div><em><%= humane_fraction(@roll_call.required).capitalize %> 'Ayes' required for passage.</em></div>
       <% end %>
 
-     <div><em>Required percentage of 'Aye' votes:</em> <%= @roll_call.required %> <span class="fontweightnormal"><%= numeric_percentage(@roll_call) %></span></div>
-     
-      <% if @roll_call.total_votes > 0 %>
-     
-     <div><em>Percentage of 'aye' votes:</em> <span class="fontweightnormal"><%= "%2d" % ((@roll_call.ayes.to_f / @roll_call.total_votes.to_f) * 100) %>%</span></div>
-    
-    
+      <div><em>Result:</em> <span class="fontweightnormal"><%= @roll_call.result %></span> </div>
+
     <% end %>
-   
-   <div><em>Result:</em> <span class="fontweightnormal"><%= @roll_call.result %></span> </div>
-  
   </div>
-  
- </div>
+</div>
+

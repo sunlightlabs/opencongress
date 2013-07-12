@@ -5,18 +5,14 @@ require 'united_states'
 
 cong_num = Settings.available_congresses.sort.last
 
-congress_dir_path = File.join(Settings.data_path,
-                              "unitedstates",
-                              cong_num.to_s)
-
 if ARGV.length > 0 and File.exist?(ARGV[0])
   roll_call_file_paths = ARGV
 else
-  roll_call_file_paths = Dir.glob(File.join(Settings.data_path,
-                                            'unitedstates',
+  roll_call_file_paths = Dir.glob(File.join(Settings.unitedstates_data_path,
                                             cong_num.to_s,
                                             'votes',
-                                            '**',
+                                            '*',
+                                            '*',
                                             'data.json'))
 end
 

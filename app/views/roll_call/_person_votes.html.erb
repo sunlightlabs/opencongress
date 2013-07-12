@@ -2,7 +2,7 @@
   <table class="simple-table">
     <tr><th>Name</th><th>Voted</th></tr>
     
-    <% votes.each do |vote| %>
+    <% votes.sort_by{ |v| v.person.lastname }.each do |vote| %>
       <tr>
         <td>
           <% if vote.person %>
@@ -11,7 +11,7 @@
             No Data*
           <% end %>
         </td>
-        <td><%= vote %></td>
+        <td><%= vote_name(vote.vote) %></td>
       </tr>
     <% end %>
   </table>

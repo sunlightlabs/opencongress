@@ -55,6 +55,7 @@ module UnitedStates
       end
       roll_call.date = rc_hash['+date']
       roll_call.roll_type = rc_hash['type']
+      roll_call.required = rc_hash['requires']
       roll_call.result = rc_hash['result']
       if rc_hash['votes']
         roll_call.ayes = (rc_hash['votes']['Yea'] or
@@ -72,7 +73,7 @@ module UnitedStates
       roll_call.title = rc_hash['question'][0..254]
       roll_call.updated = rc_hash['+updated_at']
       roll_call.filename = rc_hash['source_url']
-      roll_call.save!
+      roll_call.save! if roll_call.changed?
 
       if rc_hash.include? 'bill'
         bill_ident = {
@@ -125,13 +126,22 @@ module UnitedStates
                 vote = voter.roll_call_votes.new
                 vote.roll_call_id = roll_call.id
               end
-              vote.vote = vote_label
-              vote.save!
+              vote.vote = collapsed_vote_label(vote_label)
+              vote.save! if vote.changed?
             else
               OCLogger.log "Roll call #{roll_call.where}#{roll_call.number} references unrecognized voter #{vote_hash['id']}"
             end
           end
         end
+      end
+    end
+
+    def collapsed_vote_label (label)
+      case label.downcase
+        when 'aye', 'yea' then '+'
+        when 'nay', 'no' then '-'
+        when 'present', 'p' then 'P'
+        when 'not voting' then '0'
       end
     end
   end

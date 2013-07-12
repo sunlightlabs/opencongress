@@ -28,22 +28,31 @@
    <p>** Because of incomplete data, party breakdown visualizations may be inaccurate by one or two votes.</p>
 
     </div>
-  
+
+    <script type="text/javascript">
+      $j().ready(function(){
+        $j('.jqmWindow').jqm();
+      });
+    </script>
+
     <div class="col2">
       <h3 class="darkline">Vote Result</h3>
-      <%= roll_call_master_sublists(person_type).html_safe %>
+      <% @vote_counts.keys.each do |vote_type| %>
+        <%= render :partial => 'jqm_window', :locals => { :party => 'All', :vote_type => vote_type } %>
+      <% end %>
       <div id='roll_call_All_chart'><%= @master_chart.html_safe %></div>
 
       <h3 class="darkline">Votes by Party</h3>
-      
-      <%= roll_call_sublists_by_vote_type('+', @roll_call).html_safe %>
-      <div id='roll_call_Aye_chart'><%= @aye_chart.html_safe %></div>
 
-      <%= roll_call_sublists_by_vote_type('-', @roll_call).html_safe %>
-      <div id='roll_call_Nay_chart'><%= @nay_chart.html_safe %></div>
+      <% @vote_counts.to_a.sort_by(&:second).reverse.each do |vote_type, cnt| %>
+        <% if cnt > 10 %>
+          <%= render :partial => 'jqm_window', :locals => { :party => 'Democrat', :vote_type => vote_type } %>
+          <%= render :partial => 'jqm_window', :locals => { :party => 'Republican', :vote_type => vote_type } %>
+          <%= render :partial => 'jqm_window', :locals => { :party => 'Other', :vote_type => vote_type } %>
+          <div id='roll_call_<%= vote_type %>_chart'><%= chart_html_for_vote_type(vote_type).html_safe %></div>
+        <% end %>
+      <% end %>
 
-      <%= roll_call_sublists_by_vote_type('0', @roll_call).html_safe %>
-      <div id='roll_call_Abstain_chart'><%= @abstain_chart.html_safe %></div>
     </div>
   </div>
   <% end %>

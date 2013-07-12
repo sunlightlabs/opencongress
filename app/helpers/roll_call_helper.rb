@@ -6,107 +6,116 @@ module RollCallHelper
     end
   end
   
-  def aye_breakdown(display = 'html')
-    breakdown('+', display)
-  end
-  
-  def nay_breakdown(display = 'html')
-    breakdown('-', display)
-  end
-  
-  def abstain_breakdown(display = 'html')
-    breakdown('0', display)
-  end
-  
   def vote_name(vote)
-    vote_names = { '+' => 'Aye', "-" => 'Nay', "0" => 'Abstain' }
-    return vote_names[vote]
+    vote_names = {
+      '+' => 'Aye',
+      'aye' => 'Aye',
+      'yea' => 'Aye',
+      '-' => 'Nay',
+      'no' => 'Nay',
+      'nay' => 'Nay',
+      'p' => 'Present',
+      'present' => 'Present',
+      '0' => 'Not Voting',
+      'not voting' => 'Not Voting'
+    }
+    vote_names.fetch(vote.downcase, vote)
   end
-  
-  def breakdown(breakdown_type, display)
-    vote_names = { '+' => 'Aye', "-" => 'Nay', "0" => 'Abstain' }
-    vote_methods = { '+' => 'ayes', "-" => 'nays', "0" => 'abstains' }
-    
-    votes = @roll_call.roll_call_votes.select { |rcv| rcv.vote == breakdown_type }
-    
-    democrat_votes = votes.select { |rcv| rcv.person.party == 'Democrat' if rcv.person }
-    republican_votes = votes.select { |rcv| rcv.person.party == 'Republican' if rcv.person }
-    out = "("
-    
-    
-    if display == 'plain'
-      out += "Democrat: #{democrat_votes.size}; Republican: #{republican_votes.size}"
-    else
-      out += "<span style='color: #888;'>Democrat:</span> <a href='/roll_call/sublist/#{@roll_call.id}?party=Democrat&vote=#{vote_names[breakdown_type]}'>#{democrat_votes.size}</a>;"
-      out += " <span style='color: #888;'>Republican:</span> <a href='/roll_call/sublist/#{@roll_call.id}?party=Republican&vote=#{vote_names[breakdown_type]}'>#{republican_votes.size}</a>"
-    end
-    
-    if (votes.size - democrat_votes.size - republican_votes.size) > 0
-      if display == 'plain'
-        out += "; Other: #{votes.size - democrat_votes.size - republican_votes.size}"
-      else
-        out += "; <span style='color: #888;'>Other:</span> <a href='/roll_call/sublist/#{@roll_call.id}?party=Other&vote=#{vote_names[breakdown_type]}'>#{votes.size - democrat_votes.size - republican_votes.size}</a>"
-      end
-    end
-    
-    if display == 'plain'
-      out += ")"
-    else
-      out += (votes.size == @roll_call.send(vote_methods[breakdown_type])) ? ")" : ")**"
-    end
-    
-    out   
-  end
-  
 
-  def roll_call_master_sublists(person_type)
-    # let's just define this again, cause it's fun, right? sigh.
-    vote_names = { '+' => 'Aye', "-" => 'Nay', "0" => 'Abstain' }
-    
-    out = ""
-    
-    vote_names.keys.each do |vote_type|
-      votes = @roll_call.roll_call_votes.select { |rcv| (rcv.vote == vote_type && rcv.person) }
-      out += "<script type=\"text/javascript\">$j().ready(function(){$j('##{vote_names[vote_type]}_All').jqm();});</script>"
-      out += "<div id='#{vote_names[vote_type]}_All' class='jqmWindow scrolling'>\n"
-      out += "<div class='ie'><a href='#' class='jqmClose'>Close</a></div><h4>#{person_type}s Voting '#{vote_names[vote_type]}'</h4>\n"
-      votes.each { |v| out += "#{link_to_person v.person}<br />\n" }
-      out += "</div>\n"
-    end
-    
-    out
+  def singular_vote_css_class(vote)
+    classes = {
+      '+' => 'aye',
+      'aye' => 'aye',
+      'yea' => 'aye',
+      '-' => 'nay',
+      'no' => 'nay',
+      'nay' => 'nay',
+      'p' => 'abs',
+      'present' => 'abs',
+      '0' => 'abs',
+      'not voting' => 'abs'
+    }
+    classes[vote.downcase]
   end
-  
-  
-  def roll_call_sublists_by_vote_type(vote_type, roll_call)
-    # let's just define this again, cause it's fun, right? sigh.
-    vote_names = { '+' => 'Aye', "-" => 'Nay', "0" => 'Abstain' }
-    parties = ['Democrat', 'Republican', 'Other' ]
-    
-    out = ""
-    
-    parties.each do |party|
-      unless party == 'Other'
-        votes = roll_call.roll_call_votes.select { |rcv| (rcv.vote == vote_type && rcv.person && rcv.person.party == party) }
-      else
-        votes = roll_call.roll_call_votes.select { |rcv| (rcv.vote == vote_type && rcv.person && rcv.person.party != 'Democrat' && rcv.person.party != 'Republican') }
-      end
-      
-      out += %Q{<script type="text/javascript">$j().ready(function(){$j('##{party}_#{vote_names[vote_type]}').jqm();});</script>
-      <div id="#{party}_#{vote_names[vote_type]}" class="jqmWindow scrolling">
-      <div class="ie"><a href="#" class="jqmClose"><span>Close</span></a></div><h4>#{party}s Voting '#{vote_names[vote_type]}'</h4>}
-      votes.each { |v| out += "#{link_to_person v.person}<br />\n" }
-      out += "</div>\n"
-    end
-    
-    out
+
+  def plural_vote_css_class(vote)
+    classes = {
+      '+' => 'ayes',
+      'aye' => 'ayes',
+      'yea' => 'ayes',
+      '-' => 'nays',
+      'no' => 'nays',
+      'nay' => 'nays',
+      'p' => 'abs',
+      'present' => 'abs',
+      '0' => 'abs',
+      'not voting' => 'abs'
+    }
+    classes[vote.downcase]
   end
-  
+
+  def count_for_vote_and_party (vote, party)
+    @party_vote_counts.fetch([vote, party], 0)
+  end
+
+  def count_for_affirmative_votes_by_party (party)
+    count_for_vote_and_party('Aye', party) + count_for_vote_and_party('Yea', party) + count_for_vote_and_party('+', party)
+  end
+
+  def count_for_negative_votes_by_party (party)
+    count_for_vote_and_party('No', party) + count_for_vote_and_party('Nay', party) + count_for_vote_and_party('-', party)
+  end
+
+  def count_for_present_votes_by_party (party)
+    count_for_vote_and_party('Present', party) + count_for_vote_and_party('P', party)
+  end
+
+  def count_for_non_votes_by_party (party)
+    count_for_vote_and_party('Not Voting', party) + count_for_vote_and_party('0', party)
+  end
+
+  def count_for_affirmative_votes 
+    @vote_counts.fetch('Aye', 0) + @vote_counts.fetch('Yea', 0) + @vote_counts.fetch('+', 0)
+  end
+
+  def count_for_negative_votes
+    @vote_counts.fetch('No', 0) + @vote_counts.fetch('Nay', 0) + @vote_counts.fetch('-', 0)
+  end
+
+  def count_for_present_votes
+    @vote_counts.fetch('Present', 0) + @vote_counts.fetch('P', 0)
+  end
+
+  def count_for_non_votes
+    @vote_counts.fetch('Not Voting', 0) + @vote_counts.fetch('0', 0)
+
+  end
+
+  # Motivating example for this is using "Not Voting" => "not_voting" for 
+  # the Flash <-> JavaScript coordination for chart on_click events.
+  def vote_name_suitable_for_id (vote_type)
+    vote_type.gsub(/ /, '_').downcase
+  end
+
+  def chart_html_for_vote_type (vote_type, width=400, height=220, params={})
+    params['breakdown_type'] = vote_type
+    ofc2(width, height, "roll_call/partyvote_piechart_data/#{@roll_call.id}?" + params.to_param)
+  end
+
+  def humane_fraction (fr)
+    case fr
+    when '1/2' then 'one half'
+    when '2/3' then 'two thirds'
+    when '3/5' then 'three fifths'
+    else fr
+    end
+  end
+
   def numeric_percentage(roll_call)
     case roll_call.required
-      when '1/2' then "(50%)"
-      when '2/3' then "(66%)"
-      when '3/5' then "(60%)"
-    end
+    when '1/2' then "(50%)"
+    when '2/3' then "(66%)"
+    when '3/5' then "(60%)"
+    end  
   end
 end

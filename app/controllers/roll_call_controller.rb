@@ -1,5 +1,6 @@
 class RollCallController < ApplicationController
   helper :index
+  include RollCallHelper
   skip_before_filter :store_location, :except => [:show, :all]
   before_filter :page_view, :only => [:show, :by_number]
   before_filter :can_blog, :only => [:update_hot]
@@ -18,23 +19,29 @@ class RollCallController < ApplicationController
 
   def master_piechart_data
     @roll_call = RollCall.find_by_id(params[:id])
+    @vote_counts = @roll_call.roll_call_votes.group(:vote).count
 
+    color_well = [
+      '#16CEC6',
+      '#DF18DF',
+      '#319450',
+      '#E0D81A'
+    ].cycle
     colors = []
     vals = []
 
-    if @roll_call.ayes > 0
-      vals << OFC2::PieValue.new(:value => @roll_call.ayes, :label => "Aye (#{@roll_call.ayes})", :on_click => 'openRollCallOverlay("Aye_All")')
-      colors << "#4ED046"
-    end
+    @vote_counts.each do |vote_type, cnt|
+      vals << OFC2::PieValue.new(:value => cnt,
+                                 :label => "#{vote_name(vote_type)} (#{cnt})",
+                                 :on_click => "openRollCallOverlay('#{vote_name_suitable_for_id(vote_name(vote_type))}_All')")
 
-    if @roll_call.nays > 0
-      vals << OFC2::PieValue.new(:value => @roll_call.nays, :label => "Nay (#{@roll_call.nays})", :on_click => 'openRollCallOverlay("Nay_All")')
-      colors << "#F53C34"
-    end
-
-    if @roll_call.abstains > 0
-      vals << OFC2::PieValue.new(:value => @roll_call.abstains, :label => "Abstained (#{@roll_call.abstains})", :on_click => 'openRollCallOverlay("Abstain_All")')
-      colors << "#BDBDBD"
+      if ['Aye', 'Yea', '+'].include?(vote_type)
+        colors << '#4ED046'
+      elsif ['No', 'Nay', '-'].include?(vote_type)
+        colors << '#F53C34'
+      else
+        colors << color_well.next
+      end
     end
 
     pie = OFC2::Pie.new(
@@ -78,18 +85,23 @@ class RollCallController < ApplicationController
     colors = []
 
     if republican_votes.size > 0
-#      vals << OFC2::PieValue.new(:value => republican_votes.size, :label => "Republican (#{republican_votes.size})", :on_click => "openRollCallOverlay('Republican_#{@@VOTE_TYPES[params[:breakdown_type]]}')")
-      vals << OFC2::PieValue.new(:value => republican_votes.size, :label => "Republican (#{republican_votes.size})", :on_click => "alert('boom!');")
+      vals << OFC2::PieValue.new(:value => republican_votes.size,
+                                 :label => "Republican (#{republican_votes.size})",
+                                 :on_click => "openRollCallOverlay('#{vote_name_suitable_for_id(vote_name(params[:breakdown_type]))}_Republican')")
       colors << "#F84835"
     end
 
     if democrat_votes.size > 0
-      vals << OFC2::PieValue.new(:value => democrat_votes.size, :label => "Democrat (#{democrat_votes.size})", :on_click => "window.location.href='/roll_call/sublist/#{@roll_call.id}?party=Democrat&vote=#{@@VOTE_TYPES[params[:breakdown_type]]}'")
+      vals << OFC2::PieValue.new(:value => democrat_votes.size,
+                                 :label => "Democrat (#{democrat_votes.size})",
+                                 :on_click => "openRollCallOverlay('#{vote_name_suitable_for_id(vote_name(params[:breakdown_type]))}_Democrat')")
       colors << "#5D77DA"
     end
 
     if other_votes_size > 0
-      vals << OFC2::PieValue.new(:value => other_votes_size, :label =>"Other (#{other_votes_size})", :on_click => "window.location.href='/roll_call/sublist/#{@roll_call.id}?party=Other&vote=#{@@VOTE_TYPES[params[:breakdown_type]]}'")
+      vals << OFC2::PieValue.new(:value => other_votes_size,
+                                 :label =>"Other (#{other_votes_size})",
+                                 :on_click => "openRollCallOverlay('#{vote_name_suitable_for_id(vote_name(params[:breakdown_type]))}_Other')")
       colors << "#DDDDDD"
     end
 
@@ -112,7 +124,8 @@ class RollCallController < ApplicationController
     )
     pie.colours = colors
     chart = OFC2::Graph.new
-    chart.title = OFC2::Title.new(:text => "#{@@VOTE_TYPES[params[:breakdown_type]]} Votes: #{votes.size}#{disclaimer_note}", :style => "font-size:14px;color:#333;")
+    chart.title = OFC2::Title.new(:text => "#{vote_name(params[:breakdown_type])} Votes: #{votes.size}#{disclaimer_note}",
+                                  :style => "font-size:14px;color:#333;")
     chart << pie_shadow
     chart << pie
     chart.bg_colour = '#FFFFFF'
@@ -141,29 +154,12 @@ class RollCallController < ApplicationController
   end
 
   def sublist
+    flash[:warning] = "The page you navigated to is no longer available. This is the page for the related roll call."
     @roll_call = RollCall.find(params[:id])
-
-    if params[:vote] == 'Aye'
-      @vote = 'Aye'
-    elsif params[:vote] == 'Nay'
-      @vote = 'Nay'
-    else
-      @vote = 'Abstain'
-    end
-
-    if params[:party] == 'Democrat'
-      @party = 'Democrat'
-    elsif params[:party] == 'Republican'
-      @party = 'Republican'
-    else
-      @party = 'Other'
-    end
-
-    type_votes = @roll_call.roll_call_votes.select { |rcv| rcv.vote == @@VOTE_VALS[@vote] }
-    @votes = type_votes.select { |rcv| rcv.person.party == @party if rcv.person }
-
-    @page_title = "#{@roll_call.chamber} Roll Call ##{@roll_call.number}: #{@party}s Voting '#{@vote}'"
-    @title_desc = SiteText.find_title_desc('roll_call_show')
+    redirect_to :action => 'by_number',
+                :chamber => @roll_call.chamber.downcase[0],
+                :year => @roll_call.date.year,
+                :number => @roll_call.number
   end
 
   def index
@@ -259,16 +255,15 @@ class RollCallController < ApplicationController
 
   def by_number
     chamber_name = case params[:chamber]
-                   when 'h'
-                     'house'
-                   when 's'
-                     'senate'
-                   else
-                     'unknown'
+                   when 'h' then 'house'
+                   when 's' then 'senate'
+                   else 'unknown'
                    end
     @roll_call = RollCall.in_year(params[:year].to_i)
                          .where(:where => chamber_name,
                                 :number => params[:number].to_i).first
+    @vote_counts = @roll_call.roll_call_votes.group(:vote).count
+    @party_vote_counts = @roll_call.roll_call_votes.includes(:person).group(:vote, :party).count
     @titles_by_person = Hash[ Person.on_date(@roll_call.date).collect{ |p| [p.id, p.role_type] } ]
 
     if params[:state] && State.for_abbrev(params[:state])
@@ -293,8 +288,7 @@ class RollCallController < ApplicationController
       @roll_call = RollCall.find_by_id(params[:id])
     elsif params[:year] and params[:chamber] and params[:number]
       chamber_name = case params[:chamber]
-                     when 'h'
-                       'house'
+                     when 'h' then 'house'
                      when 's'
                        'senate'
                      else
@@ -318,9 +312,6 @@ class RollCallController < ApplicationController
 
   def roll_call_shared
     @master_chart = ofc2(400,220, "roll_call/master_piechart_data/#{@roll_call.id}")
-    @aye_chart = ofc2(400,220, "roll_call/partyvote_piechart_data/#{@roll_call.id}?breakdown_type=#{CGI.escape("+")}")
-    @nay_chart = ofc2(400,220, "roll_call/partyvote_piechart_data/#{@roll_call.id}?breakdown_type=-")
-    @abstain_chart = ofc2(400,220, "roll_call/partyvote_piechart_data/#{@roll_call.id}?breakdown_type=0")
 
     @page_title = @roll_call.title.blank? ? "" : "#{@roll_call.title} - "
     @page_title += "#{@roll_call.chamber} Roll Call ##{@roll_call.number} Details"

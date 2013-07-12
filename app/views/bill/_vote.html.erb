@@ -26,29 +26,15 @@
       
       <% end %>
 
-      <div class="req floatright"><em>Required percentage of 'Aye' votes:</em> <%= vote.required %> <%= numeric_percentage(vote) %></div>
-
-
-      <% if vote.total_votes > 0 %>
-        <em>Percentage of 'aye' votes:</em> 
-        <%= "%2d" % ((vote.ayes.to_f / vote.total_votes.to_f) * 100) %>%
-      <% end %>
-      
-      
       <div class="pies clear">
-        <%#= roll_call_sublists_by_vote_type('+', vote).html_safe %>
         <div class="pie-chart" id='roll_call_Aye_chart_<%= vote.id %>'>
-          <%= ofc2(165,120, "roll_call/partyvote_piechart_data/#{vote.id}?breakdown_type=#{CGI.escape("+")}&disclaimer_off=true&radius=40").html_safe %>
+          <%= chart_html_for_vote_type(vote.affirmative_type, 165, 120, :radius => 40, :disclaimer_off => true).html_safe %>
         </div>
-        
-        <%# roll_call_sublists_by_vote_type('-', vote).html_safe %>
         <div class="pie-chart" id='roll_call_Nay_chart_<%= vote.id %>'>
-          <%= ofc2(165,120, "roll_call/partyvote_piechart_data/#{vote.id}?breakdown_type=-&disclaimer_off=true&radius=40").html_safe %>
+          <%= chart_html_for_vote_type(vote.negative_type, 165, 120, :radius => 40, :disclaimer_off => true).html_safe %>
         </div>
-        
-        <%#= roll_call_sublists_by_vote_type('0', vote).html_safe %>
         <div class="pie-chart last" id='roll_call_Abstain_chart_<%= vote.id %>'>
-          <%= ofc2(165,120, "roll_call/partyvote_piechart_data/#{vote.id}?breakdown_type=0&disclaimer_off=true&radius=40").html_safe %>
+          <%= chart_html_for_vote_type(vote.present_type, 165, 120, :radius => 40, :disclaimer_off => true).html_safe %>
         </div>
       </div>
   

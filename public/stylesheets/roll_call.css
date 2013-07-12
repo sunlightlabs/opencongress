@@ -313,6 +313,10 @@ span.ayes{
 padding-left: 20px !important;
 }
 
+span.no_icon {
+  padding-left: 20px !important;
+}
+
 
 #head_button{
 display: block;
@@ -348,4 +352,20 @@ display: block;
 margin: 19px 0 0 27px;
 }
 
+span.vote_count {
+  display: inline-block;
+  width: 80px;
+  text-align: right;
+  margin: 0 0.5em 0 0;
+}
 
+em.roll {
+  display: inline-block;
+  width: 80px;
+  text-align: left;
+  margin: 0 0 0 0;
+}
+
+span.party_count {
+  color: #888888;
+}

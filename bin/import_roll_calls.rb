@@ -14,6 +14,7 @@ else
                                             '*',
                                             '*',
                                             'data.json'))
+  roll_call_file_paths.sort_by! { |path| [path.length, path] }
 end
 
 roll_call_file_paths.each_with_index do |file_path, idx|

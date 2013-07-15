@@ -11,6 +11,7 @@ bill_file_paths = Dir.glob(File.join(Settings.unitedstates_data_path,
                                      '*',
                                      '*',
                                      'data.json'))
+bill_file_paths.sort_by! { |path| [path.length, path] }
 
 bill_file_paths.each_with_index do |bill_file_path, idx|
   OCLogger.log "Importing bill from #{bill_file_path} (#{idx + 1} of #{bill_file_paths.count})"

@@ -16,6 +16,7 @@ else
                            "CRPT-#{cong_num.to_s}*",
                            'mods.xml')
   rpt_file_paths = Dir.glob(glob_pattern)
+  rpt_file_paths.sort_by! { |path| [path.length, path] }
 end
 
 OCLogger.log "Found #{rpt_file_paths.count} files matching #{glob_pattern}"

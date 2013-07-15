@@ -8,69 +8,69 @@
 
   <% if related_bills_list.size > 0 %>
 
-      <% related_bills_list.each_with_index do |bill, i| -%>
-        <% unless bill.title_common.blank? -%>
-         
-	<li class="<%= bill_category(bill) %>">
-		<a class="icon_link" href="<%= bill_path(bill) %>">
-            <% if commentary_type %>
-              <span class="list_count"><%= (i + 1) %></span>
-            <% else %>
+    <% related_bills_list.each_with_index do |bill, i| -%>
+      <% unless bill.title_common.blank? -%>
 
+        <li class="<%= bill_category(bill) %>">
+        <a class="icon_link" href="<%= bill_path(bill) %>">
+          <% if commentary_type %>
+            <span class="list_count"><%= (i + 1) %></span>
+          <% else %>
+
+          <% end %>
+
+          <div class="title">
+            <% unless bill.title_popular_only.blank? %>
+              <span class="a"><%= "#{bill.typenumber} - #{truncate(bill.title_popular_only, :length => 103)}" %></span>        
+            <% else %>                                 
+              <span class="a"><%= "#{bill.typenumber}" %></span>        
             <% end %>
-            
-            <div class="title">
-						<% unless bill.title_popular_only.blank? %>
-            <span class="a"><%= "#{bill.typenumber} - #{truncate(bill.title_popular_only, :length => 103)}" %></span>        
-						<% else %>                                 
-						<span class="a"><%= "#{bill.typenumber}" %></span>        
-         		<% end %>
-           
-           
-		<% unless bill.title_official.blank? %>
-			<p>
-				<% if controller.action_name == 'list_bill_type' %>
-				<%= bill.title_official %>			
-				<% else %>
-				<%= truncate(bill.title_official, :length => 145) %>
-				<% end %>
-			</p>
-		<% end %>
-           
-             </div>
 
-			<span class="status">            
-            
-            <span><%= temp_url_strip(bill.status) %></span>
-            
+
+            <% unless bill.title_official.blank? %>
+              <p>
+              <% if controller.action_name == 'list_bill_type' %>
+                <%= bill.title_official %>      
+              <% else %>
+                <%= truncate(bill.title_official, :length => 145) %>
+              <% end %>
+              </p>
+            <% end %>
+
+          </div>
+
+          <span class="status">            
+
+            <span><%= temp_url_strip(bill.last_action.action_type) %></span>
+
             <span class="date"><%= bill.last_action.formatted_date if bill.last_action %></span>
-            
-						<% unless bill.session == Settings.default_congress %>
+
+            <% unless bill.session == Settings.default_congress %>
               <span>(<%= bill.session.ordinalize %> congress)</span>
             <% end %>
 
-			</span>
+          </span>
 
 
-						<% if show_views %>
+          <% if show_views %>
             <span class='session'><%= number_with_delimiter(bill.views(Settings.default_count_time)) %> Views</span>
-            <% end %>
-            
-                       
-            
-            <% if commentary_type %>
-              <span class='session'>
-                <%= number_with_delimiter(bill.commentary_count(commentary_type, Settings.default_count_time)) %> Articles
-              </span>
-            <% end %>
-						</a>
-            <% if show_track_link %><span><%= render :partial => "shared/track_link", :locals => {:object => bill} %></span><% end %>
+          <% end %>
 
-        <% end %>
-      
-       </li>
-      
-      <% end -%>
+
+
+          <% if commentary_type %>
+            <span class='session'>
+              <%= number_with_delimiter(bill.commentary_count(commentary_type, Settings.default_count_time)) %> Articles
+            </span>
+          <% end %>
+        </a>
+        <% if show_track_link %><span><%= render :partial => "shared/track_link", :locals => {:object => bill} %></span><% end %>
+
+      <% end %>
+
+      </li>
+
+    <% end -%>
   <% else %>
     <h3>No Bills Found</h3>
   <% end %>

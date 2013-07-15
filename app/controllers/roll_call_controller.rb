@@ -137,8 +137,7 @@ class RollCallController < ApplicationController
     @roll_call = RollCall.find_by_id(params[:id])
 
     unless @roll_call
-      redirect_to :controller => 'index', :action => 'notfound'
-      return
+      render_404 and return
     else
       redirect_to @roll_call.vote_url
     end
@@ -254,14 +253,6 @@ class RollCallController < ApplicationController
   end
 
   def by_number
-    chamber_name = case params[:chamber]
-                   when 'h' then 'house'
-                   when 's' then 'senate'
-                   else 'unknown'
-                   end
-    @roll_call = RollCall.in_year(params[:year].to_i)
-                         .where(:where => chamber_name,
-                                :number => params[:number].to_i).first
     @vote_counts = @roll_call.roll_call_votes.group(:vote).count
     @party_vote_counts = @roll_call.roll_call_votes.includes(:person).group(:vote, :party).count
     @titles_by_person = Hash[ Person.on_date(@roll_call.date).collect{ |p| [p.id, p.role_type] } ]
@@ -269,11 +260,6 @@ class RollCallController < ApplicationController
     if params[:state] && State.for_abbrev(params[:state])
       @state_abbrev = params[:state]
       @state_name = State.for_abbrev(params[:state])
-    end
-
-    unless @roll_call
-      redirect_to :controller => 'index', :action => 'notfound'
-      return
     end
 
     roll_call_shared
@@ -289,14 +275,16 @@ class RollCallController < ApplicationController
     elsif params[:year] and params[:chamber] and params[:number]
       chamber_name = case params[:chamber]
                      when 'h' then 'house'
-                     when 's'
-                       'senate'
-                     else
-                       'unknown'
+                     when 's' then 'senate'
+                     else params[:chamber]
                      end
       @roll_call = RollCall.in_year(params[:year].to_i)
                            .where(:where => chamber_name,
                                   :number => params[:number].to_i).first
+      if @roll_call.nil?
+        flash[:warning] = "No such roll call."
+        render_404 and return
+      end
     else
       notfound
     end

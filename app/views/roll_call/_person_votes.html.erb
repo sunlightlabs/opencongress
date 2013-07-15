@@ -11,7 +11,7 @@
             No Data*
           <% end %>
         </td>
-        <td><%= vote_name(vote.vote) %></td>
+        <td class="<%= singular_vote_css_class(vote.vote) %>"><%= vote_name(vote.vote) %></td>
       </tr>
     <% end %>
   </table>

@@ -33,6 +33,9 @@ module UnitedStates
     def decode_roll_call_hash (rc_hash)
       rc_hash['+date'] = Time.parse(rc_hash['date'])
       rc_hash['+updated_at'] = Time.parse(rc_hash['updated_at'])
+      if rc_hash['amendment'] and rc_hash['amendment']['type'] == 'h-bill' then
+        rc_hash['amendment']['type'] = 'h'
+      end
       rc_hash
     end
 
@@ -86,18 +89,9 @@ module UnitedStates
           OCLogger.log "Linking roll call #{rc_hash['number']} to bill #{rc_hash['bill']['type']}#{rc_hash['bill']['number']}"
           bill.roll_calls << roll_call
 
-          if rc_hash.include? 'amendment'
-            # The data.json file calls a number the numeric potion of the vote "number" while
-            # the database field is a string because it is prefixed by 's' or 'h'.
-            amend_num_str = "#{rc_hash['amendment']['type']}#{rc_hash['amendment']['number']}"
-            amendment = bill.amendments.where(:number => amend_num_str).first
-            if amendment
-              OCLogger.log "Linking roll call #{amend_num_str} on bill #{rc_hash['bill']['type']}#{rc_hash['bill']['number']} to amendment #{amend_num_str}"
-              amendment.roll_calls << roll_call
-            else
-              OCLogger.log "Roll call #{roll_call.number} references unrecognized amendment #{amend_num_str}."
-            end
-          end
+          # Rather than use the roll call's amendment info (which is problematic, see
+          # https://github.com/unitedstates/congress/issues/68 for details), we use the
+          # amendment's action info to link to roll calls.
         else
           OCLogger.log "Roll call #{roll_call.number} references unrecognized bill #{rc_hash['bill']['type']}#{rc_hash['bill']['number']}"
         end

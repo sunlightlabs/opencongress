@@ -132,7 +132,6 @@ module UnitedStates
           end
         end
 
-        import_amendments bill_hash
         import_bill_actions bill_hash
         assign_subjects bill_hash
       else
@@ -161,15 +160,6 @@ module UnitedStates
             action = bill.actions.new action_ident
           end
           action.save!
-        end
-      end
-    end
-
-    def import_amendments (bill_hash)
-      bill = Bill.where(bill_ident(bill_hash)).first
-      unless bill.nil?
-        bill_hash['amendments'].each do |amdt|
-          bill.amendments.find_or_create_by_number(amdt['number'])
         end
       end
     end
@@ -250,6 +240,11 @@ module UnitedStates
       amdt_hash['+updated_at'] = Time.parse(amdt_hash['updated_at'])
       amdt_hash['actions'].each do |action|
         action['+acted_at'] = Time.parse(action['acted_at'])
+        action['+where'] = case action['where']
+                           when 'h' then 'house'
+                           when 's' then 'senate'
+                           else action['where']
+                           end
       end
       amdt_hash
     end
@@ -258,27 +253,47 @@ module UnitedStates
       bill = Bill.where(bill_ident(amdt_hash['amends_bill'])).first
       if bill
         abbr_amdt_id = "#{amdt_hash['chamber']}#{amdt_hash['number']}"
-        amdt_ident = {
-          :number => abbr_amdt_id,
-          :bill_id => bill.id
-        }
-        amdt = Amendment.where(amdt_ident).first
+        amdt = bill.amendments.find_by_number(abbr_amdt_id)
         if amdt.nil?
           OCLogger.log "Creating record for amendment #{amdt_hash['amendment_id']}"
           amdt = Amendment.new
           amdt.number = abbr_amdt_id
+          amdt.bill_id = bill.id
         end
         amdt.status = amdt_hash['status']
         amdt.status_date = amdt_hash['+status_at'].to_i
         amdt.status_datetime = amdt_hash['+status_at']
         amdt.offered_date = amdt_hash['+introduced_at'].to_i
         amdt.offered_datetime = amdt_hash['+introduced_at']
-        amdt.bill_id = bill.id
         amdt.purpose = amdt_hash['purpose']
         amdt.updated = amdt_hash['+updated_at']
-        amdt.save!
+        amdt.save! if amdt.changed?
+
+        OCLogger.log "Linking amendment to roll calls"
+        link_amendment_to_roll_calls amdt, amdt_hash
       else
         OCLogger.log "Amendment #{amdt_hash['amendment_id']} references unrecognized bill #{amdt_hash['amends_bill']['bill_id']}"
+      end
+    end
+
+    def link_amendment_to_roll_calls (amdt, amdt_hash)
+      (amdt_hash['actions'] or []).each do |action_hash|
+        if action_hash['roll'] and action_hash['where']
+          # We don't need to map this to the legislative year because the
+          # RollCall.in_year scope is extracting the year from the timestamp
+          # rather than using the congressional session.
+          year = action_hash['+acted_at'].year
+          roll_call = RollCall.in_year(year).where(:number => action_hash['roll'],
+                                                   :where => action_hash['+where']).first
+          if roll_call
+            if roll_call.amendment.nil?
+              amdt.roll_calls << roll_call
+              OCLogger.log "Linking amendment #{amdt.id} to roll call #{roll_call.id}"
+            end
+          else
+            OCLogger.log "Amendment #{amdt.id} references unrecognized roll call in action #{action_hash.to_s}"
+          end
+        end
       end
     end
   end

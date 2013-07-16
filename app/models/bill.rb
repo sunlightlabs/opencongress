@@ -883,7 +883,7 @@ class Bill < ActiveRecord::Base
     end
 
     def find_rushed_bills(congress = Settings.default_congress, rushed_time = 259200, show_resolutions = false)
-      resolution_condition = show_resolutions ? "" : " AND (bills.bill_type = 'h' OR bills.bill_type = 's')"
+      resolution_condition = show_resolutions ? "" : " AND (bills.bill_type = 'hr' OR bills.bill_type = 's')"
 
       Bill.find_by_sql(["SELECT * FROM bills INNER JOIN
                          (SELECT actions.date AS intro_date, actions.bill_id AS intro_id
@@ -911,7 +911,7 @@ class Bill < ActiveRecord::Base
     def find_gpo_consideration_rushed_bills(congress = Settings.default_congress, rushed_time = 259200, show_resolutions = false)
       # rushed time not working correctly for some reason (adapter is changing...)
 
-      resolution_condition = show_resolutions ? "" : " AND (bills.bill_type = 'h' OR bills.bill_type = 's')"
+      resolution_condition = show_resolutions ? "" : " AND (bills.bill_type = 'hr' OR bills.bill_type = 's')"
 
       Bill.find_by_sql(["SELECT * FROM bills INNER JOIN
                          (SELECT gpo_billtext_timestamps.created_at AS gpo_date, gpo_billtext_timestamps.session AS gpo_session,
@@ -1175,7 +1175,7 @@ class Bill < ActiveRecord::Base
       if a.result == 'pass'
         status_hash['steps'] << { 'text' => "#{self.chamber.capitalize} Passed", 'result' => 'Passed',
             'class' => 'passed', 'date' => a.datetime, 'roll_id' => roll_id }
-         unless (self.bill_type == 'h' or self.bill_type == 's') # is resolution - is done
+         unless (self.bill_type == 'hr' or self.bill_type == 's') # is resolution - is done
            status_hash['steps'] << { 'text' => 'Resolution<br/>Passed', 'result' => 'Passed', 'class' => 'is_res', 'date' => a.datetime, 'roll_id' => roll_id }
          end
       else
@@ -1187,14 +1187,14 @@ class Bill < ActiveRecord::Base
     else
       status_hash['steps'] << { 'text' => "#{self.chamber.capitalize} Passes",
                                 'class' => 'pending', 'result' => 'Pending' }
-      unless (self.bill_type == 'h' or self.bill_type == 's') # is resolution pending
+      unless (self.bill_type == 'hr' or self.bill_type == 's') # is resolution pending
            status_hash['steps'] << { 'text' => 'Resolution Passed', 'class' => 'becomes_res', 'result' => 'Pending' }
       end
     end
 
     current_step += 1
 
-    if (self.bill_type == 'h' or self.bill_type == 's')
+    if (self.bill_type == 'hr' or self.bill_type == 's')
       if a = self.other_chamber_vote
         roll_id = a.roll_call ? a.roll_call.id : ""
         if a.result == 'pass'

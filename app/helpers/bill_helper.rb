@@ -268,4 +268,25 @@ module BillHelper
 	return out
 	end
 
+  def until_preposition (text)
+    sentence = text.gsub(/\n|\r/, ' ').split(/\.\s*/).first
+    prepositions = [ 'about', 'below', 'in', 'spite', 'of', 'regarding',
+                     'above', 'beneath', 'instead', 'of', 'since', 'according',
+                     'to', 'beside', 'into', 'through', 'across', 'between',
+                     'like', 'throughout', 'after', 'beyond', 'near', 'to',
+                     'against', 'but', 'of', 'toward', 'along', 'by', 'off',
+                     'under', 'amid', 'concerning', 'on', 'underneath',
+                     'among', 'down', 'on', 'account', 'of', 'until', 'around',
+                     'during', 'onto', 'up', 'at', 'except', 'out', 'upon',
+                     'atop', 'for', 'out', 'of', 'with', 'because', 'of',
+                     'from', 'outside', 'within', 'before', 'in', 'over',
+                     'without', 'behind', 'inside', 'past' ]
+    tokens = sentence.split(/(\w+(?:[.,']\w+)*|-|\S+)/).select{|t| t.length > 0}
+    stop_ix = tokens.to_enum.with_index.to_a.index{|t, ix| ix > 7 and prepositions.include?(t)}
+    if stop_ix
+      tokens.slice(0, stop_ix).join('')
+    else
+      sentence
+    end
+  end 
 end

@@ -74,9 +74,7 @@ namespace :update do
   task :photos => :environment do
     begin
       system "bash #{Rails.root}/bin/daily/govtrack-photo-rsync.sh #{Settings.data_path}"
-      unless (['production', 'staging'].include?(Rails.env))
-        system "ln -nfsv #{Settings.data_path}/govtrack/photos #{Rails.root}/public/images/photos"
-      end
+      system "ln -nfsv #{Settings.data_path}/govtrack/photos #{Rails.root}/public/images/photos"
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
         Emailer.rake_error(e, "Error updating photos!").deliver

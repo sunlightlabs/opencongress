@@ -1140,3 +1140,33 @@ padding: 3px 0;
   padding-top: 15px;
   clear: both;
 }
+
+span.industry-name, span.contributor-name {
+    display: inline-block;
+    width: 260px;
+}
+
+span.industry-contrib, span.employee-contrib, span.pac-contrib, span.total-contrib {
+    display: inline-block;
+    text-align: right;
+    width: 100px;
+}
+
+ol#industries {
+    width: 366px;
+}
+
+ol#contributors {
+    width: 566px;
+}
+
+li.industry, li.contributor {
+    margin: 5px 0;
+    padding: 3px;
+    border-width: 0;
+    border-bottom: 1px dotted black;
+}
+
+li.industry:first-child, li.contributor:first-child {
+    font-weight: bold;
+}

@@ -21,6 +21,8 @@
     <script>
       var $j = jQuery.noConflict();
     </script>
+    <%= javascript_include_tag 'jquery.buildr' %>
+    <%= javascript_include_tag 'jquery.formatCurrency-1.4.0.min' %>
     <%= javascript_include_tag 'jquery.jcarousel' if @carousel %>
     <%= javascript_include_tag 'jquery.form.min' %>
     <%= javascript_include_tag 'swfobject' if (@roll_call || @roll_calls) %>

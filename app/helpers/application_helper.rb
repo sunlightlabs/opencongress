@@ -839,6 +839,16 @@ EOT
     return false
   end
 
+  def current_election_cycle (today = Date.today)
+    to = today.year + (today.year % 2)
+    q2_date = Date.new(to, 1, 1)
+    if today > q2_date
+      to
+    else
+      to - 2
+    end
+  end
+
   def opensecrets_cycle_years
     "#{Settings.current_opensecrets_cycle.to_i - 1}-#{Settings.current_opensecrets_cycle}"
   end

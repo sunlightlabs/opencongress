@@ -1,7 +1,7 @@
 <ul>
   <li id="notebook_item_<%= listitem.id %>">
     <%= image_tag 'mypn-video.png', :alt => 'Video', :title => 'Video', :class => 'mypn-icon' %>
-    <%= link_to h(listitem.title), listitem.url %>
+    <%= link_to h(listitem.title), listitem.url, :rel => 'nofollow' %>
     <br />
     <% unless listitem.description.blank? %>
     <%= h listitem.description %><br />

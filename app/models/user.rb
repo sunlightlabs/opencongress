@@ -149,6 +149,8 @@ class User < ActiveRecord::Base
   scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subject.id" => subject.id) }
   scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committee.id" => committee.id) }
 
+  scope :mypn_spammers, includes(:political_notebook => [:notebook_items]).where("notebook_items.spam = ?", true).order("users.login ASC")
+
   class << self
     def highest_rated_commenters
       cs = CommentScore.calculate(:count, :score, :include => "comment", :group => "comments.user_id", :order => "count_score DESC").collect {|p| p[1] > 3 && p[0] != nil ? p[0] : nil}.compact

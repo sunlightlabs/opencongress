@@ -5,13 +5,13 @@
 	<% if link.is_internal? %>
 		<%= link_to_internal link %>
 	<% else %>
-		<%= link_to h(link.title), link.url%>
-	<% end %>		
+		<%= link_to h(link.title), link.url, :rel => "nofollow" %>
+	<% end %>
 	<br />
 	<% unless link.description.blank? %>
 		<div class="padding-left"><%= h link.description %></div>
 	<% end %>
 	<%= render :partial => 'political_notebooks/item_meta', :object => link %>
-	
+
 </li>
 </ul>

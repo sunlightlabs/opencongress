@@ -1,4 +1,8 @@
+require_dependency 'spammable'
+
 class NotebookItem < ActiveRecord::Base
+  include Spammable
+
   acts_as_taggable_on :tags
 #  alias tag_list= tag_with
 
@@ -10,6 +14,14 @@ class NotebookItem < ActiveRecord::Base
 
   validate :embed_doesnt_contain_scripts
 
+  rakismet_attrs({
+    :author => proc { political_notebook.user.login rescue nil },
+    :author_email => proc { political_notebook.user.email rescue nil },
+    :content => proc { "#{title}: #{description} - #{url || embed}" },
+    :user_ip => :ip_address,
+    :user_agent => :user_agent,
+    :referrer => :referrer
+  })
 
   # by default, returns zero; to be overridden by child classes
   def count_times_bookmarked
@@ -35,9 +47,9 @@ class NotebookItem < ActiveRecord::Base
     if embed
       errors.add(:embed, "can't contain script tags") if embed =~ /<script/i
       errors.add(:embed, "can't include onload scripts") if embed =~ /onload=/i
-      iframe_count = embed.match(/<iframe/i).length
-      src_count = embed.match(/<iframe[^>]*src=/i).length
-      valid_src_count = embed.match(/<iframe[^>]*src=("|')https?:\/\/[^>]+("|')/i).length
+      iframe_count = embed.match(/<iframe/i).length rescue 0
+      src_count = embed.match(/<iframe[^>]*src=/i).length rescue 0
+      valid_src_count = embed.match(/<iframe[^>]*src=("|')https?:\/\/[^>]+("|')/i).length rescue 0
       errors.add(:embed, "should reference only iframes with a valid url") if iframe_count > valid_src_count || src_count > valid_src_count
       errors.add(:embed, "can't include css behaviors") if embed =~ /<style.*behavior[\s]*:[\s]*('|")/im
     end

@@ -1,5 +1,7 @@
+require_dependency 'spammable'
+
 class Comment < ActiveRecord::Base
-  include Rakismet::Model
+  include Spammable
 
   belongs_to :user
   belongs_to :commentable, :polymorphic => true
@@ -19,6 +21,8 @@ class Comment < ActiveRecord::Base
 
   attr_accessible :comment, :name, :email, :homepage, :title
 
+  acts_as_nested_set :scope => :root
+
   rakismet_attrs({
     :author => :author_name,
     :author_url => :homepage,
@@ -28,8 +32,6 @@ class Comment < ActiveRecord::Base
     :user_agent => :user_agent,
     :referrer => :referrer
   })
-
-  acts_as_nested_set :scope => :root
 
   scope :uncensored, where("censored != ?", true)
   scope :users_only, uncensored.where("comments.user_id IS NOT NULL")
@@ -47,7 +49,29 @@ class Comment < ActiveRecord::Base
   validates_presence_of :comment, :message => " : You must enter a comment."
   validates_length_of :comment, :in => 1..1000, :too_short => " : Your comment is not verbose enough, write more.", :too_long => " : Your comment is too verbose, keep it under 1000 characters."
 
-  before_save :check_for_spam, :unless => :"persisted?"
+  def self.full_text_search(q, options = {})
+    congresses = options[:congresses].nil? ? [Settings.default_congress] : options[:congresses]
+
+    s_count = Comment.count(:all,
+                            :joins => "LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')",
+                            :conditions => ["(comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
+                                             (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill')", q, congresses, q])
+
+
+    # Note: This takes (current_page, per_page, total_entries)
+    # We need to do this so we can put LIMIT and OFFSET inside the subquery.
+    WillPaginate::Collection.create(options[:page], 12, s_count) do |pager|
+      # perfom the find.
+      # The subquery is here so we don't run ts_headline on all rows, which takes a long long time...
+      # See http://www.postgresql.org/docs/8.4/static/textsearch-controls.html
+      pager.replace Comment.find_by_sql(["SELECT
+          comments.*, ts_headline(comment, ?) as headline
+        FROM (SELECT * from comments LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')
+          WHERE ((comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
+                 (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill'))
+          ORDER BY comments.created_at DESC LIMIT ? OFFSET ?) AS comments", q, q, congresses, q, pager.per_page, pager.offset])
+    end
+  end
 
   # these methods are for spam detection
   def author_name
@@ -56,30 +80,6 @@ class Comment < ActiveRecord::Base
 
   def author_email
     user.nil? ? nil : user.email
-  end
-
-  def check_for_spam
-    self.spam = self.censored = spam?
-    nil  # returning false here will interrupt save
-  end
-  alias_method :is_spam?, :spam?
-
-  def censor!(as=nil)
-    if as == :spam
-      self.spam = self.censored = spam!
-    else
-      self.censored = true
-    end
-    save
-  end
-
-  def uncensor!(as=nil)
-    if as == :ham
-      self.spam = self.censored = ham!
-    else
-      self.censored = false
-    end
-    save
   end
 
   def score_count_sum
@@ -191,30 +191,6 @@ class Comment < ActiveRecord::Base
 
   def atom_id
     "tag:opencongress.org,#{created_at.strftime("%Y-%m-%d")}:/comment/#{id}"
-  end
-
-  def self.full_text_search(q, options = {})
-    congresses = options[:congresses].nil? ? [Settings.default_congress] : options[:congresses]
-
-    s_count = Comment.count(:all,
-                            :joins => "LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')",
-                            :conditions => ["(comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
-                                             (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill')", q, congresses, q])
-
-
-    # Note: This takes (current_page, per_page, total_entries)
-    # We need to do this so we can put LIMIT and OFFSET inside the subquery.
-    WillPaginate::Collection.create(options[:page], 12, s_count) do |pager|
-      # perfom the find.
-      # The subquery is here so we don't run ts_headline on all rows, which takes a long long time...
-      # See http://www.postgresql.org/docs/8.4/static/textsearch-controls.html
-      pager.replace Comment.find_by_sql(["SELECT
-          comments.*, ts_headline(comment, ?) as headline
-        FROM (SELECT * from comments LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')
-          WHERE ((comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
-                 (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill'))
-          ORDER BY comments.created_at DESC LIMIT ? OFFSET ?) AS comments", q, q, congresses, q, pager.per_page, pager.offset])
-    end
   end
 
   # this is simply the standard equality method in active record's base class.  the problem

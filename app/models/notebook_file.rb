@@ -20,7 +20,7 @@ class NotebookFile < NotebookItem
   validates_presence_of :title
 
   def can_render_thumbnail?
-    self.image?
+    self.image? rescue false
   end
 
   def filesytem_path

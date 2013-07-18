@@ -8,6 +8,7 @@ class BillController < ApplicationController
   before_filter :bill_profile_shared, :only => [:show, :comments, :money, :votes, :actions, :amendments, :text, :actions_votes, :videos, :topnews, :topblogs, :letters]
   before_filter :aavtabs, :only => [:actions, :amendments, :votes, :actions_votes]
   before_filter :get_range, :only => [:hot]
+  before_filter :login_required, :only => [:bill_vote, :hot_bill_vote]
   skip_before_filter :store_location, :only => [:bill_vote, :status_text, :user_stats_ajax, :atom, :atom_blogs, :atom_news, :atom_top20, :atom_top_commentary, :atom_topblogs, :atom_topnews]
 
   TITLE_MAX_LENGTH = 150
@@ -165,13 +166,11 @@ class BillController < ApplicationController
 
     @cache_key = "br-bill-#{page}-#{sort}-#{order}-#{logged_in? ? current_user.login : nil}-#{@range}-#{params[:q].blank? ? nil : Digest::SHA1.hexdigest(params[:q])}"
     unless read_fragment(@cache_key)
-      unless params[:q].blank?
-        @r_count = Bill.count_all_by_most_user_votes_for_range(@range, :search => prepare_tsearch_query(params[:q]), :order => sort + " " + order, :per_page => 20, :page => page)
-        @results = Bill.find_all_by_most_user_votes_for_range(@range, :search => prepare_tsearch_query(params[:q]), :order => sort + " " + order, :total_entries => @r_count).paginate(:per_page => 20, :page => page)
-      else
-        @r_count = Bill.count_all_by_most_user_votes_for_range(@range, :order => sort + " " + order, :per_page => 20, :page => page)
-        @results = Bill.find_all_by_most_user_votes_for_range(@range, :order => sort + " " + order, :total_entries => @r_count).paginate(:page => page, :per_page => 20)
-      end
+      search = params[:q].blank? ? nil : prepare_tsearch_query(params[:q])
+      @results = Bill.find_all_by_most_user_votes_for_range(@range,
+                                                            :search => search,
+                                                            :limit => 20,
+                                                            :order => sort + " " + order)
     end
 
     respond_to do |format|
@@ -181,40 +180,29 @@ class BillController < ApplicationController
   end
 
   def hot_bill_vote
-     @bill = Bill.find_by_ident(params[:bill])
-       @bv = current_user.bill_votes.find_by_bill_id(@bill.id)
-       unless @bv
-         @bv = current_user.bill_votes.create({:bill_id => @bill.id, :user_id  => current_user.id, :support => (params[:id] == "1" ? 1 : 0) }) unless @bv
-         update = {(params[:id] == "1" ? 'oppose' : 'support') => '+'}
-       else
-         if params[:id] == "1"
-            if @bv.support == true
-               @bv.destroy
-               update = {'oppose' => '-'}
-            else
-               @bv.support = true
-               @bv.save
-               update = {'oppose' => '+', 'support' => '-'}
-            end
-         else
-            if @bv.support == false
-               @bv.destroy
-               update = {'support' => '-'}
-            else
-               @bv.support = false
-               @bv.save
-               update = {'support' => '+', 'oppose' => '-'}
-            end
-         end
-       end
-       render :update do |page|
-         page.replace_html 'vote_results_' + @bill.id.to_s, :partial => "/bill/bill_votes"
+    return head :bad_request if not BillVote.is_valid_user_position(params[:id])
 
-           update.each_pair do |view, op|
-             page << "$('#{view}_#{@bill.id.to_s}').update(parseInt($('#{view}_#{@bill.id.to_s}').innerHTML)#{op}1)"
-             page.visual_effect :pulsate, "#{view}_#{@bill.id.to_s}"
-           end
-       end
+    new_position = params[:id].to_sym
+    @bill = Bill.find_by_ident(params[:bill])
+    prev_position = BillVote.current_user_position(@bill, current_user)
+
+    update = {}
+    if prev_position != new_position
+      @bv = BillVote.establish_user_position(@bill, current_user, new_position)
+      update[new_position] = '+'
+      if prev_position
+        update[prev_position] = '-'
+      end
+    end
+
+    render :update do |page|
+      page.replace_html 'vote_results_' + @bill.id.to_s, :partial => "/bill/bill_votes"
+
+      update.each_pair do |view, op|
+        page << "$('#{view}_#{@bill.id.to_s}').update(parseInt($('#{view}_#{@bill.id.to_s}').innerHTML)#{op}1)"
+        page.visual_effect :pulsate, "#{view}_#{@bill.id.to_s}"
+      end
+    end
   end
 
   def list_bill_type
@@ -688,46 +676,20 @@ class BillController < ApplicationController
   end
 
   def bill_vote
-    @bill = Bill.find_by_ident(params[:bill])
-    if logged_in?
-      @bv = current_user.bill_votes.find_by_bill_id(@bill.id)
-      unless @bv
-        @bv = current_user.bill_votes.create({:bill_id => @bill.id, :user_id  => current_user.id, :support => (params[:id] == "1" ? 1 : 0) }) unless @bv
-      else
-        if params[:id] == "1"
-           if @bv.support == true
-             @bv.destroy
-           else
-              @bv.support = true
-              @bv.save
-           end
-        else
-           if @bv.support == false
-              @bv.destroy
-           else
-              @bv.support = false
-              @bv.save
-           end
-        end
-      end
+    return head :bad_request if not BillVote.is_valid_user_position(params[:id])
 
-      render :update do |page|
-        page.replace_html 'vote_results_' + @bill.id.to_s, :partial => "bill_votes"
-        page.replace_html 'users_result', user_bill_result(@bill)
-        page.visual_effect :pulsate, 'users_result'
-        #page.replace_html 'support_' + @bill.id.to_s, @bill.bill_votes.count(:all, :conditions => "support = 0")
-        #page.replace_html 'oppose_' + @bill.id.to_s, @bill.bill_votes.count(:all, :conditions => "support = 1")
-        #page.replace_html 'vote_message_' + @bill.id.to_s, :partial => "voted"
-        #page.show 'vote_message_' + @bill.id.to_s
-        #page.visual_effect :highlight, (@bv.support == 0 ? 'support_' : 'oppose_') + @bill.id.to_s if @bv
-        #page.visual_effect :highlight, 'vote_message_' + @bill.id.to_s
-      end
-    else
-      render :update do |page|
-        page.replace_html 'vote_message_' + @bill.id.to_s, "You must <a href='/login'>login</a> to vote. No account? <a href='/register'>Register</a> now!"
-        page.show 'vote_message_' + @bill.id.to_s
-        page.visual_effect :highlight, 'vote_message_' + @bill.id.to_s
-      end
+    new_position = params[:id].to_sym
+    @bill = Bill.find_by_ident(params[:bill])
+    prev_position = BillVote.current_user_position(@bill, current_user)
+
+    if prev_position != new_position
+      @bv = BillVote.establish_user_position(@bill, current_user, new_position)
+    end
+
+    render :update do |page|
+      page.replace_html 'vote_results_' + @bill.id.to_s, :partial => "bill_votes"
+      page.replace_html 'users_result', user_bill_result(@bill)
+      page.visual_effect :pulsate, 'users_result'
     end
   end
 

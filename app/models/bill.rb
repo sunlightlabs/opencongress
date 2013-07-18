@@ -584,8 +584,7 @@ class Bill < ActiveRecord::Base
             #{search ? "AND bill_fulltext.fti_names @@ to_tsquery('english', ?)
             AND bills.id = bill_fulltext.bill_id" : ""}
             ORDER BY #{order}
-            LIMIT #{limit}
-            OFFSET #{offset}"
+            LIMIT #{limit}"
 
         query_params = [range.seconds.ago,range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, range.seconds.ago]
 

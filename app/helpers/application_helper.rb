@@ -466,7 +466,7 @@ EOT
     end
   end
 
-	def draw_inline_user_bill_vote(bill)
+  def draw_inline_user_bill_vote(bill)
     bill_vote_images = String.new
     bill_vote_images = inline_determine_support(bill)
     if logged_in?
@@ -482,76 +482,75 @@ EOT
     return bill_vote_images.html_safe
   end
 
-	def inline_determine_support(bill, support = 10)
-		yah = String.new
-		nah = String.new
-		if support == 0
-			yah = "bill_support"
-			nah = "bill_nosupport"
-		elsif support == 1
-			nah = "bill_support"
-			yah = "bill_nosupport"
-		else
-			yah = "bill_nosupport"
-			nah = yah
-		end
-		logger.info params[:controller]
-		if (params[:controller] == "bill" and params[:action] == 'hot') or
-		   (params[:controller] == "bill" and params[:action] == 'hot_bill_vote')
-			if logged_in?
-			"" +
-			link_to_remote("Aye",
-			{ :url => {:controller => 'bill', :action => 'hot_bill_vote', :bill => bill.ident, :id => 0}},
-			:class => "aye #{yah}") +
-			"" +
+  def inline_determine_support(bill, support = 10)
+    yah = String.new
+    nah = String.new
+    if support == 0
+      yah = "bill_support"
+      nah = "bill_nosupport"
+    elsif support == 1
+      nah = "bill_support"
+      yah = "bill_nosupport"
+    else
+      yah = "bill_nosupport"
+      nah = yah
+    end
+    if (params[:controller] == "bill" and params[:action] == 'hot') or
+      (params[:controller] == "bill" and params[:action] == 'hot_bill_vote')
+      if logged_in?
+        "" +
+          link_to_remote("Aye",
+                         { :url => {:controller => 'bill', :action => 'hot_bill_vote', :bill => bill.ident, :id => :support}},
+                         :class => "aye #{yah}") +
+          "" +
 
-			link_to_remote("Nay",
-			{:url => {:controller => 'bill', :action => 'hot_bill_vote', :bill => bill.ident, :id => 1}},
-			:class => "nay #{nah}") +
-			""
+          link_to_remote("Nay",
+                         {:url => {:controller => 'bill', :action => 'hot_bill_vote', :bill => bill.ident, :id => :oppose}},
+                         :class => "nay #{nah}") +
+          ""
       else
-        link_to("Aye", login_url(:modal => true, :login_action => 0),
-  			:class => "modal_fire aye #{yah}") +
-  			"" +
+        link_to("Aye", login_url(:modal => true, :login_action => {:action => :support_bill, :bill => bill.ident}),
+                :class => "modal_fire aye #{yah}") +
+        "" +
 
-        link_to("Nay", login_url(:modal => true, :login_action => 1),
-  			:class => "modal_fire nay #{nah}") +
-  			""
-       end
-		else
-		  if logged_in?
+        link_to("Nay", login_url(:modal => true, :login_action => {:action => :oppose_bill, :bill => bill.ident}),
+                :class => "modal_fire nay #{nah}") +
+        ""
+      end
+    else
+      if logged_in?
         "<div class='voting_buttons'>" +
           link_to_remote(image_tag('yes.png') + "<span>I Support this Bill</span>".html_safe,
-  			      {:url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => 0}},
-  			      :class => "yes #{yah}") +
-        "
+                         {:url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :support}},
+                         :class => "yes #{yah}") +
+          "
 
         " +
           link_to_remote(image_tag('no.png') + "<span>I Oppose this Bill</span>".html_safe,
-  			      {:url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => 1}},
-  			      :class => "no #{nah}") +
-        %Q{
+                         {:url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :oppose}},
+                         :class => "no #{nah}") +
+          %Q{
         </div>
           <!-- <a href="" class="more learn_trigger"><span>I Want to Learn More</span></a> -->
           <a href="" class="more learn_trigger"><span></span></a>
-        }
+                         }
       else
         '<div class="voting_buttons">' +
           link_to(image_tag('yes.png') + "<span>I Support this Bill</span>".html_safe,
-              login_url(:modal => true, :login_action => 0), :class => "vote_trigger yes") +
-        "
+                  login_url(:modal => true, :login_action => {:action => :support_bill, :bill => bill.ident}), :class => "vote_trigger yes") +
+          "
 
         " +
           link_to(image_tag('no.png') + "<span>I Oppose this Bill</span>".html_safe,
-              login_url(:modal => true, :login_action => 1), :class => "vote_trigger no") +
-        "
+                  login_url(:modal => true, :login_action => {:action => :oppose_bill, :bill => bill.ident}), :class => "vote_trigger no") +
+          "
         </div>
           <!-- <a href=\"\" class=\"more learn_trigger\"><span>I Want to Learn More</span></a> -->
           <a href=\"\" class=\"more learn_trigger\"><span></span></a>
         "
       end
-		end
-	end
+    end
+  end
 
   def user_bill_result(bill)
     color = percent_to_color(bill.users_percentage_at_position('support'))

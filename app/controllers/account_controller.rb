@@ -36,7 +36,12 @@ class AccountController < ApplicationController
 
   def login
     if params[:login_action]
-      session[:login_action] = {:url => session[:return_to], :action_result => params[:login_action]}
+      if params[:login_action].is_a?(Hash)
+        session[:login_action] = params[:login_action].clone
+        session[:login_action][:url] = session[:return_to]
+      else
+        session[:login_action] = {:url => session[:return_to], :action_result => params[:login_action]}
+      end
     end
 
     # Forum Integration
@@ -543,65 +548,61 @@ class AccountController < ApplicationController
       home_url
     end
     def process_login_actions
-      #debugger
-      if session[:action] && session[:action][:url]
-        case session[:action][:url]
-        when /\/bill\/([0-9]{3}-\w{2,})\//
-          ident = $1
-          if ident
-            bill = Bill.find_by_ident(ident)
+      if session[:login_action] && session[:login_action][:url]
+        if ['support_bill', 'oppose_bill'].include?(session[:login_action][:action])
+          if session[:login_action][:bill]
+            bill = Bill.find_by_ident(session[:login_action][:bill])
             if bill
-              if session[:login_action][:action_result].to_i == 0
-                b = BillVote.find_or_initialize_by_user_id_and_bill_id(current_user.id, bill.id)
-                b.support = 0
-                b.save
-              elsif session[:login_action][:action_result].to_i == 1
-                b = BillVote.find_or_initialize_by_user_id_and_bill_id(current_user.id, bill.id)
-                b.support = 1
-                b.save
+              position = case session[:login_action][:action]
+                         when 'support_bill' then :support
+                         when 'oppose_bill' then :oppose
+                         else nil
+                         end
+              if position
+                BillVote.establish_user_position(bill, current_user, position)
               end
             end
           end
         end
-      end
 
-      if session[:login_action] and session[:login_action][:action_result]
-        if session[:login_action][:action_result] == 'track'
-          case session[:login_action][:url]
-          when /\/bill\/([0-9]{3}-\w{2,})\//
-            ident = $1
-            if ident
-              bill = Bill.find_by_ident(ident)
-              if bill
-                bookmark = Bookmark.new(:user_id => current_user.id)
-                bill.bookmarks << bookmark
+        if session[:login_action] and session[:login_action][:action_result]
+          if session[:login_action][:action_result] == 'track'
+            case session[:login_action][:url]
+            when /\/bill\/([0-9]{3}-\w{2,})\//
+              ident = $1
+              if ident
+                bill = Bill.find_by_ident(ident)
+                if bill
+                  bookmark = Bookmark.new(:user_id => current_user.id)
+                  bill.bookmarks << bookmark
+                end
+              end
+            when /\/([^\/]+)\/[^\/]+\/(\d+)/
+              obj = $1
+              id = $2
+              if id && obj
+                object = Object.const_get(obj)
+                this_object = object.find_by_id(id)
+                if this_object
+                  bookmark = Bookmark.new(:user_id => current_user.id)
+                  this_object.bookmarks << bookmark
+                end
               end
             end
-          when /\/([^\/]+)\/[^\/]+\/(\d+)/
-            obj = $1
-            id = $2
-            if id && obj
-              object = Object.const_get(obj)
-              this_object = object.find_by_id(id)
-              if this_object
-                bookmark = Bookmark.new(:user_id => current_user.id)
-                this_object.bookmarks << bookmark
-              end
+          elsif session[:login_action][:action_result] == 'contact_congress'
+            session[:formageddon_unsent_threads].each do |t|
+              thread = Formageddon::FormageddonThread.find(t)
+
+              thread.formageddon_sender = current_user
+
+              # force the email on the letters to the user email
+              thread.sender_email = current_user.email
+
+              thread.save
             end
+
+            session[:return_to] = "/contact_congress_letters/delayed_send"
           end
-        elsif session[:login_action][:action_result] == 'contact_congress'
-          session[:formageddon_unsent_threads].each do |t|
-            thread = Formageddon::FormageddonThread.find(t)
-
-            thread.formageddon_sender = current_user
-
-            # force the email on the letters to the user email
-            thread.sender_email = current_user.email
-
-            thread.save
-          end
-
-          session[:return_to] = "/contact_congress_letters/delayed_send"
         end
       end
     end

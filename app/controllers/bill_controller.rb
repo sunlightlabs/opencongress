@@ -176,13 +176,7 @@ class BillController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.xml {
-        render :xml => @results.to_xml(:methods => [:title_full_common, :status, :ident],
-                                       :except => [:rolls, :hot_bill_category_id, :summary,
-                                                   :current_support_pb, :support_count_1, :rolls, :hot_bill_category_id,
-                                                   :support_count_2, :vote_count_2])
-      }
-
+      format.xml { head :gone }
     end
   end
 

@@ -2,6 +2,11 @@
 class Subject < ActiveRecord::Base
   include ViewableObject
 
+  validates_uniqueness_of :term, :case_sensitive => false
+
+  has_many :child_subjects, :class_name => 'Subject', :foreign_key => :parent_id
+  belongs_to :parent, :class_name => 'Subject'
+
   has_many :bill_subjects
   has_many :bills, :through => :bill_subjects, :order => "bills.introduced DESC"
 
@@ -24,8 +29,22 @@ class Subject < ActiveRecord::Base
   acts_as_bookmarkable
 
   scope :active, includes(:bills).where("bills.session" => Bill.available_sessions.last)
+  scope :with_major_bills, includes(:bills).where(:bills => { :is_major => true })
+  scope :top_level, lambda { where(:parent_id => Subject.root_category.id) }
+
+  def self.root_category
+    find_by_term("\u22a4")
+  end
+
+  def major_bills
+    bills.where(:is_major => true)
+  end
 
   @@DISPLAY_OBJECT_NAME = 'Issue'
+
+  def is_child_of (other)
+    parent == other
+  end
 
   def display_object_name
     @@DISPLAY_OBJECT_NAME
@@ -46,6 +65,10 @@ class Subject < ActiveRecord::Base
 
   def title_for_share
     term
+  end
+
+  def self.find_by_term_icase (term)
+    first(:conditions => ['lower(term) = ?', term.downcase])
   end
 
   # TODO: Take this for a ride on the refactor tractor
@@ -351,9 +374,21 @@ class Subject < ActiveRecord::Base
     #actions.collect { |a| a.bill }
   end
 
-  # TODO
-  def count_bills
-    self.bill_count = id ? BillSubject.count_by_sql("SELECT COUNT(*) FROM bill_subjects INNER JOIN bills ON bills.id=bill_subjects.bill_id WHERE bill_subjects.subject_id=#{id} AND bills.session=#{Settings.default_congress}") : 0
+  def count_bills (options = Hash.new)
+    congress = options.fetch(:congress, Settings.default_congress)
+    self.bill_count = id ? bills.where(:session => congress).count : 0
+  end
+
+  def self.update_bill_counts (options = Hash.new)
+    congress = options.fetch(:congress, Settings.default_congress)
+    cnt = 0
+    Subject.transaction {
+      Subject.all.each do |subj|
+        subj.save!
+        cnt = cnt + 1
+      end
+    }
+    cnt
   end
 
   def summary

@@ -76,6 +76,7 @@ class Bill < ActiveRecord::Base
   attr_accessor :wiki_summary_holder
 
   scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
+  scope :major, where(:is_major => true)
 
   @@DISPLAY_OBJECT_NAME = 'Bill'
 
@@ -346,7 +347,6 @@ class Bill < ActiveRecord::Base
         :facets => {:fields => [:my_bills_supported, :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens, :my_bills_opposed],
         :browse => ["my_bills_supported:#{self.id}"],
         :limit => 6, :zeros => false, :sort =>  true}, :limit => 1)
-        logger.debug users.to_yaml
     rescue
       return [0, {}] unless Rails.env == 'production'
       raise
@@ -365,7 +365,6 @@ class Bill < ActiveRecord::Base
       users = User.find_by_solr('placeholder:placeholder', :facets => {:fields => [:my_bills_supported, :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens, :my_bills_opposed],
             :browse => ["my_bills_opposed:#{self.id}"],
             :limit => 6, :zeros => false, :sort =>  true}, :limit => 1)
-            logger.debug users.to_yaml
     rescue
       return [0, {}] unless Rails.env == 'production'
       raise
@@ -506,11 +505,10 @@ class Bill < ActiveRecord::Base
     end
 
     def find_all_by_most_user_votes_for_range(range, options)
-      range = 2.years.to_i if range.nil?
+      range = 30.days.to_i if range.nil?
       possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
                          "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
                          "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
-      logger.debug options.to_yaml
       order = options[:order] ||= "vote_count_1 desc"
       search = options[:search]
       if possible_orders.include?(order)
@@ -604,7 +602,6 @@ class Bill < ActiveRecord::Base
       possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
                          "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
                          "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
-      logger.debug options.to_yaml
       order = options[:order] ||= "vote_count_1 desc"
       search = options[:search]
       if possible_orders.include?(order)
@@ -733,13 +730,6 @@ class Bill < ActiveRecord::Base
         end
       end
       return nil
-    end
-
-    def find_hot_bills(order = 'pvs_categories.name', options = {})
-      # not used right now.  more efficient to loop through categories
-      # probably just need to add an index to hot_bill_category_id
-      Bill.find(:all, :conditions => ["bills.session = ? AND bills.hot_bill_category_id IS NOT NULL", Settings.default_congress],
-                :include => :hot_bill_category, :order => order, :limit => options[:limit])
     end
 
     def top20_viewed

@@ -159,7 +159,7 @@ class ApiController < ApplicationController
   end
 
   def hot_bills
-    @bills = Bill.find_hot_bills
+    @bills = Bill.major
     do_render(@bills)
   end
   

@@ -717,15 +717,13 @@ EOT
   end
 
   def bill_category(bill)
-    klass = ''
-    klass += bill.status_class
-    unless bill.hot_bill_category.nil?
-      klass += ' hot'
-    end
+    klasses = []
+    klasses.push(bill.status_class)
+
     if Time.at(bill.introduced) > 30.days.ago
-      klass += ' new'
+      klasses.push('new')
     end
-    return klass
+    return klasses.join(' ')
   end
 
   def meta_description_tag

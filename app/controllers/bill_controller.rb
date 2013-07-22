@@ -118,13 +118,16 @@ class BillController < ApplicationController
   end
 
   def major
-    @page_title = "Hot Bills"
+    @page_title = "Major Bills"
     @sort = 'major'
-    @title_desc = SiteText.find_title_desc('bill_hot')
+    @title_desc = SiteText.find_title_desc('bill_major')
     @types = 'all'
     @atom = {'link' => "/bill/major.rss", 'title' => "Major Bills"}
+
+    @root_category = Subject.root_category
     @congress = params[:congress].blank? ? Settings.default_congress : params[:congress]
-    @hot_bill_categories = PvsCategory.includes(:hot_bills).where(["bills.session = ?", @congress]).order("pvs_categories.name")
+    @major_bills = Bill.major.includes(:subjects).where(:session => @congress)
+    @categories = @major_bills.flat_map{|b| b.subjects.select{|s| s.is_child_of(@root_category)} }.uniq
 
     respond_to do |format|
       format.html {}
@@ -707,7 +710,6 @@ private
       @types_from_params = Bill.all_types_ordered
       @types = "all"
     end
-    @carousel = [Bill.find_hot_bills('bills.page_views_count desc',{:limit => 12})]
   end
 
   def bill_profile_shared

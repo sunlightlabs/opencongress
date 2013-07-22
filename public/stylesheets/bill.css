@@ -2474,16 +2474,25 @@ font-size: 11px;
   margin-top: 20px;
 }
 
+form#filter-major-bills {
+    display: inline-block;
+    position: relative;
+    top: -20px;
+}
 
+hr {
+    margin: -10px 0 15px 0;
+}
 
+ul.bill-category-list {
+    color: #444;
+    display: block;
+    float: right;
+}
 
-
-
-
-
-
-
-
-
-       
+ul.bill-category-list li.bill-category {
+    display: inline-block;
+    margin: 5px 0 0 3px;
+    font-weight: bold;
+}
 

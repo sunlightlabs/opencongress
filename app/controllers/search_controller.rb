@@ -140,7 +140,7 @@ class SearchController < ApplicationController
     names = Person.find(:all, :conditions => "title='Rep.' OR title='Sen.'").collect{ |p| [p.popular_name, p.name, p] }
 
     bill_titles = []
-    bills = Bill.find_hot_bills
+    bills = Bill.major
     bills.each do |bill|
       bill_titles << [ bill.title_full_common, bill.title_full_common, bill ]
     end

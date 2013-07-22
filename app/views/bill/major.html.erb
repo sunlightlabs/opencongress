@@ -1,6 +1,78 @@
 <% @content_for_sortby = render :partial => 'sort_bills', :locals => { :sort => 'hot'} %>
 
+<script type="text/javascript">
+  jQuery(document).ready(function(){
+
+    var show_all_categories = function () {
+      jQuery('ul.bills_list').find('li').show();
+    };
+    var show_category = function (category) {
+        var category_sel = ".category_" + category.toString();
+        jQuery('ul.bills_list').children('li').not(category_sel).hide();
+        jQuery('ul.bills_list').children('li' + category_sel).show();
+    };
+    jQuery('#filter-major-bills select#categories').change(function(event){
+      var category = jQuery(this).val();
+      if ((category == null) || (category == "")) {
+        show_all_categories();
+      } else {
+        show_category(category);
+      }
+    });
+
+  });
+</script>
 
 <div id="the-bills">
-  <%= render :partial => 'hot_bills', :locals => { :hot_bill_categories =>  @hot_bill_categories } %>
+  <form id="filter-major-bills">
+    <label for="categories">Filter by category:</label>
+    <%= select_tag "categories", options_for_select([['Show all categories', nil]].concat(@categories.map{ |c| [c.term, c.id] }), :selected => 'Show all categories') %>
+  </form>
+  <div class="cf"></div>
+  <hr>
+  <div class="cf"></div>
+
+  <ul class="bills_list"> 
+    <% @major_bills.each do |b| %>
+      <li class="<%= bill_category(b) %> <%= b.subjects.select{|c| (c.parent_id == @root_category.id)}.map{|c| "category_#{c.id}"}.join(' ') %>">
+        <a class="icon_link" href="<%= bill_path(b) %>">
+          <div class="title">
+            <% unless b.title_popular_only.blank? %>
+              <span class="a"><%= "#{b.typenumber} - #{truncate(b.title_popular_only, :length => 103)}" %></span>
+            <% else %>
+              <span class="a"><%= b.typenumber %></span>
+            <% end %>
+
+            <% if b.plain_language_summary %>
+              <%= b.plain_language_summary.gsub(/<\/?[^>]*>/, "") %>
+            <% else %>
+
+              <% unless b.title_official.blank? %>
+                <p><%= truncate(b.title_official, :length => 145) %></p>
+              <% end %>
+            <% end %>
+          </div>
+
+          <span class="status">
+            <span><%= temp_url_strip(b.status) %></span>
+            <span class="date"><%= b.last_action.formatted_date if b.last_action %></span>
+            <% unless b.session == Settings.default_congress %>
+              <span>(<%= b.session.ordinalize %> congress)</span>
+            <% end %>
+          </span>
+
+          <ul class="bill-category-list">
+            <% b.subjects.each_with_index do |c, idx| %>
+              <% if c.parent_id == @root_category.id %>
+                <%= (idx > 0) ? ', ' : '' %>
+                <li class="bill-category">
+                  <%= c.term %>
+                </li>
+              <% end %>
+            <% end %>
+          </ul>
+        </a>
+      </li>
+    <% end %>
+  </ul>
 </div>

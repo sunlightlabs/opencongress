@@ -72,12 +72,7 @@
   	<form action="/admin/hot_bills/addbill">
   		<b>Select category for this bill's "hot"-ness:</b><br />
   		<%= hidden_field "bill", "id" %>
-  		<% PvsCategory.find(:all, :order => 'name').each do |c| %>
-  		  <%= radio_button "bill", "hot_bill_category_id", c.id %> <%= c.name %><br />
-  		<% end %>
-  		<%= radio_button "bill", "hot_bill_category_id", "" %> Remove (not "Hot")<br />
-  		<%= radio_button "bill", "hot_bill_category_id", "new" %> New category:
-  		<%= text_field "hot_bill_category", "name" %><br />
+        <div style="margin: 5px;">Is Major: <%= check_box "bill", "is_major" %></div>
   		Summary:<br>
   		<%= text_area "bill", "plain_language_summary", :rows => 4, :cols => 50 %><br />
   		<%= submit_tag %>

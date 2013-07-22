@@ -27,8 +27,9 @@ class Person < ActiveRecord::Base
   scope :independent, :conditions => ["party != 'Republican' AND party != 'Democrat'"]
   scope :in_state, lambda { |state| {:conditions => {:state => state.upcase}}}
 
-  scope :sen, :joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='sen' AND roles.enddate > ?", Date.today]
-  scope :rep, :joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='rep' AND roles.enddate > ?", Date.today]
+  scope :sen,        lambda { {:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='sen' AND roles.enddate > ?", Date.today]} }
+  scope :rep,        lambda { {:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='rep' AND roles.enddate > ?", Date.today]} }
+  scope :legislator, lambda { {:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND (roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]} }
 
   scope :on_date, proc { |date|
     { :conditions => ['roles.startdate <= ? and roles.enddate >= ?', date.to_s, date.to_s],
@@ -36,9 +37,6 @@ class Person < ActiveRecord::Base
       :select => 'people.*, roles.role_type'
     }
   }
-
-  scope :legislator, :joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND (roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]
-
 
   has_many :news, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC', :conditions => proc { "commentaries.is_ok = 't' AND commentaries.is_news='t'" }
   has_many :blogs, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC', :conditions => proc { "commentaries.is_ok = 't' AND commentaries.is_news='f'" }

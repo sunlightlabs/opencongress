@@ -18,7 +18,7 @@ class ContactCongressLettersController < ApplicationController
 
       if @sens.empty? && @reps.empty?
         flash[:notice] = "In order to contact your representatives in Congress, you must configure your account.  Please enter your zipcode and address in the form below."
-        redirect_to user_profile
+        redirect_to edit_user_profile_path(:login => current_user.login)
       end
     else
       @sens = @reps = []

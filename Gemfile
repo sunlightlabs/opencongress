@@ -97,6 +97,10 @@ gem 'simple_form'
 gem 'mechanize'
 gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'
 gem 'postmark-rails'
+# Faxing
+gem 'phaxio'
+# apt-get or brew install wkhtmltopdf first!
+gem 'pdfkit'
 
 group :deployment do
   gem 'capistrano'

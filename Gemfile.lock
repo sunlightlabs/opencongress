@@ -279,7 +279,10 @@ GEM
       activesupport (>= 3.0.0)
       cocaine (~> 0.5.0)
       mime-types
+    pdfkit (0.5.4)
     pg (0.15.1)
+    phaxio (0.4.0)
+      httmultiparty (~> 0.3.8)
     poltergeist (1.3.0)
       capybara (~> 2.1.0)
       faye-websocket (>= 0.4.4, < 0.5.0)
@@ -466,7 +469,9 @@ DEPENDENCIES
   oauth
   okkez-open_id_authentication
   paperclip
+  pdfkit
   pg
+  phaxio
   poltergeist
   possessive
   postmark-rails

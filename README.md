@@ -27,12 +27,12 @@ currently running postgres 9.1 in production.
 
 For Ubuntu:
 
-    sudo apt-get install postgresql postgresql-client postgresql-contrib libpq-dev ruby1.8 ruby1.8 dev rubygems libopenssl-ruby imagemagick libmagick9-dev gcj-4.4-jre
+    sudo apt-get install postgresql postgresql-client postgresql-contrib libpq-dev ruby1.8 ruby1.8 dev rubygems libopenssl-ruby imagemagick libmagick9-dev gcj-4.4-jre wkhtmltopdf
 
 For Mac OS X, start by installing [Homebrew](http://mxcl.github.io/homebrew/),
 then run:
 
-    brew install postgresql postgresql-server ImageMagick md5sha1sum wget
+    brew install postgresql postgresql-server ImageMagick md5sha1sum wget wkhtmltopdf
  
 Follow the instructions after the packages install for initializing your database
 

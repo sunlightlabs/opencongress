@@ -14,6 +14,8 @@ OpenCongress::Application.configure do
   config.action_mailer.perform_deliveries = false
   config.action_mailer.delivery_method = :postmark
 
+  config.faxable.deliver_faxes = false
+
   # Enable threaded mode
   # config.threadsafe!
 

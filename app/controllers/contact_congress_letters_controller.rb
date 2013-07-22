@@ -178,8 +178,7 @@ class ContactCongressLettersController < ApplicationController
 
     if @contact_congress_letter.nil?
       # something weird happened
-      redirect_to '/'
-      return
+      render_404 and return
     else
       if @contact_congress_letter.user.nil?
         if current_user == :false

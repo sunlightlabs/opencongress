@@ -23,7 +23,8 @@ defaults: &defaults
   formageddon_password: xxx
   formageddon_get_replies_key: xxx
   bing: xxx
-  defensio: xxx
+  phaxio_key: xxx
+  phaxio_secret: xxx
 
 development:
   <<: *defaults

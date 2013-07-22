@@ -60,7 +60,7 @@ class Formageddon::FormageddonLetter
     else
       send_as_fax(recipient.fax)
     end
-    self.status = "SENT AS FAX"
+    self.status = "SENT_AS_FAX"
     self.status += ": Error was, #{options[:error_msg]}" if options[:error_msg].present?
     self.save!
     return @fax

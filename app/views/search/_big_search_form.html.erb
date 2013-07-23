@@ -1,11 +1,11 @@
  <% show_form ||= false %>
- 	
+
  	<div class="search_info">
- 	
+
  	<h4>Advanced Search Options</h4>
- 	
+
  	<p>Use the options to the right to narrow down your search results.</p>
- 	
+
  	</div>
 
  	<% if show_form %>
@@ -19,17 +19,17 @@
         </label>
      	</p>
   <% end %>
- 	
+
     <div id="sessions">
       <p>Sessions:</p>
       <% Settings.available_congresses.each do |c| %>
-        <%= check_box_tag "search_congress[#{c}]", "#{c}", c == Settings.default_congress ? true : false %> <%= c.ordinalize %> Congress<br />
+        <label><%= check_box_tag "search_congress[#{c}]", "#{c}", c == Settings.default_congress ? true : false %> <%= c.ordinalize %> Congress</label><br />
       <% end %>
     </div>
-		
+
   	<div id="search_in">
   	  <p>Search in:</p>
-	  
+
   	  <input checked="checked" id="search_bills" name="search_bills" type="checkbox" value="1" /> <label for="search_bills">Bills</label><br />
   	  <input checked="checked" id="search_people" name="search_people" type="checkbox" value="1" /> <label for="search_senators">Congresspeople</label><br />
   	  <input checked="checked" id="search_committees" name="search_committees" type="checkbox" value="1" /><label for="search_committees"> Committees</label><br />

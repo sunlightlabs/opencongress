@@ -413,15 +413,12 @@ margin-bottom: 10px;
 #sessions input,
 #search_in input{
 margin: 5px 10px !important;
-float: left;
-clear: both;
 }
 
 
 #sessions label,
 #search_in label{
 margin: 4px 0 0;
-float: left;
 }
 
 

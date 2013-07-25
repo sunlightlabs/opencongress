@@ -70,17 +70,17 @@
 <% end %>
 
 
-<% if @hot_bills.any? %>
-  <h3>Hot Bills</h3>
-  <%= render :partial => "bill/related_bills_list", :locals => {:related_bills_list => @hot_bills, :subject => @subject } -%>
-  <a href="/bill/hot" class="silver button small floatleft clearnone margin-right margin-bottom">
-    <span>See Hot Bills in All Issue Areas</span>
+<% if @major_bills.any? %>
+  <h3>Major Bills</h3>
+  <%= render :partial => "bill/related_bills_list", :locals => {:related_bills_list => @major_bills, :subject => @subject } -%>
+  <a href="/bill/major" class="silver button small floatleft clearnone margin-right margin-bottom">
+    <span>See Major Bills in All Issue Areas</span>
   </a>
   <div class="clear">&nbsp;</div>
 <% end %>
 
 
-<% if @hot_bills.any? %>
+<% if @major_bills.any? %>
   <h3>Key Votes</h3>
   <%= render :partial => 'roll_call/roll_calls_list', :locals => {:rolls => @key_votes}%>
   <a href="/roll_call/all?sort=keyvotes" class="silver button small floatleft clearnone margin-right margin-bottom">

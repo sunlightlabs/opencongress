@@ -22,5 +22,20 @@ module GroupsHelper
   def show_search?
     @state.nil?
   end
+
+  def grouped_subject_options (selected, prompt)
+    # TODO: This will need to change with Rails 4.0
+    groups = {}
+    root_subject_id = Subject.root_category.id
+    Subject.where('parent_id IS NOT NULL').each do |sub|
+      if sub.parent_id == root_subject_id
+        groups[sub.term] = [[sub.term, sub.id]]
+      else
+        (groups[sub.parent.term] ||= []).push([sub.term, sub.id])
+      end
+    end
+
+    grouped_options_for_select(groups.to_a, selected, prompt)
+  end
 end
 

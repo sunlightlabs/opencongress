@@ -94,9 +94,9 @@ class IssueController < ApplicationController
 
 
     @latest_bills = @subject.latest_bills(3, 1)
-    @hot_bills = @subject.pvs_categories.collect{|c| c.hot_bills.where(["bills.session=?", Settings.default_congress]) }.flatten
+    @major_bills = @subject.major_bills.where(:session => Settings.default_congress)
     @key_votes = @subject.pvs_categories.collect{|c| c.key_votes }.flatten
-    @groups = @subject.pvs_categories.collect{|c| c.group }.paginate(:page => 1)
+    @groups = @subject.groups.all
     @passed_bills = @subject.passed_bills(3, 1, Settings.available_congresses)
 
     # the following lines could be a little more, eh, efficient

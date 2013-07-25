@@ -11,6 +11,10 @@ class PvsCategory < ActiveRecord::Base
 
   has_one :group
 
+  def self.find_by_name_icase (name)
+    first(:conditions => ['lower(name) = ?', name.downcase])
+  end
+
   def key_votes(congress = Settings.default_congress)
     RollCall.includes(:bill, :amendment).where(
             ['roll_calls.date > ? AND 

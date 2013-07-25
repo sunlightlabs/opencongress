@@ -35,7 +35,7 @@
         
     .grid_7.box.rounded.center.issue-bg
       %h3 Select Issue Area
-      = select_tag 'issue', options_from_collection_for_select(PvsCategory.order('name').all, :id, :name), :include_blank => true, :id => 'group_issue'
+      = select_tag :issue, grouped_subject_options(nil, ''), :id => "group_issue"
     
 
 

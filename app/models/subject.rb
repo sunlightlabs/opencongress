@@ -17,8 +17,8 @@ class Subject < ActiveRecord::Base
   has_many :comments, :as => :commentable
   has_many :talking_points, :as => :talking_pointable
 
+  has_many :groups
   has_one :issue_stats
-
   has_one :wiki_link
 
   has_many :pvs_category_mappings, :as => :pvs_category_mappable

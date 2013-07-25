@@ -14,8 +14,8 @@
     = f.text_field :website, :class => 'field'
 
   %p
-    = f.label :pvs_category_id, 'Issue Area of Focus'
-    = f.select :pvs_category_id, options_for_select(PvsCategory.order('name').all.map { |c| [c.name, c.id] }, @group.pvs_category_id), {:include_blank => true}
+    = f.label :subject_id, 'Issue Area of Focus'
+    = f.select :subject_id, grouped_subject_options(@group.subject_id, 'Select an issue')
     
   %p
     = f.label :join_type, "Who can join?"

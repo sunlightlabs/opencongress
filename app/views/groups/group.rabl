@@ -1,5 +1,5 @@
 
-attributes :name, :id, :to_param, :created_at, :updated_at, :pvs_category_id, :district_id, :description, :state_id, :invite_type
+attributes :name, :id, :to_param, :created_at, :updated_at, :subject_id, :district_id, :description, :state_id, :invite_type
 
 code(:thumbnail_path) { |g| g.group_image? ? g.group_image.url(:thumb) : nil }
 code(:permalink) { |g| group_path(g) }

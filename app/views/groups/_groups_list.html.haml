@@ -3,7 +3,7 @@
     %span.grid_1.alpha= "&nbsp;".html_safe
     %span.grid_3= link_to 'Name', '#', :id => 'name', :class => group_header_class('groups.name', @sort)
     %span.grid_6.descrip Description
-    %span.grid_3= link_to 'Issue Area of Focus', '#', :id => 'pvs_category', :class => group_header_class('pvs_categories', @sort)
+    %span.grid_3= link_to 'Issue Area of Focus', '#', :id => 'issue_area', :class => group_header_class('issue_area', @sort)
     %span.grid_2.omega= link_to 'Members', '#', :id => 'group_members', :class => group_header_class('group_members', @sort)
     
 %ul.container_12
@@ -13,7 +13,7 @@
         .thumb.smaller= group_image(g)
       %span.grid_3= link_to "<strong>#{g.name}</strong>".html_safe, g
       %span.grid_6.descrip= g.description
-      %span.grid_3= g.pvs_category.nil? ? "None" : g.pvs_category.name
+      %span.grid_3= g.subject.nil? ? "None" : g.subject.term
       %span.grid_2.large-count= group_members_num_with_delimiter(g)
       - if logged_in?
         - if g.is_member?(current_user)
@@ -34,7 +34,7 @@
     var doSearch = function() {
       $j('#group_search_spinner').show();
       $j.ajax({
-        url:'#{groups_path(:format => "js")}?q=' + $j('#group_search_field').val() + '&pvs_category=' +  $j('#group_issue').val() + '&sort=' + $j('#group_sort').val()
+        url:'#{groups_path(:format => "js")}?q=' + $j('#group_search_field').val() + '&subject=' +  $j('#group_issue').val() + '&sort=' + $j('#group_sort').val()
       });
     }
 

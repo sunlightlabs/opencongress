@@ -52,8 +52,8 @@ class GroupsController < ApplicationController
       case sort_column
       when 'name'
         @sort = "groups.name #{sort_dir}"
-      when 'pvs_category'
-        @sort = "pvs_categories.name #{sort_dir}, groups.name ASC"
+      when 'issue_area'
+        @sort = "subjects.term #{sort_dir}, groups.name ASC"
       when 'group_members'
         @sort = "group_members_count #{sort_dir}"
       else
@@ -75,11 +75,11 @@ class GroupsController < ApplicationController
       @groups = @groups.with_name_or_description_containing(params[:q])
     end
     
-    unless params[:pvs_category].blank?
-      @groups = @groups.in_category(params[:pvs_category])
+    unless params[:subject].blank?
+      @groups = @groups.where(:subject_id => params[:subject])
     end
 
-    @groups = @groups.select("groups.*, coalesce(gm.group_members_count, 0) as group_members_count").joins(%q{LEFT OUTER JOIN (select group_id, count(group_members.*) as group_members_count from group_members where status != 'BOOTED' group by group_id) gm ON (groups.id=gm.group_id)}).includes(:pvs_category).paginate(:per_page => 20, :page => params[:page])
+    @groups = @groups.select("groups.*, coalesce(gm.group_members_count, 0) as group_members_count").joins(%q{LEFT OUTER JOIN (select group_id, count(group_members.*) as group_members_count from group_members where status != 'BOOTED' group by group_id) gm ON (groups.id=gm.group_id)}).includes(:subject).paginate(:per_page => 20, :page => params[:page])
 
     respond_with @groups
   end

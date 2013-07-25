@@ -12,6 +12,7 @@ class Group < ActiveRecord::Base
   belongs_to :user
   has_many :group_invites, :dependent => :destroy
   belongs_to :pvs_category
+  belongs_to :subject
 
   has_many :group_members, :dependent => :destroy
   has_many :users, :through => :group_members, :order => "users.login ASC"

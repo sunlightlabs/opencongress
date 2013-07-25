@@ -248,7 +248,7 @@ class User < ActiveRecord::Base
     # user stays in 'give us your address' purgatory.
     # TODO: Allow user to send feedback if they get stuck here.
     if params[:lat].present? and params[:lng].present?
-      dsts = Congress.districts_locate(params[:lat], params[:lng]) rescue []
+      dsts = Congress.districts_locate(params[:lat], params[:lng]).results rescue []
     else
       dsts = Congress.districts_locate(zipcode).results rescue []
     end

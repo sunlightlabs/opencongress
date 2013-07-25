@@ -9,6 +9,11 @@ class RollCall < ActiveRecord::Base
   # TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
   scope :for_ident, lambda { |ident| {:conditions => ["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?", *Bill.ident(ident)]} }
   scope :in_year, lambda { |y| { :conditions => ["date_part('year', roll_calls.date) = :y", :y => y] } }
+  scope :in_congress, lambda { |cong|
+    where(['date >= ? and date <= ?',
+           UnitedStates::Congress.start_datetime(cong),
+           UnitedStates::Congress.end_datetime(cong)])
+  }
   scope :on_major_bills_for, lambda { |cong|
     includes(:bill).where(:bills => { :session => cong, :is_major => true })
   }
@@ -100,10 +105,15 @@ class RollCall < ActiveRecord::Base
 
   def key_vote_category_name
     if amendment
-      amendement.key_vote_category.name
-    elsif bill
+      subject_bill = amendment.bill
+    end
+    if subject_bill.nil? and bill
+      subject_bill = bill
+    end
+
+    if subject_bill
       root_category = Subject.root_category
-      subjects = bill.subjects.where(:parent_id => root_category.id)
+      subjects = subject_bill.subjects.where(:parent_id => root_category.id)
       subjects.map(&:term).join(', ')
     else
       ""

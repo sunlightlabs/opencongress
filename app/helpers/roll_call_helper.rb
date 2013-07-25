@@ -102,6 +102,14 @@ module RollCallHelper
     ofc2(width, height, "roll_call/partyvote_piechart_data/#{@roll_call.id}?" + params.to_param)
   end
 
+  def roll_call_css_class (rollcall)
+    classes = []
+    if rollcall.bill.is_major
+      classes.push('key')
+    end
+    classes.join(' ')
+  end
+
   def humane_fraction (fr)
     case fr
     when '1/2' then 'one half'

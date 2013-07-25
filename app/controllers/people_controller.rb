@@ -97,23 +97,37 @@ class PeopleController < ApplicationController
     end
 
     if params[:person1]
-    @person1 = Person.find(params[:person1])
-    @person2 = Person.find(params[:person2])
-    @head_title = " - #{@person1.title} #{@person1.lastname} and #{@person2.title} #{@person2.lastname}"
-    @shared_committees = @person1.committees.find(:all, :include => :people, :conditions => ["people.id = ?", @person2.id])
+      @person1 = Person.find(params[:person1])
+      @person2 = Person.find(params[:person2])
+      @chamber = @person1.latest_role.chamber
+      @head_title = " - #{@person1.title} #{@person1.lastname} and #{@person2.title} #{@person2.lastname}"
+      @shared_committees = @person1.committees.find(:all, :include => :people, :conditions => ["people.id = ?", @person2.id])
 
-    @vote_together = RollCall.vote_together(@person1, @person2)
-    logger.info @vote_together.to_yaml
-    @hot_votes = RollCall.find(:all, :select => "DISTINCT roll_calls.id", :include => [:roll_call_votes, :bill],
-                  :conditions => ['roll_call_votes.person_id IN (?)
-                                   AND is_hot = ? AND bill_id IS NOT NULL',
-                  [@person1.id,@person2.id], true]).sort_by(&:bill_id).group_by(&:bill_id)
-    @cold_votes = RollCall.find(:all, :select => "DISTINCT roll_calls.id", :include => [:roll_call_votes, :bill],
-                  :conditions => ['roll_call_votes.person_id IN (?) AND bill_id IS NOT NULL
-                                   AND ( question LIKE ? OR question LIKE ? OR question LIKE ? )
-                                   AND bills.hot_bill_category_id IS NULL AND ( roll_calls.is_hot IS NULL OR roll_calls.is_hot = ?)',
-                  [@person1.id,@person2.id], "On Passage%", "On Motion to Concur in Senate Amendments", "On Concurring %", false]).sort_by(&:bill_id).group_by(&:bill_id)
+      @shared_votes = RollCallVote.for_duo_in_congress(@person1, @person2, Settings.default_congress)
+      @identical_votes = @shared_votes.select do |vote1, vote2|
+        vote1.vote == vote2.vote and not vote1.is_non_vote?
+      end
 
+      @p1_voted_with_party = @person1.with_party
+      @p1_voted_total = @person1.unabstained_roll_calls.count
+      @p1_voted_with_party_pct = (@p1_voted_with_party.to_f / @p1_voted_total.to_f * 100).round
+      @p2_voted_with_party = @person2.with_party
+      @p2_voted_total = @person2.unabstained_roll_calls.count
+      @p2_voted_with_party_pct = (@p2_voted_with_party.to_f / @p2_voted_total.to_f * 100).round
+
+      @voted_together = @identical_votes.count
+      @voted_total = @shared_votes.count
+      if @voted_total > 0
+        @voted_together_pct = (@voted_together.to_f / @voted_total.to_f * 100).round
+      else
+        @voted_together_pct = 0
+      end
+
+      p1_rc_ids = Set.new(RollCallVote.on_passage.where(:person_id => @person1.id).map(&:roll_call_id))
+      p2_rc_ids = Set.new(RollCallVote.on_passage.where(:person_id => @person2.id).map(&:roll_call_id))
+      shared_rc_ids = (p1_rc_ids & p2_rc_ids).to_a
+      @votes = RollCall.includes(:roll_call_votes, :bill).where(:id => shared_rc_ids, 'roll_calls.where' => @chamber).order('date DESC')
+      @votes = @votes.map{|v| [v, v.roll_call_votes.where(:person_id => [@person1.id, @person2.id]).group_by(&:person_id)]}
     end
 
     respond_to do |format|

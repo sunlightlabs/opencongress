@@ -9,6 +9,10 @@ class RollCall < ActiveRecord::Base
   # TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
   scope :for_ident, lambda { |ident| {:conditions => ["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?", *Bill.ident(ident)]} }
   scope :in_year, lambda { |y| { :conditions => ["date_part('year', roll_calls.date) = :y", :y => y] } }
+  scope :on_major_bills_for, lambda { |cong|
+    includes(:bill).where(:bills => { :session => cong, :is_major => true })
+  }
+  scope :on_passage, lambda { where("question ILIKE 'On Passage%' OR question ILIKE 'On Motion to Concur in Senate%' OR question ILIKE 'On Concurring%'") }
 
   with_options :class_name => 'RollCallVote' do |rc|
     rc.has_many :aye_votes, :conditions => { :roll_call_votes => { :vote => ['Aye', 'Yea', '+'] } }
@@ -89,17 +93,18 @@ class RollCall < ActiveRecord::Base
   def total_votes
     (ayes + nays + abstains + presents)
   end
-  
+ 
   def key_vote?
-    return ((@@BILL_PASSAGE_TYPES.include?(roll_type) and bill and bill.key_vote_category) or
-           (@@AMDT_PASSAGE_TYPES.include?(roll_type) and amendment and amendment.key_vote_category))
+    return ((bill and bill.is_major) or (amendment and amendment.bill and amendment.bill.is_major))
   end
-  
+
   def key_vote_category_name
-    if self.amendment
-      self.amendement.key_vote_category.name
-    elsif self.bill
-      self.bill.key_vote_category.name
+    if amendment
+      amendement.key_vote_category.name
+    elsif bill
+      root_category = Subject.root_category
+      subjects = bill.subjects.where(:parent_id => root_category.id)
+      subjects.map(&:term).join(', ')
     else
       ""
     end
@@ -168,13 +173,15 @@ class RollCall < ActiveRecord::Base
   end
   
   def self.vote_together(person1, person2)
-     together = RollCall.count_by_sql(["SELECT count(roll_calls.id) from roll_calls INNER JOIN (select * from roll_call_votes WHERE person_id = ? AND vote != '0') person1 on person1.roll_call_id = roll_calls.id
-                                                       INNER JOIN (select * from roll_call_votes WHERE person_id = ? AND vote != '0') person2 on person2.roll_call_id = roll_calls.id
-                                                       WHERE person1.vote = person2.vote", person1.id, person2.id])
+     together = RollCall.count_by_sql(["SELECT count(roll_calls.id)
+                                        FROM roll_calls INNER JOIN (select * from roll_call_votes WHERE person_id = ? AND vote != '0') person1 on person1.roll_call_id = roll_calls.id
+                                                        INNER JOIN (select * from roll_call_votes WHERE person_id = ? AND vote != '0') person2 on person2.roll_call_id = roll_calls.id
+                                                        WHERE person1.vote = person2.vote", person1.id, person2.id])
                                                        
 
-     total = RollCall.count_by_sql(["SELECT count(roll_calls.id) from roll_calls INNER JOIN (select * from roll_call_votes WHERE person_id = ? AND vote != '0') person1 on person1.roll_call_id = roll_calls.id
-                                                       INNER JOIN (select * from roll_call_votes WHERE person_id = ? AND vote != '0') person2 on person2.roll_call_id = roll_calls.id", 
+     total = RollCall.count_by_sql(["SELECT count(roll_calls.id)
+                                     FROM roll_calls INNER JOIN (select * from roll_call_votes WHERE person_id = ? AND vote != '0') person1 on person1.roll_call_id = roll_calls.id
+                                                     INNER JOIN (select * from roll_call_votes WHERE person_id = ? AND vote != '0') person2 on person2.roll_call_id = roll_calls.id", 
                                                        person1.id, person2.id])
     return [together,total]
   end

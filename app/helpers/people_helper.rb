@@ -49,6 +49,23 @@ module PeopleHelper
     end
   end
 
+  def role_title (role)
+    case role.role_type
+    when 'rep' then 'Representative'
+    when 'sen' then 'Senator'
+    when 'prez' then 'President'
+    end
+  end
+
+  def role_title_abbr (role)
+    case role.role_type
+    when 'rep' then 'Rep.'
+    when 'sen' then 'Sen.'
+    when 'prez' then 'Pres.'
+    else ''
+    end
+  end
+
   def top_voting_similarities
 	  total_people = (@person.title == "Sen.") ? 100 : 440
 
@@ -165,7 +182,6 @@ module PeopleHelper
 	end
 
 	def rc_compare(vo, xml = false)
-	  logger.info "COMPARING: #{vo.id}"
     vote1 = RollCallVote.find_by_roll_call_id_and_person_id(vo.id,@person1.id)
     vote2 = RollCallVote.find_by_roll_call_id_and_person_id(vo.id,@person2.id)
 

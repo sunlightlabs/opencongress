@@ -1,3 +1,4 @@
+require 'united_states'
 class RollCallVote < ActiveRecord::Base  
   belongs_to :roll_call
   belongs_to :person
@@ -5,14 +6,38 @@ class RollCallVote < ActiveRecord::Base
   after_create :recount_party_lines
 
   scope :for_state, lambda { |abbrev| {:include => :person, :conditions => {:people => {:state => abbrev} } } }
-  
+  scope :on_passage, lambda { includes(:roll_call).where("roll_calls.question ILIKE 'On Passage%' OR roll_calls.question ILIKE 'On Motion to Concur in Senate%' OR roll_calls.question ILIKE 'On Concurring%'") }
+ 
+  scope :in_congress, lambda { |cong| includes(:roll_call).where(['date >= ? and date <= ?', UnitedStates::Congress.start_datetime(cong), UnitedStates::Congress.end_datetime(cong)]) }
+
   @@VOTE_FOR_SYMBOL = {
     "+" => "Aye",
     "-" => "Nay",
     "0" => "Abstain",
     "P" => "Present"
   }
+
+  def self.for_duo (p1, p2)
+    includes(:roll_call)
+    .where(['(person_id = ? OR person_id = ?)', p1.id, p2.id])
+    .group_by(&:roll_call_id)
+    .values
+    .select{|pair| pair.count == 2}
+    .each{|pair| pair.sort_by!(&:person_id)}
+  end
   
+  def self.for_duo_in_congress (p1, p2, congress)
+    includes(:roll_call)
+    .where(['roll_calls.date >= ? AND roll_calls.date <= ? AND (person_id = ? OR person_id = ?)',
+           UnitedStates::Congress.start_datetime(congress),
+           UnitedStates::Congress.end_datetime(congress),
+           p1.id, p2.id])
+    .group_by(&:roll_call_id)
+    .values
+    .select{|pair| pair.count == 2}
+    .each{|pair| pair.sort_by!(&:person_id)}
+  end
+
   def atom_id
     "tag:opencongress.org,#{roll_call.date.strftime("%Y-%m-%d")}:/roll_call_vote/#{id}"
   end
@@ -64,5 +89,20 @@ class RollCallVote < ActiveRecord::Base
       nil
     end
   end
-  
+
+  def is_affirmative?
+    return ['Yea', 'Aye', '+'].include?(vote)
+  end
+
+  def is_negative?
+    return ['No', 'Nay', '-'].include?(vote)
+  end
+
+  def is_present?
+    return ['P', 'Present'].include?(vote)
+  end
+
+  def is_non_vote?
+    return ['Not Voting', '0'].include?(vote)
+  end 
 end

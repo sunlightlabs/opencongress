@@ -634,16 +634,58 @@ height: 45px;
 }
 
 .comp{
-margin: 0 !important;
+  margin: 0 auto;
+  margin: 0 !important;
+  width: 900px;
 }
 
+.comp .rc-question {
+  text-align: left;
+}
+.comp .rc-date {
+  width: 68px;
+  text-align: center;
+}
+.comp .rc-number {
+  width: 50px;
+  text-align: center;
+}
+.comp .rc-vote {
+  width: 68px;
+  text-align: center;
+}
 .comp tr{
-border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
 
 .comp td{
-padding: 8px 0;
-border-right: 1px solid #ddd;
+  padding: 8px 8px;
+  border-right: 1px solid #ddd;
+}
+.comp td:first-child{
+  border-left: 1px solid #ddd;
+}
+
+.comp-well {
+  border: 1px solid #ddd;
+  margin: 10px 10px 10px 10px;
+  padding: 7px;
+  width: 291px;
+  height: 220px;
+  vertical-align: top;
+  float: left;
+}
+.comp-well-middle {
+}
+.comp-well-left, .comp-well-right {
+  margin-left: 0;
+  margin-right: 0;
+}
+.comp-well img {
+  margin: 0 auto 0 !important;
+}
+body#people.compare .comp-well h3 {
+  margin-top: 2px;
 }
 
 .comppeeps {
@@ -676,6 +718,8 @@ color: #999;
 font-size: 11px;
 margin: 20px 10px 0 0;
 /*background: url(../images/big_default_compare.png) center;*/
+clear: right;
+vertical-align: top;
 }
 
 .compare table{
@@ -881,10 +925,6 @@ padding: 0 12px !important;
 	min-width: 100px;
 	padding: 0 12px !important;
 	background: #fcfcfc !important;
-}
-
-.billlist{
-	padding-right: 30px !important;
 }
 
 .no{
@@ -1170,3 +1210,4 @@ li.industry, li.contributor {
 li.industry:first-child, li.contributor:first-child {
     font-weight: bold;
 }
+

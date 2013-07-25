@@ -176,7 +176,8 @@ class RollCallController < ApplicationController
 
     elsif params[:sort] == 'keyvotes'
       @sort = 'keyvotes'
-      @rolls = RollCall.find_pvs_key_votes.paginate :page => @page
+      @rolls = RollCall.on_major_bills_for(Settings.default_congress).paginate :page => @page
+
     elsif params[:sort] == 'oldest'
       @sort = 'oldest'
       @rolls = RollCall.find(:all, :include => [:bill, :amendment], :order => 'date ASC',

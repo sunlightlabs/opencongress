@@ -33,6 +33,14 @@ module UnitedStates
     def self.year_for_congress(cong)
       ((cong + 894) * 2) - 1
     end
+
+    def self.start_datetime(cong)
+      Time.new(year_for_congress(cong), 1, 3, 12, 0, 0)
+    end
+
+    def self.end_datetime(cong)
+      Time.new(year_for_congress(cong + 1), 1, 3, 11, 59, 59)
+    end
   end
 end
 

@@ -11,13 +11,13 @@ class Person < ActiveRecord::Base
   has_many :bill_cosponsors
   has_many :bills_cosponsored, :class_name => 'Bill', :through => :bill_cosponsors, :source => :bill, :conditions => proc { [ "bills.session = ?", Settings.default_congress ] }, :order => 'bills.introduced DESC'
   has_many :roles, :order => 'roles.startdate DESC'
-  has_many :roll_call_votes, :include => :roll_call, :order => 'roll_calls.date DESC'
+  has_many :roll_call_votes #, :include => :roll_call, :order => 'roll_calls.date DESC'
 
   with_options :class_name => "RollCall", :through => :roll_call_votes,
                :source => :roll_call, :include => :bill do |rc|
-    rc.has_many :unabstained_roll_calls, :conditions => proc { ["roll_call_votes.vote != '0' AND bills.session = ?", Settings.default_congress] }
-    rc.has_many :abstained_roll_calls, :conditions => proc { ["vote = '0' AND bills.session = ?", Settings.default_congress] }
-    rc.has_many :party_votes, :conditions => proc { "((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote = '+') OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote = '-')) AND bills.session = #{Settings.default_congress}" }
+    rc.has_many :unabstained_roll_calls, :conditions => proc { ["roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress] }
+    rc.has_many :abstained_roll_calls, :conditions => proc { ["vote IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress] }
+    rc.has_many :party_votes, :conditions => proc { "((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}" }
   end
 
   has_many :person_approvals
@@ -189,6 +189,10 @@ class Person < ActiveRecord::Base
     else
       return [nil,nil]
     end
+  end
+
+  def latest_role
+    roles.order(:startdate).first
   end
 
   def self.list_chamber(chamber, congress, order, limit = nil)

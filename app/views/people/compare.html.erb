@@ -44,9 +44,6 @@
 									<b>State:</b> <%= @person1.state %><br/>
 									<b>Party:</b> <%= @person1.party %><br/>
 									<b>Abstains:</b> <%= @person1.abstains_percentage.round %>%<br/>
-									<% if @person1.belongs_to_major_party? %>
-									<b>Votes with Party:</b> <%= @person1.with_party_percentage.round %>%<br/>
-									<% end %>
 									<% if @person1.person_approvals.count > 0 %>
 									<b>OpenCongress Users' Approval Rating:</b> <%= (@person1.person_approvals.average(:rating) * 10.0).round %>%<br/>
 									<% end %>
@@ -60,9 +57,6 @@
 									<b>State:</b> <%= @person2.state %><br/>
 									<b>Party:</b> <%= @person2.party %><br/>
 									<b>Abstains:</b> <%= @person2.abstains_percentage.round %>%<br/>
-									<% if @person2.belongs_to_major_party? %>
-									<b>Votes with Party:</b> <%= @person2.with_party_percentage.round %>%<br/>
-									<% end %>
 									<% if @person2.person_approvals.count > 0 %>
 									<b>OpenCongress Users' Approval Rating:</b> <%= (@person2.person_approvals.average(:rating) * 10.0).round %>%<br/>
 									<% end %>
@@ -88,20 +82,50 @@
 
 
 <div class="voting_similarity">
-<% unless @vote_together[1] == 0 %>
-  <h3>Voting Similarity</h3>
-  <div class="floatleft">
-	  <img src="http://chart.apis.google.com/chart?cht=v&amp;chs=180x90&amp;chco=ff9900,6FC6B0&amp;chd=t:<%= @person2.unabstained_roll_calls.count %>,<%= @person1.unabstained_roll_calls.count %>,0,<%= (@vote_together[0].to_f /
-	@vote_together[1].to_f * 100).round %>&amp;chdl=<%= @person2.lastname%>|<%= @person1.lastname %>" style="float:right;margin:3px;border:3px solid #FFFFFF;"/>
-      <p>
-		<%= link_to @person1.full_name, :controller => 'people', :action => 'show', :id => @person1.ident %> and <%= link_to @person2.full_name, :controller => 'people', :action => 'show', :id => @person2.ident %> have voted together <%= @vote_together[0] %> times on roll call votes since January, 2007 in votes where neither abstained, representing a voting similarity of <%= (@vote_together[0].to_f / @vote_together[1].to_f * 100).round %>%.  The list below highlights how their voting records compare on passage of bills and editorially-selected "hot" votes on amendments.
-	  </p>
-  </div>  
+  <% unless @shared_votes.count == 0 %>
+    <div class="comp-well comp-well-left">
+      <h3><%= @person1.full_name %>'s Party Votes</h3>
+      <div>
+        <img src="http://chart.apis.google.com/chart?cht=v&amp;chs=240x120&amp;chco=ff9900,6FC6B0&amp;chd=t:<%= @p1_voted_total %>,<%= @p1_voted_with_party %>,0,<%= @p1_voted_with_party_pct %>&amp;chdl=<%= @person1.party.pluralize %>|<%= @person1.lastname %>" style="margin:3px;border:3px solid #FFFFFF;"/>
+        <p>
+        In the <%= Settings.default_congress.ordinalize %> congress, <%= @person1.full_name %>
+        has voted with their party on <%= @p1_voted_with_party %> out of <%= @p1_voted_total %>
+        roll calls, representing a voting similarity of <%= @p1_voted_with_party_pct %>%.
+        </p>
+      </div>
+    </div>  
 
-  <div class="floatright">
-    <%= render :partial => "vote_sim_scope", :locals => {:person1 => @person1, :person2 => @person2, :vote_together => ( @vote_together[0].to_f /   @vote_together[1].to_f * 100.0 ).round} %>
+    <div class="comp-well comp-well-middle">
+      <h3>Voting Similarity</h3>
+      <img src="http://chart.apis.google.com/chart?cht=v&amp;chs=240x120&amp;chco=ff9900,6FC6B0&amp;chd=t:<%= @person2.unabstained_roll_calls.count %>,<%= @person1.unabstained_roll_calls.count %>,0,<%= @voted_together_pct %>&amp;chdl=<%= @person2.lastname%>|<%= @person1.lastname %>" style="margin:3px;border:3px solid #FFFFFF;"/>
+      <div>
+        <p>
+        In the <%= Settings.default_congress.ordinalize %> congress, 
+        <%= link_to @person1.full_name, :controller => 'people', :action => 'show', :id => @person1.ident %>
+        and
+        <%= link_to @person2.full_name, :controller => 'people', :action => 'show', :id => @person2.ident %>
+        have voted together on <%= @voted_together %> of <%= @voted_total %> roll call votes
+        in which neither abstained,
+        representing a voting similarity of
+        <%= @voted_together_pct %>%.
+        </p>
+      </div>
+    </div>  
+    <div class="comp-well comp-well-right">
+      <h3><%= @person2.full_name %>'s Party Votes</h3>
+      <div>
+        <img src="http://chart.apis.google.com/chart?cht=v&amp;chs=240x120&amp;chco=ff9900,6FC6B0&amp;chd=t:<%= @p2_voted_total %>,<%= @p2_voted_with_party %>,0,<%= @p2_voted_with_party_pct %>&amp;chdl=<%= @person2.party.pluralize %>|<%= @person2.lastname %>" style="margin:3px;border:3px solid #FFFFFF;"/>
+        <p>
+        In the <%= Settings.default_congress.ordinalize %> congress, <%= @person2.full_name %>
+        has voted with their party on <%= @p2_voted_with_party %> out of <%= @p2_voted_total %>
+        roll calls, representing a voting similarity of <%= @p2_voted_with_party_pct %>%.
+        </p>
+      </div>
+    </div>  
+    <div class="cf">
+    &nbsp;
+    </div>
   </div>
-</div>
 <% end %>
 
 
@@ -146,52 +170,37 @@
 
 <h3 class="dark">Roll Call Comparision</h3>
 
+<p>
+The list includes all roll calls in the <%= @chamber %> involving both members.
+</p>
+
 <table class="comp" cellspacing="0" cellpadding="0">
-	<thead>
-		<tr>
-			<th align="left" width="80%">Bills</th>
-			<th width="1%" align="center">Roll Call</th>
-			<th width="1%">&nbsp;</th>
-			<th width="1%">&nbsp;</th>
-
-		</tr>
-	</thead>
-
-	<tbody>
-	
-	<% @hot_votes.each do |v| %>
-	<% vo = v[1].first %>
-	<tr>
-		<td class="billlist">
-			<%= image_tag 'icon-hot-bill.gif', :class => 'noborder', :style => 'line-height: .8em;', :alt => 'hot bill' %>
-		
-		
-			<%= link_to vo.short_identifier, :controller => :bill, :action => :show, :id => vo.bill.ident %>
-			 <%= vo.bill.title_common %>
-			<% unless vo.title.blank? %> 
-		
-			<em>(<%= vo.title %>)</em>
-			
-			<% end %>
-		</td>
-	<%= rc_compare(vo) %>
-	</tr>                           
-
-	<% end %>
-
-	
-	<% @cold_votes.each do |v| %>
-		<% vo = v[1].first %>
-	<tr>
-		<td>
-			<%= link_to vo.short_identifier, :controller => :bill, :action => :show, :id => vo.bill.ident %> 
-			<%= vo.bill.title_common %>				
-		</td>
-		<%= rc_compare(vo) %>
-	</tr>
-	<% end %>
-	</tbody>
-	
+  <thead>
+    <tr>
+      <th class="rc-question">Question</th>
+      <th class="rc-date">Date</th>
+      <th class="rc-number">Roll Call</th>
+      <th class="rc-vote"><%= @person1.lastname %></th>
+      <th class="rc-vote"><%= @person2.lastname %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @votes.each do |pair| %>
+      <% rc = pair.first %>
+      <% votes = pair.second %>
+      <tr class="<%= roll_call_css_class(rc) %> billlist">
+        <td class="rc-question"><%= rc.question %> (<%= rc.bill.title_common %>)
+          <% if rc.bill and rc.bill.is_major %>
+            <span class="yellow-star"></span>
+          <% end %>
+        </td>
+        <td class="rc-date"><%= rc.date.strftime('%m/%d/%Y') %></td>
+        <td class="rc-number"><%= link_to rc.number, :controller => 'roll_call', :action => :show, :id => rc.id %></td>
+        <td class="<%= singular_vote_css_class(votes[@person1.id].first.vote) %> rc-vote"><%= vote_name(votes[@person1.id].first.vote) %></td>
+        <td class="<%= singular_vote_css_class(votes[@person2.id].first.vote) %> rc-vote"><%= vote_name(votes[@person2.id].first.vote) %></td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
 
 

@@ -36,8 +36,8 @@
         <%= f.input :full_name, :required => true %>
         <%= f.input :about, :as => :text, :input_html => { :rows => 6 } %>
         <%= f.input :email, :required => true %>
-        <%= f.input :zipcode, :required => true %>
-        <%= f.input :zip_four, :label => "Zip+4" %>
+        <%= f.input :zipcode, :required => true, :maxlength => 5 %>
+        <%= f.input :zip_four, :label => "Zip+4", :maxlength => 4 %>
       <% end %>
 
       <%= field_set_tag "Site Preferences", {:id => "site_preferences", :class => "tab-pane"} do %>

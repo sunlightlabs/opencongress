@@ -46,13 +46,15 @@ class User < ActiveRecord::Base
     :partner_mailing => "Partner mailing preference"
   }
 
-  before_create :update_state_and_district
   after_create  :make_feed_key
   after_create  :create_privacy_option
-  after_save :join_default_groups, :if => Proc.new{|i|
-    i.state.present? && (
-      (i.is_active? && i.status_changed?) ||
-      (i.state_changed? || i.district_changed?)
+  before_save :update_state_and_district, :if => Proc.new{
+    zipcode_changed? || zip_four_changed?
+  }
+  after_save :join_default_groups, :if => Proc.new{
+    state.present? && (
+      (is_active? && status_changed?) ||
+      (state_changed? || district_changed?)
     )
   }
   # on ban or delete, clean up this user's associations with various parts of the site
@@ -244,11 +246,14 @@ class User < ActiveRecord::Base
 
   def update_state_and_district(params = {})
     # Resets state and district based on lat/lng if present
-    # if missing, tries to get from zip5. If multiple results returned,
+    # if missing, tries to get from zip. If multiple results returned,
     # user stays in 'give us your address' purgatory.
     # TODO: Allow user to send feedback if they get stuck here.
     if params[:lat].present? and params[:lng].present?
       dsts = Congress.districts_locate(params[:lat], params[:lng]).results rescue []
+    elsif zipcode.present? && zip_four.present?
+      lat, lng = Geocoder.coordinates("#{zipcode}-#{zip_four}")
+      dsts = Congress.districts_locate(lat, lng).results rescue []
     else
       dsts = Congress.districts_locate(zipcode).results rescue []
     end

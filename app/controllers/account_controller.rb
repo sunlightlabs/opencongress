@@ -110,7 +110,10 @@ class AccountController < ApplicationController
     @page_title = "Determine Your Congressional District"
     if request.post?
       if !params[:address].blank?
-        lat, lng = Geocoder.coordinates("#{params[:address]}, #{params[:zipcode]}")
+        result = Geocoder.search("#{params[:address]}, #{params[:zipcode]}").first
+        lat = result.data['latLng']['lat']
+        lng = result.data['latLng']['lng']
+        current_user.zipcode, current_user.zip_four = result.data['postalCode'].split('-')
         new_district = current_user.update_state_and_district(:lat => lat, :lng => lng)
       else
         new_district = current_user.update_state_and_district

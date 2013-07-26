@@ -59,12 +59,7 @@
       <% if @user.can_view(:my_zip_code, current_user) %>
         <p><label>Zipcode</label>
           <%= @user.zipcode %>
-          <label style="clear: both;">Zip+4</label>
           <%= @user.zip_four %>
-          <%= dbox_trigger('zip4help') if @user == current_user %>
-          <div class="dboxed">
-            <%= dbox_content('zip4help') %>
-          </div>
         </p>
       <% end %>
 

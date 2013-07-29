@@ -1,0 +1,32 @@
+<div class="padding">
+
+  <div id="bill_positions">
+    <div class="col1">
+      <h2>Organizations Supporting <%= @bill.typenumber %></h2>
+      <% supporting_orgs = @bill.organizations_supporting %>
+      <% unless supporting_orgs.empty? %>
+        <ul>
+          <% supporting_orgs.each { |org| %><li><%= org.name %></li><% } %>
+        </ul>
+      <% else %>
+        <ul><li>None via MapLight at this time.</li></ul>
+      <% end %>
+    </div>
+
+    <div class="col2">
+      <h2>Organizations Opposing <%= @bill.typenumber %></h2>
+      <% opposing_orgs = @bill.organizations_opposing %>
+      <% unless opposing_orgs.empty? %>
+        <ul>
+          <% opposing_orgs.each { |org| %><li><%= org.name %></li><% } %>
+        </ul>
+      <% else %>
+        <ul><li>None via MapLight at this time.</li></ul>
+      <% end %>
+    </div>
+
+    <div class="cf">
+    </div>
+  </div>
+</div>
+

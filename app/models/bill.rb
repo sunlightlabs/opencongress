@@ -162,6 +162,14 @@ class Bill < ActiveRecord::Base
     @@DISPLAY_OBJECT_NAME
   end
 
+  def organizations_supporting
+    bill_position_organizations.all.select{ |g| g.disposition == 'support' }
+  end
+
+  def organizations_opposing
+    bill_position_organizations.all.select{ |g| g.disposition == 'oppose' }
+  end
+
   def current_bill_text_version
     versions = bill_text_versions.find(:all, :conditions => "bill_text_versions.previous_version IS NULL")
     if versions.empty?

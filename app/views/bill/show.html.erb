@@ -116,16 +116,15 @@
     <div class="clearfix"></div>
 		
 		<% unless @bill.bill_position_organizations.empty? %>
-  		<div id="money_trail_summary">
         <div class="col1">
           <h2>Organizations Supporting <%= @bill.typenumber %></h2>
-          <% unless @bill.bill_position_organizations.select{|g| g.disposition == 'support'}.empty? %>
+          <% supporting_orgs = @bill.organizations_supporting %>
+          <% unless supporting_orgs.empty? %>
             <ul>
-            <% supporting_orgs = @bill.bill_position_organizations.select{|g| g.disposition == 'support'} %>
             <% supporting_orgs[0..5].each { |org| %><li><%= org.name %></li><% } %>
             <% if supporting_orgs.size > 5 %>
               <li>...and <strong><%= supporting_orgs.size - 5 %></strong> more.  
-              <%= link_to "See all.", :controller => 'bill', :action => 'money', :id => @bill.ident %>
+              <%= link_to "See all.", :controller => :bill, :action => :bill_positions, :id => @bill.ident %>
             <% end %>
             </ul>
           <% else %>
@@ -135,24 +134,19 @@
       
         <div class="col2">
           <h2>Organizations Opposing <%= @bill.typenumber %></h2>
-          <% unless @bill.bill_position_organizations.select{|g| g.disposition == 'oppose'}.empty? %>
+          <% opposing_orgs = @bill.organizations_opposing %>
+          <% unless opposing_orgs.empty? %>
             <ul>
-              <% opposing_orgs = @bill.bill_position_organizations.select{|g| g.disposition == 'oppose'} %>
               <% opposing_orgs[0..5].each { |org| %><li><%= org.name %></li><% } %>
               <% if opposing_orgs.size > 5 %>
                 <li>...and <strong><%= opposing_orgs.size - 5 %></strong> more.  
-                <%= link_to "See all.", :controller => 'bill', :action => 'money', :id => @bill.ident %>
+                <%= link_to "See all.", :controller => :bill, :action => :bill_positions, :id => @bill.ident %>
               <% end %>
             </ul>
           <% else %>
             <ul><li>None via MapLight at this time.</li></ul>
           <% end %>
         </div>
-      </div>
-      
-      <div class='money_trail_summary_more'>
-        See the <a href="<%= url_for :controller => 'bill', :action => 'money', :id => @bill.ident %>">money trail</a> behind this bill for more info on how campaign contributions may be influencing senators' and representatives' votes.</p>
-      </div>
     <% end %>
       
       

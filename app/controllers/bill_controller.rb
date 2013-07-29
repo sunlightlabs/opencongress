@@ -4,8 +4,8 @@ class BillController < ApplicationController
   helper :roll_call
   before_filter :page_view, :only => [:show, :text]
   before_filter :get_params, :only => [:index, :all, :popular, :pending, :hot, :most_commentary, :readthebill]
-  #before_filter :bill_profile_shared, :only => [:show, :comments, :money, :votes, :actions, :amendments, :text, :actions_votes, :news_blogs, :videos, :news, :blogs, :news_blogs, :topnews, :topblogs, :letters]
-  before_filter :bill_profile_shared, :only => [:show, :comments, :money, :votes, :actions, :amendments, :text, :actions_votes, :videos, :topnews, :topblogs, :letters]
+  #before_filter :bill_profile_shared, :only => [:show, :comments, :votes, :actions, :amendments, :text, :actions_votes, :news_blogs, :videos, :news, :blogs, :news_blogs, :topnews, :topblogs, :letters]
+  before_filter :bill_profile_shared, :only => [:show, :comments, :votes, :actions, :amendments, :text, :actions_votes, :videos, :topnews, :topblogs, :letters]
   before_filter :aavtabs, :only => [:actions, :amendments, :votes, :actions_votes]
   before_filter :get_range, :only => [:hot]
   before_filter :login_required, :only => [:bill_vote, :hot_bill_vote]
@@ -608,12 +608,9 @@ class BillController < ApplicationController
     redirect_to :controller => 'bill', :action => 'blogs', :id => @bill.ident, :sort => 'toprated'
   end
 
-  def money
+  def bill_positions
     bill_type, number, session = Bill.ident params[:id]
-    @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
-    respond_to do |format|
-      format.html
-    end
+    @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number)
   end
 
   def news
@@ -738,7 +735,6 @@ private
         ["Overview",{:action => 'show', :id => @bill.ident}],
         ["Actions & Votes",{:action => 'actions_votes', :id => @bill.ident}]
       ]
-      # @tabs << ["Campaign Finance",{:action => 'money', :id => @bill.ident}] unless @bill.bill_interest_groups.empty?
       @tabs << ["News <span>(#{news_blog_count(@bill.news_article_count)})</span> & Blogs <span>(#{news_blog_count(@bill.blog_article_count)})</span>".html_safe,{:action => 'news_blogs', :id => @bill.ident}]
       @tabs << ["Videos".html_safe,{:action => 'videos', :id => @bill.ident}] unless @bill.videos.empty?
       @tabs << ["Comments <span>(#{number_with_delimiter(@comments.comments.size)})</span>".html_safe,{:action => 'comments', :id => @bill.ident}]

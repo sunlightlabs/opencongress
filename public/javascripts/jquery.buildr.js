@@ -125,7 +125,7 @@
 
   //self-closing tags have a trailing slash
   Buildr.prototype.defineTag(
-    'a','abbr','acronym','address','article','aside','audio','b','bdi','bdo','big','blockquote','body','button','caption','canvas','command','cite','code','colgroup','datalist','dd','del','details','dfn','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','frameset','h1','h2','h3','h4','h5','h6','head','header','hgroup','html','i','iframe','ins','keygen','kbd','label','legend','li','map','mark','meter','nav','noframes','noscript','object','ol','optgroup','option','output','p','pre','progress','q','rp','rt','ruby','samp','section','script','select','small','source','span','strong','style','sub','summary','sup','table','tbody','td','textarea','tfoot','thead','time','title','tr','track','tt','ul','var','video','wbr',
+    'a','abbr','acronym','address','article','aside','audio','b','bdi','bdo','big','blockquote','body','button','caption','canvas','command','cite','code','colgroup','datalist','dd','del','details','dfn','div','dl','dt','em','embed','fieldset','figcaption','figure','footer','form','frameset','h1','h2','h3','h4','h5','h6','head','header','hgroup','html','i','iframe','ins','keygen','kbd','label','legend','li','map','mark','meter','nav','noframes','noscript','object','ol','optgroup','option','output','p','pre','progress','q','rp','rt','ruby','samp','section','script','select','small','source','span','strong','style','sub','summary','sup','table','tbody','td','textarea','tfoot','th','thead','time','title','tr','track','tt','ul','var','video','wbr',
     'area/','base/','br/','col/','frame/','hr/','img/','input/','link/','meta/','param/'
   );
 

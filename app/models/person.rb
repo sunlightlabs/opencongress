@@ -812,8 +812,10 @@ class Person < ActiveRecord::Base
   end
 
   def Person.find_current_representatives_by_state_and_district(state, district)
-      Person.find(:all,
-                  :conditions => ["title='Rep.' AND state = ? AND district in (?)", state, district.to_s])
+    Person.on_date(Date.today)
+          .where(:title => 'Rep.',
+                 :state => state,
+                 :district => district.to_s)
   end
 
 

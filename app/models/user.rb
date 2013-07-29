@@ -378,7 +378,7 @@ class User < ActiveRecord::Base
     Person.find_current_senators_by_state(self.my_state)
   end
   def my_reps
-    Person.find_current_representatives_by_state_and_district(self.my_state, self.my_district_number)
+    Person.find_current_representatives_by_state_and_district(self.state, self.district)
   end
 
   def my_approved_reps

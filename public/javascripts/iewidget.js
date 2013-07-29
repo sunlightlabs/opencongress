@@ -54,15 +54,35 @@
             return def.promise();
         };
 
+        var EntityOverview = function (infex_id) {
+            var url = 'http://transparencydata.com/api/1.0/entities/:id.json'.replace(':id', infex_id);
+            var params = { 'apikey': defaults.get('apikey') };
+            var def = $.Deferred();
+
+            $.ajax({url: url,
+                    crossDomain: true,
+                    data: params,
+                    dataType: 'jsonp'}).done(function(result){
+                        return def.resolveWith(null, [result]);
+                    });
+            return def.promise();
+        };
+
+        var FetchTopIndustries = function (infex_id, options) {
+            options = new Options(defaults, options);
+            options.require('cycle');
+            var url = 'http://transparencydata.com/api/1.0/aggregates/pol/:id:/contributors/industries.json'.replace(':id:', infex_id);
+            var params = { 'apikey': options.get('apikey'), 'cycle': options.get('cycle') };
+            return $.ajax({url: url, crossDomain: true, data: params, dataType: 'jsonp'});
+        };
+
         var IndustriesWidget = function (options) {
             options = new Options(defaults, options);
             options.require('recipient');
             options.require('cycle');
 
-            var fetch_top_industries = function (infex_id) {
-                var url = 'http://transparencydata.com/api/1.0/aggregates/pol/:id:/contributors/industries.json'.replace(':id:', infex_id);
-                var params = { 'apikey': options.get('apikey'), 'cycle': options.get('cycle') };
-                return $.ajax({url: url, crossDomain: true, data: params, dataType: 'jsonp'});
+            var _FetchTopIndustries = function (infex_id) {
+                return FetchTopIndustries(infex_id, options);
             };
 
             var display_top_industries = function (industries) {
@@ -85,8 +105,16 @@
                 $(options.get('target')).find('span.money').formatCurrency({roundToDecimalPlace: 0});
             };
 
-            fetch_top_industries(options.get('recipient'))
+            _FetchTopIndustries(options.get('recipient'))
             .done(display_top_industries); 
+        };
+
+        var FetchTopContributors = function (infex_id, options) {
+            options = new Options(defaults, options);
+            options.require('cycle');
+            var url = 'http://transparencydata.com/api/1.0/aggregates/pol/f990d08287c34c389cfabe3cbf3dde99/contributors.json';
+            var params = { 'apikey': options.get('apikey'), 'cycle': options.get('cycle') };
+            return $.ajax({url: url, crossDomain: true, data: params, dataType: 'jsonp'});
         };
 
         var ContributorsWidget = function (options) {
@@ -94,10 +122,8 @@
             options.require('recipient');
             options.require('cycle');
 
-            var fetch_top_contributors = function (infex_id) {
-                var url = 'http://transparencydata.com/api/1.0/aggregates/pol/f990d08287c34c389cfabe3cbf3dde99/contributors.json';
-                var params = { 'apikey': options.get('apikey'), 'cycle': options.get('cycle') };
-                return $.ajax({url: url, crossDomain: true, data: params, dataType: 'jsonp'});
+            var _FetchTopContributors = function (infex_id) {
+                return FetchTopContributors(infex_id, options);
             };
 
             var display_top_contributors = function (contributors) {
@@ -123,11 +149,14 @@
                 $(options.get('target')).find('span.money').formatCurrency({roundToDecimalPlace: 0});
             };
 
-            fetch_top_contributors(options.get('recipient'))
+            _FetchTopContributors(options.get('recipient'))
             .done(display_top_contributors);
         };
 
         that.Lookup = Lookup;
+        that.EntityOverview = EntityOverview;
+        that.FetchTopIndustries = FetchTopIndustries;
+        that.FetchTopContributors = FetchTopContributors;
         that.ContributorsWidget = ContributorsWidget;
         that.IndustriesWidget = IndustriesWidget;
         return this;

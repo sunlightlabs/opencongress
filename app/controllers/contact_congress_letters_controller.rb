@@ -24,6 +24,8 @@ class ContactCongressLettersController < ApplicationController
       @sens = @reps = []
     end
 
+    @member_osids = (@sens + @reps).map(&:osid).select{|osid| not osid.nil?}
+
     if @bill and params[:position].nil?
       render 'select_position'
       return
@@ -95,15 +97,12 @@ class ContactCongressLettersController < ApplicationController
 
     @sens = [] unless @sens
 
-    #@sens << Person.find(300043)
-    #@sens << Person.find(300011)
-
     if @reps and @reps.size == 1
       @letter_start = "I am writing as your constituent in the #{@reps.first.district.to_i.ordinalize} Congressional district of #{State.for_abbrev(@reps.first.state)}. "
     else
       @reps = []
-     # @reps << Person.find(412404)
     end
+    @member_osids = (@sens + @reps).map(&:osid).select{|osid| not osid.nil?}
   end
 
   def show

@@ -799,6 +799,10 @@ class Bill < ActiveRecord::Base
     Article.tagged_with(subject_terms, :any => true).order('created_at DESC').limit(5)
   end
 
+  def subject_categories
+    subjects.where('parent_id is not null').select{ |s| s.parent_id == Subject.root_category.id }
+  end
+
   def subject_terms
     subjects.collect{|s| s.term }
   end

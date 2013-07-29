@@ -62,13 +62,11 @@
           </span>
 
           <ul class="bill-category-list">
-            <% b.subjects.each_with_index do |c, idx| %>
-              <% if c.parent_id == @root_category.id %>
+            <% b.subject_categories.each_with_index do |c, idx| %>
                 <%= (idx > 0) ? ', ' : '' %>
                 <li class="bill-category">
-                  <%= c.term %>
+                <%= c.term %>
                 </li>
-              <% end %>
             <% end %>
           </ul>
         </a>

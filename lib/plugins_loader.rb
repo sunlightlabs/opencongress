@@ -5,7 +5,7 @@ require 'active_support/dependencies'
 class PluginsLoader
   # Returns list of paths to loaded engines.
   def engine_paths
-    @engine_paths ||= defined?(Formageddon) ? [`bundle show formageddon`.strip] : []
+    # @engine_paths ||= defined?(Formageddon) ? [`bundle show formageddon`.strip] : []
     @engine_paths ||= Rails::Application.railties.engines.collect{ |engine| engine.config.root.to_s }
   end
 

@@ -1,7 +1,7 @@
 # FIXME: This is ugly.
 require_dependency File.expand_path(
   'app/models/formageddon/formageddon_letter',
-  ActiveSupport::Dependencies.plugins_loader.plugin_paths.keep_if{|p| p =~ /gems\/formageddon-[0-9a-f]+$/}.first)
+  ActiveSupport::Dependencies.plugins_loader.plugin_paths.select{|p| p =~ /formageddon(-[0-9a-f]+)?$/}.first)
 require_dependency 'renders_templates'
 
 class Formageddon::FormageddonLetter

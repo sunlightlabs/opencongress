@@ -1,7 +1,7 @@
 # FIXME: This is ugly.
 require_dependency File.expand_path(
   'app/models/formageddon/formageddon_contact_step',
-  ActiveSupport::Dependencies.plugins_loader.plugin_paths.keep_if{|p| p =~ /gems\/formageddon-[0-9a-f]+$/}.first)
+  ActiveSupport::Dependencies.plugins_loader.plugin_paths.select{|p| p =~ /formageddon(-[0-9a-f]+)?$/}.first)
 
 class Formageddon::FormageddonContactStep
   ##
@@ -9,10 +9,10 @@ class Formageddon::FormageddonContactStep
   #
 
   def save_after_error(ex, letter = nil, delivery_attempt = nil, save_states = true)
-    @error_msg = "ERROR: #{ex}"
+    @error_msg = "ERROR: #{ex}: #{$@[0]}"
 
     unless letter.nil?
-      if letter.kind_of? Formageddon::FormageddonLetter
+      if letter.is_a? Formageddon::FormageddonLetter
         letter.status = @error_msg
         letter.save
       end

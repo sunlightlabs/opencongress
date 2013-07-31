@@ -16,8 +16,8 @@ GIT
       ruby-progressbar (~> 1.0.0)
 
 GIT
-  remote: git://github.com/opencongress/formageddon.git
-  revision: 753b862a593b472f47b00af2eef13e460a7eb4c8
+  remote: git://github.com/sunlightlabs/formageddon.git
+  revision: 5b9d46d5ca11c0d8fd3921e6b94f237d1841089c
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)

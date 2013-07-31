@@ -5,21 +5,31 @@ namespace :update do
     (Dir.mkdir path) unless (Dir.exists? path)
   end
 
+  def clone_or_update (url, dest)
+    if Dir.exist? dest
+      cmd = "cd #{dest} && git pull"
+      OCLogger.log cmd
+      system cmd
+    else
+      mkdir_guard dest
+      cmd = "git clone #{url} #{dest}"
+      OCLogger.log cmd
+      system cmd
+    end
+  end
+
   desc "Clones the @unitedstates/congress-legislators repository"
   task :congress_legislators => :environment do
     clone_path = File.join(Settings.data_path, 'congress-legislators')
     repo_url = 'git://github.com/unitedstates/congress-legislators.git'
+    clone_or_update repo_url, clone_path
+  end
 
-    if Dir.exist? clone_path
-      cmd = "cd #{clone_path} && git pull"
-      OCLogger.log cmd
-      system cmd
-    else
-      mkdir_guard clone_path
-      cmd = "git clone #{repo_url} #{clone_path}"
-      OCLogger.log cmd
-      system cmd
-    end
+  desc "Clones the @unitedstates/congress-contact repository"
+  task :contact_congress_data => :environment do
+    clone_path = File.join(Settings.data_path, 'contact-congress')
+    repo_url = 'git://github.com/unitedstates/contact-congress.git'
+    clone_or_update repo_url, clone_path
   end
 
   desc "Sets the in-session status of both chambers of congress for today"
@@ -52,6 +62,11 @@ namespace :update do
     ARGV = ARGV.slice(1, ARGV.length)
     require File.expand_path 'bin/import_legislators.rb', Rails.root
     ARGV = old_ARGV
+  end
+
+  desc "Creates Formageddon mappings from the unitedstates/contact-congress repo"
+  task :contact_congress => [:environment, :contact_congress_data] do
+    require File.expand_path 'bin/import_congress_contact_steps.rb', Rails.root
   end
 
   desc "Fetches data from govtrack's rsync service"

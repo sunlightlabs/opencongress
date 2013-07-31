@@ -95,7 +95,7 @@ gem 'simple_form'
 
 # Mail
 gem 'mechanize'
-gem 'formageddon', :git => 'git://github.com/opencongress/formageddon.git'
+gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git'
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'

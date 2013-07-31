@@ -8,8 +8,8 @@ require File.expand_path('../faxable/railtie', __FILE__) if defined? Rails::Rail
 module Faxable
   extend ActiveSupport::Concern
 
-  def send_as_fax(recipient)
-    cleaned_number = recipient.gsub('-', '')
+  def send_as_fax(recipient_number)
+    cleaned_number = recipient_number.gsub('-', '')
     cleaned_number = "1#{cleaned_number}" if cleaned_number.length == 10
     filename = to_pdf
     if Faxable.config.deliver_faxes

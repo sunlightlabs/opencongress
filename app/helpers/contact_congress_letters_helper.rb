@@ -29,8 +29,8 @@ module ContactCongressLettersHelper
   end
 
   def formageddon_status_explanation(status)
-    if status =~ /SENT_AS_FAX/
-      "We have confirmed delivery of your letter via fax. This could mean there was an error with the legislator's contact form, but rest assured&mdash;they got it anyway.".html_safe
+    if status =~ /SENT(_| )AS(_| )FAX/
+      "We have confirmed delivery of your letter via fax. This could mean there was an error with the legislator's contact form, but rest assured&mdash;they got it. Note, though, that this means any replies will come directly to you, and not through OpenCongress.".html_safe
     elsif status =~ /SENT/
       "We have confirmed delivery of your letter."
     elsif status =~ /WARNING/

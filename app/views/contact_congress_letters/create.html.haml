@@ -1,27 +1,29 @@
 #heading
   %h2 Contact Congress
-  
+
 .contact_congress
   = render 'contact_congress_status_bar', :step => 3
-  
+
   .congrats
     - if @new_user_notice
       %p.new_user
-        %strong You're almost done -- before we can send your letter, you must confirm the free "My OpenCongress" account we've created for you. 
+        %strong You're almost done -- before we can send your letter, you must confirm the free "My OpenCongress" account we've created for you.
         %br
         %br
-        We just sent a confirmation email from "OpenCongress Login" to the email address you entered on the previous page. Click the link inside to verify your email, and we'll complete delivery of your letter immediately. 
+        We just sent a confirmation email from "OpenCongress Login" to the email address you entered on the previous page. Click the link inside to verify your email, and we'll complete delivery of your letter immediately.
         %br
         %br
         Going forward, your new "MyOC" account will store your address info to make it easy to write your members of Congress, as well as enable you to join Groups on OpenCongress and more.
-    - else 
+    - else
       %p
-        Congratulations, your letter to your elected officials has been sent. If you receive any replies from the offices of your senators or representative, you will receive an email alert immediately.
+        Congratulations, your letter to your elected officials has been sent!
+        - if @contact_congress_letter.formageddon_threads.map {|t| t.formageddon_letters.first.status }.include?("SENT")
+          If you receive any replies from the offices of your senators or representative, you will receive an email alert immediately.
         - if @group
           Also, your letter has been added to the group
           = link_to @group.name, group_path(@group)
           \.
-      %p Recently, due to a high volume of email traffic to members of the U.S. House, reaching official Congressional offices is more difficult than typically the case.
+      -#%p Recently, due to a high volume of email traffic to members of the U.S. House, reaching official Congressional offices is more difficult than typically the case.
       %p
         - @contact_congress_letter.formageddon_threads.each do |t|
           %strong= t.formageddon_recipient
@@ -30,7 +32,7 @@
           %br
     %br
 
-  .perm 
+  .perm
     Here is your letter's permalink:
     %br
     = link_to url_for(:only_path => false, :controller => 'contact_congress_letters', :action => 'show', :id => @contact_congress_letter), url_for(:only_path => false, :controller => 'contact_congress_letters', :action => 'show', :id => @contact_congress_letter)
@@ -45,7 +47,7 @@
         A
         = link_to 'page with your letter', :controller => 'contact_congress_letters', :action => 'show', :id => @contact_congress_letter
         has been set up. Share it with your friends and followers!
-        
+
         .share_buttons
           - short_url = bitly_url(@contact_congress_letter)
           <a class="med_button twitter" href="http://twitter.com/home?status=#{personal_share_message_for_letter(@contact_congress_letter, short_url)}"><span>#{image_tag 'twitter_logo.png'}</span></a>
@@ -58,7 +60,7 @@
         Print this letter and send it through the mail.  Here's the address:
       %p
         - @contact_congress_letter.formageddon_threads.each_with_index do |thread, i|
-          %p  
+          %p
             = thread.formageddon_recipient.formageddon_display_address.gsub(/\n/, "<br />").html_safe
             = link_to 'Print', contact_congress_letter_path(@contact_congress_letter, :letter => i, :print_version => 'true'), :target => '_new'
     .step.noborder
@@ -67,8 +69,7 @@
         Call your representatives at the numbers below:
 
       - @contact_congress_letter.formageddon_threads.each do |thread|
-        %p  
+        %p
           = "#{thread.formageddon_recipient.title_long} #{thread.formageddon_recipient.firstname} #{thread.formageddon_recipient.lastname}"
           %br
           = thread.formageddon_recipient.phone
-  

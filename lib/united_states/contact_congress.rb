@@ -103,7 +103,7 @@ module UnitedStates
               form.formageddon_form_fields << Formageddon::FormageddonFormField.new(
                 :name => item['name'],
                 :css_selector => item['selector'],
-                :required => item['required'] || false
+                :required => item['required'] || false,
                 :value => value
               )
               # Email fields might have a 'disallow_plus' parameter, if the plus hack will trigger the form to fail.

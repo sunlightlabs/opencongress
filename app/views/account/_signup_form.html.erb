@@ -3,12 +3,12 @@
 
    <%= error_messages_for :user %>
 
-    <label for="new_user_login">Choose a Username</label>
-      <%= f.text_field :login, :id => 'new_user_login', :class => 'field', :size => 30 %>
+    <label for="user_login">Choose a Username</label>
+      <%= f.text_field :login, :id => 'user_login', :class => 'field', :size => 30 %>
       <p class="zip_tell">(no spaces or special characters)</p>
 
-      <label for="new_user_password">Choose a Password</label>
-    <%= f.password_field :password, :id => 'new_user_password', :class => 'field', :size => 30 %>
+      <label for="user_password">Choose a Password</label>
+    <%= f.password_field :password, :id => 'user_password', :class => 'field', :size => 30 %>
 
     <label for="user_password_confirmation">Confirm Password</label>
       <%= f.password_field :password_confirmation, :class => 'field', :size => 30 %>

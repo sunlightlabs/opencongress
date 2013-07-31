@@ -316,7 +316,7 @@ width: 100%;
 clear: both !important;
 }
 
-#bill h2.icon {
+#bill h2.bill-cat-title {
 padding: 4px 0 4px 0;
 font-size: 14px;
 border-bottom: 1px solid #ddd;
@@ -325,17 +325,17 @@ font-family: Helvetica, sans-serif;
 clear: both;
 }
 
-#bill h2.icon .dbox_trigger {
+#bill h2.bill-cat-title .dbox_trigger {
 margin-right: 0;
 }
 
-#bill h2.icon span {
+#bill h2.bill-cat-title span {
 font-size: 11px;
 font-weight: normal;
 padding-left: 15px;
 }
 
-#bill h2.icon div {
+#bill h2.bill-cat-title div {
 float: left;
 }
 

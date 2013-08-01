@@ -92,23 +92,12 @@ class IssueController < ApplicationController
     @meta_description = "#{@subject.term}-related bills and votes in the U.S. Congress."
     @comments = @subject
 
-
     @latest_bills = @subject.latest_bills(3, 1)
     @major_bills = @subject.major_bills.where(:session => Settings.default_congress)
-    @key_votes = @subject.pvs_categories.collect{|c| c.key_votes }.flatten
+    @key_votes = @subject.key_votes
     @groups = @subject.groups.all
     @passed_bills = @subject.passed_bills(3, 1, Settings.available_congresses)
-
-    # the following lines could be a little more, eh, efficient
-    @related_industries = @subject.pvs_categories.collect{|c| c.crp_sectors }.flatten.collect{ |i| i.crp_industries }.flatten
-    @related_industries.concat(@subject.pvs_categories.collect{|c| c.crp_industries }.flatten).flatten
-
-    # if params[:filter] == 'enacted'
-    #   @bills = @subject.passed_bills(10, params[:page].blank? ? 1 : params[:page])
-    # else
-    #   @bills = @subject.latest_bills(10, params[:page].blank? ? 1 : params[:page])
-    # end
-
+    
     @top_comments = @subject.comments.find(:all,:include => [:comment_scores, :user], :order => "comments.average_rating DESC", :limit => 2)
     @atom = {'link' => url_for(:only_path => false, :controller => 'issue', :id => @subject, :action => 'atom'), 'title' => "Major Bill Actions in #{@subject.term}"}
 		@hide_atom = true

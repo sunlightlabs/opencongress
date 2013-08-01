@@ -336,6 +336,15 @@ class Subject < ActiveRecord::Base
     self.comments.count(:id, :conditions => ["created_at > ?", current_user.previous_login_date])
   end
 
+  def key_votes(congress = Settings.default_congress)
+    major_bills.includes(:roll_calls)
+               .order('roll_calls.date desc')
+               .where('roll_calls.roll_type' => RollCall.passage_types)
+               .first(10)
+               .map{ |b| b.roll_calls.last }
+               .select{ |r| r.nil? == false}
+  end
+
   # TODO
   def most_viewed_bills(num = 5, congress = Settings.default_congress, seconds = Settings.default_count_time)
     Bill.find_by_sql(["SELECT bills.*,

@@ -1,3 +1,5 @@
+require_dependency 'wiki_connection'
+
 class Person < ActiveRecord::Base
   include ViewableObject
 

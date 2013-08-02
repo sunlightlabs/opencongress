@@ -1,5 +1,5 @@
-require_dependency 'wiki_connection'
 require_dependency 'united_states'
+require_dependency 'wiki_connection'
 
 class Bill < ActiveRecord::Base
   include ViewableObject

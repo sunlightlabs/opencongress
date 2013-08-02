@@ -9,7 +9,7 @@ module UrlHelper
     link_text += trunc ? "<span class=\"title\">#{truncate(item.send(attribute), :length => trunc)}</span>".html_safe :
                          "<span class=\"title\">#{item.send(attribute)}</span>".html_safe
     if item.kind_of? Bill
-      link_text +=  "<span class=\"date\"><span>#{temp_url_strip(item.status)}</span>#{item.last_action.formatted_date if item.last_action}</span>".html_safe
+      link_text +=  "<span class=\"date\"><span>#{item.status}</span>#{item.last_action.formatted_date if item.last_action}</span>".html_safe
     end
     link_text += show_views ? "<span class=\"views_count\"><span>#{item.views(Settings.default_count_time) if show_views}</span> views</span>".html_safe : ""
 

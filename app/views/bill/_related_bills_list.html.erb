@@ -42,9 +42,9 @@
           <span class="status">            
 
             <% if bill.last_action.text %>
-              <span><%= temp_url_strip(until_preposition(bill.last_action.text)) %></span>
+              <span><%= until_preposition(bill.last_action.text) %></span>
             <% else %>
-              <span><%= temp_url_strip(bill.last_action.action_type.capitalize) %></span>
+              <span><%= bill.last_action.action_type.capitalize %></span>
             <% end %>
 
             <span class="date"><%= bill.last_action.formatted_date if bill.last_action %></span>

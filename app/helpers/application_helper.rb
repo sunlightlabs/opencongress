@@ -274,15 +274,6 @@ EOT
     text
   end
 
-  # this is a temporary method to removed some weird data we are getting from govtrack
-  def temp_url_strip(str)
-    if ind = str.index(/&lt;a href/)
-      return str[0..(ind-1)]
-    else
-      str
-    end
-  end
-
   # this method should be run on tag-stripped strings
   def strip_unclosed_tag(str)
     if ind = str.index(/</)

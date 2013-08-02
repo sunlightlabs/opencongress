@@ -4,7 +4,7 @@
   	  <%= bill.typenumber %> - <span><%= truncate(bill.title_common, :length => 50) rescue nil %></span>
   	</span>
   	<span class="date">
-      <span><%= temp_url_strip(bill.status) %></span> 
+      <span><%= bill.status %></span> 
     	<%= bill.last_action.formatted_date if bill.last_action %>
   	</span>
   	

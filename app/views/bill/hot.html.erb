@@ -45,7 +45,7 @@
 
           <span class="status">            
 
-            <span><%= temp_url_strip(bill.status) %></span>
+            <span><%= bill.status %></span>
 
             <span class="date"><%= bill.last_action.formatted_date if bill.last_action %></span>
             <% unless bill.session == Settings.default_congress %>

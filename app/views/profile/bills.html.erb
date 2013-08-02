@@ -26,7 +26,7 @@
 	    Blogs: <%= link_to image_tag('feed.jpg', {:alt => "Subscribe", :style => "border:0;vertical-align:middle;"}),
 	              :controller => 'bill', :action => 'atom_blogs', :id => bill.ident %>	    
 	    </td>
-	            <td><%= temp_url_strip(bill.status) %></td>
+	            <td><%= bill.status %></td>
 	            <td><%= bill.last_action.formatted_date %></td>
 	            <td style="text-align:center;"><%= link_to bill.bookmarks.length, :controller => 'friends', :action => 'tracking_bill', :id => bill.ident %></td>
               <%= user_bill_vote_string(bill) %>

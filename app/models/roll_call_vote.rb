@@ -68,7 +68,7 @@ class RollCallVote < ActiveRecord::Base
   end
   
   def self.abstain_count
-    RollCallVote.count(:all, :include => [{:roll_call => :bill}], :conditions => ["bills.session = ? AND roll_call_votes.vote = ?", Settings.default_congress, "0"], :group => "person_id").sort{|a,b| b[1]<=>a[1]}
+    RollCallVote.includes(:roll_call => :bill) .where('bills.session' => 113, 'roll_call_votes.vote' => '0') .group(:person_id) .count .to_a .sort_by(&:second) .reverse
   end
   
   def with_party?

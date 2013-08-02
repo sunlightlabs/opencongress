@@ -55,18 +55,13 @@ class BillController < ApplicationController
   end
 
   def all
-    # disabled caching for
-    #expires_in 20.minutes, :public => true
     @congress = params[:congress] ? params[:congress] : Settings.default_congress
 
-    # the following is temporary until a better way is figured out!
-    unless read_fragment("bill_#{@types}_index_#{@congress}")
-      @bills = {}
-      @bill_counts = {}
-      @types_from_params.each do |bill_type|
-        @bills[bill_type] = Bill.find_all_by_bill_type_and_session(bill_type, @congress, :order => 'lastaction DESC', :limit => 5)
-        @bill_counts[bill_type] = Bill.count(:conditions => ['bill_type = ? AND session = ?', bill_type, @congress])
-      end
+    @bills = {}
+    @bill_counts = {}
+    @types_from_params.each do |bill_type|
+      @bills[bill_type] = Bill.find_all_by_bill_type_and_session(bill_type, @congress, :order => 'lastaction DESC', :limit => 5)
+      @bill_counts[bill_type] = Bill.count(:conditions => ['bill_type = ? AND session = ?', bill_type, @congress])
     end
 
     @page_title = "#{@types.capitalize} Bills: #{@congress}th Congress"

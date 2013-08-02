@@ -248,7 +248,6 @@ class PeopleController < ApplicationController
 
   def show
     congress = params[:congress] ? params[:congress] : Settings.default_congress
-    expires_in 20.minutes, :public => true
 
     respond_to do |format|
      format.html {

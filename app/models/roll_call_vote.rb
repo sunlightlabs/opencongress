@@ -68,7 +68,16 @@ class RollCallVote < ActiveRecord::Base
   end
   
   def self.abstain_count
-    RollCallVote.includes(:roll_call => :bill) .where('bills.session' => 113, 'roll_call_votes.vote' => '0') .group(:person_id) .count .to_a .sort_by(&:second) .reverse
+    cache_key = "roll_call_vote_abstain_by_person_table"
+    Rails.cache.fetch(cache_key) do
+      RollCallVote.includes(:roll_call => :bill)
+                  .where('bills.session' => 113, 'roll_call_votes.vote' => '0')
+                  .group(:person_id)
+                  .count
+                  .to_a
+                  .sort_by(&:second)
+                  .reverse
+    end
   end
   
   def with_party?

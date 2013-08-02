@@ -4,7 +4,6 @@ class BillController < ApplicationController
   helper :roll_call
   before_filter :page_view, :only => [:show, :text]
   before_filter :get_params, :only => [:index, :all, :popular, :pending, :hot, :most_commentary, :readthebill]
-  #before_filter :bill_profile_shared, :only => [:show, :comments, :votes, :actions, :amendments, :text, :actions_votes, :news_blogs, :videos, :news, :blogs, :news_blogs, :topnews, :topblogs, :letters]
   before_filter :bill_profile_shared, :only => [:show, :comments, :votes, :actions, :amendments, :text, :actions_votes, :videos, :topnews, :topblogs, :letters]
   before_filter :aavtabs, :only => [:actions, :amendments, :votes, :actions_votes]
   before_filter :get_range, :only => [:hot]

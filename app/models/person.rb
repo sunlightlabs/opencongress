@@ -1,9 +1,5 @@
 class Person < ActiveRecord::Base
-#class Person < ViewableObject
   include ViewableObject
-
-#  acts_as_solr :fields => [:party, {:with_party_percentage => :float}, {:abstains_percentage => :float}, {:against_party_percentage => :float}],
-#               :facets => [:party]
 
   has_many :committees, :through => :committee_people
   has_many :committee_people, :conditions => proc { [ "committees_people.session = ?", Settings.default_congress ] }

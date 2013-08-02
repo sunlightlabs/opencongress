@@ -256,14 +256,6 @@ class PeopleController < ApplicationController
 
       comment_redirect(params[:goto_comment]) and return if params[:goto_comment]
 
-		  # "issue cloud" code; to be used later
-		  #cosponsored_bills = @person.bills_cosponsored
-		  #issue_hash = {}
-		  #cosponsored_bills.each { |cb| cb.subjects.collect { |i| issue_hash[i] = issue_hash[i].nil? ? 1 : issue_hash[i] + 1}}
-		  #@top_issues = issue_hash.to_a.sort { |a, b| b[1] <=> a[1] }[0..20]
-		  #@top_issues.sort! {|a,b| a[0].term <=> b[0].term }
-		  #logger.warn "TOP ISSUES: #{@top_issues}"
-
 		  @include_vids_styles = true
 
       @featured_person_text = @person.featured_people.first

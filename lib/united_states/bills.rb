@@ -49,7 +49,6 @@ module UnitedStates
 
     ##
     # Gets a where-able set of params for the given result of decode_bill_hash
-    # TODO Guard against loading bills from other congresses
     def bill_ident (bill_hash)
       { :session => bill_hash['congress'],
         :bill_type => bill_hash['bill_type'],

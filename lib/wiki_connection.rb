@@ -13,16 +13,6 @@ class Wiki < ActiveRecord::Base
 
   set_table_name 'text'
 
-  # Monkey patch find_by_sql so that we check whether the server is up before we try to connect.
-  # This avoids an issue where the AR socket blocks for a very long time.
-  def self.find_by_sql(query)
-    if (!connected? && !SocketTest.is_port_open?(configurations['oc_wiki']['host'], configurations['oc_wiki']['port'] || 3306))
-      return nil
-    end
-
-    super(query)
-  end
-
   def self.summary_text_for(article_name)
     begin
       a = find_by_sql(['select rev_id, rev_timestamp, t.old_text, p.page_title, p.page_namespace from revision r, page p, text t where r.rev_id = p.page_latest and t.old_id = r.rev_text_id and page_title = ?', article_name])
@@ -68,29 +58,31 @@ class Wiki < ActiveRecord::Base
     begin
       a = find_by_sql(['select rev_id, rev_timestamp, t.old_text, p.page_title, p.page_namespace from revision r, page p, text t where r.rev_id = p.page_latest and t.old_id = r.rev_text_id and page_title = ?', member_name])
 
-      #puts a[0].old_text
-      
       return nil if (a.nil? || a.empty?)
     
       # for some reason, newlines were messing up mediacloth
       no_newlines = a[0].old_text.gsub(/\n/, '<br/>')   
       no_newlines =~ /==\s*?Bio(graphy)?\s*?==(.*?)==/
-      
+
       if $~[2].blank?
         return nil
       else
-        no_refs = $~[2].gsub(/<ref(.|\n)*?\/ref>/, '')
-        no_links = no_refs.gsub(/\[(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/[^\s]*?)\]/ix, '')
-        
-        #puts "AFTER: #{no_links}"
+        bio_wiki_text = $~[2]
         # remove the <ref> tags before returning
-        doc = Hpricot(MediaCloth.wiki_to_html(no_links))                 
+        doc = Hpricot(MediaCloth.wiki_to_html(bio_wiki_text))
         doc.search("ref").remove
 
         html = doc.to_html
-        
-        html = html.gsub(/<a\s(.|\n)*?>/, '')
-        html = html.gsub(/<\/a>/, '')
+
+        doc.search('a').each do |anchor|
+          html = html.sub(anchor.to_s, anchor.inner_text.sub('w:', ''))
+        end
+
+        if Hpricot(html).inner_text.length == 0
+          nil
+        else
+          html
+        end
       end
     rescue
       return nil

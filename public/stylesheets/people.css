@@ -1162,8 +1162,13 @@ padding: 3px 0;
     padding-right: 20px;
 }
 
+.bio_avatar {
+    margin: 25px 0 0 0;
+}
+
 .bio_summary {
-  width: 560px;
+  margin: 10px 0 0 0;
+  width: 660px;
 }
 
 .fundraiser {

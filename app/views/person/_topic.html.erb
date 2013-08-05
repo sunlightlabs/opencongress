@@ -1,4 +1,4 @@
-<div class="people_header clearfix" style=" background: url(/images/<%= @person.photo_path %>) 610px bottom no-repeat;">
+<div class="people_header clearfix">
   <div id="name">
     <h3><em><%= @person.title_common %> <%= @person.full_name %></em></h3>
     <h5>
@@ -28,12 +28,22 @@
       <%= sponsored_bill_stats %>
     </ul>
   <% end %>
+
+  <div class="clearfix">
+  </div>
   
   <% unless (voting_similarities_html = top_voting_similarities).nil? %>
     <!-- Should be popup <%# site_text_explain('voting_similarities')%> -->
+    <div class="floatleft">
     <%= voting_similarities_html %>
+    </div>
   <% end %> 
-  
+
+  <img class="floatright bio_avatar" src="/images/<%= @person.photo_path %>">
+
+  <div class="clearfix">
+  </div>
+
   <% unless @bio_summary.blank? %> 
     <div class='bio_summary'><%= @bio_summary.html_safe %></div>
   <% end %>

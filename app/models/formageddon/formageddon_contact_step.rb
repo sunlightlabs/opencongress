@@ -31,15 +31,15 @@ class Formageddon::FormageddonContactStep
     if options[:type] == :issue_area
       text = options[:letter].message rescue ''
       if contactable.is_a? Bill
-        text = (Bill.subjects.map(&:term).join(' ') + " #{text})" rescue text
+        text = (Bill.subjects.map(&:term).join(' ') + " #{text})" rescue text)
         text += " #{Bill.bill_titles.map(&:title).join(' ')}"  rescue ''
         text += " #{Bill.billtext_text}"
-      value = JSON.load(HTTParty.post("#{Settings.formageddon_select_box_delegate_url}",
-                             :body => { "text" => text, "choices" => options[:option_list]},
-                             :headers => { "Content-Type" => "application/x-www-form-urlencoded"}
-                             ).body) rescue nil
+        value = JSON.load(HTTParty.post("#{Settings.formageddon_select_box_delegate_url}",
+                                        :body => { "text" => text, "choices" => options[:option_list]},
+                                        :headers => { "Content-Type" => "application/x-www-form-urlencoded"}
+                                       ).body) rescue nil
+      end
+      value || options[:default]
     end
-    value || options[:default]
   end
-
 end

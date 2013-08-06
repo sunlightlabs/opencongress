@@ -75,6 +75,10 @@ class Bill < ActiveRecord::Base
 
   attr_accessor :wiki_summary_holder
 
+  after_save do
+    @bill_text = nil
+  end
+
   scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
   scope :major, where(:is_major => true)
 
@@ -1293,7 +1297,7 @@ class Bill < ActiveRecord::Base
         realpath = Pathname.new("#{path}/#{bill_type}#{number}.txt").realpath
         current_file = /\/([a-z0-9]*)\.txt/.match(realpath).captures[0]
 
-        @bill_text = File.open(realpath).read
+        @bill_text ||= File.read(realpath)
       rescue
         @bill_text = nil
       end

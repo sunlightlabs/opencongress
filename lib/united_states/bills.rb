@@ -104,6 +104,14 @@ module UnitedStates
         # Summary
         bill.summary = bill_hash['summary'] and bill_hash['summary']['text']
         bill.updated = bill_hash['+updated_at']
+        if bill_hash['subjects_top_term']
+          subj = Subject.find_by_term(bill_hash['subjects_top_term'])
+          if subj
+            bill.top_subject = subj
+          else
+            bill.top_subject = nil
+          end
+        end
         bill.save!
 
         # Import bill titles.

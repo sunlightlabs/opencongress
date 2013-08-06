@@ -25,4 +25,21 @@ class Formageddon::FormageddonContactStep
       letter.send_fax :error_msg => @error_msg
     end
   end
+
+  def delegate_select_box_value(options = {})
+    value = nil
+    if options[:type] == :issue_area
+      text = options[:letter].message rescue ''
+      if contactable.is_a? Bill
+        text = (Bill.subjects.map(&:term).join(' ') + " #{text})" rescue text
+        text += " #{Bill.bill_titles.map(&:title).join(' ')}"  rescue ''
+        text += " #{Bill.billtext_text}"
+      value = JSON.load(HTTParty.post("#{Settings.formageddon_select_box_delegate_url}",
+                             :body => { "text" => text, "choices" => options[:option_list]},
+                             :headers => { "Content-Type" => "application/x-www-form-urlencoded"}
+                             ).body) rescue nil
+    end
+    value || options[:default]
+  end
+
 end

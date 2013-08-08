@@ -1,5 +1,6 @@
 class AboutController < ApplicationController
   skip_before_filter :has_accepted_tos?
+  skip_before_filter :has_district?
   skip_before_filter :store_location, :only => ["privacy_policy","terms_of_service"]
 
   def index
@@ -27,8 +28,8 @@ class AboutController < ApplicationController
     require 'bluecloth'
     @readme = BlueCloth.new(Rails.root.join("README.md").read).to_html
   end
-  
-  def donate 
+
+  def donate
     render :layout => 'donate'
   end
 
@@ -54,15 +55,15 @@ class AboutController < ApplicationController
 
   def terms_of_service
      @page_title = "Terms of Service and Comment Policy"
-  end                                                   
-  
+  end
+
   def privacy_policy
      @page_title = "Privacy Policy"
   end
-  
+
   def version3
     @page_title = 'Announcing OpenCongress v3'
   end
-  
+
 
 end

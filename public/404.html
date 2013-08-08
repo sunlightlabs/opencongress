@@ -12,6 +12,23 @@
 #wrapper {
    padding-left: 10px;
 }
+label, input[type=text] {
+   float:none;
+   display: inline-block;
+   margin-bottom: 10px;
+}
+.control-label {
+   width: 100px;
+   /*text-align: right;*/
+   margin-right:5px;
+}
+.control-label.required:after {
+   content: "*";
+   color:#900;
+}
+.button {
+   width:265px;
+}
 </style>
 
 </head>
@@ -21,20 +38,77 @@
    </div>
    <div id="content" class="clearfix">
       <div class="inner">
-         <div id="heading" style="height: 45px;"><h2>File not found</h2></div>
+         <div id="heading" style="height: 45px;">
+            <div class="container_16">
+               <div class="row">
+                  <h2>File not found &mdash; <a href="/">Go back home &raquo;</a></h2>
+               </div>
+            </div>
+         </div>
 
-         <div class="padding pretty-text">
-            <p>Sorry, we couldn't find what you were looking for.</p>
-
-            <h3>About OpenCongress</h3>
-
+         <div class="padding pretty-text container_16">
+            <div class="row clearfix" style="padding-bottom:60px;">
+               <div class="grid_7 alpha">
+                  <img src="/images/refresh-plain.png" alt="A Refreshed OpenCongress is Coming.">
+               </div>
+               <div class="grid_7 prefix_1 omega">
+                  <h2>Well, The Good News Is We're Working On It.</h2>
+                  <p>Hi there and thanks for using OpenCongress! We know some of the features and pages (including this one) haven't been up to snuff lately, and we're sorry about that.</p>
+                  <p><strong>But!</strong> we're excited to be redoubling our efforts to improve quality, including:</p>
+                  <ul class="standard_list">
+                     <li>Data quality and address/district accuracy issues</li>
+                     <li>Site stability</li>
+                     <li>User experience</li>
+                     <li>(and more!)</li>
+                  </ul>
+                  <br/>
+                  <h3>Be the first to know when a better OpenCongress is ready:</h3>
+                  <form id="subscribe" action="/subscribe.json" method="post">
+                     <ul>
+                        <li class="string required">
+                           <label for="email" class="required control-label">Email</label>
+                           <input type="text" class="field" name="email" id="email" />
+                        </li>
+                        <li>
+                           <label for="zip" class="required control-label">Zip/Postal Code</label>
+                           <input type="text" class="field" id="zip" name="zip" />
+                        </li>
+                        <li class="controls">
+                           <button class="button large blue">Stay Updated</button>
+                        </li>
+                     </ul>
+                  </form>
+               </div>
+            </div>
+<!--
             <p>OpenCongress brings together official government data with news and blog coverage, social networking, public participation tools, and more to give you the real story behind what's happening in Congress.</p>
 
             <p>Put broadly, the main problem we seek to address with OpenCongress is that the Congressional legislative process is largely closed-off from timely and meaningful public input. For most people, finding out what's really happening in our democratically-elected Congress is a difficult and discouraging task. The rules by which bills become laws are notoriously arcane. What's more, Congress offers few channels for people to make their voices heard on consequential publicy policy matters before, during, and after the legislative process. This disconnect results in deep-seated public disapproval of Congress -- and worse, malignant apathy about politics as a whole.</p>
+-->
          </div>
       </div>
    </div>
- 
+<script src="/javascripts/jquery-1.5.2.min.js"></script>
+<script src="/javascripts/jquery.form.min.js"></script>
 <script type="text/javascript">var _gaq=_gaq||[];_gaq.push(['_setAccount','UA-1208819-1']);_gaq.push(['_trackPageview']);(function(){var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga, s);})();</script>
+<script>
+(function($){
+   $(function(){
+      $('#subscribe')
+      .submit(function(e){
+         e.preventDefault()
+         var form = $(this);
+         $(this).ajaxSubmit({
+            success: function(){
+               form.replaceWith("<p><strong>Thanks! We'll let you know when we launch.</strong></p>");
+            },
+            error: function(){
+               alert('Oops! Make sure both required fields are filled out.');
+            }
+         });
+      });
+   });
+})(jQuery);
+</script>
 </body>
 </html>

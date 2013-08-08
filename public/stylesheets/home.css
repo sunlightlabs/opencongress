@@ -14,7 +14,7 @@ margin-top: 13px;
 padding: 15px;
 background: url('../images/bill_heading_blue.png') left top;
 _background: url('../images/bill_heading_blue.gif') repeat left top;
-height: 45px !important; 
+height: 45px !important;
 border-bottom: 1px solid #abd1e2;
 overflow: hidden;
 }
@@ -214,7 +214,7 @@ padding: 20px 0 20px 20px;
 width: 982px;
 height:36px;
 background: url('/images/healthcare_bill.png') 17px 14px no-repeat;
-margin-right: 30px;	
+margin-right: 30px;
 border-bottom: 1px solid #ddd;
 }
 
@@ -227,7 +227,7 @@ width: 80px;
 
 
 .healthcare_bills div{
-padding-left: 30px;	
+padding-left: 30px;
 padding-bottom: 11px;
 float: left;
 font-weight: bold;
@@ -349,7 +349,7 @@ position: relative;
 
 .small_heading span span{
 background: none;
-padding-right: 20px; 
+padding-right: 20px;
 background: url(../images/arrows.png) right -12px no-repeat;
 }
 .small_heading a span{
@@ -371,11 +371,11 @@ top: -7px;
 width: 161px;
 display: none;
 left: -10px;
-  
+
   -moz-box-shadow: 0 3px 5px #222, inset 0 1px 0px #fff;
   -webkit-box-shadow: 0 3px 5px #222, inset 0 1px 0px #fff;
   box-shadow:  0 1px 0px #222, inset 0 1px 0px #fff;
-  
+
   background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#eee)); /* for webkit browsers */
   background: -moz-linear-gradient(top,  #fff,  #eee); /* for firefox 3.6+ */
 
@@ -434,7 +434,7 @@ background: #ddd;
   -moz-box-shadow: 0 1px 0px #888, 0 -1px 0px #ccc, inset 0 1px 0px #fff;
   -webkit-box-shadow: 0 1px 0px #888, 0 -1px 0px #ccc, inset 0 1px 0px #fff;
   box-shadow:  0 1px 0px #888, 0 -1px 0px #ccc, inset 0 1px 0px #fff;
-  
+
   background: #999; /* for non-css3 browsers */
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff', endColorstr='#ddd'); /* for IE */
   background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd)); /* for webkit browsers */
@@ -551,7 +551,7 @@ margin: 0 2px;
 font-size: 14px;
 color: #555;
 line-height: 1.5em;
- 
+
 }
 
 .blog_list #blog h3{
@@ -684,7 +684,7 @@ color: #999;
 }
 
 
-.pop-tabs li.here a span{	
+.pop-tabs li.here a span{
 background: url('/images/small_button.png') left -23px no-repeat;
    _background: url('/images/small_button.gif') left -23px no-repeat;
 }
@@ -1065,7 +1065,7 @@ padding: 0px 0 10px 14px !important;
 .indent {
 margin: 0px 0px 0 12px;
 }
-	
+
 .indent li{
 padding: 0 2px;
 }
@@ -1139,13 +1139,13 @@ padding: 45px 290px 0 40px;
 }
 
 /*#why_carousel li.number4{
-padding-right: 20px !important; 
+padding-right: 20px !important;
 }
  */
 .inner .jcarousel-skin-bravo .jcarousel-clip-horizontal {
   left:0;
   width:870px;
-}             
+}
 .jcarousel-prev, .jcarousel-next{
 margin: 110px 0 0 0 !important;
 }
@@ -1161,7 +1161,7 @@ font-weight: normal;
 
 
 #why_carousel h4{
-font-size: 18px; 
+font-size: 18px;
 color: #759dc1;
 font-weight: normal;
 }
@@ -1188,7 +1188,7 @@ position: absolute;
 bottom: 0;
 width: 550px;
 }
-	
+
 a.med_button span{
 display: block;
 background: url('/images/med_button.png') repeat left top;
@@ -1289,7 +1289,7 @@ padding-bottom: 6px;
 
 
 .og{
-background: url(../images/v3.png) 0 0 no-repeat;
+background: url(../images/refresh.png) 0 0 no-repeat;
 display: block;
 padding-top: 353px;
 overflow: hidden;

@@ -7,6 +7,7 @@ class AccountController < ApplicationController
   skip_before_filter :store_location
   skip_before_filter :has_accepted_tos?, :only => [:accept_tos, :logout]
   skip_before_filter :is_authorized?, :only => [:logout]
+  skip_before_filter :has_district?, :only => [:determine_district, :logout, :accept_tos]
 
   include OpenIdAuthentication
 

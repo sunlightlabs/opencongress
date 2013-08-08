@@ -783,7 +783,14 @@ margin: 0;
 /* fine tuning /////////////////////////////////////////////////////////////*/
 
 
-
+.offscreen{
+  overflow:hidden;
+  height: 0;
+}
+.offscreen *{
+  position:absolute;
+  left: -9999px;
+}
 
 
 .marginright{

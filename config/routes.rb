@@ -234,6 +234,8 @@ OpenCongress::Application.routes.draw do
     match '/committee/by_chamber/:chamber', :action => 'by_chamber'
   end
 
+  post '/subscribe.:format' => 'email_subscriptions#adhoc'
+
   match 'tools(/:action(/:id))', :controller => 'resources', :as => 'tools'
 
   match '/widgets' => 'widgets#index', :as => 'widgets'

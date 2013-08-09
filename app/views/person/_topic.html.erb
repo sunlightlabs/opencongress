@@ -16,8 +16,10 @@
     <%  if @person.roles_sorted.size > 1 %>
     <%= toggler("rolehistory_list", "View All", "Hide").html_safe %>
     <ul id="rolehistory_list" style="display:none;"> 
-      <% @person.roles_sorted[1..@person.roles_sorted.size].each do |role| %>
-      <li><strong><%= "#{role.startdate.year} - #{role.enddate.year}" %></strong></li>
+      <% @person.roles_sorted.each_with_index do |role, idx| %>
+        <% if idx > 0 %>
+          <li><strong><%= "#{role.startdate.year} - #{role.enddate.year}" %></strong></li>
+        <% end %>
       <% end %>
     </ul>
     <% end %>
@@ -33,7 +35,6 @@
   </div>
   
   <% unless (voting_similarities_html = top_voting_similarities).nil? %>
-    <!-- Should be popup <%# site_text_explain('voting_similarities')%> -->
     <div class="floatleft">
     <%= voting_similarities_html %>
     </div>

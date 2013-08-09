@@ -259,10 +259,6 @@ class PeopleController < ApplicationController
 
       @featured_person_text = @person.featured_people.first
 
-      @person_tracking_suggestions = @person.tracking_suggestions
-      @supporting_suggestions = @person.support_suggestions
-      @opposing_suggestions = @person.oppose_suggestions
-
       @bio_summary = @person.wiki_bio_summary
       @atom = {'link' => url_for(:only_path => false, :controller => 'people', :action => 'atom', :id => @person), 'title' => "Track " + @person.name}
  		@hide_atom = true

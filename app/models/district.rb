@@ -1,3 +1,4 @@
+# encoding=utf-8
 class District < ActiveRecord::Base
   # district_number 0 is reserved for at-large districts
 
@@ -168,43 +169,41 @@ class District < ActiveRecord::Base
     self.state.abbreviation + "-" + self.district_number.to_s
   end
 
-  def freebase_guid_url
-    if self.district_number == 0
-      URI.escape("http://www.freebase.com/api/service/search?query=#{self.state.name.possessive} congressional district&type=/common/topic&type=/government/political_district")
+  def freebase_url_name
+    if district_number == 0
+      "#{state.name.possessive} at large congressional district".gsub(' ', '_').sub('’', '').downcase # Strip out the unicode apostrophe
     else
-      URI.escape("http://www.freebase.com/api/service/search?query=#{self.state.name.possessive} #{self.district_number.ordinalize} congressional district&type=/common/topic&type=/government/political_district")
+      "#{state.name.possessive} #{district_number.ordinalize} congressional district".gsub(' ', '_').sub('’', '').downcase # Strip out the unicode apostrophe
+    end
+  end
+
+  def freebase_data
+    Rails.cache.fetch("district_freebase_#{id}") do
+      url = "https://usercontent.googleapis.com/freebase/v1/topic/en/#{freebase_url_name}?filter=/common/topic/description"
+      puts "Feching #{url}"
+      response = HTTParty.get(url)
+      if response.code == 200
+        response.parsed_response
+      else
+        nil
+      end
+    end
+  end
+
+  def freebase_description
+    begin
+      freebase_data['property']['/common/topic/description']['values'].first['value']
+    rescue
+      nil
     end
   end
 
   def freebase_link
-    "http://www.freebase.com/view/en/#{name.downcase.gsub(' ', '_')}"
+    "http://www.freebase.com/view/en/#{freebase_url_name}"
   end
 
   def wiki_link
     "/wiki/#{state.abbreviation}-#{district_number == 0 ? "AL" : district_number}"
-  end
-
-  def freebase_guid
-     require 'open-uri'
-     require 'json'
-     JSON.parse(open(freebase_guid_url).read)['result'].first['article']['id']
-  end
-
-  def freebase_description_url
-    "http://www.freebase.com/api/trans/blurb#{self.freebase_guid}?maxlength=800"
-  end
-
-  def freebase_description
-     require 'open-uri'
-     require 'json'
-   begin
-    Rails.cache.fetch("district_freebase_desc_#{self.id}") {
-        open(freebase_description_url).read.gsub(/\/(.)\(help(.)info\)/,'/')
-     }
-   rescue
-    "Sorry, we couldn't connect to Freebase to give you the description of this district."
-   end
-
   end
 
   def rep

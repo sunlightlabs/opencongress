@@ -113,32 +113,33 @@ class State < ActiveRecord::Base
     end
   end
 
-  def freebase_guid_url
-    URI.escape("http://www.freebase.com/api/service/search?query=#{self.name}&type=/common/topic&type=/location/us_state")
+  def freebase_url_name
+    name.downcase.gsub(' ', '_')
   end
 
   def freebase_link
-    "http://www.freebase.com/view/en/#{name.downcase.gsub(' ', '_')}"
-  end
-
-  def freebase_guid
-     require 'open-uri'
-     require 'json'
-     JSON.parse(open(freebase_guid_url).read)['result'].first['article']['id']
-  end
-
-  def freebase_description_url
-    "http://www.freebase.com/api/trans/blurb#{self.freebase_guid}?maxlength=800"
+    "http://www.freebase.com/view/en/#{freebase_url_name}"
   end
 
   def freebase_description
-     require 'open-uri'
-     require 'json'
+    begin
+      freebase_data['property']['/common/topic/description']['values'].first['value']
+    rescue
+      nil
+    end
+  end
 
-     Rails.cache.fetch("state_freebase_desc_#{self.id}") {
-       open(freebase_description_url).read.gsub(/\/(.)\(help(.)info\)/,'/')
-     }
-
+  def freebase_data
+    Rails.cache.fetch("state_freebase_#{id}") do
+      url = "https://usercontent.googleapis.com/freebase/v1/topic/en/#{freebase_url_name}?filter=/location/us_state&filter=/common/topic/description"
+      puts "Feching #{url}"
+      response = HTTParty.get(url)
+      if response.code == 200
+        response.parsed_response
+      else
+        nil
+      end
+    end
   end
 
   def image_path

@@ -30,7 +30,7 @@
    <h3><%= link_to raw("&larr; #{@state.name}"), state_url(@state.abbreviation) %></h3>
 
    <p><%= @district.freebase_description %>
-      <em>(More from <%= link_to "Freebase", @state.freebase_link %>)</em></p>
+      <em>(More from <%= link_to "Freebase", @district.freebase_link %>)</em></p>
 
    <div class='district-senators-box'>
      <h2 class="dark">Senators</h2>

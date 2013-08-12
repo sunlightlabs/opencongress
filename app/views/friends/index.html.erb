@@ -20,7 +20,6 @@
             <ul>
               <li><%= link_to "See users in my state and district", friends_near_me_path(@user.login), :class => '' %></li>
               <li><%= link_to 'Find users by e-mail, username, or real name', new_friend_path(@user.login), :class => '' %></li>
-              <!--<li><%= link_to "Import friends from G-Mail, Yahoo!, or Hotmail", friends_import_contacts_path, :class => '' %></li>-->
               <li><%= link_to "Invite more friends to join OpenCongress!", friends_invite_form_path(current_user.login), :class => "invite_trigger" %></li>
             </ul>
 

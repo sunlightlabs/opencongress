@@ -204,52 +204,6 @@
     <a href="<%= url_for :controller => 'bill', :action => 'letters', :id => @bill.ident %>" class="button silver small floatleft margin-left push-left">See All Letters (<%= @bill.contact_congress_letters.size %>)</a>
     <div class="clear">&nbsp;</div>
   <% end %>
-
-
-
-
-  <!-- users also tracking has been removed
-    <div class="users_also" id="users_tracking">
-    <br/>
-    <br/>
-
-
-    <% unless @tracking_suggestions[0] == 0 %>
-    <%= render :partial => "shared/tracking_suggestions_table",
-    :locals => {:object => @bill,
-      :title => @bill.typenumber,
-      :action => 'tracking_bill',
-      :tracking_suggestions => @tracking_suggestions} %>
-
-    <% end %>
-
-    <br/>
-
-
-    <% unless @supporting_suggestions[0] == 0 %>
-    <%= render :partial => "shared/support_oppose_tables",
-    :locals => {:object => @bill,
-      :title => @bill.typenumber,
-      :action => 'supporting_bill',
-      :stance => "supporting",
-      :tracking_suggestions => @supporting_suggestions} %>
-      <% end %>
-      <br/>		  <br/>		  <br/>
-
-
-    <% unless @opposing_suggestions[0] == 0 %>
-    <%= render :partial => "shared/support_oppose_tables",
-    :locals => {:object => @bill,
-      :title => @bill.typenumber,
-      :action => 'opposing_bill',
-      :stance => "opposing",
-      :tracking_suggestions => @opposing_suggestions} %>
-
-    <% end %>			
-
-
-    </div>
-  -->
   
   <br/>
   <br/>

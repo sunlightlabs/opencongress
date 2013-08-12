@@ -382,10 +382,6 @@ class BillController < ApplicationController
 
         @include_vids_styles = true
 
-        @tracking_suggestions = @bill.tracking_suggestions
-        @supporting_suggestions = @bill.support_suggestions
-        @opposing_suggestions = @bill.oppose_suggestions
-
         @latest_letters = @bill.contact_congress_letters.where("contact_congress_letters.is_public='t'").order("contact_congress_letters.created_at DESC").limit(3)
 
         # create roll call variable to include chart JS
@@ -399,9 +395,6 @@ class BillController < ApplicationController
 
   def user_stats_ajax
     @bill = Bill.find_by_id(params[:id])
-    @tracking_suggestions = @bill.tracking_suggestions
-    @supporting_suggestions = @bill.support_suggestions
-    @opposing_suggestions = @bill.oppose_suggestions
     render :action => 'user_stats_ajax', :layout => false
   end
 

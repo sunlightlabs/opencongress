@@ -44,9 +44,7 @@
 
               <div class="grid_3 omega">
                   <%=h friend.user.location && !friend.user.location.empty? ? friend.user.location : "[Not Public]" %>
-                  <% zd = ZipcodeDistrict.zip_lookup(friend.user.zipcode, (friend.user.zip_four ? friend.user.zip_four : nil)).first %>
-                  <%=h zd.state + "-" if zd %>
-                  <%=h zd.district if zd %>
+                  <%= friend.user.district_tag %>
               </div>
 
               <div class="grid_3 alpha">
@@ -102,13 +100,11 @@
                   <% unless friend.friend.location.nil? || friend.friend.location.empty? %>
                     <tr>
                       <td>
-                        <%=h friend.friend.location %>,
                         <% if friend.confirmed %>
-                          <% if friend.friend.zipcode %>
-                            <% zd = ZipcodeDistrict.zip_lookup(friend.friend.zipcode, (friend.friend.zip_four ? friend.friend.zip_four : nil)).first %>
-                          <% end %>
-                          <% if zd %>
-                            &nbsp;District: (<%=h zd.state + "-" %><%=h zd.district%>)
+                          <% if friends.user.can_view(:my_location, current_user) %>
+                            <% if friend.user.district_tag %>
+                              <%= friends.user.district_tag %>
+                            <% end %>
                           <% end %>
                         <% end %>
                       </td>

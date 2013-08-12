@@ -210,4 +210,45 @@ class District < ActiveRecord::Base
     Person.rep.find_by_state_and_district(self.state.abbreviation, district_number.to_s)
   end
 
+  def sens
+    Person.sen.where(:state => state.abbreviation)
+  end
+
+  ##
+  # Geocodes an address and returns the District model corresponding
+  # to the resulting (lat,lng). The geocoder will attempt to geocode
+  # anything. To avoid discrepencies between the geocoder address
+  # parsing and local address parsing, we use the geocoder results
+  # to determine whether a sufficiently specific address was submitted.
+  #
+  # E.g. for 42223, which includes both Christian KY and Montgomery TN,
+  # the function would return both KY-1 and TN-7 while for'Christian, KY'
+  # it would return just KY-1.
+
+  def self.from_address (address)
+    geo = Geocoder.search(address)[0]
+    return [] if ['COUNTRY', 'STATE'].include?(geo.data['geocodeQuality'])
+    if geo.data['geocodeQuality'] == 'ZIP' # This means just Zip5
+      dsts = Congress.districts_locate(geo.data['postalCode']).results
+    else
+      lat = geo.data['latLng']['lat']
+      lng = geo.data['latLng']['lng']
+      dsts = Congress.districts_locate(lat, lng).results
+    end
+
+    if dsts.length == 1
+      includes(:state).where(:district_number => dsts.first.district,
+                             :states => { :abbreviation => dsts.first.state })
+    else
+      # Partial filtering in database
+      states_abbrevs = dsts.map(&:state)
+      dst_numbers = dsts.map(&:district)
+      districts = includes(:state).where(:district_number => dst_numbers,
+                                         :states => { :abbreviation => states_abbrevs })
+
+      # Final, accurate filtering
+      dst_hashes = dsts.map{ |dst| dst.to_hash }
+      districts.select{ |d| dst_hashes.include?({'state' => d.state.abbreviation, 'district' => d.district_number}) }
+    end
+  end
 end

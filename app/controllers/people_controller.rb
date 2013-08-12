@@ -590,11 +590,15 @@ class PeopleController < ApplicationController
     @display_zip = params[:zip5]
     @display_zip += "-#{params[:zip4]}" unless params[:zip4].blank?
 
-    if !params[:address].blank?
-      @senators, @reps = Person.find_current_congresspeople_by_address_and_zipcode(params[:address], params[:zip5])
-    else
-      @senators, @reps = Person.find_current_congresspeople_by_zipcode(params[:zip5], params[:zip4])
+    address = params[:address].to_s
+    if params[:zip5].present?
+      address = "#{address}, #{params[:zip5]}"
+      if params[:zip4].present?
+        address = "#{address}-#{params[:zip4]}"
+      end
     end
+
+    @senators, @reps = Person.find_current_congresspeople_by_address(address)
 
     unless @senators and @reps
       flash.now[:notice] = "Your search did not return any members of Congress." unless params[:zip5].nil?

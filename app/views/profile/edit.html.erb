@@ -39,6 +39,11 @@
         <%= f.input :zipcode, :required => true, :maxlength => 5 %>
         <%= f.input :zip_four, :label => "Zip+4", :maxlength => 4 %>
       <% end %>
+      <script type="text/javascript">
+          document.getElementById('user_zipcode').addEventListener('change', function(event){
+              document.getElementById('user_zip_four').removeAttribute('value');
+          });
+      </script>
 
       <%= field_set_tag "Site Preferences", {:id => "site_preferences", :class => "tab-pane"} do %>
         <%= f.input :default_filter, :as => :select, :collection => 1..10,

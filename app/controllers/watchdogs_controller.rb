@@ -37,7 +37,7 @@ class WatchdogsController < ApplicationController
   end
 
   def find
-    @districts = ZipcodeDistrict.from_address(params[:address])
+    @district = District.from_address(params[:address]).first
     render :partial => "find_results"
   end
 

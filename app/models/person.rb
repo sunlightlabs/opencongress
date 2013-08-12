@@ -769,13 +769,14 @@ class Person < ActiveRecord::Base
     Person.find_all_by_state_and_title(state, 'Sen.')
   end
 
-  def Person.find_current_congresspeople_by_address_and_zipcode(address, zipcode)
-    zip5, zip4 = Geocoder.search("#{address}, #{zipcode}")[0].data['postalCode'].split('-') rescue [nil, nil]
-    unless zip5.nil?
-      return self.find_current_congresspeople_by_zipcode(zip5, zip4)
-    else
-      return nil
-    end
+  ##
+  # In this case address is free-form. Can be as simple as a state or
+  # zipcode, though those will yield less accurate results.
+  def Person.find_current_congresspeople_by_address(address)
+    dsts = District.from_address(address)
+    reps = dsts.map(&:rep)
+    sens = dsts.flat_map(&:sens)
+    return [ sens, reps ]
   end
 
   def Person.find_current_representative_by_state_and_district(state, district)
@@ -784,23 +785,25 @@ class Person < ActiveRecord::Base
                 :conditions => ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today])
   end
 
+  ##
+  # This returns a pair of arrays: [ [sen1, sen2], [rep1, ... repN] ]
+  # Callers must check the length of the rep array in case
+  # the zip5 was not specific enough.
   def Person.find_current_congresspeople_by_zipcode(zip5, zip4=nil)
-    zd = ZipcodeDistrict.zip_lookup(zip5, zip4)
-
-    return nil if zd.empty?
-
-    # get the state
-    state = zd.first.state
-
-    senators = self.find_current_senators_by_state(state)
-
-    reps = []
-    zd.each do |d|
-      rep = Person.find_current_representative_by_state_and_district(state, d.district)
-      reps << rep if rep
+    if not zip5.nil? and not zip4.nil?
+      lat, lng = Geocoder.coordinates("#{zip5}-#{zip4}")
+      legs = Congress.legislators_locate(lat, lng).results rescue []
+    elsif not zip5.nil?
+      legs = Congress.legislators_locate(zip5).results rescue []
+    else
+      legs = []
     end
 
-    [senators, reps]
+    return nil if legs.empty?
+
+    legs = Person.where(:id => legs.map{ |l| l.govtrack_id })
+    [legs.select{ |l| l.title == 'Sen.' },
+     legs.select{ |l| l.title == 'Rep.' }]
   end
 
   def Person.find_current_senators_by_state(state)

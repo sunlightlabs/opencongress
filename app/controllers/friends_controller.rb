@@ -359,7 +359,12 @@ class FriendsController < ApplicationController
   private
 
   def get_user
-    @user = User.find_by_login(params[:login]) or current_user
+    if params[:login]
+      @user = User.find_by_login(params[:login])
+    end
+    if @user.nil?
+      @user = current_user
+    end
   end
 
   def must_be_owner

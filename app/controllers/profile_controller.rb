@@ -15,17 +15,6 @@ class ProfileController < ApplicationController
     @page_title = "#{@user.login.possessive} Profile"
     @title_class = "tab-nav"
     @profile_nav = @user
-
-    if logged_in? && (current_user.id == @user.id) && @user.zipcode && @user.zip_four
-      zd = ZipcodeDistrict.zip_lookup(@user.zipcode, (@user.zip_four ? @user.zip_four : nil)).first
-      unless zd.nil?
-        @cd_text = zd.state.to_s + "-" + zd.district.to_s
-      else
-        @cd_text = "(Incorrect Zip +4)"
-      end
-    else
-      @cd_text = "(Add Zip +4)"
-    end
   end
 
   def edit

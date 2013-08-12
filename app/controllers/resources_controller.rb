@@ -379,10 +379,14 @@ class ResourcesController < ApplicationController
 
 
   def district_from_address
-    @district = ZipcodeDistrict.from_address(params[:address])
+    @districts = District.from_address(params[:address])
 
-    if @district && @district.length == 1
-      render :text => "<a href='#{Settings.base_url}states/#{@district.first.state}/districts/#{@district.first.district}'>#{@district.first.state}-#{@district.first.district}</a> is your district."
+    if @districts.length == 1
+      render :text => "<a href='#{Settings.base_url}states/#{@districts.first.state.abbreviation}/districts/#{@districts.first.district_number}'>#{@districts.first.state.abbreviation}-#{@districts.first.district_number}</a> is your district."
+    elsif @districts.length > 1
+      district_links = @districts.to_a.map{ |d| "<a href='#{Settings.base_url}states/#{d.state.abbreviation}/districts/#{d.district_number}'>#{d.state.abbreviation}-#{d.district_number}</a>" }
+      district_list = district_links.join(', ')
+      render :text => "The address provided is not specific enough to determine a single district. It could be any of: #{district_list}."
     else
       render :text => "Your district could not be found."
     end

@@ -1,3 +1,4 @@
+require_dependency 'geocoder'
 require_dependency 'wiki_connection'
 
 class Person < ActiveRecord::Base

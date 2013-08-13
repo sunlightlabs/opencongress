@@ -1,5 +1,6 @@
 OpenCongress::Application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
+  config.cache_store = :mem_cache_store, '127.0.0.1:11211', { :namespace => 'opencongress_development' }
 
   # In the development environment your application's code is reloaded on
   # every request.  This slows down response time but is perfect for development

@@ -1,3 +1,4 @@
+require 'person'
 class PeopleController < ApplicationController
   include ActionView::Helpers::NumberHelper
 
@@ -58,7 +59,8 @@ class PeopleController < ApplicationController
       @days = days_from_params(params[:days])
     end
 
-    @people = Rails.cache.fetch("people_list_#{ @sort.to_s }_#{ @person_type.to_s }", :expires_in => 20.minutes) do
+    people_cache_key = "Person.list_chamber(#{@person_type.to_s}, #{congress.to_s}, #{@sort_by.to_s})"
+    @people = Rails.cache.fetch(people_cache_key) do
       Person.list_chamber(person_type, congress, @sort_by)
     end
 

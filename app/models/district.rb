@@ -221,12 +221,31 @@ class District < ActiveRecord::Base
   # parsing and local address parsing, we use the geocoder results
   # to determine whether a sufficiently specific address was submitted.
   #
-  # E.g. for 42223, which includes both Christian KY and Montgomery TN,
-  # the function would return both KY-1 and TN-7 while for'Christian, KY'
+  # E.g. for 42223, which includes both Fort Campbell KY and Clarksville TN,
+  # the function would return both KY-1 and TN-7 while for Fort Campbell, KY
   # it would return just KY-1.
 
   def self.from_address (address)
-    geo = Geocoder.search(address)[0]
+
+    # Mapquest will return a less specific result for 'Clarksville, TN 42223'
+    # than it will for 'Clarksville, TN'. If zipcode regex matches, we try
+    # to geocode all three forms (full combination, without zipcode, and just
+    # zip code) and use the most specific result.
+    m = /((.+)\s+(\d{5}(?:-\d{2}(?:\d{2})?)?)?)\Z/.match(address)
+    if m.nil?
+      geo = Geocoder.search(address)[0]
+    else
+      mapquest_granularity_ranking = [
+        'P1', 'L1', 'I1', 'B1', 'B2', 'B3', 'Z4', 'Z3', 'Z2', 'A5', 'Z1', 'A4', 'A3', 'A1'
+      ]
+      geos = m.captures.map{ |c| Geocoder.search(c)[0] }.sort_by do |g|
+        granularity_code = g.data['geocodeQualityCode'].slice(0, 2)
+        mapquest_granularity_ranking.index(granularity_code) or mapquest_granularity_ranking.length
+      end
+      geo = geos.first
+    end
+
+    return [] if geo.nil?
     return [] if ['COUNTRY', 'STATE'].include?(geo.data['geocodeQuality'])
     if geo.data['geocodeQuality'] == 'ZIP' # This means just Zip5
       dsts = Congress.districts_locate(geo.data['postalCode']).results

@@ -37,8 +37,6 @@ class PeopleController < ApplicationController
   end
 
   def people_list
-    expires_in 20.minutes, :public => true
-
     congress = params[:congress] ? params[:congress].to_i : Settings.default_congress
     person_type = (params[:person_type] == 'senators') ? 'sen' : 'rep'
     @person_type = (person_type == 'sen') ? :senators : :representatives

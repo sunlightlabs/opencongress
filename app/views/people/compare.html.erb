@@ -86,12 +86,14 @@
     <div class="comp-well comp-well-left">
       <h3><%= @person1.full_name %>'s Party Votes</h3>
       <div>
-        <img src="http://chart.apis.google.com/chart?cht=v&amp;chs=240x120&amp;chco=ff9900,6FC6B0&amp;chd=t:<%= @p1_voted_total %>,<%= @p1_voted_with_party %>,0,<%= @p1_voted_with_party_pct %>&amp;chdl=<%= @person1.party.pluralize %>|<%= @person1.lastname %>" style="margin:3px;border:3px solid #FFFFFF;"/>
-        <p>
-        In the <%= Settings.default_congress.ordinalize %> congress, <%= @person1.full_name %>
+        <% unless @p1_voted_with_party_pct.nil? %>
+          <img src="http://chart.apis.google.com/chart?cht=v&amp;chs=240x120&amp;chco=ff9900,6FC6B0&amp;chd=t:<%= @p1_voted_total %>,<%= @p1_voted_with_party %>,0,<%= @p1_voted_with_party_pct %>&amp;chdl=<%= @person1.party.pluralize %>|<%= @person1.lastname %>" style="margin:3px;border:3px solid #FFFFFF;"/>
+          <p>
+          In the <%= Settings.default_congress.ordinalize %> congress, <%= @person1.full_name %>
         has voted with their party on <%= @p1_voted_with_party %> out of <%= @p1_voted_total %>
-        roll calls, representing a voting similarity of <%= @p1_voted_with_party_pct %>%.
-        </p>
+      roll calls, representing a voting similarity of <%= @p1_voted_with_party_pct %>%.
+      </p>
+        <% end %>
       </div>
     </div>  
 
@@ -114,12 +116,14 @@
     <div class="comp-well comp-well-right">
       <h3><%= @person2.full_name %>'s Party Votes</h3>
       <div>
-        <img src="http://chart.apis.google.com/chart?cht=v&amp;chs=240x120&amp;chco=ff9900,6FC6B0&amp;chd=t:<%= @p2_voted_total %>,<%= @p2_voted_with_party %>,0,<%= @p2_voted_with_party_pct %>&amp;chdl=<%= @person2.party.pluralize %>|<%= @person2.lastname %>" style="margin:3px;border:3px solid #FFFFFF;"/>
-        <p>
-        In the <%= Settings.default_congress.ordinalize %> congress, <%= @person2.full_name %>
-        has voted with their party on <%= @p2_voted_with_party %> out of <%= @p2_voted_total %>
-        roll calls, representing a voting similarity of <%= @p2_voted_with_party_pct %>%.
-        </p>
+        <% unless @p2_voted_with_party_pct.nil? %>
+          <img src="http://chart.apis.google.com/chart?cht=v&amp;chs=240x120&amp;chco=ff9900,6FC6B0&amp;chd=t:<%= @p2_voted_total %>,<%= @p2_voted_with_party %>,0,<%= @p2_voted_with_party_pct %>&amp;chdl=<%= @person2.party.pluralize %>|<%= @person2.lastname %>" style="margin:3px;border:3px solid #FFFFFF;"/>
+          <p>
+          In the <%= Settings.default_congress.ordinalize %> congress, <%= @person2.full_name %>
+          has voted with their party on <%= @p2_voted_with_party %> out of <%= @p2_voted_total %>
+          roll calls, representing a voting similarity of <%= @p2_voted_with_party_pct %>%.
+          </p>
+        <% end %>
       </div>
     </div>  
     <div class="cf">
@@ -170,39 +174,50 @@
 
 <h3 class="dark">Roll Call Comparision</h3>
 
-<p>
-The list includes all roll calls in the <%= @chamber %> involving both members.
-</p>
+<% if @votes.length > 0 %>
+  <p>
+  The list includes all roll calls in the <%= @chamber %> involving both members.
+  </p>
 
-<table class="comp" cellspacing="0" cellpadding="0">
-  <thead>
-    <tr>
-      <th class="rc-question">Question</th>
-      <th class="rc-date">Date</th>
-      <th class="rc-number">Roll Call</th>
-      <th class="rc-vote"><%= @person1.lastname %></th>
-      <th class="rc-vote"><%= @person2.lastname %></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @votes.each do |pair| %>
-      <% rc = pair.first %>
-      <% votes = pair.second %>
-      <tr class="<%= roll_call_css_class(rc) %> billlist">
-        <td class="rc-question"><%= rc.question %> (<%= rc.bill.title_common %>)
-          <% if rc.bill and rc.bill.is_major %>
-            <span class="yellow-star"></span>
-          <% end %>
-        </td>
-        <td class="rc-date"><%= rc.date.strftime('%m/%d/%Y') %></td>
-        <td class="rc-number"><%= link_to rc.number, :controller => 'roll_call', :action => :show, :id => rc.id %></td>
-        <td class="<%= singular_vote_css_class(votes[@person1.id].first.vote) %> rc-vote"><%= vote_name(votes[@person1.id].first.vote) %></td>
-        <td class="<%= singular_vote_css_class(votes[@person2.id].first.vote) %> rc-vote"><%= vote_name(votes[@person2.id].first.vote) %></td>
+  <table class="comp" cellspacing="0" cellpadding="0">
+    <thead>
+      <tr>
+        <th class="rc-question">Question</th>
+        <th class="rc-date">Date</th>
+        <th class="rc-number">Roll Call</th>
+        <th class="rc-vote"><%= @person1.lastname %></th>
+        <th class="rc-vote"><%= @person2.lastname %></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
-
+    </thead>
+    <tbody>
+      <% @votes.each do |pair| %>
+        <% rc = pair.first %>
+        <% votes = pair.second %>
+        <tr class="<%= roll_call_css_class(rc) %> billlist">
+          <td class="rc-question"><%= rc.question %> (<%= rc.bill.title_common %>)
+            <% if rc.bill and rc.bill.is_major %>
+              <span class="yellow-star"></span>
+            <% end %>
+          </td>
+          <td class="rc-date"><%= rc.date.strftime('%m/%d/%Y') %></td>
+          <td class="rc-number"><%= link_to rc.number, :controller => 'roll_call', :action => :show, :id => rc.id %></td>
+          <td class="<%= singular_vote_css_class(votes[@person1.id].first.vote) %> rc-vote"><%= vote_name(votes[@person1.id].first.vote) %></td>
+          <td class="<%= singular_vote_css_class(votes[@person2.id].first.vote) %> rc-vote"><%= vote_name(votes[@person2.id].first.vote) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>
+  <% if @p1_voted_total == 0 %>
+    Since <%= @person1.full_name %> has not voted on any bills, we cannot show you a roll call comparison.
+  <% elsif @p1_voted_total == 0 %>
+    Since <%= @person2.full_name %> has not voted on any bills, we cannot show you a roll call comparison.
+  <% else  %>
+    <%= @person1.full_name %> and <%= @person2.full_name %> have not voted on any of the same bills.
+  <% end %>
+  </p>
+<% end %>
 
 <p>
 <br />

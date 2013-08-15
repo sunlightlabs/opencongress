@@ -110,10 +110,10 @@ class PeopleController < ApplicationController
 
       @p1_voted_with_party = @person1.with_party
       @p1_voted_total = @person1.unabstained_roll_calls.count
-      @p1_voted_with_party_pct = (@p1_voted_with_party.to_f / @p1_voted_total.to_f * 100).round
+      @p1_voted_with_party_pct = @p1_voted_total.nonzero? and (@p1_voted_with_party.to_f / @p1_voted_total.to_f * 100).round or nil
       @p2_voted_with_party = @person2.with_party
       @p2_voted_total = @person2.unabstained_roll_calls.count
-      @p2_voted_with_party_pct = (@p2_voted_with_party.to_f / @p2_voted_total.to_f * 100).round
+      @p2_voted_with_party_pct = @p2_voted_total.nonzero? and (@p2_voted_with_party.to_f / @p2_voted_total.to_f * 100).round or nil
 
       @voted_together = @identical_votes.count
       @voted_total = @shared_votes.count

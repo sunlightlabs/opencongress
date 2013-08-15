@@ -1,4 +1,4 @@
-#class Subject < ViewableObject
+require_dependency 'viewable_object'
 class Subject < ActiveRecord::Base
   include ViewableObject
 

@@ -1,3 +1,4 @@
+require_dependency 'viewable_object'
 class ContactCongressLetter < ActiveRecord::Base
   include ViewableObject
 

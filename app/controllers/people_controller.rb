@@ -1,4 +1,4 @@
-require 'person'
+require_dependency 'person'
 class PeopleController < ApplicationController
   include ActionView::Helpers::NumberHelper
 

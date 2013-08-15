@@ -1,3 +1,4 @@
+require_dependency 'viewable_object'
 require_dependency 'united_states'
 require_dependency 'wiki_connection'
 

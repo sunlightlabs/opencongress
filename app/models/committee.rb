@@ -1,3 +1,4 @@
+require_dependency 'viewable_object'
 class Committee < ActiveRecord::Base
   include ViewableObject
   

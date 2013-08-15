@@ -1,3 +1,4 @@
+require_dependency 'viewable_object'
 require_dependency 'geocoder'
 require_dependency 'wiki_connection'
 

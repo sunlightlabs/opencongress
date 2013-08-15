@@ -1,3 +1,4 @@
+require_dependency 'viewable_object'
 class Sector < ActiveRecord::Base
   include ViewableObject
   validates_uniqueness_of :name

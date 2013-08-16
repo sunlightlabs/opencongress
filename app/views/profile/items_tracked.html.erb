@@ -8,14 +8,14 @@
 <div id="the-items">
    <div style="padding-bottom:30px;">
     <% if @user == current_user %>
-    <p>This is your profile's page of Tracked Items. To add items, simply click the button to "Track with MyOC" in the right-hand sidebar of the page for any bill, issue, or member of Congress. You'll have built a one-stop dashboard of everything you're following in Congress. Above, you can subscribe to a custom RSS feed of all your tracked items. With additional resources, we can enable you to track Congress on social media services like Twitter, Facebook, and others -- <a href="/donate">help us grow</a> with a tax-exempt donation.</p>
+      <p>This is your profile's page of Tracked Items. To add items, simply click the button to "Track with MyOC" in the right-hand sidebar of the page for any bill, issue, or member of Congress. You'll have built a one-stop dashboard of everything you're following in Congress. Above, you can subscribe to a custom RSS feed of all your tracked items.</p>
     <% else %>
-    <p>This is the list of Tracked Items <%= @user.login %> has chosen to make visible to you. To track your own items, simply click the button to "Track with MyOC" in the right-hand sidebar of the page for any bill, issue, or member of Congress.</p>
+      <p>This is the list of Tracked Items <%= @user.login %> has chosen to make visible to you. To track your own items, simply click the button to "Track with MyOC" in the right-hand sidebar of the page for any bill, issue, or member of Congress.</p>
     <% end %>
     <br />
     <div class="what-line"></div>
 
-  <p>Just getting started with MyOC? Our special pages of <a href="/bill/major">Major Bills by Issue Area</a> or <a href="/bill/hot">Hot Bills on OC</a> offer easy ways to find bills and add them to your Tracked Items. For next steps, including ways you can use the social networking on "My OpenCongress" to organize your community, see our <a href="/profile/howtouse">how-to guide</a>.</p>
+    <p>Just getting started with MyOC? Our special pages of <a href="/bill/major">Major Bills by Issue Area</a> or <a href="/bill/hot">Hot Bills on OC</a> offer easy ways to find bills and add them to your Tracked Items. For next steps, including ways you can use the social networking on "My OpenCongress" to organize your community, see our <a href="/profile/howtouse">how-to guide</a>.</p>
    </div>
 
   <div class="what-line"></div>

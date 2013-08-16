@@ -798,23 +798,4 @@ private
                         ["1 Year","1year"],
                         ["All Time","AllTime"]]
   end
-
-  def get_counts
-    objects = @results.collect{|p| p.id}
-    object_type = @results.first.class.to_s
-    if object_type == "Person"
-       @blog_count = {}
-       Commentary.count(:id, :conditions => ["is_news = ? AND commentariable_type = 'Person' AND commentariable_id in (?) AND created_at > ?", false, objects, @range.seconds.ago], :group => "commentariable_id").each {|x| @blog_count[x[0]] = x[1]}
-       @news_count = {}
-       Commentary.count(:id, :conditions => ["is_news = ? AND commentariable_type = 'Person' AND commentariable_id in (?) AND created_at > ?", true, objects, @range.seconds.ago], :group => "commentariable_id").each {|x| @news_count[x[0]] = x[1]}
-   elsif object_type == "Bill"
-       @blog_count = {}
-       Commentary.count(:id, :conditions => ["is_news = ? AND commentariable_type = 'Bill' AND commentariable_id in (?) AND created_at > ?", false, objects, @range.seconds.ago], :group => "commentariable_id").each {|x| @blog_count[x[0]] = x[1]}
-       @news_count = {}
-       Commentary.count(:id, :conditions => ["is_news = ? AND commentariable_type = 'Bill' AND commentariable_id in (?) AND created_at > ?", true, objects, @range.seconds.ago], :group => "commentariable_id").each {|x| @news_count[x[0]] = x[1]}
-   else
-      @blog_count = {}
-      @news_count = {}
-    end
-  end
 end

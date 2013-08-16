@@ -1,3 +1,4 @@
+require 'bluestatedigital'
 class EmailSubscriptionsController < ApplicationController
   skip_before_filter :has_district?
 
@@ -37,14 +38,8 @@ class EmailSubscriptionsController < ApplicationController
     if params[:name].present?
       params[:firstname], params[:lastname] = params[:name].split(' ', 2)
     end
-    allowed_params = ["email", "firstname", "lastname", "city", "state", "zip"]
-    headers = {"Content-Type" => "application/x-www-form-urlencoded"}
-    body = params.select{|k,v| allowed_params.include? k }
-    begin
-      resp = HTTParty.post(Settings.email_subscription_url, :body => body, :headers => headers, :no_follow => true)
-    rescue HTTParty::RedirectionTooDeep => e
-      resp = e.response
-    end
-    resp
+
+    result = BlueStateDigital.subscribe_to_email Settings.email_subscription_url params
+    return result[:response]
   end
 end

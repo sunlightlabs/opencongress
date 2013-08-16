@@ -1,4 +1,5 @@
 require 'digest/sha1'
+require_dependency 'bluestatedigital'
 require_dependency 'authable'
 require_dependency 'visible_by_privacy_option_query'
 

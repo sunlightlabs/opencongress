@@ -290,6 +290,17 @@ class AccountController < ApplicationController
     if @user and @user.activate!
       self.current_user = @user
 
+      if @user.partner_mailing
+        Rails.logger.info "Subscribed user #{@user.login} to mailing list."
+        fields = { :email => @user.email, :zip => @user.zipcode }
+        if @user.full_name
+          fn, ln = @user.full_name.split(' ', 2)
+          fields[:firstname] = fn unless fn.nil?
+          fields[:firstname] = ln unless ln.nil?
+        end
+        BlueStateDigital.subscribe_to_email Settings.email_subscription_url, fields
+      end
+
       activate_redirect
     else
       flash[:notice] = "We didn't find that confirmation code; maybe you've already activated your account?"

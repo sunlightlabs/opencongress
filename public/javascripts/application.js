@@ -433,6 +433,19 @@ BillText = {
 // New jQ domready stuff
 ;(function($){
   $(function(){
+    $('img.legislator-photo').error(function(e){
+        e.preventDefault();
+        $(this).attr('src', '/images/missing-medium.png');
+    });
+    $('img.legislator-photo-thumb').error(function(e){
+        e.preventDefault();
+        $(this).attr('src', '/images/missing-thumb.png');
+    });
+    $('img.legislator-photo-full').error(function(e){
+        e.preventDefault();
+        $(this).attr('src', '/images/missing-full.png');
+    });
+
     // init tabs
     $('.tabs li > a').click(function(e){
       e.preventDefault();

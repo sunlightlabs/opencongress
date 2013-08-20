@@ -40,7 +40,7 @@
     </div>
   <% end %> 
 
-  <img class="floatright bio_avatar" src="/images/<%= @person.photo_path %>">
+  <img class="floatright bio_avatar legislator-photo-full" src="/images/<%= @person.photo_path(:full, :ignore_missing) %>">
 
   <div class="clearfix">
   </div>

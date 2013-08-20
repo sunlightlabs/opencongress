@@ -79,7 +79,7 @@ class Person < ActiveRecord::Base
 
   @@NONVOTING_TERRITORIES = [ 'AS', 'DC', 'GU', 'PR', 'VI']
 
-  def photo_path(style = :full)
+  def photo_path(style = :full, missing = :check_missing)
     if style == :thumb
       photo_path = "photos/thumbs_50/#{id}-50px.jpeg"
     elsif style == :medium
@@ -88,7 +88,7 @@ class Person < ActiveRecord::Base
       photo_path = "photos/thumbs_102/#{id}.png" # :full
     end
 
-    if File.exists?(File.join(Rails.root, 'public', 'images', photo_path))
+    if missing == :ignore_missing or File.exists?(File.join(Rails.root, 'public', 'images', photo_path))
       return photo_path
     else
       return "missing-#{style}.png"

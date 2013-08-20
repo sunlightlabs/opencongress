@@ -38,7 +38,7 @@
 				</a>
       
 			<% if @show_tracked_list %>
-         <%= render :partial => "shared/track_link", :locals => {:object => person, :title => person.title_long} %>
+         <%= render :file => "shared/_track_link.html.erb", :locals => {:object => person, :title => person.title_long} %>
       <% end %>
       
 			<!-- #TODO 

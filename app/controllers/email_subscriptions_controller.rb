@@ -1,4 +1,4 @@
-require 'bluestatedigital'
+require 'blue_state_digital'
 class EmailSubscriptionsController < ApplicationController
   skip_before_filter :has_district?
 

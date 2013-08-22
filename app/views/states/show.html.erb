@@ -1,6 +1,6 @@
 <div id="heading">
 
-<h2><%= @state.name %></h2>
+  <h2><%= @state.name %></h2>
 
 </div>
 
@@ -8,96 +8,97 @@
 <div class="padding">
 
 
-<div class="col12">
+  <div class="col12">
 
-<% if @state.group %>
-  <a class="button silver floatleft grid_4 alpha pad big-but" href="<%= group_path(@state.group) %>">
-  <img src="/images/groups-small.png" />
-  <span>MyOC Group for people in <%= @state.name %>. <span>Join <%= @state.abbreviation %> constituents in tracking bills, votes, issues, and their members of Congress.</span></span>
-  </a>
-<% end %>
+    <% if @state.group %>
+      <a class="button silver floatleft grid_4 alpha pad big-but" href="<%= group_path(@state.group) %>">
+        <img src="/images/groups-small.png" />
+        <span>MyOC Group for people in <%= @state.name %>. <span>Join <%= @state.abbreviation %> constituents in tracking bills, votes, issues, and their members of Congress.</span></span>
+      </a>
+    <% end %>
 
-<a class="button silver floatleft grid_4 alpha pad big-but rt" href="/wiki/<%= @state.name == 'Washington' ? 'Washington_state' : @state.name.gsub(/ /, '_')%>_congressional_elections">
-<img src="/images/rt.png" />
-<span>RaceTracker for <%= @state.name.possessive %> U.S. Senate seats. <span>See all candidates running for federal office in <%= @state.abbreviation %> in 2012.</span></span>
-</a>
+    <a class="button silver floatleft grid_4 alpha pad big-but rt" href="/wiki/<%= @state.name == 'Washington' ? 'Washington_state' : @state.name.gsub(/ /, '_')%>_congressional_elections">
+      <img src="/images/rt.png" />
+      <span>RaceTracker for <%= @state.name.possessive %> U.S. Senate seats. <span>See all candidates running for federal office in <%= @state.abbreviation %> in 2012.</span></span>
+    </a>
 
-<div class="clear">&nbsp;</div>
+    <div class="clear">&nbsp;</div>
 
-   <h3>
-   <%= link_to '&larr; US Map'.html_safe, states_path %>
-   </h3>
+    <h3>
+      <%= link_to '&larr; US Map'.html_safe, states_path %>
+    </h3>
 
 
-   <div class='senators'>
-     <h2 class="dark">Senators</h2>
-     <%= render @senators %>
-   </div>
+    <div class='senators'>
+      <h2 class="dark">Senators</h2>
+      <%= render @senators %>
+    </div>
 
     <br />
 
-   <div class='representatives'>
-     <h2 class="dark">Representatives</h2>
-     <%= render @representatives %>
-  </div>
+    <div class='representatives'>
+      <h2 class="dark">Representatives</h2>
+      <%= render @representatives %>
+    </div>
 
-   <p class="district_description"><%= @state.freebase_description %> <em>(More from <%= link_to "Freebase", @state.freebase_link %>)</em></p>
+    <p class="district_description"><%= @state.freebase_description %> <em>(More from <%= link_to "Freebase", @state.freebase_link %>)</em></p>
 
 
-<div class="col2">
+    <div class="col2">
 
-<% unless @tracking_suggestions.last[:my_people_tracked_facet].nil? ||
-          @tracking_suggestions.last[:my_people_tracked_facet].first[:trackers] == 0 %>
-  <h3 class="dark">Top representatives among <%= @state.name %> users</h3>
-  <ul class="tiny_list">
-    <% @tracking_suggestions.last[:my_people_tracked_facet].each do |bt| %>
-      <% unless bt[:trackers] == 0 %>
-      <li class="rep">
-         <%= link_to bt[:object].title_full_name_party_state, person_url(bt[:object].ident) %><br />
-          <div class="meta"><span><%= bt[:trackers] %> followers</span>
-             <span><%= pluralize(bt[:object].consecutive_years, 'year') %> in office</span></div>
-      </li>
+      <% unless @tracking_suggestions.last[:my_people_tracked_facet].nil? ||
+                @tracking_suggestions.last[:my_people_tracked_facet].first[:trackers] == 0 %>
+        <h3 class="dark">Top representatives among <%= @state.name %> users</h3>
+        <ul class="tiny_list">
+          <% @tracking_suggestions.last[:my_people_tracked_facet].each do |bt| %>
+            <% unless bt[:trackers] == 0 %>
+              <li class="rep">
+              <%= link_to bt[:object].title_full_name_party_state, person_url(bt[:object].ident) %><br />
+              <div class="meta"><span><%= bt[:trackers] %> followers</span>
+                <span><%= pluralize(bt[:object].consecutive_years, 'year') %> in office</span></div>
+              </li>
+            <% end %>
+          <% end %>
+        </ul>
+        <br/>
       <% end %>
-    <% end %>
-  </ul>
-  <br/>
-<% end %>
 
-<% image_tag "#{@state.party_makeup_graph_url}", :style => "border:1px solid #666666;padding:5px 5px 5px 5px;" %>
+      <% image_tag "#{@state.party_makeup_graph_url}", :style => "border:1px solid #666666;padding:5px 5px 5px 5px;" %>
 
-</div><!-- col2 -->
-</div><!-- col12 -->
-<div class="col3">
+    </div><!-- col2 -->
+  </div><!-- col12 -->
+
+  <div class="col3">
    <% unless logged_in? %><p class="callout"><a href="/register">Join now</a> and connect with <%= number_with_delimiter(@state.user_count) %> OpenCongress users in <%= @state.name %> (it's free)</p><% end %>
 
-<% if @state.available_in_og? %>
-<p class="callout">Follow the state legislature at <%= link_to(raw("OpenGovernment #{@state.name} &rarr;"), @state.og_link) %></P>
-<% end %>
+   <% if @state.available_in_og? %>
+     <p class="callout">Follow the state legislature at <%= link_to(raw("OpenGovernment #{@state.name} &rarr;"), @state.og_link) %></P>
+   <% end %>
 
-<br/>
-<h2 class="dark">Representatives</h2>
-<% if logged_in? && current_user.definitive_district_object && current_user.definitive_district_object.state == @state %>
-  <p><%= link_to "Browse all", representatives_path(:anchor => @state.abbreviation) %> or <%= link_to "see your representative (#{current_user.definitive_district_object.district_state_text})", state_district_path(@state,current_user.definitive_district_object) %></p>
-<% else %>
+   <br/>
+   <h2 class="dark">Representatives</h2>
+   <% if logged_in? && current_user.definitive_district_object && current_user.definitive_district_object.state == @state %>
+     <p><%= link_to "Browse all", representatives_path(:anchor => @state.abbreviation) %> or <%= link_to "see your representative (#{current_user.definitive_district_object.district_state_text})", state_district_path(@state,current_user.definitive_district_object) %></p>
+   <% else %>
 
 
-  <div class="find_form">
-    <%= form_remote_tag :url => '/resources/district_from_address', :update => "find" do -%>
-      <p>There are <%= link_to "#{ pluralize(@representatives.length, 'representative') }", representatives_path(:anchor => @state.abbreviation) %> in <%= @state.abbreviation %>.<br /></p>
-      <p>Find yours:
-        <%= text_field_tag :address, 'enter your address', :onfocus => "if (this.value==this.defaultValue) this.value=''", :size => 30 %> <%= submit_tag 'Find' %>
-      </p>
-    <% end -%>
-  </div>
+     <div class="find_form">
+       <%= form_remote_tag :url => '/resources/district_from_address', :update => "find" do -%>
+         <p>There are <%= link_to "#{ pluralize(@representatives.length, 'representative') }", representatives_path(:anchor => @state.abbreviation) %> in <%= @state.abbreviation %>.<br /></p>
+         <p>Find yours:
+         <%= text_field_tag :address, 'enter your address', :onfocus => "if (this.value==this.defaultValue) this.value=''", :size => 30 %> <%= submit_tag 'Find' %>
+         </p>
+       <% end -%>
+     </div>
 
-  <div id="find" style="padding-bottom:5px;">
-  </div>
+     <div id="find" style="padding-bottom:5px;">
+     </div>
 
-<% end %>
+   <% end %>
 
-</div><!-- col3 -->
+ </div><!-- col3 -->
 
-<div class="col1">
+ <div class="col1">
 
    <% unless @tracking_suggestions.last[:my_bills_supported_facet].nil? or
              @tracking_suggestions.last[:my_bills_supported_facet].first[:trackers] == 0 %>
@@ -105,33 +106,33 @@
      <ul class="tiny_list">
        <% @tracking_suggestions.last[:my_bills_supported_facet].each do |bt| %>
          <% unless bt[:trackers] == 0 %>
-         <li class="bill"><%= link_to bt[:object].typenumber, bill_path(bt[:object]) %> - <%= truncate(bt[:object].title_common, :length => 40) %>
-              <br />
-              <div class="meta"><%= bt[:trackers] %> users support</div></li>
-         <% end %>
+           <li class="bill"><%= link_to bt[:object].typenumber, bill_path(bt[:object]) %> - <%= truncate(bt[:object].title_common, :length => 40) %>
+         <br />
+         <div class="meta"><%= bt[:trackers] %> users support</div></li>
        <% end %>
-     </ul>
-     <br/>
-   <% end %>
+     <% end %>
+   </ul>
+   <br/>
+ <% end %>
 
 </div>
 
 <div class="col2">
 
-   <% unless @tracking_suggestions.last[:my_bills_opposed_facet].nil? or
-             @tracking_suggestions.last[:my_bills_opposed_facet].first[:trackers] == 0 %>
+  <% unless @tracking_suggestions.last[:my_bills_opposed_facet].nil? or
+            @tracking_suggestions.last[:my_bills_opposed_facet].first[:trackers] == 0 %>
      <h3 class="dark">Top bills opposed by <%= @state.name %> users</h3>
      <ul class="tiny_list">
        <% @tracking_suggestions.last[:my_bills_opposed_facet].each do |bt| %>
          <% unless bt[:trackers] == 0 %>
-         <li class="bill"><%= link_to bt[:object].typenumber, bill_path(bt[:object]) %> - <%= truncate(bt[:object].title_common, :length => 40) %>
-              <br />
-              <div class="meta"><%= bt[:trackers] %> users oppose</div></li>
-         <% end %>
+           <li class="bill"><%= link_to bt[:object].typenumber, bill_path(bt[:object]) %> - <%= truncate(bt[:object].title_common, :length => 40) %>
+         <br />
+         <div class="meta"><%= bt[:trackers] %> users oppose</div></li>
        <% end %>
-     </ul>
-     <br/>
-   <% end %>
+     <% end %>
+   </ul>
+   <br/>
+ <% end %>
 
 </div>
 

@@ -81,7 +81,7 @@ class Person < ActiveRecord::Base
 
   def photo_path(style = :full, missing = :check_missing)
     if style == :thumb
-      photo_path = "photos/thumbs_50/#{id}-50px.jpeg"
+      photo_path = "photos/thumbs_42/#{id}.png"
     elsif style == :medium
       photo_path = "photos/thumbs_73/#{id}.png"
     else

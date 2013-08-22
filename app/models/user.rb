@@ -71,10 +71,13 @@ class User < ActiveRecord::Base
     destroy_notebook_items!
     destroy_political_notebook!
     destroy_twitter_config!
-  }, :if => Proc.new {|i| (i.is_banned? || i.is_deactivated?) && i.status_changed? }
+  }, :if => Proc.new { (is_banned? || is_deactivated?) && status_changed? }
   # before_save :update_state_and_district, :if => Proc.new {|instance|
   #   instance.district_needs_update or !instance.district_is_definitive
   # }
+
+  # Subscribe/Unsubscribe to BSD when subscription option is changed
+  after_save :update_subscription_options, :if => Proc.new { email_changed? || partner_mailing_changed? }
 
   delegate :privatize!, :to => :privacy_option
 
@@ -434,7 +437,6 @@ class User < ActiveRecord::Base
     end
   end
 
-
   def votes_like_me
     req = []
     self.my_bills_supported.each do |b|
@@ -460,14 +462,12 @@ class User < ActiveRecord::Base
     User.find_by_sql(['select distinct users.id, users.login from users where state like ? and district = ?;', "%#{state}%", district])
   end
 
-
   def senator_bookmarks_count
     current_user.bookmarks.count(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", "sen"])
   end
   def representative_bookmarks_count
     current_user.bookmarks.count(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", "rep"])
   end
-
 
   def recent_actions(limit = 10)
     b = self.bookmarks.find(:all, :order => "created_at DESC", :limit => limit)
@@ -504,6 +504,27 @@ class User < ActiveRecord::Base
     self.user_warnings.create({:warning_message => "Comment Warning for Comment #{comment.id}", :warned_by => admin.id})
     if Rails.env.production?
       UserNotifier.comment_warning(self, comment).deliver
+    end
+  end
+
+  def update_subscription_options
+    if partner_mailing?
+      if email_changed? && !partner_mailing_changed?
+        BlueStateDigital.unsubscribe_by_email(email_was)
+      end
+      fields = { :email => email, :zip => zipcode }
+      if full_name
+        fn, ln = full_name.split(' ', 2)
+        fields[:firstname] = fn unless fn.nil?
+        fields[:lastname] = ln unless ln.nil?
+      end
+      BlueStateDigital.subscribe_to_email(Settings.email_subscription_url, fields)
+    elsif partner_mailing_changed?
+      if email_changed?
+        BlueStateDigital.unsubscribe_by_email(email_was)
+      else
+        BlueStateDigital.unsubscribe_by_email(email)
+      end
     end
   end
 

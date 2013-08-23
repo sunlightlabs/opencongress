@@ -26,9 +26,9 @@ module BlueStateDigital
   # Accepts an email address to unsubscribe and optional api settings (api_base_uri, api_key, api_id)
   # and attempts to unsubscribe the given email address
   def self.unsubscribe_by_email (email, options={})
-    api_base_uri = options[:api_base_uri] || Settings.BSD_API_ROOT
-    api_secret = options[:api_key] || ApiKeys.BSD
-    api_id = options[:api_id] || Settings.BSD_API_ID
+    api_base_uri = options[:api_base_uri] || Settings.bsd_api_root
+    api_secret = options[:api_key] || ApiKeys.bsd
+    api_id = options[:api_id] || Settings.bsd_api_id
     api_ver = 2
     ts = Time.now.tv_sec
     root = api_base_uri.split('/page/')[0]

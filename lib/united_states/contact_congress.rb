@@ -1,4 +1,5 @@
 require 'yaml'
+require 'o_c_logger'
 
 module UnitedStates
   module ContactCongress
@@ -33,8 +34,12 @@ module UnitedStates
         '$SUBJECT' => 'subject',
         '$MESSAGE' => 'message',
       }
-      val = @@variables[name] || 'leave_blank'
-      raise UnmappedField.new("#{name} has no mapping") if (opts[:required] && val == 'leave_blank')
+      val = @@variables[name] || name
+      if val =~ /^\$/ && !opts[:required]
+        val = 'leave_blank'
+      elsif val =~ /^\$/
+        raise UnmappedField.new("#{name} has no mapping") if (opts[:required] && val == 'leave_blank')
+      end
       val
     end
 
@@ -66,6 +71,7 @@ module UnitedStates
     # Sets up a person's Formageddon contact environment
     # person is a Person instance
     def import_contact_steps_for(person, path)
+      OCLogger.log("Updating steps for #{person.bioguideid}...")
       hsh = parse_contact_file(path)
       current_step = nil  # formageddon steps can span multiple directives here, ex. 'fill_in', 'select' and 'click_on'. This acts as a cursor.
       person.formageddon_contact_steps.destroy_all

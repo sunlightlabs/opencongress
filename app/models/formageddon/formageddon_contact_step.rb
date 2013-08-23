@@ -26,7 +26,7 @@ class Formageddon::FormageddonContactStep
     end
   end
 
-  def delegate_select_box_value(options = {})
+  def delegate_choice_value(options = {})
     value = nil
     if options[:type] == :issue_area
       text = options[:letter].message rescue ''

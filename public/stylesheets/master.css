@@ -746,59 +746,59 @@ a.small_button.small_arrow:active span{
 .pagination .previous_page,
 .pagination em,
 .pagination .gap{
+  position: relative;
   display: block;
   float: left;
   font-size: 11px;
-  padding: 0 6px 0 0;
+  padding: 2px 2px 2px 8px;
   margin-right: 8px;
-  background: url('../images/small_button_cap.png') right 0 no-repeat;
-  _background: url('../images/small_button_cap.gif') right 0 no-repeat;
+  background: url('../images/small_button.png') repeat left top;
+  _background: url('../images/small_button.gif') repeat left top;
   text-decoration: none;
   color: #555;
-
   }
+
+.pagination a:after,
+.pagination .previous_page:after,
+.pagination em:after{
+  content: "";
+  position: absolute;
+  top: 0;
+  padding: 22px 0 0 8px;
+  background: url('../images/small_button_cap.png') right 0 no-repeat;
+  _background: url('../images/small_button_cap.gif') right 0 no-repeat;  
+}
 
 .pagination .gap{
   background: none;
-  margin: 0 4px 0 2px;
   }
 
 .pagination a:active{
   text-decoration: none;
-  background: url('../images/small_button_cap.png') right -23px no-repeat;
-  _background: url('../images/small_button_cap.gif') right -23px no-repeat;
-  }
-
-.pagination a span{
-  background: url('../images/small_button.png') repeat left top;
-  _background: url('../images/small_button.gif') repeat left top;
-  padding: 2px 2px 2px 8px;
-  display: block;
-  }
-
-.pagination a:active span{
-  color: #999;
-
   background: url('../images/small_button.png') left -23px no-repeat;
   _background: url('../images/small_button.gif') left -23px no-repeat;
+  }
+.pagination a:active:after{
+  content: "";
+  position: absolute;
+  top: 0;
+  padding: 22px 0 0 8px;
+  background: url('../images/small_button_cap.png') right -23px no-repeat;
+  _background: url('../images/small_button_cap.gif') right -23px no-repeat; 
   }
 
 .pagination em, .pagination span.disabled{
   color: #999;
-  padding: 0 6px 0 0;
-  text-decoration: none;
-  float: left;
-  background: url('../images/small_button_cap.png') right -23px no-repeat;
-  _background: url('../images/small_button_cap.gif') right -23px no-repeat;
-  }
-
-.pagination em span, .pagination span.disabled span{
-  display: block;
-  font-size: 11px;
-  font-style: normal;
-  padding: 2px 2px 2px 8px;
   background: url('../images/small_button.png') left -23px no-repeat;
   _background: url('../images/small_button.gif') left -23px no-repeat;
+  }
+  .pagination em:after, .pagination span.disabled:after{
+  content: "";
+  position: absolute;
+  top: 0;
+  padding: 22px 0 0 8px;
+  background: url('../images/small_button_cap.png') right -23px no-repeat;
+  _background: url('../images/small_button_cap.gif') right -23px no-repeat; 
   }
 
 .notice, .warning{

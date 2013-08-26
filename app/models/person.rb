@@ -719,8 +719,7 @@ class Person < ActiveRecord::Base
   end
 
   def recent_activity_mini_list(since = nil)
-    host = "dev.opencongress.org"
-    host = "www.opencongress.org" if Rails.env.production?
+    host = URI.parse(Settings.base_url).host
 
     items = []
     self.recent_activity(since).each do |i|

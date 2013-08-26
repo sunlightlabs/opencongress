@@ -12,7 +12,7 @@
           group: '#{@hot_groups.first.to_param}',
           width: 'auto',
           preview: true,
-          #{Rails.env != 'production' ? %Q{domain: '#{Settings.api_host}',} : ''}
+          domain: '#{Settings.api_host}',
           theme: {
             background: '#f9f9f9',
             color: '#555',

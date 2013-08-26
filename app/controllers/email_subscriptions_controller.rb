@@ -40,7 +40,7 @@ class EmailSubscriptionsController < ApplicationController
       params[:firstname], params[:lastname] = params[:name].split(' ', 2)
     end
 
-    result = BlueStateDigital.subscribe_to_email Settings.email_subscription_url params
+    result = BlueStateDigital.subscribe_to_email params
     return result[:response]
   end
 end

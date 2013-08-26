@@ -524,7 +524,7 @@ class User < ActiveRecord::Base
       if email_changed?
         BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_group_id)
       else
-        BlueStateDigital.remove_from_Group_by_email(email, Settings.bsd_group_id)
+        BlueStateDigital.remove_from_group_by_email(email, Settings.bsd_group_id)
       end
     end
   end

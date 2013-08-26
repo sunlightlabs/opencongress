@@ -513,13 +513,7 @@ class User < ActiveRecord::Base
       if email_changed? && !mailing_changed?
         BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_group_id)
       end
-      fields = { :email => email, :zip => zipcode }
-      if full_name
-        fn, ln = full_name.split(' ', 2)
-        fields[:firstname] = fn unless fn.nil?
-        fields[:lastname] = ln unless ln.nil?
-      end
-      BlueStateDigital.subscribe_to_email(fields)
+      BlueStateDigital.add_to_group_by_email(email, Settings.bsd_group_id)
     elsif mailing_changed?
       if email_changed?
         BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_group_id)
@@ -534,8 +528,7 @@ class User < ActiveRecord::Base
       if email_changed? && !partner_mailing_changed?
         BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_affiliate_group_id)
       end
-      fields = { :email => email, :zip => zipcode }
-      BlueStateDigital.subscribe_to_email(Settings.affiliate_email_subscription_url, fields)
+      BlueStateDigital.add_to_group_by_email(email, Settings.bsd_affiliate_group_id)
     elsif partner_mailing_changed?
       if email_changed?
         BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_affiliate_group_id)

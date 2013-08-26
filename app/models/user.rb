@@ -503,9 +503,7 @@ class User < ActiveRecord::Base
 
   def comment_warn(comment, admin)
     self.user_warnings.create({:warning_message => "Comment Warning for Comment #{comment.id}", :warned_by => admin.id})
-    if Rails.env.production?
-      UserNotifier.comment_warning(self, comment).deliver
-    end
+    UserNotifier.comment_warning(self, comment).deliver
   end
 
   def update_subscription_options

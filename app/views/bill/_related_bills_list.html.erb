@@ -8,6 +8,11 @@
 
   <% if related_bills_list.size > 0 %>
 
+    <% addHeader = false if local_assigns[:addHeader].nil? %>
+    <% if addHeader %>
+      <h3>Bills</h3>
+    <% end %>
+
     <% related_bills_list.each_with_index do |bill, i| -%>
       <% unless bill.title_common.blank? -%>
 

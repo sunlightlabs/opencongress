@@ -3,105 +3,132 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 
-<title>Uh Oh - OpenCongress</title>
+<title>500 Error—OpenCongress</title>
 <link href="/assets/application.css" media="all" rel="stylesheet" type="text/css" />
 <style type="text/css">
-.inner p {
-   margin-bottom: 10px;
+
+.error-content {
+   width: 1000px;
+   padding: 30px;
+   margin: auto;
 }
-#wrapper {
-   padding-left: 10px;
+.error {
+   float: left;
+   width: 600px;
+   padding: 100px 0;
 }
-label, input[type=text] {
-   float:none;
-   display: inline-block;
-   margin-bottom: 10px;
+.error h2{
+   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+   font-weight: lighter;
+   font-size: 340px;
+   line-height: 220px;
+   letter-spacing: -15px;
+   color: #acb6bf;
 }
-.control-label {
-   width: 100px;
-   /*text-align: right;*/
-   margin-right:5px;
+.message{
+   float: right;
+   width: 400px;
+   padding: 100px 0;
+   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+   font-weight: lighter;
+   font-size: 30px;
+   line-height: 120%;
+   color: #acb6bf;
 }
-.control-label.required:after {
-   content: "*";
-   color:#900;
+.message p{
+   margin-bottom: 30px;   
 }
-.button {
-   width:265px;
+.message a{
+   color: #768a9b;
+}
+.message a:hover{
+   color: #666;
 }
 </style>
 
 </head>
 <body class="index">
-   <div id="wrapper">
-      <h1><a class="logo" href="/" title="link to the home page"><img src="/images/open-congress.png" alt="OpenCongress -" />About Open Congress </a></h1>
+   <div class="sunlight_bar">
+      <div class="contentWrapper">
+         <a class="productOf" href="http://sunlightfoundation.com">a product of Sunlight Foundation</a>
+      </div>
    </div>
-   <div id="content" class="clearfix">
-      <div class="inner">
-         <div class="container_16">
-            <div class="row">
-               <h2>We're having trouble!</h2>
-            </div>
+
+
+   <div class="inner">
+
+      <div class="error-content">
+
+         <div id="header" class="clearfix">
+            <h1><a class="logo" href="/" title="link to the home page"><img alt="OpenCongress" src="/images/open-congress.png"/></a></h1>
          </div>
 
-         <div class="padding pretty-text container_16">
-            <div class="row clearfix" style="padding-bottom:60px;">
-               <div class="grid_7 alpha">
-                  <img src="/images/refresh-plain.png" alt="A Refreshed OpenCongress is Coming.">
-               </div>
-               <div class="grid_7 prefix_1 omega">
-                  <h2>Well, The Good News Is We're Working On It.</h2>
-                  <p>Hi there and thanks for using OpenCongress! We know some of the features and pages (including this one) haven't been up to snuff lately, and we're sorry about that.</p>
-                  <p><strong>But!</strong> we're excited to be redoubling our efforts to improve quality, including:</p>
-                  <ul class="standard_list">
-                     <li>Data quality and address/district accuracy issues</li>
-                     <li>Site stability</li>
-                     <li>User experience</li>
-                     <li>(and more!)</li>
-                  </ul>
-                  <br/>
-                  <h3>Be the first to know when a better OpenCongress is ready:</h3>
-                  <form id="subscribe" action="/subscribe.json" method="post">
-                     <ul>
-                        <li class="string required">
-                           <label for="email" class="required control-label">Email</label>
-                           <input type="text" class="field" name="email" id="email" />
-                        </li>
-                        <li>
-                           <label for="zip" class="required control-label">Zip/Postal Code</label>
-                           <input type="text" class="field" id="zip" name="zip" />
-                        </li>
-                        <li class="controls">
-                           <button class="button large blue">Stay Updated</button>
-                        </li>
-                     </ul>
-                  </form>
-               </div>
+         <div class="row clearfix">
+            <div class="error">
+               <h2>500</h2>
+            </div>
+            <div class="message">
+               <p>Internal server error.</p>
+               <p>Sorry, we're working really hard to fix the problem!</p>
+               <p>If this persists, let us know by <a href="">sending a note</a>.</p>
             </div>
          </div>
       </div>
+
+      <div class="footer-wrapper-old">
+          <div id="footerstars_wrapper">
+
+              <div class="footer_contentwrapper">
+                  <div class="contact_links">
+                      <div id="footer" class="clearfix">
+                          <div class="footlist first">
+                              <ul>
+                                  <li><a href="/search">Search</a></li>
+                                  <li><a href="/about" title="Find out more about who and what is Open Congress">About OpenCongress</a></li>
+                                  <li><a href="/about" title="">Help FAQ</a></li>
+                                  <li><a href="/about/rss">RSS Feeds</a></li>
+                              </ul>
+                          </div>
+                          <div class="footlist">
+                              <ul>
+                                  <li><a href="/widgets">Widgets</a>
+                                  </li><li><a href="/about/code">Developers/API</a></li>
+                                  <li><a href="/contact/">Contact Us</a></li>
+                              </ul>
+                          </div>
+                          <div class="footlist last">
+                              <ul>
+                                  <li><a href="/wiki">Wiki</a></li>
+                                  <li><a href="/blog">Blog</a></li>
+                                  <li><a href="/tools">Resources</a></li>
+                              </ul>
+                          </div>
+      <!-- sign up starts here -->
+                          <div class="sign_up">
+                              <h4>Like this project and want to discover others like it?</h4>
+                              <span class="tip">Join the Sunlight Foundation's open government community to learn more</span>
+                              <form action="/subscribe/" method="post" id="sfapp-subscribe-form" class="form-inline">
+                                  <div style="display:none"><input type="hidden" name="csrfmiddlewaretoken" value="8LsIjevc2XbY7Grk4KlrYkIlXz72J7nV"></div>
+                                  <input type="hidden" name="response" value="json">
+                                  <input class="signUpEmail" type="text" name="email" placeholder="Email Address">
+                                  <input class="signUpZip" type="text" name="zipcode" placeholder="Zip Code">
+                                  <button type="submit" class="btn btn-sunlight">Sign Up</button>
+                              </form>
+                          </div>
+      <!-- sunlight foundation founded starts here -->
+                          <div class="stars_divider">
+                              <a id="sfLogo" href="http://www.sunlightfoundation.com">Sunlight Foundation</a>
+                          <p id="privacyPolicy">Founded in 2006, the Sunlight Foundation is a non-partisan non-profit that uses cutting-edge technology and ideas to make government transparent and accountable. Visit <a href="http://sunlightfoundation.com">SunlightFoundation.com</a> to learn more.</p>
+                          </div>
+
+                      </div>
+                  </div>
+
+              </div>
+
+          </div>
+      </div>      
    </div>
-<script src="/javascripts/jquery-1.5.2.min.js"></script>
-<script src="/javascripts/jquery.form.min.js"></script>
-<script type="text/javascript">var _gaq=_gaq||[];_gaq.push(['_setAccount','UA-1208819-1']);_gaq.push(['_trackPageview']);(function(){var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga, s);})();</script>
-<script>
-(function($){
-   $(function(){
-      $('#subscribe')
-      .submit(function(e){
-         e.preventDefault()
-         var form = $(this);
-         $(this).ajaxSubmit({
-            success: function(){
-               form.replaceWith("<p><strong>Thanks! We'll let you know when we launch.</strong></p>");
-            },
-            error: function(){
-               alert('Oops! Make sure both required fields are filled out.');
-            }
-         });
-      });
-   });
-})(jQuery);
-</script>
+
 </body>
 </html>

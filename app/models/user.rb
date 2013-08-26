@@ -77,7 +77,8 @@ class User < ActiveRecord::Base
   # }
 
   # Subscribe/Unsubscribe to BSD when subscription option is changed
-  after_save :update_subscription_options, :if => Proc.new { email_changed? || partner_mailing_changed? }
+  after_save :update_subscription_options, :if => Proc.new { email_changed? || mailing_changed? }
+  after_save :update_partner_subscription_options, :if => Proc.new { email_changed? || partner_mailing_changed? }
 
   delegate :privatize!, :to => :privacy_option
 
@@ -508,9 +509,9 @@ class User < ActiveRecord::Base
   end
 
   def update_subscription_options
-    if partner_mailing?
-      if email_changed? && !partner_mailing_changed?
-        BlueStateDigital.unsubscribe_by_email(email_was)
+    if mailing?
+      if email_changed? && !mailing_changed?
+        BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_group_id)
       end
       fields = { :email => email, :zip => zipcode }
       if full_name
@@ -518,12 +519,28 @@ class User < ActiveRecord::Base
         fields[:firstname] = fn unless fn.nil?
         fields[:lastname] = ln unless ln.nil?
       end
-      BlueStateDigital.subscribe_to_email(Settings.email_subscription_url, fields)
+      BlueStateDigital.subscribe_to_email(fields)
+    elsif mailing_changed?
+      if email_changed?
+        BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_group_id)
+      else
+        BlueStateDigital.remove_from_Group_by_email(email, Settings.bsd_group_id)
+      end
+    end
+  end
+
+  def update_partner_subscription_options
+    if partner_mailing?
+      if email_changed? && !partner_mailing_changed?
+        BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_affiliate_group_id)
+      end
+      fields = { :email => email, :zip => zipcode }
+      BlueStateDigital.subscribe_to_email(Settings.affiliate_email_subscription_url, fields)
     elsif partner_mailing_changed?
       if email_changed?
-        BlueStateDigital.unsubscribe_by_email(email_was)
+        BlueStateDigital.remove_from_group_by_email(email_was, Settings.bsd_affiliate_group_id)
       else
-        BlueStateDigital.unsubscribe_by_email(email)
+        BlueStateDigital.remove_from_group_by_email(email, Settings.bsd_affiliate_group_id)
       end
     end
   end

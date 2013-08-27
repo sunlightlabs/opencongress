@@ -2,79 +2,79 @@
 <%= render :partial => 'aavtabs' %>
 <% unless @bill.amendments.empty? %>
 <table cellpadding="0" cellspacing="0" id="amendments">
-	<thead>
-	<tr class="header">
-		<th><span>Latest Amendment</span></th>
-		<th><span class="nopad">Status</span></th>
-		<th><span class="nopad">Purpose</span>
-		<% if @bill.amendments.size > 1 %>
-		<%= link_to "View All Amendments [#{@bill.amendments.size}]", {:action => 'amendments'}, :class => 'toggle' %>
-		<% end %>
-		</th>
-	</tr>
-	</thead>
+    <thead>
+    <tr class="header">
+        <th><span>Latest Amendment</span></th>
+        <th><span class="nopad">Status</span></th>
+        <th><span class="nopad">Purpose</span>
+        <% if @bill.amendments.size > 1 %>
+        <%= link_to "View All Amendments [#{@bill.amendments.size}]", {:action => 'amendments'}, :class => 'toggle' %>
+        <% end %>
+        </th>
+    </tr>
+    </thead>
 
-	<tfoot>
- <tr>                                
-		<td colspan="3">&nbsp;</td>
-	</tr>
-	</tfoot>
+    <tfoot>
+ <tr>
+        <td colspan="3">&nbsp;</td>
+    </tr>
+    </tfoot>
 
-	<tbody>
-	
-	<% @bill.amendments[0..2].map do |a| %>
-	<tr class="<%= cycle('a','b') %>">
-		<td class="amendments"><%= a.display_number %></td>
-		<% unless a.roll_calls.empty? %>
-		<td><%= link_to a.status.capitalize, :controller => 'roll_call', :action => 'show', :id => a.roll_calls.last %></td>
-		<% else %>
-		<td><%= a.status.capitalize %></td>
-		<% end %>
-		<td class="text"><%= a.purpose %></td>
-	</tr>
-	<% end %>
-	
-	</tbody>
+    <tbody>
+
+    <% @bill.amendments[0..2].map do |a| %>
+    <tr class="<%= cycle('a','b') %>">
+        <td class="amendments"><%= a.display_number %></td>
+        <% if a.roll_calls.any? %>
+        <td><%= link_to(a.status.capitalize, :controller => 'roll_call', :action => 'show', :id => a.roll_calls.last) rescue "" %></td>
+        <% else %>
+        <td><%= a.status.capitalize rescue "" %></td>
+        <% end %>
+        <td class="text"><%= a.purpose %></td>
+    </tr>
+    <% end %>
+
+    </tbody>
 </table>
-<% end %>		     
+<% end %>
 
 <% unless @bill.actions.empty? %>
 <table id="actions" cellpadding="0" cellspacing="0">
-	
-	<thead>
-	<tr class="header">
-		<th colspan="2"><span>Latest Actions</span>
-		<% if @bill.actions.size > 1 %>
-	<%= link_to "View All Actions [#{@bill.actions.size}]", {:action => 'actions'}, :class => 'toggle' %></th>
-		<% end %>
-	</tr>
-	</thead>
-	 <tfoot>
 
-	<tr>                                
-		<td colspan="2">&nbsp;</td>
-	</tr>
+    <thead>
+    <tr class="header">
+        <th colspan="2"><span>Latest Actions</span>
+        <% if @bill.actions.size > 1 %>
+    <%= link_to "View All Actions [#{@bill.actions.size}]", {:action => 'actions'}, :class => 'toggle' %></th>
+        <% end %>
+    </tr>
+    </thead>
+     <tfoot>
 
-	</tfoot>
-	<% reset_cycle %>
-	<tbody>
-	<% @bill.actions[0..2].map do |a| %>
-	<tr class="<%= cycle('a','b') %>">                                
-		<td width="18%" class="actionz"><%= a.formatted_date_short %></td><td class="text"><%= a.text %></td>
-	</tr>
-	<% end %>
-	</tbody>
+    <tr>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+
+    </tfoot>
+    <% reset_cycle %>
+    <tbody>
+    <% @bill.actions[0..2].map do |a| %>
+    <tr class="<%= cycle('a','b') %>">
+        <td width="18%" class="actionz"><%= a.formatted_date_short %></td><td class="text"><%= a.text %></td>
+    </tr>
+    <% end %>
+    </tbody>
 </table>
 <% end %>
 
 
 
 
-	<% unless @roll_call.nil? %>
-	
+    <% unless @roll_call.nil? %>
+
     <h3 class="header">Latest Vote</h3>
     <div class="votes">
     <%= render :partial => 'vote', :object => @bill.roll_calls.first %>
     </div>
-	<% end %>
-	</div>
+    <% end %>
+    </div>

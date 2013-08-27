@@ -13,6 +13,23 @@ class AccountController < ApplicationController
 
 #  observer :user_observer
 
+    class << self
+      def shared_domain (a, b)
+        as = a.split('.')
+        bs = b.split('.')
+        cs = common_prefix(as.reverse, bs.reverse)
+        if cs.length > 1
+          cs.reverse.join('.')
+        else
+          nil
+        end
+      end
+
+      def common_prefix (as, bs)
+        as.zip(bs).select{ |a, b| a == b }.map(&:first)
+      end
+    end
+
   def index
     redirect_to(user_profile_path(:login => current_user.login))
   end
@@ -257,20 +274,29 @@ class AccountController < ApplicationController
 
   def logout
     if params[:wiki_return_page]
-      session[:return_to] = "http://www.opencongress.org/wiki/#{params[:wiki_return_page]}"
+      session[:return_to] = "#{wiki_base_url}/#{params[:wiki_return_page]}"
     end
     redirect_loc = session[:return_to]
     self.current_user.forget_me if logged_in?
     cookies.delete :auth_token
     cookies.delete '_session_id'
     cookies.delete 'ocloggedin'
-    cookies['PHPSESSID'] = {:value => '', :path => '/', :expires => Time.at(0), :domain => ".www.opencongress.org" }
-    cookies['PHPSESSID'] = {:value => '', :path => '/', :expires => Time.at(0), :domain => ".opencongress.org" }
-    cookies['PHPSESSID'] = {:value => '', :path => '/', :expires => Time.at(0), :domain => ".www.opencongress.org" }
-    cookies.delete 'wikiToken', {:domain => '.opencongress.org'}
-    cookies.delete 'wiki_session', {:domain => '.opencongress.org'}
-    cookies.delete 'wikiUserID', {:domain => '.opencongress.org'}
-    cookies.delete 'wikiUserName', {:domain => '.opencongress.org'}
+
+    wiki_uri = URI.parse(Settings.wiki_base_url)
+    cookie_domain = ".#{AccountController.shared_domain(URI.parse(Settings.base_url).host,
+                                                        wiki_uri.host)}"
+    if cookie_domain
+      cookies['PHPSESSID'] = {:value => '', :path => '/', :expires => Time.at(0), :domain => cookie_domain }
+
+      suffixes = ['wikiToken', 'wiki_session', 'wikiUserID', 'wikiUserName']
+      suffix_pattern = Regexp.new("(#{suffixes.join('|')})$")
+      bye_bye_list = cookies.keys.select do |k|
+        not suffix_pattern.match(k).nil?
+      end
+      bye_bye_list.each do |k|
+        cookies.delete k, {:domain => cookie_domain}
+      end
+    end
 
     # force hard delete of the facebook cookie
     force_fb_cookie_delete
@@ -432,23 +458,26 @@ class AccountController < ApplicationController
   end
 
   def check_wiki
-    if logged_in? and (Rails.env == 'production')
+    if logged_in? and not Settings.wiki_base_url.empty?
       begin
         require 'net/http'
         require 'uri'
         require 'cgi'
         require 'json'
 
-        cookie_domain = '.opencongress.org'
+        wiki_uri = URI.parse(Settings.wiki_base_url)
+        cookie_domain = ".#{AccountController.shared_domain(URI.parse(Settings.base_url).host,
+                                                            wiki_uri.host)}"
+        return if cookie_domain.nil?
 
         # first we need to get the token
         data = "action=login&lgname=#{CGI::escape(current_user.login)}&lgpassword=#{ApiKeys.wiki_pass}&#{ApiKeys.wiki_key}=1&format=json"
         headers = {
           'Content-Type' => 'application/x-www-form-urlencoded'
         }
-        http = Net::HTTP.new(Rails.env.production? ? 'wiki-internal' : WIKI_HOST, 80)
-        path = "/api.php"
-        resp, data = http.post(path,data,headers)
+        http = Net::HTTP.new(wiki_uri.host, 80)
+        path = "#{wiki_uri.path}/api.php"
+        resp, data = http.post(path, data, headers)
 
         # the only cookie returned should be the wiki_session cookie.  set it in the user's browser.
         returned_cookies = resp['set-cookie'].split(',')
@@ -468,7 +497,7 @@ class AccountController < ApplicationController
           'Content-Type' => 'application/x-www-form-urlencoded',
           'Cookie' => resp['set-cookie']
         }
-        resp, data = http.post(path,data,headers)
+        resp, data = http.post(path, data, headers)
         returned_cookies = resp['set-cookie'].split(',')
 
         # now set the wiki user and token cookies
@@ -610,5 +639,4 @@ class AccountController < ApplicationController
         end
       end
     end
-
 end

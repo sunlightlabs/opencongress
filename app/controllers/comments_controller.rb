@@ -8,6 +8,9 @@ class CommentsController < ApplicationController
   def add_comment
     @object = Object.const_get(params[:type]).find_by_id(params[:id])
     if @object
+      if @object.is_a?(Article)
+        return head 403
+      end
       @comment = Comment.new(params[:comment])
       if @object.kind_of? NotebookItem and !@object.political_notebook.group.nil?
         unless @object.political_notebook.group.owner_or_member?(current_user)

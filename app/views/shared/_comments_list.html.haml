@@ -24,8 +24,10 @@
 
   = render :partial => 'shared/comments_pagination', :locals => { :object => object, :comments => comments }
 
-  
-= render :partial => 'shared/comments_add', :locals => {:parent_id => 0, :object => object, :master_container => master_container, :redirect => true }
+- if controller.controller_name == 'articles'
+  %h3 Due to the archiving of this blog, comment posting has been disabled.
+- else
+  = render :partial => 'shared/comments_add', :locals => {:parent_id => 0, :object => object, :master_container => master_container, :redirect => true }
 
 - if @goto_comment
   :javascript

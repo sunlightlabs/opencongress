@@ -33,8 +33,49 @@
         = comment.created_at.strftime('%I:%M%p').gsub(/^0+/, '').downcase
 
       .comm_action
+        - if logged_in?
+          %a.flag{ :href => preview ? '#' : url_for(:controller => 'comments', :action => 'flag', :id => comment.id), :id => "flag_#{comment.id.to_s}" }
+            = image_tag('flag.png', :alt => 'flag')
+
+          :javascript
+            $j().ready(function(){
+              $j("#flag_#{comment.id.to_s}").qtip({
+                content: "Click this flag to mark this comment as inappropriate",
+                show: 'mouseover',
+                hide: 'mouseout',
+                position:{
+                  corner: {
+                    target: 'bottomLeft',
+                    tooltip: 'topRight'
+                  }
+                },
+                style: {
+                  border: {
+                    width: 2,
+                    radius: 5,
+                    color: '#BBBBBB'
+                  },
+                  tip: {
+                    corner: 'topRight',
+                    color: '#999999',
+                    size: {
+                      x:20,
+                      y:12
+                    }
+                  }
+                }
+              })
+            });
         - unless @simple_comments
           = link_to '<span>Link</span>'.html_safe, ((preview) ? '#' : url_for(comment.commentable_link.merge({:goto_comment => comment.id}))), { :class => 'small_button' }
+        = link_to_remote "<span>Reply</span>".html_safe, :url => preview ? '#' : {:controller => 'comments', :action => 'showcomfield', :parent_id => comment.id, :object => object.id, :type => object.class.to_s}, :update => "com_" + comment.id.to_s, :complete => "Element.toggle('com_" + comment.id.to_s + "');", :html => { :class => 'small_button' }
+
+        .rate_comm{ :id => "rate_comment_#{comment.id.to_s}" }
+          - if logged_in?
+            - comment_score = myscores.select{ |s| s.comment_id == comment.id }.first
+            = link_to("<span>+</span>".html_safe, preview ? '#' : {:controller => 'comments', :action => :rate, :id => comment.id, :value => 10}, {:id => 'plus', :class => "small_button#{comment_score.score < 5 ? ' active' : '' unless comment_score.nil?}", :remote => true})
+          - else
+            = link_to("<span>+</span>".html_safe, preview ? '#' : login_url(:modal => true), { :id => 'plus', :class => 'small_button rate_trigger' })
 
           %span.comm_score{ :id => "comm_score_#{comment.id}", :style => "color:#{integer_to_color(comment.score_count_sum.to_i)}" }
             = comment.score_count_sum

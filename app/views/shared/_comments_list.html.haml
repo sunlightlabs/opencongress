@@ -24,7 +24,8 @@
 
   = render :partial => 'shared/comments_pagination', :locals => { :object => object, :comments => comments }
 
-%h3 Due to this blog not being updated any longer, comment posting has been disabled.
+  
+= render :partial => 'shared/comments_add', :locals => {:parent_id => 0, :object => object, :master_container => master_container, :redirect => true }
 
 - if @goto_comment
   :javascript

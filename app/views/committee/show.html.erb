@@ -63,7 +63,11 @@
   </div>
 
   <div class="col2">
-    <%= render :partial => 'bill/related_bills_list', :locals => {:related_bills_list => @bills_sponsored, :addHeader => true } %>
+    <% if @bills_sponsored.any? %>
+      <h3>Bills</h3>
+    <% end %>  
+    <%= render :partial => 'bill/related_bills_list', :locals => {:related_bills_list => @bills_sponsored} %>
   </div>
+
 
 </div>

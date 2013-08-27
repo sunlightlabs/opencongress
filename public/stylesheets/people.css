@@ -242,13 +242,7 @@ width: 617px;
 height: 566px;
 overflow: auto;
 float: left;
-/*_float: right;*/
 display: block;
-/*_margin-left: 0;
-_position: relative;
-_margin-top: -100px;*/
-background: url(../images/zip_arrow.png) 0 -71px no-repeat;
-   _background: url(../images/zip_arrow.gif) 0 -71px no-repeat;
 }
 
 ul#people_list li{
@@ -270,9 +264,7 @@ border-bottom: #d1d7dc 1px solid;
 margin-right: 30px;
 }
 ul#people_list li.state b{
-display: inline;/*
-background: #f4faff;
-padding-right: 10px;*/
+display: inline;
 float: left;
 }
 ul#people_list li.state span{
@@ -339,12 +331,6 @@ height: 83px;
 height: 83px;
 width: 617px;
 float: left;
-/*
-background: url(../images/sorting_bg.png) no-repeat;
-   _background: url(../images/sorting_bg.gif) no-repeat;
-*/
-background: url(../images/zip_arrow.png) 0 11px no-repeat;
-   _background: url(../images/zip_arrow.gif) 0 11px no-repeat;
 }
 #sort_nav .find_map{
 display: none;
@@ -406,6 +392,15 @@ width: 385px;
 height: 65px;
 background: url(../images/zip_lookup.jpg) -2px 0 no-repeat;
 padding: 31px 0 0 0;
+}
+#zipcode_lookup:after{
+  content: "";
+  position: absolute;
+  top: 97px;
+  left: 384px;
+  height: 427px;
+  width: 28px;
+  background: url('../images/zip_arrow.png');
 }
 #zipcode_lookup h3{
 color: #4e6426;

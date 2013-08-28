@@ -18,15 +18,6 @@ class Emailer < ActionMailer::Base
     @headers    = {}
   end
   
-  def feedback(cc, from, subject, message)
-    @subject = subject                     
-    @recipients = 'writeus@opencongress.org'
-    @cc = cc
-    @from = from
-    @sent_on = Time.now
-    @body['message'] = message
-  end
-  
   def error_snapshot(exception, trace, session, params, env, sent_on = Time.now)
     content_type "text/html" 
 

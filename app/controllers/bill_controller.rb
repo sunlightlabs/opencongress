@@ -715,7 +715,6 @@ private
       end
       @meta_keywords = "Congress, #{@bill.sponsor.popular_name unless @bill.sponsor.nil?}, " + @bill.subjects.find(:all, :order => 'bill_count DESC', :limit => 5).collect{|s| s.term}.join(", ")
       @sidebar_stats_object = @user_object = @comments = @topic = @bill
-      @related_articles = @bill.related_articles
       @page = params[:page] || 1
 
       if @bill.has_wiki_link?

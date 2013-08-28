@@ -1,8 +1,6 @@
 @import url('people.css');
 
 #issue_list{
-background: url(../images/zip_arrow.png) 0 -74px no-repeat;
-   _background: url(../images/zip_arrow.gif) 0 -74px no-repeat;
 height: 550px;
 float: right;
 width: 618px;
@@ -74,7 +72,7 @@ display: block;
 padding-top: 52px;
 overflow: hidden;
 height: 0px;
-margin: 15px 20px 13px;
+margin: 15px 20px 15px;
 }
 
 .issue_widget_link:hover{
@@ -110,13 +108,6 @@ height: 83px;
 height: 83px;
 width: 617px;
 float: left;
-
-/*
-background: url(../images/sorting_bg.png) no-repeat;
-   _background: url(../images/sorting_bg.gif) no-repeat;
-*/
-background: url(../images/zip_arrow.png) 0 11px no-repeat;
-   _background: url(../images/zip_arrow.gif) 0 11px no-repeat;
 }
 
 a#widgets_trigger {

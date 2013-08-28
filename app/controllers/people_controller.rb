@@ -681,7 +681,6 @@ class PeopleController < ApplicationController
         ["Videos <span>(#{number_with_delimiter(@person.videos.size)})</span>",{:action => 'videos', :id => @person}],
         # ["Comments <span>(#{@person.comments.size})</span>",{:action => 'comments', :id => @person}]
       ]
-      @top_comments = @person.comments.top.limit(2)
       @atom = {'link' => url_for(:only_path => false, :controller => 'people', :id => @person, :action => 'atom'), 'title' => "#{@person.popular_name} activity"}
       @bookmarking_image = @person.photo_path
     else

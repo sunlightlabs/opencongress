@@ -3,7 +3,7 @@ class StatesController < ApplicationController
   # GET /states.xml
   def index
     @page_title = "States"
-    @states = State.find(:all)
+    @states = State.all
 
     respond_to do |format|
       format.html # index.html.erb

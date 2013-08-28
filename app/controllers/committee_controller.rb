@@ -54,8 +54,6 @@ class CommitteeController < ApplicationController
     @page_title = @committee.main_committee_name
 		@stats_object = @user_object = @comments = @committee
 
-		@top_comments = @committee.comments.find(:all,:include => [:user], :order => "comments.plus_score_count - comments.minus_score_count DESC", :limit => 2)
-
     @atom = {'link' => url_for(:only_path => false, :controller => 'committee', :id => @committee, :action => 'atom'), 'title' => "#{@committee.name} - Major Bill Actions"}
   end
 

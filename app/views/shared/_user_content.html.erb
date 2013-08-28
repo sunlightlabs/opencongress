@@ -161,7 +161,7 @@
     </li>
   </ul>
 
-  <% if @top_comments.any? %>
+  <% if @top_comments and @top_comments.any? %>
     <h3 class="small_comment_title">Top-Rated Comments</h3>
     <ul id="small_comments">
       <% @top_comments.each do |c| %>

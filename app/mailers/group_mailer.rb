@@ -9,10 +9,4 @@ class GroupMailer < ActionMailer::Base
     mail(:to => @to_email, :from => @from_email,
     :subject => "Join my OpenCongress Group '#{group_invite.group.name}'")
   end
-  
-  def boot_email(group, member)
-    @group_name = group.name
-    
-    mail(:to => member.email, :subject => "You have been booted from an OpenCongress group!")
-  end
 end

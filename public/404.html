@@ -79,11 +79,19 @@ div#search{
             <div class="message">
                <p>Whoops! Something went awry and we couldn't find <br> the page you're looking for.</p>
                <p>Try a search instead?</p>
-               <div id="search" class="search">
-                    <label for="search-field">Search</label>
-                    <input name="q" id="search-field" type="text" value="" autocomplete="off">
-                    <input class="search_button" type="image" src="/images/search_submit.gif?1377206372" name="submit" id="search_submit" value="Search">
-                </div>
+               <form action="/search/result" id="form-search" method="get">
+                 <div id="search" class="search">
+                      <label for="search-field">Search</label>
+                      <input name="q" id="search-field" type="text" value="" autocomplete="off">
+                      <input type="hidden" name="search_bills" value="1" /> 
+                      <input type="hidden" name="search_people" value="1" /> 
+                      <input type="hidden" name="search_committees" value="1" /> 
+                      <input type="hidden" name="search_issues" value="1" /> 
+                      <input type="hidden" name="search_comments" value="1" /> 
+                      <input type="hidden" name="search_congress[113]" value="113" /> 
+                      <input class="search_button" type="image" src="/images/search_submit.gif" name="submit" id="search_submit" value="Search">
+                  </div>
+              </form>
                <p class="send-note">Error on our part? <a href="/contact">Send us a note</a> so we can fix it.</p>
             </div>
          </div>

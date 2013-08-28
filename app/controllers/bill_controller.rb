@@ -17,6 +17,12 @@ class BillController < ApplicationController
     render :partial => 'roll_call/roll_calls_summary', :locals => { :rolls => @rolls }
   end
 
+  ##
+  # Sends an email to the (co-)sponsors of the specified bill if
+  # those (co-)sponsors have a known email address. As of commit
+  # c09f9c9e on 2013-08-28 no such email addresses are avialable.
+  # Leaving this code in place for future use, via formageddon-provided
+  # email addresses.
   def send_sponsor
     params.delete(:commit)
     bill = Bill.find(params[:id])

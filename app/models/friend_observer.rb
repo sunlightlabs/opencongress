@@ -6,7 +6,6 @@ class FriendObserver < ActiveRecord::Observer
 
   def before_destroy(friend)
    unless @reciprical_flag
-    UserNotifier.friend_rejected_notification(friend).deliver if friend.confirmed == false
     UserNotifier.friendship_broken_notification(friend).deliver if friend.confirmed == true
     reciprical = Friend.find_by_friend_id_and_user_id(friend.user_id, friend.friend_id)
     UserNotifier.friendship_broken_notification(reciprical).deliver if friend.confirmed == true

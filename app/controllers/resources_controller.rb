@@ -304,34 +304,6 @@ class ResourcesController < ApplicationController
     render :layout => false
   end
 
-  def email_feedback_form
-    @subject = params[:subject]
-    render :layout => false
-  end
-
-  def email_feedback
-  #  debugger
-    if !simple_captcha_valid?
-      @content = "Captcha Failed.  Try again"
-      render :layout => false
-      return
-    end
-
-    cc = []
-    if params[:feedback]["cc_me"] == "1"
-      cc << params[:feedback][:email]
-    end
-
-    begin
-      Emailer::feedback(cc, params[:feedback][:email], params[:feedback][:subject], params[:feedback][:message]).deliver
-      @content = "Your feedback has been delivered."
-    rescue Exception => e
-      @content = "There was an unknown error sending your feedback. Please try again later."
-    end
-    render :layout => false
-  end
-
-
   def healthcare_panel
     @house_bill_ident = "111-h3962"
     @senate_bill_ident = "111-h3590"

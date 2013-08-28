@@ -14,6 +14,11 @@ class PeopleController < ApplicationController
 
   end
 
+  ##
+  # Sends an email to the specified person if said person has
+  # a known email address. As of commit c09f9c9e on 2013-08-28
+  # no such email addresses are avialable. Leaving this code in
+  # place for future use, via formageddon-provided email addresses.
   def send_person
     params.delete(:commit)
     person = Person.find(params[:id])

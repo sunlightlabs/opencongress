@@ -8,12 +8,17 @@ module UnitedStates
     class UnmappedField < Exception
     end
 
-    # CONSTANTS_PATH = File.join Settings.data_path, "congress-contact", "support", "constants.yaml"
-    CONSTANTS_PATH = "/users/dan/Code/git/sun/congress-contact/support/constants.yaml"
-    VARIABLES_PATH = "/users/dan/Code/git/sun/congress-contact/support/variables.yaml"
+    SUPPORT_PATH = File.join Settings.data_path, "contact-congress", "support"
+    CONSTANTS_PATH = File.join SUPPORT_PATH, "constants.yaml"
+    VARIABLES_PATH = File.join SUPPORT_PATH, "variables.yaml"
+    RECAPTCHA_PATH = File.join SUPPORT_PATH, "recaptcha-noscript.yaml"
 
     def constants
       @@constants ||= YAML.load(File.read(CONSTANTS_PATH))
+    end
+
+    def recaptcha_steps
+      @@recaptcha_steps ||=YAML.load(File.read(RECAPTCHA_PATH))['steps']
     end
 
     def get_field_value(name, opts={})
@@ -33,6 +38,7 @@ module UnitedStates
         '$TOPIC' => 'issue_area',
         '$SUBJECT' => 'subject',
         '$MESSAGE' => 'message',
+        '$CAPTCHA_SOLUTION' => 'captcha_solution'
       }
       val = @@variables[name] || name
       if val =~ /^\$/ && !opts[:required]
@@ -97,6 +103,18 @@ module UnitedStates
             # Map the field values for each item in the step and add a field instance to the form
             form = current_step.formageddon_form
             values.each do |item|
+              # Special case if this is a captcha field.
+              if item['value'] == "$CAPTCHA_SOLUTION"
+                # Even more special is recaptcha. Recaptcha noscripts an iframe which must be separately fetched
+                # and stored as a separate browser.
+                if item['name'] =~ /recaptcha/
+                  generate_recaptcha_form(person, form, item)
+                end
+                form.formageddon_form_captcha_image = Formageddon::FormageddonFormCaptchaImage.new(
+                  :css_selector => item['captcha_selector']
+                )
+              end
+
               if action == "check"
                 # Set the value from the YAML if this is a checkbox
                 value = item['value']
@@ -147,6 +165,20 @@ module UnitedStates
     end
 
     protected
+
+    def generate_recaptcha_form(person, form, item)
+      browser = Mechanize.new
+      url = person.formageddon_contact_steps.select{|step| step.command =~ /^visit/ }.first.command.split('::').last
+      browser.get(url)
+      captcha_url = browser.page.search("iframe[src*='google.com/recaptcha']").first.attr('src')
+      step = recaptcha_steps[1]['fill_in'][0]
+      form.formageddon_recaptcha_form = Formageddon::FormageddonRecaptchaForm.new(
+        :url => captcha_url,
+        :response_field_css_selector => step['selector'],
+        :image_css_selector => step['captcha_selector'],
+        :id_selector => step['captcha_id_selector']
+      )
+    end
 
     def is_const?(str)
       !! (str =~ /\A[A-Z][A-Z0-9_]*\Z/i)

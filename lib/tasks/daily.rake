@@ -25,7 +25,7 @@ namespace :update do
     clone_or_update repo_url, clone_path
   end
 
-  desc "Clones the @unitedstates/congress-contact repository"
+  desc "Clones the @unitedstates/contact_congress repository"
   task :contact_congress_data => :environment do
     clone_path = File.join(Settings.data_path, 'contact-congress')
     repo_url = 'git://github.com/unitedstates/contact-congress.git'

@@ -27,7 +27,7 @@ Person.legislator.each do |p|
     OCLogger.log "Unable to import #{p.firstname} #{p.lastname} (#{p.bioguideid}): <#{$!.class}: #{$!}>"
     OCLogger.log $@.join("\n")
   rescue
-    # OCLogger.log "Unable to import #{p.firstname} #{p.lastname} (#{p.bioguideid}): <#{$!.class}: #{$!}>"
+    OCLogger.log "Unable to import #{p.firstname} #{p.lastname} (#{p.bioguideid}): <#{$!.class}: #{$!}>"
   end
 end
 

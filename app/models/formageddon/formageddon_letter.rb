@@ -34,15 +34,16 @@ class Formageddon::FormageddonLetter
     when 'TRYING_CAPTCHA', 'RETRY_STEP'
       attempt = formageddon_delivery_attempts.last
 
-      if status == 'TRYING_CAPTCHA' and !(attempt.result == 'CAPTCHA_REQUIRED' or attempt.result == 'CAPTCHA_WRONG')
+      if status == 'TRYING_CAPTCHA' and ! %w(CAPTCHA_REQUIRED CAPTCHA_WRONG).include? attempt.result
         # weird state, abort
         return false
       end
 
-      browser = (attempt.result == 'CAPTCHA_WRONG') ? attempt.rebuild_browser(browser, false) : attempt.rebuild_browser(browser, true)
+      browser = (attempt.result == 'CAPTCHA_WRONG') ? attempt.rebuild_browser(browser, 'after') : attempt.rebuild_browser(browser, 'before')
 
       if options[:captcha_solution]
         @captcha_solution = options[:captcha_solution]
+        @captcha_browser_state = attempt.captcha_browser_state
       end
 
       return recipient.execute_contact_steps(browser, self, attempt.letter_contact_step)

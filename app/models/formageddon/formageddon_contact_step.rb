@@ -9,7 +9,7 @@ class Formageddon::FormageddonContactStep
   #
 
   def save_after_error(ex, letter = nil, delivery_attempt = nil, save_states = true)
-    @error_msg = "ERROR: #{ex}: #{$@[0]}"
+    @error_msg = "ERROR: #{ex}: #{$@[0..6].join("\n")}"
 
     unless letter.nil?
       if letter.is_a? Formageddon::FormageddonLetter
@@ -30,15 +30,24 @@ class Formageddon::FormageddonContactStep
     value = nil
     if options[:type] == :issue_area
       text = options[:letter].message rescue ''
+      contactable = ContactCongressLettersFormageddonThread.where(
+        :formageddon_thread_id => options[:letter].formageddon_thread.id
+        ).order(["formageddon_thread_id DESC"]).first.contact_congress_letter.contactable rescue nil
       if contactable.is_a? Bill
-        text = (Bill.subjects.map(&:term).join(' ') + " #{text})" rescue text)
-        text += " #{Bill.bill_titles.map(&:title).join(' ')}"  rescue ''
-        text += " #{Bill.billtext_text}"
-        value = JSON.load(HTTParty.post("#{Settings.formageddon_select_box_delegate_url}",
-                                        :body => { "text" => text, "choices" => options[:option_list]},
-                                        :headers => { "Content-Type" => "application/x-www-form-urlencoded"}
-                                       ).body) rescue nil
+        text = (contactable.subjects.map(&:term).join(' ') + " #{text})" rescue text)
+        text += " #{contactable.bill_titles.map(&:title).join(' ')}"  rescue ''
+
+        bill = contactable
+        version = bill.bill_text_versions.last
+        if version
+          path = "#{Settings.oc_billtext_path}/#{bill.session}/#{bill.reverse_abbrev_lookup}/#{bill.reverse_abbrev_lookup}#{bill.number}#{version.version}.gen.html-oc"
+          text += " #{File.read(path) rescue nil}"
+        end
       end
+      value = JSON.load(HTTParty.post("#{Settings.formageddon_select_box_delegate_url}",
+          :body => { "text" => text, "choices" => options[:option_list]},
+          :headers => { "Content-Type" => "application/x-www-form-urlencoded"}
+        ).body) rescue nil
       value || options[:default]
     end
   end

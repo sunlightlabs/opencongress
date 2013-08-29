@@ -81,10 +81,6 @@ namespace :update do
     end
   end
 
-  task :mailing_list => :environment do
-    require File.expand_path 'bin/daily/civicrm_sync', Rails.root
-  end
-
   desc "Fetches legislator photos from govtrack"
   task :photos => :environment do
     begin

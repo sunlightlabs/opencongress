@@ -1,30 +1,37 @@
 defaults: &defaults
-  mapquest: xxx
+  twitter_consumer: xxx
+  twitter_secret: xxx
+  # These APIs are used for the commentary features which
+  # are currently broken.
   technorati_api_key: xxx
   daylife_access_key: xxx
   daylife_secret: xxx
-  twitter_consumer: xxx
-  twitter_secret: xxx
+  bing: xxx
+  # The MapQuest API is used for geolocating user addresses in order to
+  # lookup congressional districts.
+  mapquest: xxx
+  # The Sunlight API key is used to map zip codes and lat/lng pairs to 
+  # congressional districts.
   sunlightlabs_key: xxx
+  # The Maplight key is for their bill positions API.
   maplight: xxx
+  # The Wiki credentials can by found/set in your wiki's LocalSettings.php file.
   wiki_pass: xxx
   wiki_key: xxx
   wiki_callback_key: xx
-  app_key: xxx
-  yahoo_apis: xxx
-  civicrm_system_key: xxx
-  civicrm_user_key: xxx
-  project_vote_smart: xxx
+  # The Google Maps key must be enabled for Javascript maps v2
   google_maps: xxx
   airbrake: xxx
+  sentry_dsn: xxx
+  postmark: xxx
   bitly: xxx
   aws_access_key_id: xxx
   aws_secret_access_key: xxx
   formageddon_password: xxx
   formageddon_get_replies_key: xxx
-  bing: xxx
   phaxio_key: xxx
   phaxio_secret: xxx
+  akismet: xxx
 
 development:
   <<: *defaults
@@ -38,5 +45,3 @@ staging:
 production:
   <<: *defaults
 
-drm:
-  <<: *defaults

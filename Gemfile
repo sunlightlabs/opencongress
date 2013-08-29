@@ -36,7 +36,6 @@ gem 'fog'
 gem "awesome_nested_set", ">= 2.0"
 
 # Open Gov APIs
-gem "govkit", :git => "git@github.com:sunlightlabs/govkit.git"
 gem "congress"
 
 # jammit support

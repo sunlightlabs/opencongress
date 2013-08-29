@@ -37,13 +37,6 @@ class UserNotifier < ActionMailer::Base
     @body[:friend] = friend
   end
 
-  def friend_rejected_notification(friend)
-    setup_email(friend.user)
-    @from = "\"OpenCongress Friends\" <friends@opencongress.org>"
-    @subject  += "#{CGI::escapeHTML(friend.friend.login)} has declined your Friend invitation on OpenCongress"
-    @body[:friend] = friend
-  end
-
   def friendship_broken_notification(friend)
     setup_email(friend.user)
     @from = "\"OpenCongress Friends\" <friends@opencongress.org>"

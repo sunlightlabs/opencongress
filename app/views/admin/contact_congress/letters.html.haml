@@ -1,6 +1,6 @@
 .padding
   %h2 Contact Congress Letters
-  
+
   %table
     %tr
       %th Date
@@ -25,10 +25,10 @@
             )
             %br
         %td
-          = link_to l.bill.typenumber, bill_path(l.bill)
+          = link_to(l.contactable.typenumber, send(:"#{l.contactable_type.downcase}_path", l.contactable)) rescue nil
           \:
           = l.disposition
         %td= l.comments.size
         %td= l.views
-  
+
   = will_paginate @letters

@@ -16,12 +16,12 @@ defaults: &defaults
 
   mini_mailer_from: alert@dev.opencongress.org
 
-  data_path: /data
-  govtrack_data_path: /data/govtrack
-  govtrack_billtext_path: /data/govtrack/bills.text
-  govtrack_billtext_diff_path: /data/govtrack/bills.text.cmp
-  oc_billtext_path: /data/opencongress/bills.text
-  committee_reports_path: /data/committee_reports
+  data_path: <%= Rails.root %>/data
+  govtrack_data_path: <%= Rails.root %>/data/govtrack
+  govtrack_billtext_path: <%= Rails.root %>/data/govtrack/bills.text
+  govtrack_billtext_diff_path: <%= Rails.root %>/data/govtrack/bills.text.cmp
+  oc_billtext_path: <%= Rails.root %>/data/opencongress/bills.text
+  committee_reports_path: <%= Rails.root %>/data/committee_reports
   # The following two paths should contain a trailing slash
   # If you run the unitedstates scrapers locally then leave
   # the unitedstates_rsync_source blank and point unitedstates_data_path
@@ -39,9 +39,8 @@ defaults: &defaults
   wiki_host: www.opencongress.org
   wiki_base_url: http://www.opencongress.org/wiki
 
-  ban_file: /u/apps/opencongress/shared/files/banned_users.txt
+  ban_file: <%= Rails.root %>/data/banned_users.txt
 
-  # Andy's server for formageddon
   formageddon_reply_domain: formageddon.nindy.com
   formageddon_server: pop.gmail.com
   formageddon_username: formageddon@nindy.com
@@ -54,40 +53,24 @@ defaults: &defaults
 development:
   <<: *defaults
 
-  data_path: /tmp/opencongress_data
-  govtrack_data_path: /tmp/opencongress_data/govtrack
-  govtrack_billtext_path: /tmp/opencongress_data/govtrack/bills.text
-  govtrack_billtext_diff_path: /tmp/opencongress_data/govtrack/bills.text.cmp
-  oc_billtext_path: /tmp/opencongress_data/opencongress/bills.text
-  committee_reports_path: /tmp/opencongress_data/committee_reports
-
   group_images_path: <%= Rails.root %>/public/system/group_images
   notebook_files_path: <%= Rails.root %>/public/system/notebook_files
 
-  base_url: http://localhost:3000/
-  api_host: api.127localhost.com:3000
-  api_base_url: http://api.127localhost.com:3000/
-
-  ban_file: /tmp/banned_users.txt
-
-
-drm:
-  <<: *defaults
-  base_url: http://drm.dev.opencongress.org
-  api_host: api.dev.opencongress.org
-  api_base_url: http://api.dev.opencongress.org/
-  wiki_base_url: http://wiki-dev.opencongress.org/wiki
+  # All API routes use an 'api.' subdomain. To facilitate this you will
+  # need to add an entry to your hosts file that resolves to 127.0.0.1
+  base_url: http://dev.opencongress.org:3000/
+  api_host: api.dev.opencongress.org:3000
+  api_base_url: http://api.dev.opencongress.org:3000/
 
 test:
   <<: *defaults
 
 staging:
   <<: *defaults
-  base_url: http://dev.opencongress.org/
-
-  wiki_base_url: http://wiki-dev.opencongress.org/wiki
-  api_host: api.dev.opencongress.org
-  api_base_url: http://api.dev.opencongress.org/
+  base_url: http://staging.opencongress.org/
+  api_host: api.staging.opencongress.org
+  api_base_url: http://api.staging.opencongress.org/
+  wiki_base_url: http://staging.opencongress.org/wiki
 
 production:
   <<: *defaults

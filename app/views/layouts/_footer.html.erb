@@ -1,67 +1,65 @@
+<!--
+    <div class="footer_border">
+    </div>
+-->
 
-        <div id="footer-wrapper">
-                <div class="left">
-                    <div class="right">
-            <div id="footer" class="clearfix">
-                    <h5><b>Find Your Way:</b></h5>
-                <div class="footlist first">
+<div class="footer-wrapper-old">
+    <div id="footerstars_wrapper">
 
+
+        <div class="footer_contentwrapper">
+            <div class ="contact_links">
+                <div id="footer" class="clearfix">
+                    <div class="footlist first">
                         <ul>
-                        <li><a href="/search">Search</a></li>
-                        <li><%= link_to 'About OpenCongress', { :controller => 'about' },
-                                      { :title => "Find out more about who and what is Open Congress" } %></li>
-                  <li><%= link_to 'Help FAQ', { :controller => 'about'},
-                                      { :title => "" } %></li>
-                                    <li><%= link_to 'RSS Feeds', :controller => 'about', :action => 'rss' %></li>
-                        </ul>
-                </div>
-                <div class="footlist">
-                    <b>Go to</b>
-                        <ul>
-                          <li><%= link_to 'Widgets', widgets_path %>
-                          <li><%= link_to 'Developers/API', :controller => 'about', :action => 'code' %></li>
-                          <li><a href="/contact/">Contact Us</a></li>
-                        </ul>
-                </div>
-                <div class="footlist">
-                    <ul>
-                      <li><%= link_to 'Wiki', '/wiki' %></li>
-                      <li><%= link_to 'Blog', :controller => 'blog' %></li>
-                      <li><%= link_to 'Resources', :controller => 'resources' %></li>
-                      <!-- ><li><%= link_to 'Battle Royale', :controller => 'battle_royale' %></li> -->
-                    </ul>
-                </div>
-
-                <div class="footlist last">
-
-                        <ul>
-
-                                    <% if logged_in? %>
-                                    <li><%= link_to "Tracked Items", :controller => 'profile', :action => 'items_tracked', :login => current_user.login %></li>
-                                    <li><%= link_to "Actions", :controller => 'profile', :action => 'actions', :login => current_user.login %></li>
-                                    <li><%= link_to "Friends", friends_path(current_user.login)%></li>
-                                    <li><%= link_to "My Political Notebook", political_notebook_path(current_user.login) %></li>
-                                    <li><%= link_to "My Profile", user_profile_path(:login => current_user.login) %></li>
-                                    <li><%= link_to "Logout", logout_path %></li>
-                                    <% else %>
-                                    <li><%= link_to "Login", login_path %></li>
-                                    <% end %>
+                            <li><a href="/search">Search</a></li>
+                            <li><%= link_to 'About OpenCongress', { :controller => 'about' },
+                            { :title => "Find out more about who and what is Open Congress" } %></li>
+                            <li><%= link_to 'Help FAQ', { :controller => 'about'},
+                            { :title => "" } %></li>
+                            <li><%= link_to 'RSS Feeds', :controller => 'about', :action => 'rss' %></li>
                         </ul>
                     </div>
+                    <div class="footlist">
+                        <ul>
+                            <li><%= link_to 'Widgets', widgets_path %>
+                            <li><%= link_to 'Developers/API', :controller => 'about', :action => 'code' %></li>
+                            <li><a href="/contact/">Contact Us</a></li>
+                        </ul>
                     </div>
+                    <div class="footlist last">
+                        <ul>
+                            <li><%= link_to 'Wiki', '/wiki' %></li>
+                            <li><%= link_to 'Blog', :controller => 'blog' %></li>
+                            <li><%= link_to 'Resources', :controller => 'resources' %></li>
+                        </ul>
                     </div>
-      </div> <!-- // footer  -->
-    </div>  <!-- // footer-wrapper -->
+<!-- sign up starts here -->
+                    <div class="sign_up">
+                        <h4>Like this project and want to discover others like it?</h4>
+                        <span class="tip">Join the Sunlight Foundation's open government community to learn more</span>
+                        <form action="/subscribe/" method="post" id="sfapp-subscribe-form" class="form-inline">
+                            <div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='8LsIjevc2XbY7Grk4KlrYkIlXz72J7nV' /></div>
+                            <input type="hidden" name="response" value="json">
+                            <input class="signUpEmail" type="text" name="email" placeholder="Email Address">
+                            <input class="signUpZip" type="text" name="zipcode" placeholder="Zip Code">
+                            <button type="submit" class="btn btn-sunlight">Sign Up</button>
+                        </form>
+                    </div>
+<!-- sunlight foundation founded starts here -->
+                    <div class="stars_divider">
+                        <a id="sfLogo" href="http://www.sunlightfoundation.com">Sunlight Foundation</a>
+                    <p id="privacyPolicy">Founded in 2006, the Sunlight Foundation is a non-partisan non-profit that uses cutting-edge technology and ideas to make government transparent and accountable. Visit <a href="http://sunlightfoundation.com">SunlightFoundation.com</a> to learn more.</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
 
 
-        <div id="subfoot">
-             <% if @stats_object %>
-         <%= render :partial => 'shared/stats_box', :object => @stats_object %>
-            <% else %>
-            <% end %>
 
-        </div> <!-- // end subfoot -->
+    </div>
+</div>
 
-
-
-
+<!-- // end subfoot -->

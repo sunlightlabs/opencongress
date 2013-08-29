@@ -99,7 +99,7 @@ gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git'
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'
-# apt-get or brew install wkhtmltopdf first!
+# apt-get or brew `install xvfb wkhtmltopdf` first!
 gem 'pdfkit'
 
 group :deployment do

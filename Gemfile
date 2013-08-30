@@ -99,6 +99,7 @@ gem 'postmark-rails'
 # Faxing
 gem 'phaxio'
 # apt-get or brew `install xvfb wkhtmltopdf` first!
+# You'll have to build QT yourself on Ubuntu: https://code.google.com/p/wkhtmltopdf/wiki/compilation
 gem 'pdfkit'
 
 group :deployment do

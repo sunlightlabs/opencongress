@@ -238,7 +238,7 @@ class District < ActiveRecord::Base
       mapquest_granularity_ranking = [
         'P1', 'L1', 'I1', 'B1', 'B2', 'B3', 'Z4', 'Z3', 'Z2', 'A5', 'Z1', 'A4', 'A3', 'A1'
       ]
-      geos = m.captures.map{ |c| Geocoder.search(c)[0] }.sort_by do |g|
+      geos = m.captures.map{ |c| Geocoder.search(c)[0] }.compact.sort_by do |g|
         granularity_code = g.data['geocodeQualityCode'].slice(0, 2)
         mapquest_granularity_ranking.index(granularity_code) or mapquest_granularity_ranking.length
       end

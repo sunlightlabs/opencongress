@@ -136,6 +136,7 @@ class SearchController < ApplicationController
     render :action => 'result', :layout => false
   end
 
+  # TODO: This is so terrible guys.
   def autocomplete
     if params[:value].present?
       names = Person.find(:all, :conditions => "title='Rep.' OR title='Sen.'").collect{ |p| [p.popular_name, p.name, p] }

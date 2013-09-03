@@ -17,12 +17,13 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: f6e6ec1d92aaab2fca0b10cd8079d833e5695093
+  revision: d1416ac29ce84e011eed275dabf09a60dc9aac8a
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
       haml
       mechanize
+      rufus-mnemo
 
 GIT
   remote: git@github.com:sunlightlabs/geocoder.git
@@ -362,6 +363,7 @@ GEM
     ruby-hmac (0.4.0)
     ruby-openid (2.2.3)
     ruby-progressbar (1.0.2)
+    rufus-mnemo (1.2.3)
     safe_yaml (0.9.4)
     sass (3.2.9)
     selenium-client (1.2.18)

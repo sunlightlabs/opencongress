@@ -101,8 +101,9 @@ class User < ActiveRecord::Base
   has_many :fans, :class_name => "Friend", :foreign_key => "friend_id", :conditions => ["confirmed = ?", false]
   has_many :person_approvals
   has_many :bookmarks
-  has_many :senator_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person], :conditions => ["people.name like ?", "Sen.%"]
-  has_many :representative_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person], :conditions => ["people.name like ?", "Rep.%"]
+  has_many :senator_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person => :roles], :conditions => proc { ["roles.role_type = ? and roles.startdate < ? and roles.enddate > ?", "sen", Time.now, Time.now] }
+  has_many :representative_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person => :roles], :conditions => proc { ["roles.role_type = ? and roles.startdate < ? and roles.enddate > ?", "rep", Time.now, Time.now] }
+  has_many :legislator_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person => :roles], :conditions => proc { ["roles.role_type in(?) and roles.startdate < ? and roles.enddate > ?", ["sen", "rep"], Time.now, Time.now] }
   has_many :bill_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Bill'"
   has_many :issue_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Subject'"
   has_many :committee_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Committee'"

@@ -8,7 +8,7 @@
 <div id="the-items">
    <div style="padding-bottom:30px;">
     <% if @user == current_user %>
-      <p>This is your profile's page of Tracked Items. To add items, simply click the button to "Track with MyOC" in the right-hand sidebar of the page for any bill, issue, or member of Congress. You'll have built a one-stop dashboard of everything you're following in Congress. Above, you can subscribe to a custom RSS feed of all your tracked items.</p>
+      <p>This is your profile's page of Tracked Items. To add items, simply click the button to "Track with MyOC" in the right-hand sidebar of the page for any bill, issue, or member of Congress. You'll have built a one-stop dashboard of everything you're following in Congress. <%= link_to("Follow your tracked items via RSS &raquo;".html_safe, @atom["link"]) if @atom["link"] %></p>
     <% else %>
       <p>This is the list of Tracked Items <%= @user.login %> has chosen to make visible to you. To track your own items, simply click the button to "Track with MyOC" in the right-hand sidebar of the page for any bill, issue, or member of Congress.</p>
     <% end %>

@@ -1,5 +1,5 @@
 class UserFeedsController < ApplicationController
-  
+
   before_filter :get_user_login
   before_filter :is_permitted_tracked?, :except => [:actions,:comments,:votes]
   before_filter :is_permitted_actions?, :only => [:actions,:comments,:votes]
@@ -11,11 +11,11 @@ class UserFeedsController < ApplicationController
 
     @tracked_issues = @user.issue_bookmarks
     @tracked_bills = @user.bill_bookmarks
-    @tracked_people = @user.representative_bookmarks
+    @tracked_people = @user.legislator_bookmarks
     @tracked_committees = @user.committee_bookmarks
 
     @items = []
-    
+
     @tracked_issues.each do |i|
       @items.concat(i.subject.latest_major_actions(5))
     end
@@ -23,11 +23,11 @@ class UserFeedsController < ApplicationController
         @items.concat(p.person.last_x_bills(5).to_a)
         @items.concat(p.person.votes(10).to_a)
     end
-    
+
     @tracked_bills.each do |b|
       @items.concat(b.bill.last_5_actions.to_a)
     end
-    
+
     @tracked_committees.each do |b|
       logger.info b.bookmarkable.latest_reports(5).to_a.to_yaml
       logger.info b.bookmarkable.latest_major_actions(5).to_a.to_yaml
@@ -42,7 +42,7 @@ class UserFeedsController < ApplicationController
     render :action => "tracked_rss.rxml", :layout => false
 
   end
-  
+
   def committees
     @tracked_committees = @user.committee_bookmarks
      @items = []
@@ -55,13 +55,13 @@ class UserFeedsController < ApplicationController
      expires_in 60.minutes, :public => true
      render :action => "committees.xml.builder", :layout => false
   end
-  
+
   def actions
     @items = @user.recent_actions
     expires_in 60.minutes, :public => true
     render :action => "user_actions_rss.rxml", :layout => false
   end
-  
+
   def senators
     @ptype = 'Senators'
     @page_title = "Profile of #{@user.login} - Senators Tracked"
@@ -76,7 +76,7 @@ class UserFeedsController < ApplicationController
 
       render :action => "person.rxml", :layout => false
   end
-  
+
   def representatives
     @ptype = 'Representatives'
     @page_title = "Profile of #{@user.login} - Representatives Tracked"
@@ -91,7 +91,7 @@ class UserFeedsController < ApplicationController
 
       render :action => "person.rxml", :layout => false
   end
-  
+
   def bills
     @page_title = "Profile of #{@user.login} - Bills Tracked"
     @bookmarks = Bookmark.find_bookmarked_bills_by_user(@user.id)
@@ -131,7 +131,7 @@ class UserFeedsController < ApplicationController
     expires_in 60.minutes, :public => true
     render :action => "comments.rxml", :layout => false
   end
-  
+
   def issues
     @page_title = "Profile of #{@user.login} - Issues tracked"
     @bookmarks = Bookmark.find(:all, :conditions => ["bookmarkable_type = ? AND user_id = ?", "Subject", @user.id])
@@ -155,20 +155,21 @@ class UserFeedsController < ApplicationController
     else
       redirect_to '/'
       return false
-    end       
+    end
   end
-  
+
   def is_permitted_tracked?
     t_user = nil
     t_user = User.find_by_feed_key(params[:key] ? params[:key] : "ASDFASDF")
     if @user.can_view(:my_tracked_items, t_user) == true
       return true
     else
+      flash[:warning] = "You are not permitted to view that feed!"
       redirect_to '/'
       return false
-    end 
+    end
   end
-  
+
   def is_permitted_actions?
     t_user = nil
     t_user = User.find_by_feed_key(params[:key] ? params[:key] : "ASDFASDF")
@@ -177,7 +178,7 @@ class UserFeedsController < ApplicationController
     else
       redirect_to '/'
       return false
-    end 
+    end
   end
-  
+
 end

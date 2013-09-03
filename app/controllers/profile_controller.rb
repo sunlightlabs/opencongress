@@ -277,7 +277,7 @@ class ProfileController < ApplicationController
 
     @tracked_issues = @user.issue_bookmarks
     @tracked_bills = Bookmark.find_bookmarked_bills_by_user(@user.id)
-    @tracked_people = @user.representative_bookmarks
+    @tracked_people = @user.legislator_bookmarks
     @tracked_committees = @user.committee_bookmarks
 
     @items = []

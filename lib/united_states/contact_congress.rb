@@ -5,7 +5,7 @@ module UnitedStates
   module ContactCongress
     extend self
 
-    class UnmappedField < Exception
+    class UnmappedField < StandardError
     end
 
     SUPPORT_PATH = File.join Settings.data_path, "contact-congress", "support"
@@ -44,7 +44,7 @@ module UnitedStates
       if val =~ /^\$/ && !opts[:required]
         val = 'leave_blank'
       elsif val =~ /^\$/
-        raise UnmappedField.new("#{name} has no mapping") if (opts[:required] && val == 'leave_blank')
+        raise UnmappedField, "#{name} has no mapping" if (opts[:required] && val == 'leave_blank')
       end
       val
     end

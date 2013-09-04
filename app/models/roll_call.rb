@@ -1,3 +1,4 @@
+require_dependency 'united_states'
 require_dependency 'viewable_object'
 class RollCall < ActiveRecord::Base
   include ViewableObject

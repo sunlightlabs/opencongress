@@ -151,7 +151,7 @@ class SearchController < ApplicationController
       @bill_hits = bill_titles.select{|h| h[0] =~ /#{Regexp.escape(params[:value])}/i }
     else
       @people_hits = []
-      @bill_its = []
+      @bill_hits = []
     end
     render :layout => false
   end

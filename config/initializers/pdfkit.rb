@@ -1,5 +1,5 @@
 PDFKit.configure do |config|
-  config.wkhtmltopdf = '/bin/wkhtmltopdf' unless `which /bin/wkhtmltopdf`.empty?
+  config.wkhtmltopdf = `which wkhtmltopdf`.chop
   config.default_options = {
     :page_size => 'Letter',
     :print_media_type => true

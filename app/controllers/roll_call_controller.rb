@@ -19,6 +19,7 @@ class RollCallController < ApplicationController
 
   def master_piechart_data
     @roll_call = RollCall.find_by_id(params[:id])
+    render_404 and return unless @roll_call
     @vote_counts = @roll_call.roll_call_votes.group(:vote).count
 
     color_well = [
@@ -72,6 +73,7 @@ class RollCallController < ApplicationController
 
   def partyvote_piechart_data
     @roll_call = RollCall.find_by_id(params[:id])
+    render_404 and return unless @roll_call
     radius = params[:radius] ||= 80
     votes = @roll_call.roll_call_votes.select { |rcv| rcv.vote == params[:breakdown_type] }
 
@@ -145,6 +147,7 @@ class RollCallController < ApplicationController
 
   def update_hot
     @roll_call = RollCall.find_by_id(params[:id])
+    render_404 and return unless @roll_call
     @roll_call.is_hot = params[:roll_call][:is_hot]
     @roll_call.hot_date = Time.now if @roll_call.is_hot
     @roll_call.title = params[:roll_call][:title] if params[:roll_call][:title]
@@ -239,6 +242,7 @@ class RollCallController < ApplicationController
 
   def summary_text
     @roll_call = RollCall.find_by_ident(params[:id])
+    render_404 and return unless @roll_call
 
     render :layout => false
   end

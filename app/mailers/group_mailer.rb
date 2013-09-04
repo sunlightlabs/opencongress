@@ -6,7 +6,7 @@ class GroupMailer < ActionMailer::Base
     @from_email = group_invite.group.user.email
     @group_invite = group_invite
 
-    mail(:to => @to_email
+    mail(:to => @to_email,
          :subject => "Join my OpenCongress Group '#{group_invite.group.name}'")
   end
 end

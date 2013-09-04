@@ -44,7 +44,7 @@ class Emailer < ActionMailer::Base
   def friend(to, from, subject, url, item_desc, message)
     @subject    = subject
     @recipients = to
-    @from       = from
+    @from       = "\"OpenCongress Friends\" <accounts@opencongress.org>"
     @headers    = {}
     @body['item_url'] = url
     @body['item_desc'] = item_desc
@@ -63,11 +63,12 @@ class Emailer < ActionMailer::Base
   end
 
   def feedback(params)
-    @name = params[:name]
-    @from = params[:email]
-    @subject = "[OpenCongress #{Rails.env}] Message from #{@name} (#{@from})"
-    @message = params[:message]
     @recipients = Settings.contact_emails
+    @from = "\"OpenCongress\" <noreply@opencongress.org>"
+    @subject = "[OpenCongress #{Rails.env}] Message from #{@name} (#{@from})"
+    @name = params[:name]
+    @sender_email = params[:email]
+    @message = params[:message]
     @sent_on = params[:sent_on] || Time.now
   end
 end

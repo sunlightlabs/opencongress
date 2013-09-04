@@ -25,7 +25,7 @@ class UserNotifier < ActionMailer::Base
 
   def comment_warning(user, comment)
     setup_email(user)
-    @from = "\"OpenCongress Editors\" <writeus@opencongress.org>"
+    @from = "\"OpenCongress Editors\" <oc-mail@sunlightfoundation.com>"
     @subject += "Warning from OpenCongress re: your comment"
     @body[:comment] = comment
   end

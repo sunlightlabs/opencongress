@@ -17,13 +17,13 @@ class Emailer < ActionMailer::Base
     @sent_on    = sent_at
     @headers    = {}
   end
-  
+
   def error_snapshot(exception, trace, session, params, env, sent_on = Time.now)
-    content_type "text/html" 
+    content_type "text/html"
 
     @recipients         = 'oc-errors@lists.ppolitics.org'
     @from               = 'Open Congress Logger <noreply@opencongress.org>'
-    @subject            = "Exception in #{env['REQUEST_URI']}" 
+    @subject            = "Exception in #{env['REQUEST_URI']}"
     @sent_on            = sent_on
     @body["exception"]  = exception
     @body["trace"]      = trace
@@ -31,7 +31,7 @@ class Emailer < ActionMailer::Base
     @body["params"]     = params
     @body["env"]        = env
   end
-  
+
   def rake_error(exception, message)
     @subject    = "OpenCongress Rake Task Error"
     @recipients = "oc-rake-errors@lists.ppolitics.org"
@@ -40,7 +40,7 @@ class Emailer < ActionMailer::Base
     @body['message'] = message
     @body['time'] = Time.now
   end
-  
+
   def friend(to, from, subject, url, item_desc, message)
     @subject    = subject
     @recipients = to
@@ -51,7 +51,7 @@ class Emailer < ActionMailer::Base
     @body['message'] = message
     @body['from'] = from
   end
-  
+
   def invite(to, from, url, message)
     @recipients  = to
     @from        = "\"OpenCongress Friends\" <accounts@opencongress.org>"
@@ -60,5 +60,14 @@ class Emailer < ActionMailer::Base
     @body[:message] = message
     @body[:url] = url
     @body[:from] = from
+  end
+
+  def feedback(params)
+    @name = params[:name]
+    @from = params[:email]
+    @subject = "[OpenCongress #{Rails.env}] Message from #{@name} (#{@from})"
+    @message = params[:message]
+    @recipients = Settings.contact_emails
+    @sent_on = params[:sent_on] || Time.now
   end
 end

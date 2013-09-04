@@ -9,7 +9,7 @@ class EmailSubscriptionsController < ApplicationController
   def create
     response = submit_to_bsd
     if response.code == "302" && response.body =~ /thanks/
-      flash[:info] = "Thanks! We'll let you know when we launch."
+      flash[:info] = "Thanks! We'll keep you up to date."
       redirect_to "/"
     else
       flash[:error] = "Oops! Please be sure to fill out all required fields."

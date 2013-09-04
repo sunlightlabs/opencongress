@@ -45,6 +45,9 @@ defaults: &defaults
   formageddon_server: pop.gmail.com
   formageddon_username: formageddon@nindy.com
 
+    contact_emails:
+    - you@example.com
+
   group_images_path: <%= Rails.root %>/public/system/group_images
   group_images_url: /system/group_images
   notebook_files_path: <%= Rails.root %>/public/system/notebook_files

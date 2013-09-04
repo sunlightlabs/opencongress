@@ -161,6 +161,8 @@ OpenCongress::Application.routes.draw do
 
   match 'howtouse' => 'about#howtouse'
 
+  resources :contact, :only => [:index, :create]
+
   scope :controller => 'account' do
     for action in %w{ login why logout signup welcome contact_congress}
       match action, :action => action

@@ -15,6 +15,7 @@ class StatesController < ApplicationController
   # GET /states/1.xml
   def show
     @state = State.find_by_abbreviation(params[:id])
+    render_404 and return unless @state
     @page_title = "#{@state.name.titleize}"
     @representatives = @state.representatives.order("CAST(district AS INTEGER)")
     @users = @state.users

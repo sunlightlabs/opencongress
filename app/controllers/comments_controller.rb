@@ -185,7 +185,7 @@ class CommentsController < ApplicationController
         flash[:notice] = "IP #{comment.ip_address} banned, "
       end
       userlogin = comment.user.login
-      comment.user.destroy
+      comment.user.ban!
 
       flash[:notice] += "#{userlogin} and comments destroyed"
     else

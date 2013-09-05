@@ -84,10 +84,10 @@ class PeopleController < ApplicationController
 
     @carousel = [random_news, random_blogs, @people.sort{|a,b| b.view_count.to_i <=> a.view_count.to_i}[0..9]]
 
-		respond_to do |format|
+    respond_to do |format|
       format.html { render :action => 'list' }
       format.js { render :action => 'update'}
-		end
+    end
   end
 
   def compare
@@ -155,7 +155,7 @@ class PeopleController < ApplicationController
 
     if params[:person_type] == 'representatives'
       person_type = 'rep'
-			@person_type = :representatives
+      @person_type = :representatives
       @page_title = "Representatives Most Written About "
       bc_url = '/people/representatives'
       @atom = {
@@ -164,7 +164,7 @@ class PeopleController < ApplicationController
       }
     else
       person_type = 'sen'
-			@person_type = :senators
+      @person_type = :senators
       @page_title = "Senators Most Written About "
       bc_url = '/people/senators'
       @atom = {
@@ -196,7 +196,7 @@ class PeopleController < ApplicationController
     respond_to do |format|
       format.html { render :action => 'list' }
       format.js { render :action => 'update' }
-		end
+    end
   end
 
   def atom_top_commentary
@@ -256,17 +256,17 @@ class PeopleController < ApplicationController
 
     respond_to do |format|
      format.html {
-		  @abstain_rank = @person.abstain_rank
+      @abstain_rank = @person.abstain_rank
 
       comment_redirect(params[:goto_comment]) and return if params[:goto_comment]
 
-		  @include_vids_styles = true
+      @include_vids_styles = true
 
       @featured_person_text = @person.featured_people.first
 
       @bio_summary = @person.wiki_bio_summary
       @atom = {'link' => url_for(:only_path => false, :controller => 'people', :action => 'atom', :id => @person), 'title' => "Track " + @person.name}
- 		@hide_atom = true
+    @hide_atom = true
       }
      format.xml {
         render :xml => @person.to_xml(:include => [:recent_news, :recent_blogs])

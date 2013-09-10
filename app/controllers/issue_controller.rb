@@ -7,7 +7,8 @@ class IssueController < ApplicationController
 
   def index
     @filter_by = :active
-    @subjects = Subject.active.order("term ASC").paginate(:page => params[:page])
+    @subjects = Subject.active.select(
+                  "subjects.*, count(bills.id) as bill_count").where("bill_count > 0").order("bill_count desc").paginate(:page => params[:page])
     @page_title = "Active Issues"
     include_carousel
   end
@@ -97,7 +98,7 @@ class IssueController < ApplicationController
     @key_votes = @subject.key_votes
     @groups = @subject.groups.all
     @passed_bills = @subject.passed_bills(3, 1, Settings.available_congresses)
-    
+
     @top_comments = @subject.comments.find(:all,:include => [:comment_scores, :user], :order => "comments.average_rating DESC", :limit => 2)
     @atom = {'link' => url_for(:only_path => false, :controller => 'issue', :id => @subject, :action => 'atom'), 'title' => "Major Bill Actions in #{@subject.term}"}
 		@hide_atom = true

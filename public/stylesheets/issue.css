@@ -1,8 +1,14 @@
 @import url('people.css');
 
+#contain_issues {
+  height: auto;
+  width: 617px;
+  float: left;
+}
+
 #issue_list{
-height: 550px;
-float: right;
+height: 555px;
+float: left;
 width: 618px;
 }
 
@@ -105,9 +111,11 @@ height: 83px;
 }
 
 #sort_nav{
-height: 83px;
 width: 617px;
 float: left;
+}
+.contain_list #sort_nav{
+  height: auto;
 }
 
 a#widgets_trigger {
@@ -204,4 +212,14 @@ table.money {
 table.money th, table.money td {
   border: 1px solid #eee;
   padding: 5px 0 0 5px;
+}
+
+.pagination {
+    clear: left;
+    padding: 10px 0 20px 20px;
+}
+@media screen {
+    #zipcode_lookup:after {
+        top: 125px;
+    }
 }

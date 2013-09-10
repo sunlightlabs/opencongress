@@ -7,7 +7,7 @@
 }
 
 #issue_list{
-height: 555px;
+height: 539px;
 float: left;
 width: 618px;
 }
@@ -216,7 +216,7 @@ table.money th, table.money td {
 
 .pagination {
     clear: left;
-    padding: 10px 0 20px 20px;
+    padding: 10px 0 10px 20px;
 }
 @media screen {
     #zipcode_lookup:after {

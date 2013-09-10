@@ -7,8 +7,7 @@ class IssueController < ApplicationController
 
   def index
     @filter_by = :active
-    @subjects = Subject.active.select(
-                  "subjects.*, count(bills.id) as bill_count").where("bill_count > 0").order("bill_count desc").paginate(:page => params[:page])
+    @subjects = Subject.active.where("subjects.bill_count > 0").order(["subjects.bill_count desc", "subjects.term asc"]).paginate(:page => params[:page])
     @page_title = "Active Issues"
     include_carousel
   end

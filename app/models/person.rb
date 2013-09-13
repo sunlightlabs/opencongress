@@ -11,7 +11,7 @@ class Person < ActiveRecord::Base
   has_many :bill_cosponsors
   has_many :bills_cosponsored, :class_name => 'Bill', :through => :bill_cosponsors, :source => :bill, :conditions => proc { [ "bills.session = ?", Settings.default_congress ] }, :order => 'bills.introduced DESC'
   has_many :roles, :order => 'roles.startdate DESC'
-  has_many :roll_call_votes #, :include => :roll_call, :order => 'roll_calls.date DESC'
+  has_many :roll_call_votes, :include => :roll_call, :order => 'roll_calls.date DESC'
 
   with_options :class_name => "RollCall", :through => :roll_call_votes,
                :source => :roll_call, :include => :bill do |rc|

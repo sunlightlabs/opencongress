@@ -983,7 +983,6 @@ padding-top: 13px;
 }
 .bills .search_form, .voting_history .search_form{
 float: right;
-width: 100%;
 padding: 30px;
 }
 .bills .search_form div, .voting_history .search_form div{
@@ -991,6 +990,13 @@ float: right;
 }
 .bills .search_form div span, .voting_history .search_form div span{
 display: none;
+}
+.bills .search_form #search-field, .voting_history .search_form #search-field{
+  position: static;
+  width: 150px;
+}
+.bills .pagination, #people.voting_history .pagination{
+  padding-top:34px;
 }
 .user_stats_div {
 float: left;

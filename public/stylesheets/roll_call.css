@@ -61,8 +61,8 @@ background: url(../images/sen-sort.png) left top repeat-x;
 
 
 ul.rolls_list li:first-child {
-margin: 0 3px 0 0px;             
-padding: 17px 0 17px 36px;  
+margin: 0 3px 0 0px;
+padding: 17px 0 17px 36px;
 border-bottom: 1px solid #e8def8;
 }
 
@@ -128,13 +128,13 @@ background:url(../images/star.gif) no-repeat 0 -32px
 
 #timeframe_select.popular {
   margin-left:240px;
-}                        
+}
 #timeframe_select.approval {
   margin-left:168px;
 }
 #timeframe_select.news {
   margin-left:331px;
-} 
+}
 #timeframe_select.blog {
   margin-left:440px;
 }
@@ -194,13 +194,13 @@ width: 415px;
 #zipcode_lookup{
 margin-top: 0px;
 height: 180px;
-padding: 0;	
+padding: 0;
 background-position: -2px 84px;
 }
 #zipcode_lookup:after{
   content: "";
   position: absolute;
-  top: 97px;
+  top: 125px;
   left: 384px;
   height: 427px;
   width: 28px;
@@ -262,7 +262,7 @@ background: url(../images/map_buttons.png) left -210px no-repeat;
    _background: url(../images/map_buttons.gif) left -210px no-repeat;
 }
 
-	
+
 #sort_nav{
 height: 83px;
 width: 617px;

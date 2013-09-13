@@ -788,9 +788,12 @@ font-weight: bold;
 }
 
 body#people.compare h3{
-	clear: both;
-	margin-top: 20px;
+  clear: both;
+  margin-top: 20px;
 }
+
+/* except user nav from above */
+body#people.compare .user_nav h3{ margin-top: 0;}
 
 body#people.compare .padding .left{
 float: left;

@@ -55,7 +55,8 @@ class Comment < ActiveRecord::Base
     s_count = Comment.count(:all,
                             :joins => "LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')",
                             :conditions => ["(comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
-                                             (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill')", q, congresses, q])
+                                             (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill') AND
+                                             comments.commentable_type != 'Person'", q, congresses, q])
 
 
     # Note: This takes (current_page, per_page, total_entries)
@@ -69,6 +70,7 @@ class Comment < ActiveRecord::Base
         FROM (SELECT * from comments LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')
           WHERE ((comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
                  (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill'))
+          AND comments.commentable_type != 'Person'
           ORDER BY comments.created_at DESC LIMIT ? OFFSET ?) AS comments", q, q, congresses, q, pager.per_page, pager.offset])
     end
   end

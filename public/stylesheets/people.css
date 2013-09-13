@@ -396,7 +396,7 @@ padding: 31px 0 0 0;
 #zipcode_lookup:after{
   content: "";
   position: absolute;
-  top: 97px;
+  top: 125px;
   left: 384px;
   height: 427px;
   width: 28px;

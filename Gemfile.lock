@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: e28ec2816c3305eb0b795510ee7f2fa47d7e0ca7
+  revision: a00c3285a112973012bcb20075ca7357888c8c2a
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
@@ -26,7 +26,7 @@ GIT
       rufus-mnemo
 
 GIT
-  remote: git@github.com:sunlightlabs/geocoder.git
+  remote: git://github.com/sunlightlabs/geocoder.git
   revision: b23cec8515f7075d06231be5670fd1a3d91871ed
   specs:
     geocoder (1.1.8)

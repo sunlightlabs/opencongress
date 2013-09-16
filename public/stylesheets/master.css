@@ -3513,6 +3513,8 @@ _background:url('../images/sprites.gif') 0 0 no-repeat;
   background: url('../images/send_email.png') left 50% no-repeat;
 }
 
+.activity_stream .icon:before { background: none; }
+
 
 li.subscribe ul li{
 float: left !important;

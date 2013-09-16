@@ -678,3 +678,7 @@ input#group_captcha {
   float: left;
   margin: 20px 0 50px 210px;
 }
+
+select#group_issue {
+  max-width: 398px;
+}

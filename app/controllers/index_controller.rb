@@ -2,7 +2,7 @@ class IndexController < ApplicationController
   layout "frontpage"
 
   caches_page :pipa
-  
+
   def index
     unless read_fragment("frontpage_rightside")
       @index_tabs = [
@@ -18,7 +18,7 @@ class IndexController < ApplicationController
               # :id => 'bbg',
               # :link => 'bill/most/blog?types=all',
               # :style => 'display: none;',
-              # :count_type => 'blog_articles'},              
+              # :count_type => 'blog_articles'},
               {:title => 'Most-Viewed Bills',
               :partial => 'bill',
               :collection => ObjectAggregate.popular('Bill', Settings.default_count_time, 5),
@@ -56,19 +56,20 @@ class IndexController < ApplicationController
               :count_type => 'views'}]
 
     end
-    
+
     unless read_fragment("frontpage_featured_members")
       @popular_sen_text = FeaturedPerson.senator
       @popular_rep_text = FeaturedPerson.representative
     end
 
     @sessions = CongressSession.sessions
+    @updated_at = CongressSession.order(["date desc"]).first.date
 
   end
-  
+
   def pipa
   end
-  
+
   def about
     redirect_to :controller => 'about'
   end
@@ -92,10 +93,10 @@ class IndexController < ApplicationController
 	  @page_title = 'The President\'s Proposal - Health Care Reform'
 	  render :layout => 'application'
 	end
-	
+
 	def house_reconciliation
 	  @page_title = 'Health Care Bill Text - H.R. 4872 - Reconciliation Act of 2010'
 	  render :layout => 'application'
 	end
-	
+
 end

@@ -20,7 +20,7 @@ width: 250px;
 background: url(/images/groups.png) no-repeat;
 }
 
-#heading h2 a{
+#heading h2 a.all-groups{
 display: block;
 height: 80px;
 text-indent: -9999px;

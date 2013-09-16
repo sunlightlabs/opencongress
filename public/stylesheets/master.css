@@ -5971,6 +5971,13 @@ span.yellow-star {
   vertical-align: baseline;
 }
 
+.updated.timestamp {
+  color: #666;
+  font-size: 10px;
+  font-family: verdana, sans-serif;
+  padding: 10px 0 5px;
+}
+
 /**
  * For modern browsers
  * 1. The space content is one way to avoid an Opera bug when the

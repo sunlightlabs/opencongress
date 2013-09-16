@@ -42,6 +42,14 @@ class Group < ActiveRecord::Base
     'Group'
   end
 
+  def is_state_group?
+    !!state && !district
+  end
+
+  def is_district_group?
+    !!district
+  end
+
   def active_members
     users.where("group_members.status != 'BOOTED'")
   end

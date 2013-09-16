@@ -6,10 +6,11 @@
   - else
     = link_to "Register or Login to Use Groups", login_path, :class => 'button silver medium margin-top floatright margin-right'
 
-  %h2 OpenCongress Groups
+  %h2
+    = link_to "OpenCongress Groups", groups_path
 
   %p.groups_instructions
-    %strong Join Groups, it's free and easy. 
+    %strong Join Groups, it's free and easy.
     Find Groups by searching for keyword, browsing by issue area, or by popularity.
 
 
@@ -18,11 +19,11 @@
 .space &nbsp;
 
 - if show_search?
-  .container_12  
+  .container_12
     .grid_7.box.rounded.center.group-map
       %h3 Find Groups for States & Congressional Districts
       %span.button.silver.huge.jqModal.find_map Launch Map
-    
+
       #map.jqmWindow{ :style => "display:none;" }
         = render :partial => "shared/map", :locals => { :param => :state }
         .ie
@@ -31,12 +32,12 @@
       :javascript
         $j().ready(function() {
           $j('#map').jqm();
-        });   
-        
+        });
+
     .grid_7.box.rounded.center.issue-bg
       %h3 Select Issue Area
       = select_tag :issue, grouped_subject_options(nil, ''), :id => "group_issue"
-    
+
 
 
 
@@ -44,14 +45,14 @@
   - if show_search?
     .groups_search
       = image_tag 'spinner-small.gif',  :id => 'group_search_spinner'
-  
+
       = text_field_tag 'q', nil, :id => 'group_search_field', :class => 'field small-search-field'
       = hidden_field_tag 'sort', @sort, :id => 'group_sort'
-  
+
   #groups_list_result
     = render 'groups_list', :groups => @groups
 
-    
+
 .clear.space.margin-top.margin-bottom &nbsp;
 
 .clear.space.margin-top.margin-bottom &nbsp;

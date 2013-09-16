@@ -77,7 +77,14 @@
   <% elsif object.class.to_s == "Person" %>
     <div class="rep_info">
       <% unless object.website.blank? %>
-        Official website: <a href="<%= object.website %>" target="_new"><%= object.website %></a><br />
+        Official website:<br />
+        <ul>
+          <li><a href="<%= object.website %>" target="_new"><%= object.website %></a></li>
+          <% unless object.contact_webform.blank? %>
+          <li><a href="<%= object.contact_webform %>" target="_new">Contact webform</a></li>
+          <% end %>
+        </ul>
+        <br />
       <% end %>
 
       <% unless object.congress_office.blank? %>

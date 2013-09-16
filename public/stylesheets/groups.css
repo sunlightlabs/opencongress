@@ -682,3 +682,6 @@ input#group_captcha {
 select#group_issue {
   max-width: 398px;
 }
+select#group_subject_id {
+  max-width: 367px;
+}

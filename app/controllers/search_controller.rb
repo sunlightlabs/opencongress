@@ -67,14 +67,13 @@ class SearchController < ApplicationController
                  :conditions => [ "(UPPER(firstname || ' ' || lastname)=? OR
                                     UPPER(nickname || ' ' || lastname)=?)",
                                     query_stripped.upcase, query_stripped.upcase ])
+          redirect_to person_url(people_for_name[0]) and return if people_for_name.size == 1
 
-          if people_for_name.size == 1
-            redirect_to person_url(people_for_name[0])
-            return
-          end
+          opts = {:page => @page}
+          # restrict search if the only congress checked is the current congress
+          opts[:only_current] = true if params[:search_congress].keys.count == 1 && !params[:search_congress][Settings.default_congress.to_s].nil?
 
-          @people = Person.full_text_search(query_stripped, { :page => @page, :only_current => true })
-
+          @people = Person.full_text_search(query_stripped, opts)
           @found_items += @people.total_entries
         end
 

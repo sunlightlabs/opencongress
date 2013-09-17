@@ -669,6 +669,7 @@ class BillController < ApplicationController
   end
 
   def bill_vote
+    binding.pry
     return head :bad_request if not BillVote.is_valid_user_position(params[:id])
 
     new_position = params[:id].to_sym

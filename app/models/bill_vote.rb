@@ -38,7 +38,7 @@ class BillVote < ActiveRecord::Base
     if POSITION_CHOICES.include?(position)
       bv = BillVote.where(:bill_id => bill_id, :user_id => user_id).first
       if bv.nil?
-        bv = BillVote.new(:bill_id => bill_id, :user_id => user_id)
+        bv = BillVote.new(:bill_id => bill_id, :user_id => user_id, :support => nil)
       end
 
       if bv.support != POSITION_CHOICES[position]

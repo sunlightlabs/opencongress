@@ -48,6 +48,8 @@ defaults: &defaults
   contact_emails:
     - you@example.com
 
+  contact_us_email: you@example.com
+
   email_from_address: you@example.com
 
   group_images_path: <%= Rails.root %>/public/system/group_images

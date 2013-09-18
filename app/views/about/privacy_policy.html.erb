@@ -26,7 +26,7 @@
 
 <h3>4.  Changing or Deleting Your Information</h3>
 
-<p>All registered users may review, update, correct or delete the Personal Information provided in their registration or account profile by by changing their user preferences in their profile or by contacting: <script type="text/javascript">m("writeus","opencongress","org","1");</script>.  If you completely delete all such information, then your account may become deactivated.</p>
+<p>All registered users may review, update, correct or delete the Personal Information provided in their registration or account profile by by changing their user preferences in their profile or by contacting: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.  If you completely delete all such information, then your account may become deactivated.</p>
 
 <h3>5.  Security</h3>
 
@@ -38,7 +38,7 @@
 
 <h3>7.  Contacting Us</h3>
 
-<p>If you have any questions about this Privacy Policy, please contact us at <script type="text/javascript">m("writeus","opencongress","org","1");</script> or at:</p>
+<p>If you have any questions about this Privacy Policy, please contact us at <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script> or at:</p>
 
 <p>Privacy Matters<br>
 c/o OpenCongress<br>

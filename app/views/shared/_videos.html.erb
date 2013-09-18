@@ -5,7 +5,7 @@
     Hmmm, no video coverage of this topic at this time.
     If you know of a relevant video to display here, send us an email with the
     URL of this page and the URL of your suggested video: <script
-    type="text/javascript">m("writeus","opencongress","org","1");</script>.
+    type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.
     The OpenCongress editorial team will review and post relevant videos as
     quickly as possible.
   </div>

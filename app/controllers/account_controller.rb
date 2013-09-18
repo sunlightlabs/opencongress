@@ -143,7 +143,7 @@ class AccountController < ApplicationController
         activate_redirect(user_profile_path(:login => current_user.login))
         return
       else
-        @error_msg = "Sorry, we weren't able to find your representatives. Please email writeus@opencongress.org with your address and zipcode and we'll get back to you. We apologize for the inconvenience."
+        @error_msg = "Sorry, we weren't able to find your representatives. Please email #{ Settings.contact_us_email } with your address and zipcode and we'll get back to you. We apologize for the inconvenience."
         return
       end
     end

@@ -1,5 +1,5 @@
 <div id="heading" class="clearfix">
-	<h2>OpenCongress API Documentation</h2>   
+	<h2>OpenCongress API Documentation</h2>
 	<div class="explain_box">
 	  <p>Welcome. This API provides programmers with structured access to all the data on OpenCongress, everything from official bill info to news and blog coverage to user-generated votes on bills and much more. The data below is just a start -- we will continually add more unique info &amp; useful enhancements in order to contribute public knowledge about Congress back to the data commons on the open Web. We're always interested in hearing requests or seeing use cases of how you're using this API -- see the Developer Resources at the bottom of this page.</p>
 	  <p>This API defaults to returning XML. All queries can also return JSON by adding a .json file extension, or by specifying <tt>format=json</tt> as a URL parameter. JSONP is also supported, via a <tt>callback</tt> parameter. The API defaults to returning 30 results. You can pass the <tt>per_page</tt> variable to decrease this (30 is the max), and the <tt>page</tt> variable to flip through pages.</p>
@@ -117,7 +117,7 @@
 
   <dt>Bills by type</dt>
   <dd>
-    Returns bills matching the given type.  Type can be: h (house), 
+    Returns bills matching the given type.  Type can be: h (house),
     s (senate), hj (house joint resolution), sj (senate joint resolution), hc (house concurrent resolution)
     sc (senate concurrent resolution), hr (house resolution), sr (senate resolution) <br/>
     <%= link_to_shown_url "#{Settings.api_base_url}bills?type=h&congress=#{Settings.default_congress}" %>
@@ -128,7 +128,7 @@
     Returns bills matching the given number.<br/>
     <%= link_to_shown_url "#{Settings.api_base_url}bills?number=5749&type=h&congress=#{Settings.default_congress}"  %>
   </dd>
-  
+
   <dt>Bills by ident</dt>
   <dd>
     Returns bills matching the given OpenCongress identification strings (session + chamber + bill number).<br/>
@@ -140,7 +140,7 @@
     Returns bills that were introduced since the supplied date (30 at a time).<br/>
     <%= link_to_shown_url "#{Settings.api_base_url}bills_introduced_since?date=Jan 30th, 2009" %>
   </dd>
-  
+
 
   <dt>Bills by Query</dt>
   <dd>
@@ -153,7 +153,7 @@
     Returns bills that OpenCongress editors feel are "hot".<br/>
     <%= link_to_shown_url "#{Settings.api_base_url}hot_bills" %>
   </dd>
-  
+
   <dt>Stalled Bills</dt>
   <dd>
     Returns bills that have passed one chamber but have not received a vote on passage in the other (or a conference vote).<br/>
@@ -171,7 +171,7 @@
      Returns the most bills most reported on by news agencies this week.<br/>
     <%= link_to_shown_url "#{Settings.api_base_url}bills_in_the_news_this_week" %>
   </dd>
-  
+
   <dt>Most Commented-On Bills This Week</dt>
   <dd>
     Returns 20 bills with the most comments added in the last week.<br/>
@@ -183,7 +183,7 @@
      Returns the most bills most tracked by OpenCongress Users this week.<br/>
     <%= link_to_shown_url "#{Settings.api_base_url}most_tracked_bills_this_week" %>
   </dd>
-  
+
   <dt>Most Supported Bills this Week</dt>
   <dd>
      Returns the most bills most supported by OpenCongress Users this week.<br/>
@@ -195,7 +195,7 @@
      Returns the most bills most opposed by OpenCongress Users this week.<br/>
      <%= link_to_shown_url "#{Settings.api_base_url}most_opposed_bills_this_week" %>
   </dd>
-  
+
   <dt>Bills Supported by Open Congress Users are Also</dt>
   <dd>
      Returns bills, representatives, and senators supported and opposed by users's supporting a given bill.<br/>
@@ -213,7 +213,7 @@
      Returns bills, people, and issues commonly tracked by people tracking a given bill.<br/>
     <%= link_to_shown_url "#{Settings.api_base_url}opencongress_users_tracking_bill_are_also_tracking/111-s1" %>
   </dd>
-  
+
 
 </dl>
 </div>
@@ -230,7 +230,7 @@
     Returns the roll calls for a given list of bills.<br/>
     <%= link_to_shown_url "#{Settings.api_base_url}bill_roll_calls?bill_id[]=51865&bill_id[]=51868" %>
   </dd>
-      
+
 </dl>
 </div>
 
@@ -262,7 +262,7 @@
     <%= link_to_shown_url "#{Settings.api_base_url}comments?object_type=Bill&object_id=49937" %>
     <%= link_to_shown_url "#{Settings.api_base_url}comments?object_type=Person&object_id=300056" %>
   </dd>
-      
+
 </dl>
 </div>
 
@@ -295,21 +295,21 @@ Here is the page to retrieve all the data on the OpenCongress Wiki, including a 
  <a href="/wiki/Special:GetData">http://www.opencongress.org/wiki/Special:GetData</a>
   </dd>
 
-      
+
 </dl>
 
 </div>
 
 
 <div class="dev_resources">
-<h3>OpenCongress Developer Resources</h3> 
-<ul class="star"> 
-<li class="top-star">To ask questions about the API, suggest enhancements, report bugs, or let us know how you're using data from our API, send us an email: <script type="text/javascript">m("writeus","opencongress","org","1");</script></li> 
+<h3>OpenCongress Developer Resources</h3>
+<ul class="star">
+<li class="top-star">To ask questions about the API, suggest enhancements, report bugs, or let us know how you're using data from our API, send us an email: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script></li>
 <li class="top-star">To sign up for general site updates over e-mail: <a href="http://crm.ppolitics.org">OpenCongress mailing list</a> (low-volume, major announcements only).</li>
-<li class="top-star">To subscribe to updates via RSS: <a href="http://feeds.feedburner.com/OpenCongressCongressGossipBlog">Blog RSS feed</a>.</li> <li class="top-star">To sign up for detailed programming updates over e-mail: <a href="http://lists.ppolitics.org/listinfo.cgi/develop-ppolitics.org">Site development list-serv</a>.</li> 
+<li class="top-star">To subscribe to updates via RSS: <a href="http://feeds.feedburner.com/OpenCongressCongressGossipBlog">Blog RSS feed</a>.</li> <li class="top-star">To sign up for detailed programming updates over e-mail: <a href="http://lists.ppolitics.org/listinfo.cgi/develop-ppolitics.org">Site development list-serv</a>.</li>
 <li class="top-star">To join an associated Google Group: <a href="http://groups.google.com/group/sunlightlabs">Sunlight Labs</a>, <a href="http://wiki.sunlightlabs.com/index.php/OpenCongress">Sunlight Wiki</a></li> <li class="top-star">To chat with our open-source development team over IRC: #opencongress on irc.freenode.net.</li>
-<li class="top-star">To check out our site code: <a href="http://github.com/opencongress/opencongress/tree/master">GitHub</a> page</li> <li class="top-star">To file a bug report, interface improvement, data source, or feature suggestion: <a href="http://trac.opencongress.org/">Trac project homepage</a>.</li> 
-</ul> 
+<li class="top-star">To check out our site code: <a href="http://github.com/opencongress/opencongress/tree/master">GitHub</a> page</li> <li class="top-star">To file a bug report, interface improvement, data source, or feature suggestion: <a href="http://trac.opencongress.org/">Trac project homepage</a>.</li>
+</ul>
 </div>
 
 

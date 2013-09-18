@@ -7,4 +7,4 @@ It's free to create your personal profile and takes only a minute, you can sign 
 Thanks!
 http://www.opencongress.org
 
-If you think you've received this message in error, let us know by contacting <script type="text/javascript">m("writeus","opencongress","org","1");</script>.
+If you think you've received this message in error, let us know by contacting <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.

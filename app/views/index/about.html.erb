@@ -22,7 +22,7 @@ Our team is:
 </p>
 <p>
 As you may already know, we want to hear from you. You can email all of us at:
-<script type="text/javascript">m("writeus","opencongress","org","1");</script>
+<script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>
 </p>
 <p>
 You can email any of us separately by using this formula: [firstname]@ppolitics.org

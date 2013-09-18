@@ -4,7 +4,7 @@
 
 <p>The OpenCongress blog is written primarily by Donny Shaw of the Participatory Politics Foundation, with contributions from other members of PPF, including PPF co-founder Tiffiniy Cheng and Program Director David Moore. As with all written content on Open Congress, the blog is non-partisan and seeks to maintain a neutral point of view, though the blog strongly supports efforts from both sides of the aisle to increase the transparency and accessibility of government.</p>
 
-<p>You can help make the OpenCongress blog better by submitting a tip, either anonymously or attributed to your name, whichever you prefer. We welcome your feedback on the blog and how it can be more helpful. To contact us with questions or comments, or to suggest a link, send us an e-mail anytime: <script type="text/javascript">m("writeus","opencongress","org","1");</script>.</p>
+<p>You can help make the OpenCongress blog better by submitting a tip, either anonymously or attributed to your name, whichever you prefer. We welcome your feedback on the blog and how it can be more helpful. To contact us with questions or comments, or to suggest a link, send us an e-mail anytime: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.</p>
 
 <p>Subscribe to the OpenCongress blog's <a href="/articles/atom">RSS feed</a> in order to stay on top of the latest happenings on Capitol Hill.</p>
 

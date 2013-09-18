@@ -50,10 +50,10 @@
 
 <ul class="blue-arrow">
 
-	<li>Most-Viewed Bills <a href="/bill/atom_top20" class="feed">Feed</a></li> 
-	<li> Most-Viewed Senators <a href="/people/atom_top20?type=sen" class="feed">Feed</a></li>  
-	<li>Most-Viewed Representatives <a href="/people/atom_top20?type=rep" class="feed">Feed</a></li> 
-	<li>Most-Viewed Committees <a href="/committee/atom_top20" class="feed">Feed</a></li> 
+	<li>Most-Viewed Bills <a href="/bill/atom_top20" class="feed">Feed</a></li>
+	<li> Most-Viewed Senators <a href="/people/atom_top20?type=sen" class="feed">Feed</a></li>
+	<li>Most-Viewed Representatives <a href="/people/atom_top20?type=rep" class="feed">Feed</a></li>
+	<li>Most-Viewed Committees <a href="/committee/atom_top20" class="feed">Feed</a></li>
 	<li>Most-Viewed Issues <a href="/issue/atom_top20" class="feed">Feed</a></li>
 
 </ul>
@@ -75,17 +75,16 @@
 
 <ul class="star">
 
-	<li class="top-star">Subscribe to Bills Most Written-About on Blogs: [NEED LINK INFO]<img class="feed-button" src="feed.jpg" /></li> 
+	<li class="top-star">Subscribe to Bills Most Written-About on Blogs: [NEED LINK INFO]<img class="feed-button" src="feed.jpg" /></li>
 	<li class="top-star">Subscribe to Members of Congress Most Written-About on Blogs: [NEED LINK INFO] <img class="feed-button" src="feed.jpg" /></li>
 -->
 
 <p>We enthusiastically encourage other websites and blogs to display this most-viewed page information for their readers and membership. In future site development, we will offer even more RSS feeds into the collaborative social wisdom created by the public in OpenCongress, as well as easy "cut-and-paste" HTML text to make it as easy as possible to aggregate OpenCongress RSS information on your website. (For the moment, there are a variety of WordPress plug-ins and similar free tools to aggregate RSS content on your site.)</p>
 
-<p>Feel free to <a href="/contact">contact us</a> anytime with questions about OpenCongress RSS feeds, or suggestions for other types of RSS feeds that you would find useful. Also, send us a note to show us your website or blog and how you're syndicating information from OpenCongress, and we'll mention you in a Blog post about our user community. Simply send us an e-mail: <script type="text/javascript">m("writeus","opencongress","org","1");</script>.</p>
+<p>Feel free to <a href="/contact">contact us</a> anytime with questions about OpenCongress RSS feeds, or suggestions for other types of RSS feeds that you would find useful. Also, send us a note to show us your website or blog and how you're syndicating information from OpenCongress, and we'll mention you in a Blog post about our user community. Simply send us an e-mail: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.</p>
 
 </div>
 
 
 
 
-	

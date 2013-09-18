@@ -11,4 +11,4 @@
 </script>
 <br />
 <p><a target="_blank" href="/screencast.mp4">Download full quality version of screencast</a></p>
-Have a question or feedback about this screencast? Let us know what you think: <script type="text/javascript">m("writeus","opencongress","org","1");</script>.
+Have a question or feedback about this screencast? Let us know what you think: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.

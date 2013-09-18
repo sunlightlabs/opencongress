@@ -29,6 +29,6 @@
 c/o OpenCongress.org<br>
 220 Lafayette St. #3<br>
 New York, NY 10012<br>
-<script type="text/javascript">m("writeus","opencongress","org","1");</script></p>
+<script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script></p>
 
 </div>

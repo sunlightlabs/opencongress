@@ -4,7 +4,7 @@
   <h2>Oops!</h2>
   <p>We're sorry, but the page you requested is having problems. Let's fix this together, yes? Will take just a sec and make the site better for everyone.</p>
 
-  <p>To help out, please send an email to <script type="text/javascript">m("writeus","opencongress","org","1");</script>, subject heading "Oops!", and include the following info:</p>
+  <p>To help out, please send an email to <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>, subject heading "Oops!", and include the following info:</p>
 
   <ul>
   <li>the URL of the OpenCongress page where the error occurred</li>
@@ -21,5 +21,5 @@
 <%= exception.message %>
 Trace:
 <%= exception.backtrace.join("\n") %>
-     
+
 -->

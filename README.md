@@ -12,10 +12,15 @@ By far, the fastest and easiest way to get started with OpenCongress is by downl
 
 Once you've installed vagrant, just run:
 
-    vagrant box add opencongress http://vagrant.sunlightfoundation.com/opencongress/ubuntu-precise-server-x86-opencongress.box
+    vagrant box add opencongress http://vagrant.sunlightfoundation.com/opencongress/opencongress.box
     vagrant init opencongress
     vagrant up
-        
+
+Then connect to your new VM:
+
+    vagrant ssh
+
+From here, you can skip down to 'install the bundle'
 
 ### Running locally
 
@@ -33,7 +38,7 @@ For Mac OS X, start by installing [Homebrew](http://mxcl.github.io/homebrew/),
 then run:
 
     brew install postgresql postgresql-server ImageMagick md5sha1sum wget wkhtmltopdf
- 
+
 Follow the instructions after the packages install for initializing your database
 
 ---
@@ -42,12 +47,12 @@ Install the bundle:
 
     [sudo] gem install bundler
     bundle install
-    
+
 
 __Note for OS X:__ *You may need to specify additional compile options
 for your gems. Try: `ARCHFLAGS="-arch x86_64" bundle install`
 
-    
+
 ---
 
 Generate your settings files. First change into the opencongress directory and then:
@@ -83,14 +88,14 @@ the data files is `/tmp/opencongress_data` but you can change this by
 editing `config/application_settings.yml`.  This task will import ALL
 of the data for the current session of Congress: it will take a long
 time and occupy a LOT of space on your filesystem!  Keep this in mind
-before importing the data! 
+before importing the data!
 
 ### Starting the server
 
 To start the webserver:
 
     rails s
-   
+
 ## Contributing
 
 We are currently focused on getting the code up to speed--more friendly for developers and better covered by tests. If you would like to help out, please be sure any new code is tested appropriately under RSpec, Capybara and/or Cucumber and send pull requests to this github repo. We'd especially love help in improving test coverage, but all pull requests are welcome. See the [Sunlight Community page](http://sunlightfoundation.com/api/community/) for specific asks related to this project.

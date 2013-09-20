@@ -1,9 +1,12 @@
 require_dependency 'viewable_object'
 require_dependency 'united_states'
 require_dependency 'wiki_connection'
+require_dependency 'tire'
 
 class Bill < ActiveRecord::Base
   include ViewableObject
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
 
   # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
   #              :facets => [:bill_type, :session], :auto_commit => false
@@ -1355,5 +1358,15 @@ class Bill < ActiveRecord::Base
     bill_titles.select { |t| t.is_default == true }.first
   end
 
+  mapping do
+    indexes :id,         :index => :not_analyzed
+    indexes :ident,      :as   => proc { ident }
+    indexes :official_title
+    indexes :short_title
+    indexes :popular_title
+    indexes :sponsor,    :as   => proc { sponsor and sponsor.full_name }
+    indexes :subject,    :as   => proc { top_subject and top_subject.term }
+    indexes :created_on, :type => 'date'
+  end
 
 end

@@ -1,31 +1,43 @@
 <div id="heading">
-<h2>Congressional Committees</h2>
+  <h2>Congressional Committees</h2>
 </div>
 <% if defined? @carousel %>
   <%= render :partial => 'committee/carousel' %>
 <% end %>
+
+<div class="grid_16">
+  <div class="grid_7">
+    <p class="margin-top">
+    Select a House or Senate committee to see membership related bills, and to track it on OpenCongress.
+    </p>
+  </div>
+
+  <div class="grid_4">
+    <%= render :partial => 'sort_committees', :locals => { :sort => :all } %>
+  </div>
+</div>
+
 <div class="clearfix">
-  <%= render :partial => 'sort_committees', :locals => { :sort => :all } %>
 </div>
 
 <ul id="house">
- <li>
-  <h3>House Committees</h3>
-  <ul class="list">
-      <%= render(:partial => 'committees_list',
-                 :as => :committee,
-                 :collection => @house_committees ) %>
-  </ul>
+  <li>
+    <h3>House Committees</h3>
+    <ul class="list">
+        <%= render(:partial => 'committees_list',
+                   :as => :committee,
+                   :collection => @house_committees ) %>
+    </ul>
  </li>
 </ul>
 
 <ul id="senate">
-<li>
-  <h3>Senate Committees</h3>
-  <ul class="list">
-      <%= render(:partial => 'committees_list',
-                 :as => :committee,
-                 :collection => @senate_committees ) %>
-  </ul>
-</li>
+  <li>
+    <h3>Senate Committees</h3>
+    <ul class="list">
+        <%= render(:partial => 'committees_list',
+                   :as => :committee,
+                   :collection => @senate_committees ) %>
+    </ul>
+  </li>
 </ul>

@@ -1,303 +1,113 @@
 <div id="heading">
-	<h2>About OpenCongress</h2>
+  <h2>About OpenCongress</h2>
 </div>
 
 <div class="padding">
-<div class="pretty-text">
-
-<div class="col1">
-<h2>What is OpenCongress?</h2>
-
-<p>OpenCongress is a project of the <a href="http://www.participatorypolitics.org/" target="_blank">Participatory Politics Foundation</a>, a 501(c)3 non-profit organization that builds free & open-source software for civic engagement. The <a href="http://sunlightfoundation.com/" target="_blank">Sunlight Foundation</a>, also a non-profit organization, is the founding and primary supporter of OpenCongress.</p>
-
-<a class="small-ppf" target="_blank" href="http://participatorypolitics.org/">Participatory Politics Foundation</a>
-
-<a class="small-sunlight" target="_blank" href="http://sunlightfoundation.com/">Sunlight Foundation</a>
-
-
-
-
-<p>Trying to figure out what's happening in the U.S. Congress is a difficult and discouraging task. Even in 2010, as technology empowers other areas of our lives, the process by which bills become laws remains closed-off from timely and meaningful public input.</p>
-  <%= image_tag 'about/press/t_atlantic.jpg', :class => 'floatleft marginright', :border => 0 %>
-
-	<p>	The federal legislative process is notoriously arcane, and Congress offers few channels for people to make their voices heard on consequential matters of public policy. This disconnect, and many others, result in a variety of malignant outcomes: ignorance about government, apathy about politics, and declining approval ratings for our democratically-elected officials. <em>(Pictured at left: The Atlantic blog post uses OpenCongress to read and cite official bill text.)</em></p>
-
-	<p>Small groups of political insiders and federal lobbyists can find out and act on what's really going on in Congress, but this valuable information rarely makes its way out of the Beltway and into our everyday lives. The official website of the Library of Congress, <a href="http://thomas.loc.gov/" target="_blank">THOMAS</a>, publishes the raw text of bills online, but it's so terribly outmoded in its technology and user experience, it's hardly ever used by the public at large.
-
-<p class="pullquote-right">We can do more to inform ourselves and our communities, affect legislative outcomes positively, and make our government more responsive.</p>
-
-	<p>And yet the bills crafted in Congress have tremendous national implications -- they literally become the laws of the land, affecting what's realistically possible in the other two branches of government (Executive and Judicial) and the priorities of the federal budget (totaling $3.69 trillion for 2011). The American system of representative democracy has been closed-off from its constituents, both historically and ongoing today, and actively resists efforts towards comprehensive reform.</p>
-
-	<p>OpenCongress addresses these issues by making it easier to understand, track, and engage with the U.S. Congress. OpenCongress combines official government data with news and blog coverage, social networking, and participation tools to give you the real story behind what's happening in Congress. OpenCongress is a public-mission project with the following principles ::
-
-		<ul class="star">
-		   <li>Free of charge to everyone and non-commercial (e.g., no advertisements, no commercial sponsors)</li>
-		   <li>Open-source (our "libre" web code is openly licensed under the GPL)</li>
-		   <li>Open standards (our structured data is available for bulk download and accessible via API) </li>
-		   <li>Not-for-profit (our site is an educational resource for the public good)</li>
-		   <li>Non-partisan (we are independent from any political party and candidate)</li>
-		   <li>"Copyleft" (our site content is free to share, reuse, and remix in ways compliant with our <a href="/about/code">licensing</a> (as of July 2011, under <a href="http://www.gnu.org/licenses/agpl.html">AGPLv3</a>, subject to change)</li>
-		   <li>Free culture (our sibling non-profit, <a href="http://pculture.org/" target="_new">PCF</a>, works for a fairer and more democratic media space, against corporate gatekeepers)</li>
-		   <li>For net neutrality (we advocate for <a href="http://www.savetheinternet.com/" target="new">internet freedom</a> and the broadest possible public access online, against current corporate telco lobbying policies)</li>
-		   <li>For fair elections (we stand with <a href="http://www.fixcongressfirst.org/" target="_new">Fix Congress First</a> in calling for <a href="http://www.fixcongressfirst.org/pages/fair-elections-now-act" target="_new">full public financing</a> of all federal elections and a new Constitutional convention for comprehensive electoral reform)</li>
-		   <li>Against systemic corruption (in addition to traditional quid-pro-quo corruption, we oppose our current system by which the major institution of the U.S. government is regularly captured or dominated by moneyed interests through campaign contributions and lobbying)</li>
-		</ul>
-
-		<p>We hold these principles because we believe they form the best foundation in providing a valuable and trustworthy public resource -- more than just motivating ideals, they are formally incorporated into our organizational structure. OpenCongress was conceived and is developed by the Participatory Politics Foundation, a 501(c)3 non-profit organization with a mission to increase civic engagement. Over the past three years, OpenCongress has grown to become the most-visited government transparency website in the United States, with approximately one million visits per month and a user community of more than 150,000 members. Our sibling non-profit is the <a href="http://participatoryculture.org/" target="_blank">Participatory Culture Foundation</a>, working to build a fairer, more open, and more democratic media space.</p>
-
-		<p>Our work to help build public knowledge about Congress is guided by the <%= link_to '8 Principles of Open Government Data', 'http://www.opengovdata.org/home/8principles' %>: public data should be open to the public, full stop. We demand that the U.S. government comply immediately and in full with all 8 Principles. Nothing short of this standard is sufficient or acceptable in a true democracy. To fix our currently broken and systemically corrupt system of captured government, PPF stands with the <a href="http://www.fixcongressfirst.org/" target="_blank">Change Congress</a> community in advocating for full public financing of elections and a new constitutional convention for comprehensive electoral reform.</p>
-<%= image_tag 'about/press/t_publicagenda.jpg', :class => 'floatleft marginright', :border => 0 %>
-
-<a name="about_howitworks"></a>
-<h2>How does OpenCongress work?</h2>
-
-<ul class="star">
-   <li>We continually aggregate all the best information about Congress available across the Web, using automated processes and open-source technology.</li>
-   <li>Then we harness social wisdom, "filtering up" the most-viewed and attention-worthy bills, votes, issues, and people in Congress.</li>
-   <li>With a more user-friendly interface, one-click sharing tools, and "My OpenCongress" social networking features, we facilitate peer-to-peer communication of the most useful information about Congress.</li>
-   <li>Finally, we close the feedback loop with free ways for you to make your voice heard by contacting Congress with questions, analysis, and input. We provide an open platform for individuals and organizations to organize online communities around their political interests.</li>
-</ul>
-
-<p>With OpenCongress you can research and track a bill, a Member of Congress,
-or an issue area, and follow developments by subscribing to a variety of customized <a href="/about/rss">RSS feeds</a> or by registering a free <a href="/register">My OpenCongress</a> account. By offering links to relevant news and blog coverage for every bill and Member, we aim to close the information lag and bring people closer to the Congressional process. Every bill on
-OpenCongress is also organized by official <a href="/issues">issue areas</a> (from the <a href="http://www.loc.gov/crsinfo/whatscrs.html" target="_blank">Congressional Research Service</a>, the non-partisan research arm of Congress), so you can find
-bills of interest just by browsing an issue area that matters to you.
-Along the way, OpenCongress lets you know which <a href="/bill/all">bills</a> are the hottest on the Web overall -- the
-most-viewed, the most written about in the news, the most buzzed-about on
-blogs -- and in our one-of-a-kind <a href="/bill/hot">Hot Bills</a> section, which bills are the hottest with our open user community -- the most commented-on, the most-tracked, most-popular, and more.
-
-
-
-<!-- Triggers Modal Based on REF -->
-
-
-
-
-
-
-<p><a href="/money_trail">The Money Trail</a> on OpenCongress is a tool for exposing corruption, putting a
-spotlight on wasteful spending, and holding politicians accountable for
-their records. Even since we launched OpenCongress in 2007, ongoing scandals in Congress prove that wasteful spending and pay-to-play corruption are still endemic to the closed-off Congressional process. In this way, OpenCongress works to open up the
-doors and show how Congress actually works, as well as the real-world
-implications of bills. By getting at what bills are, what they propose to
-do, who is behind each bill, and where the money is coming from, we hope
-to inform and add power to everyone’s political ideas.</p>
-
-<%= image_tag 'about/press/t_washpost.jpg', :class => 'floatleft marginright', :border => 0 %>
-
-<a name="data_sources"></a>
-<h2>Our Data Sources</h2>
-<p>On OpenCongress, the full text and status of a bill are shown alongside the bigger picture of news analyses, buzz on blogs, the bill sponsors' campaign contribution data, and more. We cull data from across the web, including:</p>
-<ul class="star">
-<li class="top-star">Official government data from the Library of Congress' website <a href="http://thomas.loc.gov/" target="_blank">THOMAS</a>, via the community project <a href="http://www.govtrack.us/" target="_blank">GovTrack</a>: every publicly-available piece of legislation (i.e., every bill), vote, committee report, and more. Additional data about Congress from the similarly community-driven <a href="http://www.sunlightlabs.com/" target="_blank">Sunlight Labs API</a>. </li>
-<li class="top-star">Articles and posts about bills and Members of Congress from <a href="http://news.google.com/" target="_blank">Google News</a> and the news service <a href="http://www.daylife.com/" target="_blank">Daylife</a>, and from <a href="http://blogsearch.google.com/" target="_blank">Google Blog Search</a>
-and the blog service <a href="http://technorati.com/" target="_blank">Technorati</a>.</li>
-<li class="top-star">Campaign contribution data for Members of Congress from <a href="http://www.opensecrets.org/" target="_blank">OpenSecrets</a>, which is the original source for all of the incredibly valuable money-in-politics data that's free on the Web. Campagign contribution analysis and lists of supporting & opposing interest groups for bills on OC, where available, comes from the non-partisan research group <a href="http://maplight.org/" target="_blank">MAPLight</a>.</li>
-<li class="top-star">Videos about Congress from the inspirational activist project <a href="http://www.http://metavid.org/wiki/" target="_blank">Metavid</a>, which liberates C-SPAN into open standards. Additional streaming videos in locked-down proprietary formats come via the YouTube <a href="http://www.youtube.com/senatehub" target="_blank">Senate Hub</a> and <a href="http://www.youtube.com/househub" target="_blank">House Hub</a>.</li>
-<li class="top-star">Narrative background on Members of Congress, analysis of key legislation, Congressional scorecards, and more, from the OpenCongress community, via the <a href="/wiki" target="_blank">OpenCongress Wiki</a>, formerly known as Congresspedia on the collaborative <a href="http://sourcewatch.org/index.php?title=SourceWatch" target="_blank">Sourcewatch</a> wiki.</li>
-</ul>
-
-<a name="about_foundations"></a>
-<h2>About the Participatory Politics Foundation and the Sunlight Foundation</h2>
-
-<p>OpenCongress was built and launched publicly in 2007 as a joint project of PPF and the Sunlight Foundation. Since January of 2010, OpenCongress has been operated solely by PPF. The site is active open-source development (volunteers and donations warmly welcomed).</a>
-
-<p>The <a target="_blank" href="http://participatorypolitics.org/" target="_blank">Participatory Politics Foundation</a> is a 501(c)3 non-profit organization with a mission to increase civic engagement. PPF builds software tools and websites that create new opportunities for continual engagement with government. Voting is important, but we have a chance to go further and create a political process that is meritocratic, creative, and participatory. Every day, our lives abound in political feelings and opinions -- not just on Election Day. We believe that the internet presents an unprecedented opportunity to amplify political voices and actions. PPF conceived of OpenCongress back in 2004, and since then the site has served as a first step towards these goals. Our next major project is <a href="http://participatorypolitics.org/projects/">OpenGovernment</a>, which will build on and extend the OpenCongress model of transparency to other levels of government: state, local, international, and more. PPF is working towards a future in which the public at large can conveniently access information about all public actions at every level of government, then organize civic events of their own in response to and in dialogue with their elected officials. PPF operates day-to-day as a web-based organization, with <a href="/about/staff">team members</a> and volunteers based around the country: Holyoke, MA; Los Angeles, CA; Brooklyn, NY; Austin, TX; and San Francisco, CA.</p>
-
-<p><a target="_blank" href="http://www.sunlightfoundation.com" target="_blank">The Sunlight Foundation</a> is the Founding and Primary Supporter of OpenCongress. Co-founded by businessman Michael Klein and public interest advocate
-Ellen Miller in 2006, Sunlight is an organization designed to use the
-power of the Internet to catalyze greater government openness and
-transparency and to provide new tools and resources for media and
-citizens alike. They are committed to improving access to government
-information by making it available online—indeed redefining “public
-information” as meaning “online”—and by creating new tools and
-websites to access that information and engage communities in their
-use.</p>
-
-<p>The Sunlight Foundation wants to catalyze a demand for greater government transparency
-through strong communities—communities of technologists, policy wonks,
-open government advocates and ordinary citizens—engaging them in
-demanding policies that will open government enabling all of us to
-hold government accountable. Sunlight develops and encourages new
-policies inside the government to make it more open and transparent;
-facilitates searchable, sortable and machine readable databases;
-builds tools and websites to enable easy access to information;
-fosters distributed research projects as an community building tool;
-engages in advocacy for 21st century laws to require that government
-make data available in real time; and trains thousands of journalists.
-Major elements of our work include the <a href="http://reporting.sunlightfoundation.com/">Sunlight Reporting Group</a>,
-<a href="http://sunlightlabs.com/">Sunlight Labs</a>, <a href="http://sunlightfoundation.com/live/">Sunlight Live</a>, and the <a href="http://www.theopenhouseproject.com/">Open House Project</a>. Major
-websites include: <a href="http://sunlightfoundation.com/">SunlightFoundation.com</a>, <a href="http://politicalpartytime.org/">PoliticalPartyTime.org</a>, <a href="http://transparencydata.org">TransparencyData.com</a>, InfluenceExplorer.com,
-<a href="http://politiwidgets.com/">Politiwidgets.com</a> and the <a href="http://nationaldatacatalog.com/">NationalDataCatalog.com</a>.</p>
-
-<p>PPF is proud to be part of the greater Sunlight Foundation <a href="http://sunlightfoundation.com/resources/" target="_blank">community of resources</a>. Another partner in this effort is <a target="_blank" href="http://www.theopenhouseproject.com/" target="_blank">the Open House Project</a>, a working group designed to make recommendations to Congress on ways to begin the process of opening up the House of Representatives and increasing government transparency. Additional PPF allies, to mention a few, include <a href="http://openvideoalliance.org/" target="_blank">Open Video Alliance</a>, the <a href="http://www.fsf.org/" target="_blank">Free Software Foundation</a>, <a href="http://www.eff.org/" target="_blank">the Electronic Frontier Foundation</a>, the <a href="http://www.mozilla.org/" target="_blank">Mozilla</a> community, <a href="http://openplans.org/" target="_blank">OpenPlans</a>, <a href="http://www.fixcongressfirst.org/" target="_blank">Change Congress</a>, <a href="http://www.freepress.net/" target="_blank">Free Press</a>, <a href="http://creativecommons.org/" target="_blank">Creative Commons</a>, <a href="http://www.savetheinternet.com/" target="_blank">Save The Internet</a>, the <a href="http://public-accountability.org/" target=_"blank">Public Accountability Initiative</a> and their tremendously inspirational & innovative public-service work on <a href="http://littlesis.org/" target="_blank">Little Sis</a>, and of course, all our wonderful data partners mentioned above. We'll keep working to contribute code, data, and expertise back to the public commons. Now let's build radical transparency in government, combat systemic corruption in politics, and push through comprehensive reform of our democracy.</p>
-
-<a name="press"></a>
-<h2>Press</h2>
-<p>To see what people are saying about OpenCongress, view recent news & blog coverage on <a href="http://bit.ly/Rb975">Google News</a> and <a href="http://technorati.com/blogs/opencongress.org">Technorati</a>.</p>
-
-<p>For more press coverage, check out mentions of our work on some prominent social bookmarking sites and blogs: <a href="http://digg.com/search?s=opencongress.org&submit=Search&section=all&search-buried=1&type=all&area=all&sort=score">Digg</a>, <a href="http://www.reddit.com/domain/opencongress.org">reddit</a>, <a href="http://delicious.com/search?p=opencongress+or+opencongress.org&u=&chk=&context=all&fr=del_icio_us&lc=1"</a>del.icio.us</a>, <a href="http://www.stumbleupon.com/search?q=opencongress">StumbleUpon</a>, <a href="http://bit.ly/oeOUj">Slashdot</a>, <a href="http://search.techcrunch.com/query.php?s=opencongress.org">TechCrunch</a>, <a href="http://mashable.com/search-results/?cx=partner-pub-9942038924324175%3Alhvsj5-dt4y&cof=FORID%3A11&q=opencongress.org&sa.x=0&sa.y=0#1407">Mashable</a>, <a href="http://www.readwriteweb.com/fastsearch?search=opencongress.org&x=0&y=0">ReadWriteWeb</a>, <a href="http://www.wired.com/search?query=opencongress&siteAlias=all&x=0&y=0">Wired.com</a>, <a href="http://bit.ly/HYBHP">BoingBoing</a>, and <a href="http://query.nytimes.com/search/sitesearch?query=opencongress.org&srchst=cse">NYTimes.com</a>. To get an overview of more reactions to our site's public release and ongoing feature enhancements, see our blog's <a href="/articles/view/90-Early-Reviews-and-Mentions-of-OpenCongress">launch roundup</a> and our announcement following <a href="/articles/view/387--My-OpenCongress-in-Action-so-far-">My OpenCongress</a>.</p><br>
-
-<a name="about_history"></a>
-<h2>Our History and Mission</h2>
-
-<p>In January of 1995, Congress launched <a target="_blank" href="http://thomas.loc.gov/" target="_blank">THOMAS</a>, the online home of the Library of Congress, making available the full text of bills under consideration in Congress. THOMAS is a positive and necessary starting place for Congressional transparency, and continues to add new features as any government website of its kind would. But in its current state, THOMAS is not a user-friendly web resource for a wide audience. The site's presentation of bill information can be difficult to understand (for an example, see their page for <a href="http://thomas.loc.gov/cgi-bin/bdquery/z?d111:H.R.3200:" target="_blank">H.R. 3200</a>, the major health care reform bill of 2009) and bills are presented flatly, without any indicators of which ones (say, major appropriations bills) are more significant than others (say, resolutions naming post offices). With tens of thousands of bills and resolutions introduced each session of Congress, it's difficult to separate the signal from the noise and keep your eye on bills that are really important.</p>
-
-<p>What's more, THOMAS does little to make the language of bills or the legislative process accessible -- when was the last time you heard a friend or a talking head cite THOMAS in a political conversation? Unintelligible information about bills translates to political writing on the web which is divorced from the actual text of bills in Congress. There is a diverse and flourishing ecosystem of political blogs, and a huge number of engaged readers of political news, but for many reasons, the actual text of bills is not as frequently discussed on political blogs as it could be. Issue-based groups sometimes send "action alerts" to their members on specific bills, but such sporadic actions reflect the more general shortcoming: it's difficult for large numbers of people to stay engaged with the sometimes-glacial, sometimes-tumultuous Congressional process. Political news occasionally publicizes what happens in the basements and cloakrooms of the Capitol building after-the-fact, but this is clearly insufficient for healthy, democratic participation.</p>
-
-<p>The inaccessibility of Congressional information contributes to the widespread perception that the Congressional process is the realm of a privileged few, or worse, is irrelevant to our everyday lives. Just the opposite is true: the text of bills that are often crafted in Congressional subcommittees and voted on via obscure parliamentary maneuvers can have significant real-world implications, both at the kitchen table and abroad. Now we have the web tools to open up the Congressional process to effective public scrutiny and collaborative analysis. OpenCongress offers a step forward by harnessing the wide-ranging body of social wisdom about Congress that is available in news articles and blog posts across the open (i.e., publicly-searchable, no-gatekeeper) Web. By placing the voices of journalists and bloggers directly alongside official Congressional information, OpenCongress seeks to contextualize and demystify Congress as a whole.</p>
-
-<p>Congress produces thousands of bills and resolutions and statements each session, but together, we can focus attention on the ones that make the most difference. Which bills are the hottest on Capitol Hill? Which bills have the most money riding on them? Which bills affect the issues you care about? Which bills are the most volatile, or the most closely contested?</p>
-
-<p>This is where OpenCongress comes in, offering anyone the ability to subscribe to RSS feeds of the most-viewed bills, Members of Congress, as well as RSS feeds listing the bills most written-about in the news and on blogs, so that you can keep track on the weightiest bills in the Congressional fray. We encourage organizations, membership groups, bloggers, and others to syndicate this user-generated contextual information from OpenCongress on their websites and thereby increase the number of people watchdogging Congress.</p>
-
-<p>A condensed site history: the beta version of OpenCongress launched publicly as a joint project of the Participatory Politics Foundation and the Sunlight Foundation on Feb. 27th, 2007. The "My OpenCongress" major feature set (colloquially, OpenCongress version 1.0) was announced on January 28th, 2008. A significant site upgrade (roughly, version 2.0) launched July 30th, 2009. The site is in active open-source development, with many new features, data sources, and free engagement tools to be released over 2010 and beyond.</p>
-
-<%= image_tag 'about/press/t_waspost2.jpg', :class => 'floatleft marginright', :border => 0 %>
-
-<a name="about_staff"></a>
-
-<h2>Our Staff and some of our Volunteers</h2>
-
-<p>Please visit our <a href="/about/staff">Staff page</a> to view photographs and brief biographies of our non-profit team and some of our volunteers. (Only some of our volunteers are pictured because others help remotely, over the Web, and we'll do more soon to gather their MyOC profiles on a special thank-you page). We're dedicated to the principles outlined above, and we warmly welcome your feedback, volunteer time, or donation to our public-mission work.</p>
-
-<a name="about_contribute"></a>
-<h2>Get Involved</h2>
-
-<ul class="star">
-<li><strong>Developers and Designers:</strong> OpenCongress is open-source and you can help! <%= link_to 'Learn more ...', '/about/code' %>
-<li><strong>Bloggers and citizen journalists:</strong>
-   <ul class="star">
-      <li>read what's hot on our daily <a href="/blog">blog</a>,</li>
-      <li>link to our pages when you're writing about bills, then <a href="/contact">suggest your link</a> for us publish,</li>
-      <li><a href="/resources" target="_blank">post one of our many free widgets</a> on your site,</li>
-      <li>contribute to the <a href="/wiki">OpenCongress Wiki</a></li>
-	  <li>use the uniquely-generated open data from our free <a href="/api">API</a></li>
-   </ul>
-
-<li><strong>Researchers:</strong> Help us improve the site's explanatory text of parliamentary terms and make the legislative process more widely accessible for public education. <a href="/contact">Get in touch</a>!</li>
-<li><strong>Political professionals:</strong> <a href="/contact">Submit inside-the-Beltway tips or comments</a> to our public-access <a href="/blog" target="_blank"> Blog</a>.</li>
-<li><strong>Everyone who supports our principles &amp; mission:</strong> Help spread the word to more people who should know about the site: issue-based groups, family, friends, colleagues, social networks, and more.</li>
-</ul>
-
-<p> To find out more ways to help, simply send us an e-mail (<script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>) with a short note of introduction, and we'll write you back. You don't need to be a political expert or technology-savvy to get involved... after all, it's all of our representative democracy we're reforming here.</p>
-
-<a name="about_press"></a>
-
-<h2>Press Coverage of OC</h2>
-
-<p>Please visit our <a href="/about/uses">Uses of OC</a> page for a helpful-and-lengthy-but-not-quite-exhaustive overview of press coverage of our project: news articles, blog mentions, use cases by individual bloggers and issue-based organizations of varying backgrounds, and more. If you're new to OC, you might be interested in this page and able to make use of how it concretely illustrates the many in ways in which <a href="/about/howtouse">individuals and groups can use</a> our open-source public resource. There are a lot of options, and it can be difficult to present them all concisely and accessibly, you know? Ask us questions anytime: <script>m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script> .</p>
-
-<a name="coming_soon"></a>
-<h2>Coming Soon to OpenCongress</h2>
-
-<p>To date, OpenCongress has focused on bringing together government data, blog and press coverage from the open Web, and context from sources like campaign contributions into a comprehensive snapshot of every congressional bill. But to truly narrow the gap between what Congressional insiders can impact and what average citizens can impact, we need be able to add detail and richness that doesn't come from the public data sources. When people view a bill on OpenCongress, they should be able to glean not only the bill details, but also the real story behind the bill. Towards this goal, we'll soon be adding more interactive features to OpenCongress to allow for greater user engagement with the Congressional process.</p>
-
-<p>OpenCongress is a growing web project in active open-source development -- we're continually adding new data, features, and free resources to the site in order to make it a more useful public resource. Of course, we already have quite a lot of specific ideas in-hand for new features to build and launch, and we receive even more great suggestions from site visitors and dedicated users. Because we're committed to being a transparent, collaborative non-profit team practicing (or trying to, at least) agile, user-focused web development, here are a few major new features we plan to add as soon as we have the resources.</p>
-
-<ul class="star">
-<li class="top-star"><strong>State and Local Versions of OpenCongress</strong>
-
-<p>This is a powerful, important, and logical idea -- it's probably our most-frequently-received question or suggestion: "When will there be a version of OpenCongress for my [State / City / Neighborhood / Other Entity]?" The short answer: hopefully soon. Longer answer: we very much seek to make this a reality, in conjunction with the wider community of volunteer open-source developers & transparency advocates. Ever since we conceived of OpenCongress in 2004, we've realized that the model of combining government data with social wisdom in order to facilitate civic engagement can and should be applied to other levels of government -- e.g., state legislatures, city councils, neighborhood associations, international institutions, other branches of government (The White House & the U.S. Supreme Court), public institutions such as schools & hospitals, foreign countries with more-or-less democratic systems, and more... whatever comes to mind. We eagerly anticipate a near-term future in which people from a variety of backgrounds can conveniently access the best available info about all actions by their government at every level, then take actions of their own in response and in dialogue with their elected officials.
-
-<p>Towards this end, we're working with our partners at <a href="http://www.sunlightlabs.com" target="_blank">Sunlight Labs</a> on the community-driven <a href="http://fiftystates-dev.sunlightlabs.com/" target="_blank">Fifty State Project</a>, with the goal of establishing an open data standard and collecting machine-readable data streams for all 50 U.S. State Legislatures. This will form the basis for a new not-for-profit, open-source project called <a href="http://opengovernment.org/" target="_blank">OpenGovernment</a>, where, in working partnership with the open-source community, we'll seek to build free and non-partisan versions of OpenCongress for all fifty states, and make our site code more modular (i.e., better-documented and easier to work with). We'll continue to encourage volunteer developers to remix the code for city, county, or municipal governments -- or even to make their own versions of OpenCongress for the federal level with an emphasis on the topics they and their communities care about.</p>
-
-<p>Overall, we're just getting started, and we need more resources to fulfill this exciting non-profit project. If you are in a position to support the building of OpenCongress and OpenGovernment, or for more detailed information on how to contribute to our open-source development, please <a href="/contact">contact us</a>.</p>The best way to stay up-to-date with our development plans is to subscribe to our site <a href="http://crm.ppolitics.org/" target="_blank">email list-serv</a> to receive major announcments, or subscribe to our Blog's <a href="http://feeds.feedburner.com/OpenCongressCongressGossipBlog">RSS feed</a>. We're a collaborative crew, so we hope you'll get involved.</p>
-
-</li>
-<li class="top-star"><strong>"My OpenCongress Groups"</strong>
-
-<p>As of this writing, individuals can create profiles on "My OpenCongress" to track, comment, and vote on all the things they care about in Congress. Social networking and built-in social sharing tools allow people to share the best info with others using peer-to-peer communication and our free widgets and open API. But we can do more to enable group education, engagement, and action on OpenCongress.</p>
-
-<p>Coming soon, we seek to build the ability for groups of all sorts -- say, issue-based organizations or regional groups of fellow constituents -- to create group profiles on "My OpenCongress", and for individuals to opt-in to these groups. For example, if you're concerned with the environment, you could choose to add the group profile of a national environmental organization to your "My OpenCongress" friends, as well as join a chapter of environmentalists in your state and your Congressional district. Together, your group will be able to track legislation, issues, and Members of Congress on a shared "Tracked Items" page. Plus you'll be able to share relevant links, videos, and notes using group "My Political Notebook" features. What's more, your group's lead watchdog(s) will be able to set alerts to which you can subscribe over email, RSS, text, calendar alerts, and more. These customizable alerts will keep your group in touch with major actions surrounding the bills you're tracking, or let you know when significant votes affecting your issues are coming up.</p>
-
-<p>The goal looks something like this: self-organizing groups on OC banding together and using peer-to-peer communication to send their questions, feedback, analysis and opinions to Members of Congress. What's more, once in contact with their elected officials, we'll work to establish a two-way platform for communication to facilitate a productive and mutually respectful dialogue with Members, their staffs, and their official offices. There are many more positive impacts and innovations to be described here, but for now, feel free to <a href="/contact" target="_blank">contact us</a> with questions about our plans for enabling groups.</p>
-
-</li>
-<li class="top-star"><strong>Contact Congress Enhanced Richly With Social Feedback</strong>
-
-<p>Currently, OpenCongress.org presents useful lots of information about Congress and basic ways for individuals to communicate their opinions or input to Members. As background, such functionality has been a longstanding part of site development plans and we believe is essential to our mission of increasing civic engagement. The site can do much more to help translate information into action. One challenge is that Members’ offices often only accept communications through webforms and a variety of other closed mediums. This problem is ultimately surmountable -- quite a few commercial services are available to fill this niche of reliably delivering grassroots opinion to Members' offices on the Hill. But as of this writing, there remain surprisingly few free, open-source, full-featured services with user-friendly interfaces for individuals and organizations to easily contact Congress. OpenCongress seeks to establish a top-notch foothold for open-source tools in this well-understood public need.</p>
-
-<p>Our planned "Contact Congress" enhancements have two main goals: first, to make it possible to contact Congress in timely and accessible ways through OpenCongress, with access to all the rich content available on the site; and second, to make the process of contacting Congress a more social and user-friendly experience, both for users of “My OC” and the public as a whole. To meet the first, our development team seeks to build-in more basic features of contacting Members' offices, both federal and district-based, and then smoothly integrate these features throughout the site. To meet the second, we seek to build more intensive social-feedback features that walk a visitor through each step of contacting Congress, offer relevant info along the way, and document the outcome for interested parties and the larger community. This proposed accompanying help copy would obviously need to be edited and specified for other methods of communication: phone, VOIP, email, postal mail, fax, blogs, and more. Interested in supporting our goal of making it more effective to contact Congress, either with a charitable contribution or open-source development time? Then <a href="/contact">contact us</a>!</p>
-
-</li>
-<li class="top-star"><strong>Text Alerts and VoIP</strong>
-
-<p>As outlined above, we plan to add new ways for individuals and organizations to keep in touch with everything they're tracking in Congress. First, users will be able to sign up for SMS text alerts on their tracked items -- much like an <a href="/about/rss" target="_blank">RSS feed</a> of Congressional actions, but on their mobile device -- for bill actions, issue areas, Members of Congress' votes, as well as highly-rated news & blog coverage, user comments, wiki content, and more. Second, users will be able to call Congressional offices using VoIP on their computers -- specifically, we're planning to integrate the open-source browser plugin <a href="http://www.shiftspace.org/spaces/yeas-and-nays/" target="_blank">Yeas & Nays</a>, as well as other free solutions. We look forward especially to seeing how Groups on "My OpenCongress" take advantage of enhanced "Contact Congress" features to convey their opinions & engage their Members of Congress in dialogue.</p>
-
-</li>
-<li class="top-star"><strong>Two-Way Platform for Communication with Congress</strong>
-
-<p>To date, the U.S. Congress has been largely closed-off from structured constituent communications on the open Web. Some Members dip their toes into social media like Facebook and Twitter, but these commercial services are by definition the illusion of transparency. We believe that social media, in the absence of fully open-source and open standards technology, is actually more of a problem than a solution when it comes to constituent relations. The relevant term of art here is walled gardens -- the proprietary data of companies like Facebook, which are ultimately unaccountable to the public at large, is not available for *every and all* citizen to access, remix, and reuse in their personal communications. In other words, for communicating with Congress, social media tools are neither necessary nor sufficient -- they are just one ancillary piece of the puzzle, and until they're fully open, they're <a href="http://defectivebydesign.org/" target="_blank">Defective By Design</a>. We can and must do provide truly open and standards-based tools in order to make communicating with Congress a productive two-way street. Along with enhanced features for citizens to contact their members of Congress on OC (written in openly-licensed web code and drawing on freely-available data), we'll work to make it more convenient and efficient for members to convey their positions to their constituents. The key, as we see it, is to develop a sufficiently compelling platform for two-way communication -- a free, open-source, and user-friendly version of <a href="http://www.sunlightlabs.com/blog/2009/03/12/do-we-need-getsatisfaction-congress/" target="_blank">"Get Satisfaction"</a> or Stack Overflow for Congress</a>. We look forward to working with any enlightened members of Congress, Capitol staff, government employees, and transparency & reform advocates who wish to volunteer their offices for pilot projects in this area: publishing official responses to aggregated constituent concerns in participatory discourse. Simply <a href="/contact">contact us</a>, we're easy to find and eager to collaborate.</p>
-
-</li>
-
-</li class="top-star"><strong>OC Mobile Apps</strong>
-
-<p>Our small non-profit team works every day to keep up this hugely popular public resource website, with very few development cycles available for enhancements such as mobile versions of OpenCongress. But free and open-source OC apps should exist to allow users to track, share, and comment on bills from their mobile devices. We have specs for a whole suite of unique and useful OC-driven apps to add to the existing ecosystem of mobile Congress watchdogging -- we simply need resources to start making them a reality. Let's bring the power of OpenCongress to your fingertips on Android, Android tablets, iPhone, iPad, and other devices. For more info on how we can start this <em>today</em>, <a href="/contact">hit us up</a>.
-</li>
-
-<li class="top-star"><strong>Congresssional Scorecard Library</strong>
-
-<p>We seek to create the first-ever centralized, query-able and shareable repository of congressional scorecards created by issue groups on OpenCongress.org. Scorecards are invaluable sources of information because they contain descriptions and positions on individual votes written by subject matter experts from established positions. While these issue groups spend a great deal of time and money creating these scorecards, they are generally locked up in PDFs or other difficult-to-share formats in difficult-to-find locations, leaving this wealth of information inaccessible to the public and forcing bloggers, reporters, researchers and citizens to duplicate their research and reinvent the wheel every time they want to know what a particular vote was about. PPF's project will enable everyone to view, download and share this information and access it either by politician or vote, providing a constellation of views within which everyone can triangulate their own personal truth. And we will do this with cooperative, community labor. For more, please see our <a href="http://wiki.creativecommons.org/Grants/Congressional_Scorecard_Library" target="_blank">Creative Commons grant application</a>, and to help us get started or to fund our work, <a href="/contact">contact us</a>.
-
-</li>
-</ul>
-
-<%= image_tag 'about/press/t_cnn.jpg', :class => 'floatleft marginright', :border => 0 %>
-
-
-</div><!-- left col -->
-
-<div class="col2">
-
-
-
-
-<p class="highlight">OpenCongress is a project of <%= link_to 'PPF', 'http://ppolitics.org' %> and <%= link_to 'Sunlight', 'http://sunlightfoundation.com/' %>.<br /><strong><%= link_to 'Read More &rarr;', '#about_foundations' %></strong></p>
-
-<h2>Using OpenCongress</h2>
-<ul class="pointy">
-   <li><%= link_to 'How to use OpenCongress', '/howtouse' %></li>
-   <li><%= link_to 'OpenCongress for Developers', '/about/code' %></li>
-   <li><%= link_to 'Terms of Service', '/about/terms_of_service' %></li>
-   <li><%= link_to 'Privacy Policy', '/about/privacy_policy' %></li>
-   <li><%= link_to 'Copyright Policy', '/about/copyright_policy' %></li>
-</ul>
-<br />
-<h2>More about us</h2>
-<ul class="pointy">
-	 <li><%= link_to 'About PPF and the Sunlight Foundation', '#about_foundations' %></li>
-   <li><%= link_to 'Our history and mission', '#about_history' %></li>
-   <li><%= link_to 'Our staff and some of our volunteers', '#about_staff' %></li>
-   <li><%= link_to "Where we're headed - our development wish list", '#coming_soon' %></li>
-   <li><%= link_to 'How you can help', '#about_contribute' %></li>
-   <li><%= link_to 'News coverage, blog mentions, use cases from around the web, and misc. press mentions', '#about_press' %></li>
-   <li><%= link_to 'Our data sources', '#data_sources' %></li>
-</ul>
-<br />
-<h2>Using the OpenCongress Wiki</h2>
-<ul class="pointy">
-   <li><%= link_to 'Introduction', '/wiki/Meta:Introduction' %>
-   <li><%= link_to 'About the OpenCongress Wiki', '/wiki/Meta:About'%></li>
-   <li><%= link_to 'FAQs', '/wiki/Help:FAQ' %></li>
-   <li><%= link_to 'Editorial Policy', '/wiki/Meta:Editorial_policy' %></li>
-   <li><%= link_to "Wiki Sourcing Policies", '/wiki/Meta:References' %></li>
-</ul>
-<br />
-<h2>OC Wiki Research Guides</h2>
-<ul class="pointy">
-   <li><a href="/wiki/Help:Researching_members_of_Congress">Researching a Member of Congress</a></li>
-   <li><a href="/wiki/Help:Researching_legislation">Researching bills and legislation</a>></li>
-<br />
-   <h2>Contacting Us</h2>
-   <p>To send us general site feedback, ask a question, or report a problem, e-mail <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>. We get a fair amount of email, so plese be patient -- our support team can usually respond in under 24 hours.</p>
-<%= render :partial => 'licensing_terms' %>
-</div>
-<h2>Press Use Cases</h2>
-<ul class="pointy">
-   <li><%= link_to 'Press Use Cases', '/about/uses' %></li>
-</ul>
-
-</div>
+  <div class="pretty-text">
+
+    <div class="col1">
+
+      <h2>About OpenCongress</h2>
+
+      <p>
+      OpenCongress makes it easy to follow legislation in Congress,
+      from bill introduction to floor vote, as well as profiles for
+      senators and representatives. You can use the site to learn
+      more about issues you care about and connect with others who
+      share similar views.
+      </p>
+
+      <hr>
+
+      <p>
+      Using the site is simple: enter a lawmaker’s name, issue topic
+      or bill number to search OpenCongress. Get information on who
+      represents you, find relevant legislation and learn how to take
+      action. Check out House and Senate profile pages to see what bills
+      lawmakers sponsor, voting records and how to contact them. You can even
+      review side-by-side comparisons on how members vote in the current
+      Congress. OpenCongress also provides quick links for bills based on
+      issue, popularity and status, and you can rate your support or opposition
+      to any piece of legislation.
+      </p>
+
+      <p>
+      Becoming a registered user of OpenCongress brings more functionality to
+      site. You can track bills and issues within the site and connect with
+      other users on OpenCongress Groups.
+      <a href="<%= url_for(:controller => :account, :action => :login) %>">Register or login here.</a>
+      </p>
+
+      <p>
+      OpenCongress is a project of the Sunlight Foundation. Thank you to [any
+      funders here] for their generous support. In 2013, Sunlight became sole
+      operator of the site, taking over from the Participatory Politics
+      Foundation.
+      </p>
+
+      <h3>Data</h3>
+
+      <p>
+      Bill, legislator, committee, vote and issue data are collected from
+      official sources, including the Library of Congress, GovTrack,
+      Congressional Research Service and the Sunlight Foundation.
+      </p>
+
+      <p>
+      The site is updated daily and searchable from the start of the 109th
+      Congress in January 2005 through the current date.
+      </p>
+
+      <h3>API</h3>
+
+      <p>
+      OpenCongress is open source. Developers interested in using the data on
+      OpenCongress should check out the
+      <a href="http://sunlightfoundation.com/api/">Sunlight Foundation’s
+        Congress API.</a> This is a continuously updated JSON API for the
+      people and work of Congress. It provides current information on
+      legislators, districts, committees, bills, votes, as well as real-time
+      notice of hearings, floor activity and upcoming bills.
+      </p>
+
+      <p>
+      Please note, the previously available OpenCongress API developed by PPF
+      is deprecated.
+      </p>
+
+      <p>
+      If you're using Sunlight data and want to tell us about it, please
+      contact us: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@.]/).push("1").map(&:to_json).join(',')) %>);</script>.
+      </p>
+
+    </div><!-- left col -->
+
+    <div class="col2">
+
+      <h2>Using OpenCongress</h2>
+      <ul class="pointy">
+        <li><%= link_to 'How to use OpenCongress', '/howtouse' %></li>
+        <li><%= link_to 'OpenCongress for Developers', '/about/code' %></li>
+        <li><%= link_to 'Terms of Service', '/about/terms_of_service' %></li>
+        <li><%= link_to 'Privacy Policy', '/about/privacy_policy' %></li>
+        <li><%= link_to 'Copyright Policy', '/about/copyright_policy' %></li>
+      </ul>
+      <br />
+      <h2>More about us</h2>
+      <ul class="pointy">
+        <li><%= link_to 'About the Sunlight Foundation', 'http://sunlightfoundation.com/about' %></li>
+      </ul>
+      <br />
+      <br />
+      <h2>Contacting Us</h2>
+      <p>
+      To send us general site feedback, ask a question, or report a problem, e-mail
+      <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.
+      We get a fair amount of email, so plese be patient -- our support team
+      can usually respond in under 24 hours.
+      </p>
+      <%= render :partial => 'licensing_terms' %>
+
+    </div>
+  </div>
 </div>

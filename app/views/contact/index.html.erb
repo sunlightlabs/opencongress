@@ -25,39 +25,39 @@ input[type=text] {
 </style>
 
 <div id="heading">
-<h2>Get In Touch!</h2>
+  <h2>Get In Touch!</h2>
 </div>
 
 <div class="container_16">
+  <div class="row">
+    <div class="grid_8 alpha">
 
-    <div class="row">
+      <p class="big">
+      Please note: OpenCongress is not affiliated with any House or Senate
+      office and cannot respond to comments on legislation. Please direct
+      comments on legislation to
+      <a href="<%= url_for(:controller => :people, :action => :zipcodelookup) %>">
+        your elected official.
+      </a>
+      </p>
 
-        <div class="grid_8 alpha">
+      <p>
+      We'd love to hear from you. If you have a question about OpenCongress or
+      would like to learn how to incorporate our data into your own work/apps,
+      please drop us a line
+      <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@.]/).push("1").map(&:to_json).join(',')) %>);</script>
+      and we'll do our best to get back to you right away.
+      </p>
 
-            <p class="big">We're always interested in hearing from you&mdash;how you're using OpenCongress, how it could be a better public resource and any new features you'd like to see.</p>
 
-            <p><strong>To send us general site feedback, ask a question or report a problem, please fill out this form:</strong></p>
-            <%= render :partial => 'form' %>
-            <br/>
-            <p><strong>Developers</strong> are invited to join our non-profit team. OpenCongress is proud to be an open-source project&mdash;remixes encouraged!&mdash;in the community of free Web resources for civic engagement. All of our site code and site content can be checked out on our <a href="http://github.com/opencongress/opencongress">GitHub page</a>.</p>
+      <p>
+      If you are a reporter and would like to interview Sunlight staff about
+      OpenCongress, please call Sunlight’s Media Director Liz Bartolomeo at
+      202-742-1520 ext. 226.
+      </p>
 
-            <br/>
+      <br/>
 
-            <h3>Stay in touch with OpenCongress:</h3>
-            <ul class="star">
-                <li>To sign up for general site updates over e-mail: <a href="http://crm.ppolitics.org">OpenCongress mailing list</a> (low-volume, major announcements only).</li>
-                <li>To subscribe to blog updates via RSS: <a href="http://feeds.feedburner.com/OpenCongressCongressGossipBlog">RSS feed</a>.</li>
-                <li>To sign up for detailed programming updates over e-mail: <a href="http://lists.ppolitics.org/listinfo.cgi/develop-ppolitics.org">PPF development list-serv</a>.</li>
-                <li>To join an associated Google Group: <a href="http://groups.google.com/group/sunlightlabs">Sunlight Labs</a>, <a href="http://wiki.sunlightlabs.com/index.php/OpenCongress">Sunlight Wiki</a></li>
-                <li>To check out our site code: <a href="http://github.com/opencongress/opencongress/tree/master">OpenCongress GitHub</a></li>
-                <li>To file a bug report, interface improvement, data source, or feature suggestion: <a href="https://participatorypolitics.lighthouseapp.com/projects/35587-opencongress/overview">Lighthouse project homepage</a>.</li>
-                <li>Social Networking: Join us on our <a href="http://www.google.com/url?q=http%3A%2F%2Fwww.facebook.com%2Fgroup.php%3Fgid%3D15201705550&amp;sa=D&amp;sntz=1&amp;usg=AFQjCNHngqIHFY-mUhJw5iCs944Oio1NfA">Facebook Group</a> or follow us on Twitter: <a href="http://twitter.com/opencongress">@opencongress</a></li>
-            </ul>
-
-            <br />
-
-            </div>
-
-        </div>
     </div>
+  </div>
 </div>

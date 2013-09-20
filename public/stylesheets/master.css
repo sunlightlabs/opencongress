@@ -5919,22 +5919,12 @@ border-radius:0px !important;
 }
 
 #privacyPolicy {
-  color: rgba(28, 27, 27, 0.8);
-  font-family: arial;
-  margin-top: 64px;
-  float: left;
-  width: 466px;
+  width: 600px;
 }
 
-#privacyPolicy a {
-  font-family: arial;
-  color: #537486;
-  font-style: italic;
-  font-weight: bold;
-}
-
-#privacyPolicy a:hover {
-  color: #c9a706;
+#privacyPolicy li {
+    list-style-type: circle;
+    margin: 0 0 0 30px;
 }
 
 #sfLogo {

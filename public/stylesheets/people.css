@@ -1070,6 +1070,10 @@ _background: url('/images/brown_bg.gif');
   float: left !important;
   margin-left: 50px !important;
 }
+#people.zipcodelookup .results {
+  float: left !important;
+  width: 418px;
+}
 .zip_search table td {
   padding:6px 0px;
 }

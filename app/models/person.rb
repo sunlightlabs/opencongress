@@ -775,8 +775,8 @@ class Person < ActiveRecord::Base
   # zipcode, though those will yield less accurate results.
   def Person.find_current_congresspeople_by_address(address)
     dsts = District.from_address(address)
-    reps = dsts.map(&:rep)
-    sens = dsts.flat_map(&:sens)
+    reps = dsts.map(&:rep).uniq
+    sens = dsts.flat_map(&:sens).uniq
     return [ sens, reps ]
   end
 

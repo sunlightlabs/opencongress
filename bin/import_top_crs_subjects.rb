@@ -3,7 +3,7 @@ require 'json'
 require 'date'
 require 'united_states'
 
-Settings.available_congresses.sort.each do |cong_num|
+Settings.available_congresses.sort.reverse.each do |cong_num|
   OCLogger.log "Importing top CRS subjects for the #{cong_num.ordinalize} congress"
 
   bill_file_paths = Dir.glob(File.join(Settings.unitedstates_data_path,

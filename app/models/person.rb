@@ -4,6 +4,8 @@ require_dependency 'wiki_connection'
 
 class Person < ActiveRecord::Base
   include ViewableObject
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
 
   has_many :committees, :through => :committee_people
   has_many :committee_people, :conditions => proc { [ "committees_people.session = ?", Settings.default_congress ] }
@@ -1617,4 +1619,13 @@ class Person < ActiveRecord::Base
     super(SERIALIZATION_OPS.merge(ops))
   end
 
+  mapping do
+    indexes :govtrack_id,           :index => :not_analyzed
+    indexes :osid,                  :index => :not_analyzed
+    indexes :bioguideid,            :index => :not_analyzed
+    indexes :full_name,             :as    => proc { full_name }
+    indexes :official_name,         :as    => proc { name }
+    indexes :party
+    indexes :state
+  end
 end

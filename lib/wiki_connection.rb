@@ -55,6 +55,18 @@ class Wiki < ActiveRecord::Base
   end
   
   def self.biography_text_for(member_name)
+    bad_tags = [ 'ACRONYM', 'ADDRESS', 'APPLET', 'AREA', 'BASE', 'BASEFONT',
+                 'BDO', 'BODY', 'BUTTON', 'CAPTION', 'CENTER', 'CITE', 'CODE',
+                 'COL', 'COLGROUP', 'DD', 'DEL', 'DFN', 'DIR', 'DIV', 'DL',
+                 'DT', 'FIELDSET', 'FONT', 'FORM', 'FRAME', 'FRAMESET', 'H1',
+                 'H2', 'H3', 'H4', 'H5', 'H6', 'HEAD', 'HR', 'HTML', 'IFRAME',
+                 'IMG', 'INPUT', 'INS', 'ISINDEX', 'KBD', 'LABEL', 'LEGEND',
+                 'LI', 'LINK', 'MAP', 'MENU', 'META', 'NOFRAMES', 'NOSCRIPT',
+                 'OBJECT', 'OL', 'OPTGROUP', 'OPTION', 'PARAM', 'PRE',
+                 'Q', 'S', 'SAMP', 'SCRIPT', 'SELECT', 'SMALL', 'SPAN',
+                 'STYLE', 'TABLE', 'TBODY', 'TD', 'TEXTAREA', 'TFOOT', 'TH',
+                 'THEAD', 'TITLE', 'TR', 'TT', 'UL', 'VAR' ]
+
     begin
       a = find_by_sql(['select rev_id, rev_timestamp, t.old_text, p.page_title, p.page_namespace from revision r, page p, text t where r.rev_id = p.page_latest and t.old_id = r.rev_text_id and page_title = ?', member_name])
 
@@ -70,6 +82,12 @@ class Wiki < ActiveRecord::Base
         bio_wiki_text = $~[2]
         # remove the <ref> tags before returning
         doc = Hpricot(MediaCloth.wiki_to_html(bio_wiki_text))
+        bad_tags.each do |tag_name|
+          tags = doc.search(tag_name.downcase)
+          tags.each do |tag|
+            tag.swap(tag.innerHTML)
+          end
+        end
         doc.search("ref").remove
 
         html = doc.to_html

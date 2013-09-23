@@ -102,7 +102,7 @@ module UnitedStates
         end
 
         # Summary
-        bill.summary = bill_hash['summary'] and bill_hash['summary']['text']
+        bill.summary = bill_hash['summary'] && bill_hash['summary']['text']
         bill.updated = bill_hash['+updated_at']
         if bill_hash['subjects_top_term']
           subj = Subject.find_by_term(bill_hash['subjects_top_term'])

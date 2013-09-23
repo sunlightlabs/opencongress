@@ -34,7 +34,7 @@ module UnitedStates
         leg_hash['+current_term'] = nil
       end
 
-      if leg_hash['bio'] and leg_hash['bio']['birthday']
+      if leg_hash['bio'] && leg_hash['bio']['birthday']
         leg_hash['bio']['+birthday'] = Date.parse(leg_hash['bio']['birthday'])
       end
 
@@ -80,7 +80,7 @@ module UnitedStates
       else
         leg_person.name = "#{leg_person.firstname} #{leg_person.lastname}".strip
       end
-      
+
       title_override = GOVTRACK_ID_TO_TITLE_MAPPING[leg_hash['id']['govtrack']]
       if title_override
         leg_person.title = title_override

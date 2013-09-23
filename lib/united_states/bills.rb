@@ -70,7 +70,7 @@ module UnitedStates
 
       if bill.updated.nil? or bill_hash['+updated_at'] > bill.updated
         # Assign sponsor
-        sponsor_id = bill_hash['sponsor'] and bill_hash['sponsor']['thomas_id']
+        sponsor_id = bill_hash['sponsor'] && bill_hash['sponsor']['thomas_id']
         unless sponsor_id.nil?
           sponsor = Person.find_by_thomas_id bill_hash['sponsor']['thomas_id']
           if sponsor.nil?
@@ -285,7 +285,7 @@ module UnitedStates
 
     def link_amendment_to_roll_calls (amdt, amdt_hash)
       (amdt_hash['actions'] or []).each do |action_hash|
-        if action_hash['roll'] and action_hash['where']
+        if action_hash['roll'] && action_hash['where']
           # We don't need to map this to the legislative year because the
           # RollCall.in_year scope is extracting the year from the timestamp
           # rather than using the congressional session.

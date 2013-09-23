@@ -6,12 +6,12 @@ module UnitedStates
     def current_legislative_year(now = nil)
       now ||= Time.now
       now = now.in_time_zone # enforce EST
-   
+
       year = now.year
       if now.month == 1
         if [1, 2].include?(now.day)
           year - 1
-        elsif (now.day == 3) and (now.hour < 12)
+        elsif (now.day == 3) && (now.hour < 12)
           year - 1
         else
           year
@@ -20,12 +20,12 @@ module UnitedStates
         year
       end
     end
-   
+
     # e.g. 2009 & 2010 -> 111th congress, 2011 & 2012 -> 112th congress
     def self.current_congress
       congress_for_year current_legislative_year
     end
-   
+
     def self.congress_for_year(year)
       ((year.to_i + 1) / 2) - 894
     end

@@ -2,6 +2,16 @@
 height: 45px;
 }
 
+#heading p {
+width: 740px;
+float: left;
+font-size: 11px;
+text-align: left;
+padding: 7px 0 0 20px ;
+font-style: italic;
+color: #999;
+}
+
 .inner {
 }
 

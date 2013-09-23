@@ -18,7 +18,7 @@
       <% end %>
   </div>
   <% end %>
-<p>Welcome to your profile's Watchdog page. Here, you can compare your votes on bills to those of your elected officials, and see what topics other users in your state and district are tracking.</p>
+<p>Welcome to your OpenCongress Watchdog page. Here, you can compare your votes on bills to those of your elected officials and see what topics other users in your state and district are tracking.</p>
 <br />
 
   <h3 class="dark floatright">My State: <%= link_to @my_state.name, @my_state %></h3>
@@ -32,7 +32,7 @@
   <% if @my_district.rep %>
   <%= render :partial => "watchdog_person_detail", :locals => {:s => @my_district.rep} %>
   <% else %>
-  <p>Welcome to your profile's Watchdog page. At this time, we are not finding a representative for your district.
+  <p>Welcome to your OpenCongress Watchdog page. At this time, we are not finding a representative for your district.
     Congress may be in transition, or we may be having a temporary problem with our data.</p>
     <% end %>
   </div><!-- end peoples -->

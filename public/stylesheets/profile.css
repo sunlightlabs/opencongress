@@ -82,6 +82,7 @@ background: url('../images/arrow_button.png') left -34px repeat-x;
 }
 
 #profile #the-items, #friends .invites, #friends #the-items{
+margin-bottom: 20px;
 /* float: right;
 width: 700px;
 */

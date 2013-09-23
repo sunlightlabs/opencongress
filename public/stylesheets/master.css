@@ -1826,7 +1826,7 @@ vertical-align: middle;
   height: 16px;
   width: 16px;
   overflow: hidden;
-  text-indent: -999px;
+  text-indent: -9999px;
   background: url('../images/note_close.png') 0 0 no-repeat;
   _background: url('../images/note_close.gif') 0 0 no-repeat;
   }
@@ -1837,6 +1837,12 @@ vertical-align: middle;
 
 .error{
   color: #900;
+}
+
+.hide-text{
+  display:inline-block;
+  text-indent: -9999px;
+  overflow: hidden;
 }
 
 /*///////////////////////////////////////////////////////

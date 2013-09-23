@@ -61,7 +61,7 @@ module UnitedStates
     def import_membership (cmte_thomas_id, mem_hash)
       cmte = Committee.find_by_thomas_id cmte_thomas_id
       legislator = Person.find_by_bioguideid(mem_hash['bioguide'])
-      if cmte and legislator
+      if cmte && legislator
         membership = CommitteePerson.find_by_committee_id_and_person_id(cmte.id, legislator.id)
         if not membership
           membership = CommitteePerson.new

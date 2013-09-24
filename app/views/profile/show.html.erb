@@ -100,26 +100,14 @@
 
 
   <div class="grid_6 ">
-    <% if current_user == @user %>
       <p>
-        <em>This page shows only the personal information that you have chosen to make
-            public. OpenCongress users are encouraged to share their preferred contact
-            info above: website or IM address (and coming soon, e-mail). This allows
-            other users to get in touch -- for example, users located in the same
-            state or district, or users tracking similar bills and issues, or users
-            with shared opinions on Congress.</em>
+        <em>This page shows only the personal information that
+            <% if current_user == @user %>you choose<% else %>this user has chosen<% end %>
+            to make public. OpenCongress users are encouraged to share their preferred contact
+            information. This allows other users, such as those in your
+            state or district or tracking similar bills and issues to get in touch
+        </em>
       </p>
-    <% else %>
-      <p>
-        <em>This page shows only the personal information that this user has
-            chosen to make public. OpenCongress users are encouraged to share
-            their preferred contact info above: website or IM address
-            (and coming soon, email). This allows other users to get in
-            touch -- for example, users located in the same state or
-            district, or users tracking similar bills and issues, or
-            users with shared opinions on Congress.</em>
-      </p>
-    <% end %>
 
     <% if @user.can_view(:my_congressional_district, current_user) %>
       <h3 class="margin-top">State Group</h3>

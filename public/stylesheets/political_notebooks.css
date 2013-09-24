@@ -84,7 +84,7 @@ ul#notebook-items{
   padding-top:3px;
 	width:650px;
 }
-   
+
 ul#notebook-items p {
   margin-bottom:0;
 }
@@ -92,7 +92,7 @@ ul#notebook-items li{
 	padding-bottom:24px;
 	padding-left: 3px;
 	font-size:12px;
-}        
+}
 ul#notebook-items li ul li {
   padding-bottom:0;
 }
@@ -124,33 +124,33 @@ ul#notebook-items li a:hover{
 
 ul#notebook-items li span{
   font-style:italic;
-	color:#bababa;	
+	color:#bababa;
 }
 
 ul#notebook-items li span a{
 	font-size:12px;
 }
 .notebook_top {
-  padding-top:28px;
+  padding-top:16px;
   background: url("../images/notebook_top.png") no-repeat left top;
    _background: url("../images/notebook_top.gif") no-repeat left top;
 }
 .notebook_top h3 {
   margin:0 0 0 92px;
   line-height:36px;
-} 
+}
 .notebook_content {
   background: url("../images/notebook_spiral.png") repeat-y left top;
-   _background: url("../images/notebook_spiral.gif") repeat-y left top;  
+   _background: url("../images/notebook_spiral.gif") repeat-y left top;
   line-height:24px;
   overflow:visible;
   min-height:462px;
   padding:0 20px 0 98px;
-} 
+}
 .notebook_bottom {
   padding-bottom:32px;
   background: url("../images/notebook_bottom.png") no-repeat left bottom;
-   _background: url("../images/notebook_bottom.gif") no-repeat left bottom;  
+   _background: url("../images/notebook_bottom.gif") no-repeat left bottom;
 }
 div.notebook-form-div{
 	padding-top:30px;
@@ -223,11 +223,11 @@ ul#pn_tabs li a.off {
   background-position:-22px top;
 }
 ul#pn_tabs li a.off:hover {
-  background-position:left top; 
+  background-position:left top;
 }
 .hints {
   margin:1em 35px;
-}             
+}
 .hints p {
   font-style:italic;
 }

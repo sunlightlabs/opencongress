@@ -10,7 +10,7 @@ defaults: &defaults
   # The MapQuest API is used for geolocating user addresses in order to
   # lookup congressional districts.
   mapquest: xxx
-  # The Sunlight API key is used to map zip codes and lat/lng pairs to 
+  # The Sunlight API key is used to map zip codes and lat/lng pairs to
   # congressional districts.
   sunlightlabs_key: xxx
   # The Maplight key is for their bill positions API.
@@ -32,6 +32,8 @@ defaults: &defaults
   phaxio_key: xxx
   phaxio_secret: xxx
   akismet: xxx
+  google_analytics: xxx
+  chartbeat_id: xxx
 
 development:
   <<: *defaults

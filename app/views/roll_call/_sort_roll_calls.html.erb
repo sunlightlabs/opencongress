@@ -1,7 +1,7 @@
 <div id="heading">
 	<h2>Votes</h2>
-	<p>This is a list of all roll call votes to date in the current 111th U.S. Congress. (A roll call records a vote from every Member on the question at hand.)</p>
-	<a href="#" id="view_button"><span>Change View</span></a> 
+	<p>Review all roll call votes to date in the <%= Settings.default_congress.ordinalize %> U.S. Congress. (A roll call records a vote from every lawmaker on the question at hand.) Recent votes are displayed first.</p>
+	<a href="#" id="view_button"><span>Change View</span></a>
 	<script type="text/javascript">
 	$j(document).ready(function(){
 
@@ -17,7 +17,7 @@
 			});
 		});
 
-	});              
+	});
 	</script>
 </div>
 <div id="views">
@@ -25,10 +25,10 @@
 		<div id="zipcode_lookup">
 		<%= render :partial => 'search_form' %>
 		</div>
-	<%= render :partial => 'shared/carousel' if @carousel %>	
+	<%= render :partial => 'shared/carousel' if @carousel %>
 
 
-	
+
 	<script type='text/javascript'>
 	$j().ready(function() {
 		$j('#roll_call_examples').jqm();
@@ -49,8 +49,8 @@
 	<div id="sort_nav">
 		<ul id="sort">
 			<h4>Show:</h4>
-			<li id="allvotes" class="<%= sort == 'allvotes' ? 'active' : '' %>"><%= link_to "<span>All Votes</span>".html_safe, :sort => 'allvotes' %></li> 
-			<li id="majorbills" class="<%= sort == 'majorbills' ? 'active' : '' %>"><%= link_to "<span>Votes on Major Bills</span>".html_safe, :sort => 'majorbills' %></li> 
+			<li id="allvotes" class="<%= sort == 'allvotes' ? 'active' : '' %>"><%= link_to "<span>All Votes</span>".html_safe, :sort => 'allvotes' %></li>
+			<li id="majorbills" class="<%= sort == 'majorbills' ? 'active' : '' %>"><%= link_to "<span>Votes on Major Bills</span>".html_safe, :sort => 'majorbills' %></li>
 		</ul>
 		<%= will_paginate @rolls %>
 	</div>

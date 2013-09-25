@@ -183,10 +183,11 @@ module UnitedStates
         end
       end
       bill_hash['subjects'].each do |term|
-        subj = Subject.find_by_term term
+        subj = Subject.find_by_term_icase term
         if subj.nil?
           OCLogger.log "Creating new Subject '#{term}'"
           subj = Subject.create(:term => term)
+          # TODO: Capture failures and send email
         end
         bs = BillSubject.new(:bill_id => bill.id, :subject_id => subj.id)
         if bs.save

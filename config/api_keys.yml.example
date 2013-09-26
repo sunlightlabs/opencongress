@@ -34,6 +34,7 @@ defaults: &defaults
   akismet: xxx
   google_analytics: xxx
   chartbeat_id: xxx
+  facebook_app_id: xxx
 
 development:
   <<: *defaults

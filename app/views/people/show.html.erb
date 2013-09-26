@@ -1,3 +1,9 @@
+<% content_for :open_graph do %>
+  <%= open_graph_meta(:title => "#{@person.title} #{@person.full_name} on OpenCongress",
+                      :image => "#{Settings.base_url}images/#{@person.photo_path}"
+                      ) %>
+<% end %>
+
 <%= render :partial => 'shared/stats_box', :object => @sidebar_stats_object if @sidebar_stats_object %>
 
 <% cache("#{@person.fragment_cache_key}_header") do %>

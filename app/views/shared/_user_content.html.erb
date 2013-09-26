@@ -142,9 +142,29 @@
     <!-- share -->
     <li class="side-button">
       <h4 class="icon social">Share This <%= object.display_object_name %></h4>
+      <% share_options = {'url' => "#{Settings.base_url.sub(/\/\Z/, '')}#{request.instance_variable_get('@fullpath')}"}
+        case object.display_object_name
+        when "Person"
+          twitter_options = { 'title' => "I'm keeping tabs on #{object.title} #{object.full_name}:", 'via' => 'opencongress' }
+        when "Bill"
+          twitter_options = { 'title' => "I'm keeping tabs on #{object.ident}:", 'via' => 'opencongress' }
+          fb_options = { 'title' => "#{object.ident}: Track the latest legislation out of Washington" }
+        when "Issue"
+          twitter_options = { 'title' => "I'm keeping tabs on #{object.term}:", 'via' => 'opencongress' }
+          fb_options = { 'title' => "#{object.term}: Track the latest issues and legislation out of Washington"}
+        when "Committee"
+          twitter_options = { 'title' => "Track congressional committees and their activity:", 'via' => 'opencongress' }
+          fb_options = { 'title' => "Track congressional committees and their activity" }
+        else
+          twitter_options = {'title' => "I'm keeping tabs on Washington with @opencongress"}
+          fb_options = {'title' => "Track the latest out of Washington"}
+        end %>
       <%= render :partial => 'shared/social', :locals => {
              :social_options => {
                  'data-services' => 'facebook, twitter, opencongress-email',
+                 'data-options' => share_options,
+                 'data-facebook-options' => fb_options,
+                 'data-twitter-options' => twitter_options,
                  'data-opencongress-email-options' => {
                    'object-id' => object.id,
                    'object-class' => object.display_object_name,

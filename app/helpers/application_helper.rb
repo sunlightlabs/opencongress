@@ -887,4 +887,32 @@ EOT
     end
   end
 
+  def open_graph_meta(options = {})
+    defaults = {
+      :title => "OpenCongress - Track the latest out of Washington, DC",
+      :description => "OpenCongress is your primary resource for holding Washington accountable.",
+      :image => "#{Settings.base_url}images/fb-default.jpg",
+      :type => "website",
+      :twitter_type => "summary"
+    }
+    options = HashWithIndifferentAccess.new(defaults.merge(options))
+    tags = <<-EOT.strip_heredoc
+      <meta property="fb:app_id" content="#{ApiKeys.facebook_app_id}">
+      <meta property="og:site_name" content="OpenCongress">
+      <meta property="og:title" content="#{options[:title]}">
+      <meta property="og:description" content="#{options[:description]}">
+      <meta property="og:type" content="#{options[:type]}">
+      <meta property="og:image" content="#{options[:image]}">
+    EOT
+    if options[:twitter_type]
+      tags += <<-EOT.strip_heredoc
+        <meta name="twitter:card" content="#{options[:twitter_type]}">
+        <meta name="twitter:site" content="@OpenCongress">
+        <meta name="twitter:title" content="#{options[:title]}">
+        <meta name="twitter:description" content="#{options[:description]}">
+        <meta name="twitter:image" content="#{options[:image]}">
+      EOT
+    end
+    tags.html_safe
+  end
 end

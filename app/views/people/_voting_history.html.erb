@@ -13,7 +13,7 @@
           </div>
           <div class="vote">
             <%= get_vote_image(vote.vote) %> <%= vote %>
-    				
+
             <% unless vote.with_party?.nil? %><em>(<%= vote.with_party? ? "with party" : "against party" %>)</em><% end %>
           </div>
           <span class="date"><%= vote.roll_call.date.strftime("%B %d, %Y") %></span>

@@ -47,8 +47,6 @@ module UnitedStates
       cmte_rec.parent = parent_cmte # nil for top-level committees
       cmte_rec.save! and OCLogger.log("Saved #{cmte_rec.subcommittee_name || cmte_rec.name}")
 
-      #TODO: Also, memberships
-
       subcmte_hashes = cmte_hash.fetch('subcommittees', [])
       subcmte_hashes.each do |subcmte_hash|
         import_committee(subcmte_hash, cmte_rec)
@@ -64,6 +62,7 @@ module UnitedStates
 
     def import_membership (cmte_thomas_id, mem_hash)
       # raise ImportExpiredError if import_expired?
+      return if import_expired?
       cmte = Committee.find_by_thomas_id cmte_thomas_id
       legislator = Person.find_by_bioguideid(mem_hash['bioguide'])
       if cmte && legislator

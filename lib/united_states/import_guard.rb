@@ -1,4 +1,8 @@
 module UnitedStates
+
+  CONGRESS = Settings.default_congress
+  IMPORT_UNTIL = Settings.default_import_until
+
   module ImportGuard
     def self.extended(base)
       object = base.name.underscore.split('/').last.singularize
@@ -10,8 +14,5 @@ module UnitedStates
         end
       end
     end
-  end
-
-  class ImportExpiredError < Error
   end
 end

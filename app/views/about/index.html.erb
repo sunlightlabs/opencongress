@@ -74,34 +74,8 @@
       contact us: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@.]/).push("1").map(&:to_json).join(',')) %>);</script>.
       </p>
 
-    </div><!-- left col -->
-
-    <div class="col2">
-
-      <h2>Using OpenCongress</h2>
-      <ul class="pointy">
-        <li><%= link_to 'How to use OpenCongress', '/howtouse' %></li>
-        <li><%= link_to 'OpenCongress for Developers', '/about/code' %></li>
-        <li><%= link_to 'Terms of Service', '/about/terms_of_service' %></li>
-        <li><%= link_to 'Privacy Policy', '/about/privacy_policy' %></li>
-        <li><%= link_to 'Copyright Policy', '/about/copyright_policy' %></li>
-      </ul>
-      <br />
-      <h2>More about us</h2>
-      <ul class="pointy">
-        <li><%= link_to 'About the Sunlight Foundation', 'http://sunlightfoundation.com/about' %></li>
-      </ul>
-      <br />
-      <br />
-      <h2>Contacting Us</h2>
-      <p>
-      To send us general site feedback, ask a question, or report a problem, e-mail
-      <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.
-      We get a fair amount of email, so plese be patient -- our support team
-      can usually respond in under 24 hours.
-      </p>
       <%= render :partial => 'licensing_terms' %>
 
-    </div>
+    </div><!-- left col -->
   </div>
 </div>

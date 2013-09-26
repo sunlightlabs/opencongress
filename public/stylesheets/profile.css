@@ -544,6 +544,9 @@ width: 70px;
 .person table img{
 width: inherit;
 }
+.person .vote img{
+  width: auto;
+}
 
 .person .details a.name{
 display: block !important;

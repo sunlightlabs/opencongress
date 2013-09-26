@@ -128,30 +128,5 @@
   <% end %>
 
 </div> <!-- // the-items -->
-
-  <% if @senators%>
-
-  <h3 class="darkline">Senators Representing Your State</h3>
-  <p>
-  <div class="clearfix">
-    <%= render :partial => "person_main_detail", :locals => {:people => @senators, :show_updates => false, :no_show_stats => true}, :person_type => "Senator" %>
-  </div>
-  </p>
-  <% end %>
-
-  <% if @reps %>
-  <br />
-  <h3 class="darkline">Representatives Representing Your Zipcode</h3>
-    <% if @reps.size > 1 %>
-    <p>
-      We found multiple representatives corresponding to your zipcode. You can narrow them down by adding your zipcode's 4 digit extension to your profile. If you don't know it offhand, you can look it up easily on the <a href="http://zip4.usps.com/zip4/welcome.jsp" target="_blank">U.S. Postal Service site</a>.
-    </p>
-    <% end %>
-  <p>
-    <div class="clearfix">
-      <%= render :partial => "person_main_detail", :locals => {:people => @reps, :show_updates => false, :no_show_stats => true}, :person_type => "Representatives" %>
-    </div>
-  </p>
-  <% end %>
-
-</div> <!-- // profile_content --></div>
+</div> <!-- // profile_content -->
+</div>

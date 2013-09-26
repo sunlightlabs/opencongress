@@ -79,7 +79,6 @@ class ProfileController < ApplicationController
     @profile_nav = @user
     @title_class = "tab-nav"
 
-    @senators, @reps = Person.find_current_congresspeople_by_zipcode(@user.zipcode, @user.zip_four) if ( logged_in? && @user == current_user && !(@user.zipcode.nil? || @user.zipcode.empty?))
     if logged_in? && current_user.id == @user.id
       mailing_list = UserMailingList.find_or_create_by_user_id(@user.id)
       @show_email_alerts = true
@@ -97,16 +96,16 @@ class ProfileController < ApplicationController
     @bill = Bill.find_by_id(params[:id])
     @limit = params[:limit].to_i
     @limit > 5 ? @limit = 5 : @limit = @limit
-    '<h3 class="darkline">Recent Actions</h3>' +
-    render(:partial => 'bill/action_list_recent', :locals => { :actions => @bill.actions.find(:all, :limit => @limit) })
+    render :text => '<h3 class="darkline">Recent Actions</h3>' +
+    render_to_string(:partial => 'bill/action_list_recent', :locals => { :actions => @bill.actions.find(:all, :limit => @limit) }, :layout => false )
   end
 
   def tracked_votes
     @person = Person.find_by_id(params[:id])
     @limit = params[:limit].to_i
     @limit > 30 ? @limit = 30 : @limit = @limit
-    '<h3 class="darkline">Recent Voting History </h3>' +
-    render(:partial => 'people/voting_history', :locals => { :votes => @person.votes(@limit.to_i) }) +
+    render :text => '<h3 class="darkline">Recent Voting History </h3>' +
+    render_to_string(:partial => 'people/voting_history', :locals => { :votes => @person.votes(@limit.to_i) }, :layout => false) +
     '<p><a href="/people/voting_history/<%= person.to_param %>"><img src="/images/btn-voting-history.gif" class="noborder"></a></p>'
   end
 

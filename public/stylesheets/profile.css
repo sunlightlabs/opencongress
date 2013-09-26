@@ -437,6 +437,9 @@ float: left;
 margin-top: 20px;
 margin-right: 10px;
 }
+.profile_content h3.tracking{
+float:none;
+}
 
 #privacy_settings{
   float:left;

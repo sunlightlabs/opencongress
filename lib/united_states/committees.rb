@@ -1,6 +1,8 @@
 module UnitedStates
   module Committees
+
     extend self
+    extend ImportGuard
 
     @@ActiveCommitteeIds = Set.new
 
@@ -24,6 +26,8 @@ module UnitedStates
     end
 
     def import_committee (cmte_hash, parent_cmte = nil)
+      # raise ImportExpiredError if import_expired?
+      return if import_expired?
       active_committee_id_cache_guard
 
       # parent_cmte will be non-nil if importing a subcommittee
@@ -41,7 +45,7 @@ module UnitedStates
       cmte_rec.chamber = chamber
       cmte_rec.active = @@ActiveCommitteeIds.include? thomas_id
       cmte_rec.parent = parent_cmte # nil for top-level committees
-      cmte_rec.save!
+      cmte_rec.save! and OCLogger.log("Saved #{cmte_rec.subcommittee_name || cmte_rec.name}")
 
       #TODO: Also, memberships
 
@@ -59,18 +63,22 @@ module UnitedStates
     end
 
     def import_membership (cmte_thomas_id, mem_hash)
+      # raise ImportExpiredError if import_expired?
       cmte = Committee.find_by_thomas_id cmte_thomas_id
       legislator = Person.find_by_bioguideid(mem_hash['bioguide'])
       if cmte && legislator
-        membership = CommitteePerson.find_by_committee_id_and_person_id(cmte.id, legislator.id)
-        if not membership
+        membership = CommitteePerson.find_by_committee_id_and_person_id_and_session(cmte.id, legislator.id, CONGRESS)
+        if membership.nil?
           membership = CommitteePerson.new
           membership.person_id = legislator.id
           membership.committee_id = cmte.id
         end
-        membership.role = mem_hash['title']
-        membership.session = nil
-        membership.save!
+        created = membership.new_record?
+        if created || membership.role != mem_hash['title'] || membership.session != CONGRESS
+          membership.role = mem_hash['title']
+          membership.session = CONGRESS
+          membership.save! and OCLogger.log("#{created ? "Created" : "Updated"} membership: #{legislator.full_name} sitting on #{cmte.subcommittee_name || cmte.name} in the #{CONGRESS.ordinalize}")
+        end
       end
     end
 
@@ -85,6 +93,8 @@ module UnitedStates
     end
 
     def import_meeting (mtg_hash)
+      # raise ImportExpiredError if import_expired?
+      return if import_expired?
       mtg_hash = decode_meeting_hash(mtg_hash)
       OCLogger.log "Considering meeting for committee #{mtg_hash['+committee_id']} @ #{mtg_hash['+occurs_at']}"
       cmte = Committee.find_by_thomas_id(mtg_hash['+committee_id'])
@@ -111,6 +121,8 @@ module UnitedStates
     end
 
     def import_committee_report_mods_file (rpt_path)
+      # raise ImportExpiredError if import_expired?
+      return if import_expired?
       begin
         mods = Nokogiri::XML(File.open(rpt_path))
         # We need to remove the namespaces because the XML doesn't properly

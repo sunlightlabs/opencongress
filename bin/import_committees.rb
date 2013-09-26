@@ -1,8 +1,6 @@
 require 'o_c_logger'
 require 'united_states'
 
-$latest_congress = Settings.available_congresses.sort.last
-
 ['historical', 'current'].each do |mode|
   cmtes_file_path = File.join(Settings.data_path,
                               "congress-legislators",

@@ -16,7 +16,6 @@ module UnitedStates
     # Decodes string representations of datetime and numeric
     # fields. Typed field names are prefixed with +.
     def decode_legislator_hash (leg_hash)
-
       latest_term = nil
       leg_hash['terms'].each do |term|
         term['+start'] = Date.parse(term['start'])
@@ -122,14 +121,12 @@ module UnitedStates
 
     # We call roles what the source data calls terms
     def import_role (person, term_hash)
-      roles = Set.new
-      person.roles.where(:startdate => term_hash['+start']).each do |r| roles.add(r) end
-      person.roles.where(:enddate => term_hash['+end']).each do |r| roles.add(r) end
-      if roles.size == 1
+      roles = person.roles.where("startdate = ? OR enddate = ?", term_hash['+start'], term_hash['+end'])
+      if roles.count == 1
         role = roles.first
       else
-        if roles.size > 1
-          roles.each do |r| r.delete end
+        if roles.count > 1
+          roles.destroy_all
         end
         role = person.roles.new(:startdate => term_hash['+start'],
                                 :enddate => term_hash['+end'])

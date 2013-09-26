@@ -1,5 +1,6 @@
 module UnitedStates
   module Bills
+
     extend self
 
     ABBREVIATIONS = HashWithIndifferentAccess.new({

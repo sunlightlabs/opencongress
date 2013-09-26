@@ -160,6 +160,7 @@ OpenCongress::Application.routes.draw do
   end
 
   match 'howtouse' => 'about#howtouse'
+  match 'userguide' => redirect('/howtouse')
 
   resources :contact, :only => [:index, :create]
 

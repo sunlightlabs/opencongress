@@ -1,9 +1,10 @@
-<!-- 
-<img class="displaynone" src="read-this-bill.png" /> 
--->
+<% content_for :open_graph do %>
+  <%= open_graph_meta(:title => "#{@bill.typenumber} - #{@bill.title_common}, a bill on OpenCongress"
+                      ) %>
+<% end %>
 
 <div class="main">
-  
+
 <%= render :partial => 'shared/stats_box', :object => @sidebar_stats_object if @sidebar_stats_object %>
 
 <div id="bill-status-box" class="clearfix">
@@ -22,15 +23,15 @@
 <div class="sponsorship_data">
   <% unless @bill.current_bill_text_version.nil? %>
 	  <%= render :partial => 'sponsor' %>
-    
+
     <div id="committees">
   <% else %>
     <div id="committees" class="morepadding">
   <% end %>
-    
+
 		<h2 class="gray">Committees</h2>
-		<% unless @bill.committees.empty? %>	
-		  <div class="details">              
+		<% unless @bill.committees.empty? %>
+		  <div class="details">
 			  <%= committee_list(0,1).html_safe %>
 			  <% if @bill.committees.size > 1 %>
   			  <div id="bill_committee_more" style="display:none;">
@@ -39,7 +40,7 @@
 			  <% end %>
 			</div>
 		<% else %>
-			<div class="details">              
+			<div class="details">
 				<p>No Committees found for this Bill</p>
       </div>
 		<% end %>
@@ -49,14 +50,14 @@
 		<% end %>
 	</div>
 
-  
+
 
 
 	<% unless @bill.subjects.empty? %>
 		<div class="related_issues_list" id="issue_list">
 		  <h2>Related Issue Areas</h2>
-  		<% unless @bill.subjects.empty? %>	
-  		  <div class="details">              
+  		<% unless @bill.subjects.empty? %>
+  		  <div class="details">
   			  <%= issue_list(0,1).html_safe %>
   			  <% if @bill.subjects.size > 1 %>
     			  <div id="bill_issues_more" style="display:none;">
@@ -65,7 +66,7 @@
   			  <% end %>
   			</div>
   		<% else %>
-  			<div class="details">              
+  			<div class="details">
   				<p>No Issue Areas found for this Bill</p>
         </div>
   		<% end %>
@@ -90,9 +91,9 @@
       </div>
     </div>
 	<% end %>
-	
-	
-	
+
+
+
 	<% unless @bill.plain_language_summary.blank? %>
   	<div id="oc_summary">
 			<h4>OpenCongress Summary</h4>
@@ -112,9 +113,9 @@
       <%= bill_summary_with_more.html_safe %>
     </div>
   <% end %>
-  
+
     <div class="clearfix"></div>
-		
+
 		<% unless @bill.bill_position_organizations.empty? %>
         <div class="col1">
           <h2>Organizations Supporting <%= @bill.typenumber %></h2>
@@ -123,7 +124,7 @@
             <ul>
             <% supporting_orgs[0..5].each { |org| %><li><%= org.name %></li><% } %>
             <% if supporting_orgs.size > 5 %>
-              <li>...and <strong><%= supporting_orgs.size - 5 %></strong> more.  
+              <li>...and <strong><%= supporting_orgs.size - 5 %></strong> more.
               <%= link_to "See all.", :controller => :bill, :action => :bill_positions, :id => @bill.ident %>
             <% end %>
             </ul>
@@ -131,7 +132,7 @@
             <ul><li>None via MapLight at this time.</li></ul>
           <% end %>
         </div>
-      
+
         <div class="col2">
           <h2>Organizations Opposing <%= @bill.typenumber %></h2>
           <% opposing_orgs = @bill.organizations_opposing %>
@@ -139,7 +140,7 @@
             <ul>
               <% opposing_orgs[0..5].each { |org| %><li><%= org.name %></li><% } %>
               <% if opposing_orgs.size > 5 %>
-                <li>...and <strong><%= opposing_orgs.size - 5 %></strong> more.  
+                <li>...and <strong><%= opposing_orgs.size - 5 %></strong> more.
                 <%= link_to "See all.", :controller => :bill, :action => :bill_positions, :id => @bill.ident %>
               <% end %>
             </ul>
@@ -148,13 +149,13 @@
           <% end %>
         </div>
     <% end %>
-      
-      
-		<br />                      
+
+
+		<br />
 
   <% if false %>
 	<div class="news_blogs">
-		<div class="col1">      
+		<div class="col1">
 
 			<% cache("#{@bill.fragment_cache_key}_news_preview") do %>
 			  <!-- cached: <%= "#{@bill.fragment_cache_key}_news_preview" %> // <%= Time.now %> -->
@@ -191,11 +192,11 @@
 			<% end %>
 
 		</div>  <!-- // col2 -->
-	</div>       
-	<% end %>     
+	</div>
+	<% end %>
 
   <br class="clear" />
-  
+
   <% if @latest_letters.any? %>
     <h3 class="margin-left push-left margin-top push-top">Latest Letters to Congress</h3>
     <ul class='most_viewed_letters'>
@@ -204,7 +205,7 @@
     <a href="<%= url_for :controller => 'bill', :action => 'letters', :id => @bill.ident %>" class="button silver small floatleft margin-left push-left">See All Letters (<%= @bill.contact_congress_letters.size %>)</a>
     <div class="clear">&nbsp;</div>
   <% end %>
-  
+
   <br/>
   <br/>
 
@@ -216,15 +217,15 @@
 			  <%= bill_related_list.html_safe %>
 		  </ul>
 		</div>
-	<% end %>	
+	<% end %>
 
-	
-	<% unless @bill.videos.empty? %>  
+
+	<% unless @bill.videos.empty? %>
     <div id="bill_video" class="cols-box clearfix">
       <h2 class="darkline clear">Videos of <%= @bill.typenumber %></h2>
-      <%= render :partial => 'shared/videos', :object => @bill.videos.find(:all, :limit => 2), 
+      <%= render :partial => 'shared/videos', :object => @bill.videos.find(:all, :limit => 2),
                  :locals => { :more_url => (@bill.videos.size > 2) ? link_to("See more videos (#{@bill.videos.size} total)", { :controller => 'bill', :action => 'videos', :id => @bill.ident }, :class => "arrow") : nil } %>
     </div>
   <% end %>
-  
+
 </div>

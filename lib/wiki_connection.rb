@@ -91,6 +91,8 @@ class Wiki < ActiveRecord::Base
         doc.search("ref").remove
 
         html = doc.to_html
+        # Some wikitext <ref> tags are encoded as html entities. Strip them out.
+        html = html.gsub(/\&lt;ref\&gt;.*?\&lt;\/ref\&gt;/, '')
 
         doc.search('a').each do |anchor|
           html = html.sub(anchor.to_s, anchor.inner_text.sub('w:', ''))

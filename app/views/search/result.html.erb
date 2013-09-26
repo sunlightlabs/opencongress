@@ -76,7 +76,7 @@
 
     <h3 class="line2">Committees <em>Found <b><%= @committees_total %></b> committees.</em></h3>
     <ul class="list">
-      <%= render :partial =>'committee', :locals => {:committees => @committees }, :collection => @committees.keys.sort, :as => :name %>
+      <%= render :partial =>'shared/committees_list', :locals => {:committees => @committees }, :collection => @committees.keys.sort, :as => :name %>
     </ul>
     </div>
   <% end %>

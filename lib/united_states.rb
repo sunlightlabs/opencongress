@@ -2,17 +2,14 @@ require 'o_c_logger'
 require 'json'
 require 'time'
 require 'active_support'
-require 'united_states/bills'
-require 'united_states/committees'
-require 'united_states/votes'
-require 'united_states/legislators'
-require 'united_states/congress'
-require 'united_states/contact_congress'
 
 ##
 # Provides methods to parse and decode files from the
 # @unitedstates repositories.
 module UnitedStates
+  CONGRESS = Settings.default_congress
+  IMPORT_UNTIL = Settings.default_import_until
+
   class Error < StandardError
   end
 
@@ -21,4 +18,12 @@ module UnitedStates
 
   class MissingRequiredElement < DataValidationError
   end
+
+  require 'united_states/import_guard'
+  require 'united_states/bills'
+  require 'united_states/committees'
+  require 'united_states/votes'
+  require 'united_states/legislators'
+  require 'united_states/congress'
+  require 'united_states/contact_congress'
 end

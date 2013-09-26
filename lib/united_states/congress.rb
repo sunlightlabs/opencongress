@@ -1,6 +1,8 @@
 module UnitedStates
   module Congress
+
     extend self
+
     # function to calculate current legislative year from a timestamp (defaults to now)
     # legislative year - consider Jan 1, Jan 2, and first half of Jan 3 to be last year
     def current_legislative_year(now = nil)

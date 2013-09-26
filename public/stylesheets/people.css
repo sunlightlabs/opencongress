@@ -94,6 +94,13 @@ background: #fff;
 width: 670px;
 padding: 30px 20px 0 35px;
 }
+
+#people.show .committee_list{
+  float:left;
+  width: 670px;
+  padding: 30px 20px 0 35px;
+}
+
 .co{
 margin-left: 10px;
 }

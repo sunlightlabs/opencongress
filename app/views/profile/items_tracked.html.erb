@@ -6,7 +6,7 @@
 <div class="grid_12">
 
 <div id="the-items">
-   <div style="padding-bottom:30px;">
+  <div style="padding-bottom:30px;">
     <% if @user == current_user %>
       <p>Use this page to manage what you track on OpenCongress. To add more items, simply click the button, "Track with MyOC" on the right-hand sidebar of any bill, issue or member of Congress' page. You can also subscribe to a <%= link_to("custom RSS feed", @atom["link"]) if @atom["link"] %> of all your tracked items.</p>
     <% else %>
@@ -14,44 +14,50 @@
     <% end %>
     <br />
     <!-- <p>Just getting started with MyOC? Our special pages of <a href="/bill/major">Major Bills by Issue Area</a> or <a href="/bill/hot">Hot Bills on OC</a> offer easy ways to find bills and add them to your Tracked Items. For next steps, including ways you can use the social networking on "My OpenCongress" to organize your community, see our <a href="/profile/howtouse">how-to guide</a>.</p> -->
-   </div>
+  </div>
 
   <div class="what-line"></div>
   <br />
   <div style="float:right;">
   <% if @user == current_user %>
-  <%= form_for :privacy_option, @user.privacy_option, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
-    <%= f.select PrivacyOption.column_names[10].to_sym, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
-    <span style = "margin-left:10px;"><%= image_tag("private.png", :alt => "private", :title => "Private", :id => 'Privacy') %></span>
+    <%= form_for :privacy_option, @user.privacy_option, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
+      <%= f.select PrivacyOption.column_names[10].to_sym, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
+      <span style = "margin-left:10px;"><%= image_tag("private.png", :alt => "private", :title => "Private", :id => 'Privacy') %></span>
     <% end %>
-    <% end %>
-    </div>
-    <% unless @user.bill_bookmarks.length == 0 %>
-        <h3><%= link_to "Tracking #{@user.bill_bookmarks.length} Bills", :controller => 'profile', :action => 'bills' %></h3>
-      <ul class="links_detailed">
-        <% @bill_items_tracked[0...10].each do |bill| %>
-          <li class="<%= cycle('odd', 'even')%>"><%= render :partial => "bill_main_detail", :locals => {:bill => bill} %></li>
-        <% end %>
-        <% if @bill_items_tracked.length > 10 %>
-          <li class="even"><%= link_to "#{@user.bill_bookmarks.length - 10} more bills", {:controller => 'profile', :action => 'bills'}, :class => "arrow" %></li>
-        <% end %>
-      </ul>
-    <% end %>
+  <% end %>
+  </div>
+
+  <% if @user.bookmarks.empty? %>
+    <h3><%= @user == current_user ? "You aren't" : "#{@user.login} isn't" %> tracking any items.</h3>
+  <% end %>
+
+
+  <% unless @user.bill_bookmarks.length == 0 %>
+      <h3><%= link_to "Tracking #{pluralize(@user.bill_bookmarks.length, 'Bill')}", :controller => 'profile', :action => 'bills' %></h3>
+    <ul class="links_detailed">
+      <% @bill_items_tracked[0...10].each do |bill| %>
+        <li class="<%= cycle('odd', 'even')%>"><%= render :partial => "bill_main_detail", :locals => {:bill => bill} %></li>
+      <% end %>
+      <% if @bill_items_tracked.length > 10 %>
+        <li class="even"><%= link_to "#{pluralize(@user.bill_bookmarks.length - 10, 'more bill')}", {:controller => 'profile', :action => 'bills'}, :class => "arrow" %></li>
+      <% end %>
+    </ul>
+  <% end %>
    <% unless @sen_items_tracked.length == 0 %>
-    <h3><%= link_to "Tracking #{@sen_items_tracked.length} Senators", :controller => 'profile', :action => 'person', :person_type => "senators" %></h3>
+    <h3><%= link_to "Tracking #{pluralize(@sen_items_tracked.length, 'Senator')}", :controller => 'profile', :action => 'person', :person_type => "senators" %></h3>
        <%= render :partial => "person_main_detail", :locals => {:people => @sen_items_tracked[0...10], :show_updates => true },
                               :person_type => "Senator" %>
       <div class="after"></div>
    <% end %>
   <% unless @rep_items_tracked.length == 0 %>
-    <h3><%= link_to "Tracking #{@rep_items_tracked.length} Representatives", :controller => 'profile', :action => 'person', :person_type => "representatives" %></h3>
+    <h3><%= link_to "Tracking #{pluralize(@rep_items_tracked.length, 'Representative')}", :controller => 'profile', :action => 'person', :person_type => "representatives" %></h3>
      <%= render :partial => "person_main_detail", :locals => {:people => @rep_items_tracked[0...10], :show_updates => true},
                                :person_type => "Senator" %>
     <div class="after"></div>
   <% end %>
 
   <% unless @user.bookmarked_committees.length == 0 %>
-    <h3><%= link_to "Tracking #{@user.bookmarked_committees.length} Committees", :controller => 'profile', :action => 'committees' %></h3>
+    <h3><%= link_to "Tracking #{pluralize(@user.bookmarked_committees.length, 'Committee')}", :controller => 'profile', :action => 'committees' %></h3>
     <ul class="links_detailed">
             <% @user.bookmarked_committees[0...10].each do |committee| %>
             <li class="tracking" id="issues_tracked">
@@ -88,14 +94,13 @@
                             </div>
                     </li>
             <% end %>                <% if @user.bookmarked_committees.length > 10 %>
-            <li class="even"><%= link_to "#{@user.bookmarked_committees.length - 10} more Committees", {:controller => 'profile', :action => 'committees'}, :class => "arrow" %></li>
+            <li class="even"><%= link_to "#{pluralize(@user.bookmarked_committees.length - 10, 'more committee')}", {:controller => 'profile', :action => 'committees'}, :class => "arrow" %></li>
             <% end %>
           </ul>
        <div class="after"></div>
-   <% end %>
-  <% link_to "Industries", :controller => 'accounts', :action => 'industries' %>
+  <% end %>
   <% unless @user.bookmarked_issues.length == 0 %>
-  <h3><%= link_to "Tracking #{@user.bookmarked_issues.length} Issues", :controller => 'profile', :action => 'issues' %></h3>
+  <h3><%= link_to "Tracking #{pluralize(@user.bookmarked_issues.length, 'Issue')}", :controller => 'profile', :action => 'issues' %></h3>
   <ul class="links_detailed">
     <% @user.bookmarked_issues[0...10].each do |subject| %>
     <li id="issues_tracked" class="tracking">
@@ -121,7 +126,7 @@
       </li>
     <% end %>
     <% if @user.bookmarked_issues.length > 10 %>
-      <li class="even"><%= link_to "#{@user.bookmarked_issues.length - 10} more Issues", {:controller => 'profile', :action => 'issues'}, :class => "arrow" %></li>
+      <li class="even"><%= link_to "#{pluralize(@user.bookmarked_issues.length - 10, 'more issue')}", {:controller => 'profile', :action => 'issues'}, :class => "arrow" %></li>
     <% end %>
   </ul>
   <div class="after"></div>

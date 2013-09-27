@@ -115,9 +115,9 @@ class User < ActiveRecord::Base
   # Support = 0 for support, 1 for oppose. Not even kidding.
   has_many :bills_supported, :class_name => "Bill", :through => :bill_votes, :source => :bill, :conditions => ["bill_votes.support = 0"], :order => "bill_votes.created_at DESC"
   has_many :bills_opposed, :class_name => "Bill", :through => :bill_votes, :source => :bill, :conditions => ["bill_votes.support = 1"], :order => "bill_votes.created_at DESC"
-  has_many :bookmarked_people, :class_name => "Person", :through => :bookmarks, :source => :person, :order => "bookmarks.created_at DESC"
-  has_many :bookmarked_issues, :class_name => "Subject", :through => :bookmarks, :source => :subject, :order => "bookmarks.created_at DESC"
-  has_many :bookmarked_committees, :class_name => "Committee", :through => :bookmarks, :source => :committee, :order => "bookmarks.created_at DESC"
+  has_many :bookmarked_people, :class_name => "Person", :through => :bookmarks, :source => :person, :conditions => ["bookmarks.bookmarkable_type = 'Person'"], :order => "bookmarks.created_at DESC"
+  has_many :bookmarked_issues, :class_name => "Subject", :through => :bookmarks, :source => :subject, :conditions => ["bookmarks.bookmarkable_type = 'Subject'"], :order => "bookmarks.created_at DESC"
+  has_many :bookmarked_committees, :class_name => "Committee", :through => :bookmarks, :source => :committee, :conditions => ["bookmarks.bookmarkable_type = 'Committee'"], :order => "bookmarks.created_at DESC"
 
   belongs_to :representative, :class_name => "Person", :foreign_key => "representative_id"
   belongs_to :user_role

@@ -196,30 +196,39 @@ class ProfileController < ApplicationController
   def remove_vote
     bill_vote = current_user.bill_votes.find_by_bill_id(params[:id])
     bill_vote.destroy
-    flash[:notice] = "Vote Removed"
+    flash[:notice] = "Vote removed."
     redirect_back_or_default(:action => 'index', :login => current_user.login)
   end
 
   def remove_bill_bookmark
     bookmark = current_user.bookmarks.find_by_bookmarkable_type_and_bookmarkable_id("Bill", params[:id])
-    bookmark.destroy
-    flash[:notice] = "Bill Removed from Tracking"
-    redirect_back_or_default(:action => 'items_tracked', :login => current_user.login)
+    remove_bookmark(bookmark, (bookmark.bill.typenumber rescue nil))
   end
 
   def remove_person_bookmark
     bookmark = current_user.bookmarks.find_by_bookmarkable_type_and_bookmarkable_id("Person", params[:id])
-    bookmark.destroy
-    flash[:notice] = "Person Removed from Tracking"
-    redirect_back_or_default(:action => 'items_tracked', :login => current_user.login)
+    remove_bookmark(bookmark, "#{bookmark.person.title rescue nil} #{bookmark.person.full_name rescue nil}")
   end
 
-  def remove_bookmark
-    book = current_user.bookmarks.find_by_id(params[:id])
-    if book
-      book.destroy
+  def remove_committee_bookmark
+    bookmark = current_user.bookmarks.find_by_bookmarkable_type_and_bookmarkable_id("Committee", params[:id])
+    remove_bookmark(bookmark, (bookmark.commitee.name rescue 'Committee'))
+  end
+
+  def remove_subject_bookmark
+    bookmark = current_user.bookmarks.find_by_bookmarkable_type_and_bookmarkable_id("Subject", params[:id])
+    remove_bookmark(bookmark, "Issue '#{bookmark.subject.term rescue nil}'")
+  end
+
+  # Takes bookmark, either int id or Bookmark object,
+  # confirms it belongs to current_user and deletes it.
+  def remove_bookmark(bookmark, name = 'Bookmark')
+    bookmark = current_user.bookmarks.find_by_id(bookmark) if bookmark.is_a? Integer
+    if bookmark && bookmark.user == current_user
+      destroyed = bookmark.destroy rescue false
     end
-    redirect_back_or_default(:action => 'index', :login => current_user.login)
+    flash[:notice] = destroyed ? "#{name} removed from your tracking list." : "There was an error removing #{name}"
+    redirect_back_or_default(:action => 'items_tracked', :login => current_user.login)
   end
 
   def comments

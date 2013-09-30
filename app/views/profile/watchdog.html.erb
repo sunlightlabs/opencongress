@@ -22,9 +22,11 @@
 <br />
 
   <h3 class="dark floatright">My State: <%= link_to @my_state.name, @my_state %></h3>
-  <h3>My Senators</h3>
-  <% @my_state.senators.each do |s| %>
-    <%= render :partial => "watchdog_person_detail", :locals => {:s => s} %>
+  <% if @my_state.senators.any? %>
+    <h3>My Senators</h3>
+    <% @my_state.senators.each do |s| %>
+      <%= render :partial => "watchdog_person_detail", :locals => {:s => s} %>
+    <% end %>
   <% end %>
 
 

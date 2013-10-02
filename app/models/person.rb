@@ -123,6 +123,18 @@ class Person < ActiveRecord::Base
     self.to_xml(:include => [:recent_news, :recent_blogs, :oc_approval_rating])
   end
 
+  def seated_name
+    rope = [firstname]
+    if middlename
+      rope << ' ' << middlename
+    end
+    rope << ' ' << lastname
+    if not party.nil? and not state.nil?
+      rope << ' [' << party[0] << '-' << state << ']'
+    end
+    rope.join('')
+  end
+
   def with_party
     self.party_votes.count
   end

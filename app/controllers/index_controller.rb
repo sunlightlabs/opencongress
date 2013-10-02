@@ -67,6 +67,13 @@ class IndexController < ApplicationController
 
   end
 
+  def new
+    @sessions = CongressSession.sessions
+    @updated_at = CongressSession.order(["date desc"]).first.date
+
+    render 'interim_index'
+  end
+
   def pipa
   end
 

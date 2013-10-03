@@ -1,7 +1,167 @@
 <%= content_for :stylesheets do %>
 <style>
+    .bootstrap-enabled strong {
+        font-weight: 500;
+    }
+    #content {
+        font-family: "franklin-gothic-urw", sans-serif;
+        font-weight: 400;
+    }
     .two-up { width: 46%; box-sizing: border-box; float: left; }
     .two-up:nth-child(even) { margin-right: 4%; }
+
+    #hero {
+        height: 435px;
+        background: #c4d9df;
+        color: #fff;
+    }
+    #hero h1 {
+        float: none;
+        width: 800px;
+        margin: 60px auto 40px;
+        font-weight: 300;
+        font-size: 30px;
+        font-style: normal;
+        line-height: 120%;
+    }
+    .bootstrap-enabled .form-search .input-append .search-query{
+        height: 25px;
+        padding: 10px 20px;
+        border-radius: 25PX;
+        width: 450px;
+        border: 1px solid #ddd;
+        font-family: "franklin-gothic-urw";
+        font-size: 18px;
+        font-style: italic;
+        margin-left: -16px; 
+    }
+    .bootstrap-enabled .form-search .input-append .search-query::input-placeholder {
+        color: #ccc;
+    }
+    .bootstrap-enabled .form-search .input-append .search-query::-webkit-input-placeholder { /* WebKit browsers */
+        color: #ccc;
+    }
+    .bootstrap-enabled .form-search .input-append .search-query:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+        color: #ccc;
+    }
+    .bootstrap-enabled .form-search .input-append .search-query::-moz-placeholder { /* Mozilla Firefox 19+ */
+        color: #ccc;
+    }
+    .bootstrap-enabled .form-search .input-append .search-query:-ms-input-placeholder { /* Internet Explorer 10+ */
+        color: #ccc;
+    }
+    #hero .input-append {
+    }
+    #hero button.search {
+        background: none;
+        border: 0;
+        border-top: 0;
+        border-bottom: 0; 
+        box-shadow: none;
+        -webkit-box-shadow: none;
+        outline: 0;
+        height: 24px;
+        width: 24px;
+        background-image: url('../images/icon-search.png');
+        position: relative;
+        z-index: 10;
+        margin-left: -40px;
+        opacity: 0.7;
+    }
+    #hero button.search:hover, #hero button.search:active {
+        opacity: 1;
+    }    
+    p.featured {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+    .featured a {
+        text-decoration: underline;
+    }
+    #in_session {
+        font-size: 15px;
+        font-weight: 300;
+        border: 1px solid rgba(255,255,255, .4);
+        width: 475px;
+        height: 50px;
+        margin: 50px auto;
+    }
+    h4.inset {
+        text-transform: uppercase;
+        font-size: 16px;
+        font-weight: 300;
+        background: #c4d9df;
+        width: 190px;
+        margin: -10px auto 10px;        
+    }
+    ul.status-lights {
+        margin: 0;
+    }
+    ul.status-lights li {
+        display: inline;
+        color: #666;
+    }
+    ul.status-lights li:first-child{
+        margin-right: 20px;
+    }    
+    ul.status-lights li:before {
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border: 2px solid #fff;
+        border-radius: 10px;
+        margin-right: 8px;
+        position: relative;
+        top: 2px;     
+       -moz-box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
+       -webkit-box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
+       box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
+    }
+    ul.status-lights li.on:before {
+        background: #afe075;
+    }    
+    ul.status-lights li.off:before {
+        background: #d05b5b;
+    }    
+    #belt {
+        background: #72919d;
+    }
+    #belt h2 {
+        font-weight: 300;
+        font-size: 24px;
+        font-style: normal;
+    }    
+    .announcement {
+        width: 250px;
+        height: 220px;
+        padding: 20px 30px; 
+        border: 1px dotted #fff;
+        background: #efc20d;
+        color: #666;
+        font-weight: 300;        
+    }
+    .announcement h2 {
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        border-bottom: 3px double rgba(255,255,255, .5);
+        line-height: 120%;
+        color: #fff;
+    }
+    #superlatives h3 {
+        text-align: center;
+    }
+    .superlative {
+        background: #fff;
+    }
+    #content_footer {
+        background: #cedcdf;
+        height: 190px;
+    }
+    .icbiaselect-display {
+        border: 1px solid #ccc;
+    }
+
 </style>
 <% end %>
 <%= content_for :javascripts do %>
@@ -11,6 +171,8 @@
     $('#superlatives select').icbiaControl();
 })(jQuery)
 </script>
+<script type="text/javascript" src="//use.typekit.net/xev8qlf.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 <% end %>
 
 <div id="content" class="bootstrap-enabled">
@@ -18,10 +180,10 @@
         <div class="row-fluid">
             <div class="span12 centered">
                 <h1>Enter a lawmaker&rsquo;s name, issue area or bill number to search OpenCongress. Discover who represents you, find relevant legislation and learn how to take action.</h1>
-                <form action="#" method="post">
+                <form class="form-search" action="#" method="post">
                     <div class="input-append">
-                        <input type="text" placeholder="Tim Kaine">
-                        <button class="btn">Search OpenCongress</span>
+                        <input class="search-query" type="text" placeholder="Tim Kaine">
+                        <button class="search"></button>
                     </div>
                     <p class="featured">
                         Popular Searches:
@@ -44,7 +206,7 @@
     <div id="belt" class="container-fluid">
         <div class="row-fluid">
             <div class="span4 announcement">
-                <h2>Hello! From the Sunlight Foundation</h2>
+                <h2>Hello! From the<br> Sunlight Foundation</h2>
                 <p>The Sunlight Foundation is now the sole operator of OpenCongress. This site will continue to be a comprehensive, nonpartisan source for whatS happening in the United States Congress.</p>
                 <a class="more" href="http://sunlightfoundation.com/about">Learn more about Sunlight &raquo;</a>
             </div>

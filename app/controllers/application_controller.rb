@@ -16,6 +16,7 @@ class ApplicationController < ActionController::Base
   before_filter :get_site_text_page
   before_filter :is_authorized?
   before_filter :set_simple_comments
+  before_filter :last_updated
 
   def facebook_check
     return unless session[:nofacebook].nil?
@@ -270,6 +271,10 @@ class ApplicationController < ActionController::Base
 
   def force_fb_cookie_delete
     cookies.delete fb_cookie_name
+  end
+
+  def last_updated
+    @updated_at = CongressSession.order(["date desc"]).first.date
   end
 
   protected

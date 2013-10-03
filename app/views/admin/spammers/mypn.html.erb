@@ -90,7 +90,7 @@ button { padding: 6px 16px; float: right; margin-left: 20px; }
     $('input.master').click(function(e){
       var user = $(this).attr('id');
       checked = $(this).is(':checked');
-      $('input[data-user="' + user + '"]').attr('checked', checked);
+      $('input[data-user="' + user + '"]').prop('checked', checked);
     });
   })(jQuery);
 </script>

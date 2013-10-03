@@ -5,37 +5,48 @@
 
 <div class="footer-wrapper-old">
     <div id="footerstars_wrapper">
-
-
-        <div class="footer_contentwrapper">
-            <div class ="contact_links">
-                <div id="footer" class="clearfix">
-                    <div class="footlist first">
-                        <ul>
-                            <li><a href="/search">Search</a></li>
-                            <li><%= link_to 'About OpenCongress', { :controller => 'about' },
-                            { :title => "Find out more about who and what is Open Congress" } %></li>
-                            <li><%= link_to 'Help FAQ', { :controller => 'about'},
-                            { :title => "" } %></li>
-                            <li><%= link_to 'RSS Feeds', :controller => 'about', :action => 'rss' %></li>
-                        </ul>
+        <div class="footer_contentwrapper bootstrap-enabled">
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <h3>About OpenCongress</h3>
+                        <p>OpenCongress allows anyone to follow legislation in Congress, from bill introduction to floor vote. Learn more about issues you care about and connect with others who share similar views. OpenCongress is also <a href="https://github.com/sunlightlabs/opencongress">open source</a>. <a href="/about">Get more information about the data powering the site</a>.</p>
+                        <p class="time">OpenCongress' data was updated <%= time_ago_in_words(@updated_at) %> ago.</p>
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="span5">
+                                    <ul class="unstyled">
+                                        <li><a href="/search">Search</a></li>
+                                        <li><%= link_to 'About OpenCongress', { :controller => 'about' },
+                                        { :title => "Find out more about who and what is Open Congress" } %></li>
+                                        <li><%= link_to 'Help FAQ', { :controller => 'about'},
+                                        { :title => "" } %></li>
+                                        <li><%= link_to 'RSS Feeds', :controller => 'about', :action => 'rss' %></li>
+                                    </ul>
+                                </div>
+                                <div class="span4">
+                                    <ul class="unstyled">
+                                        <li><%= link_to 'Widgets', widgets_path %>
+                                        <li><%= link_to 'Developers/API', :controller => 'about', :action => 'code' %></li>
+                                        <li><a href="/contact/">Contact Us</a></li>
+                                    </ul>
+                                </div>
+                                <div class="span3">
+                                    <ul class="unstyled">
+                                        <li><%= link_to 'Wiki', '/wiki' %></li>
+                                        <li><%= link_to 'Blog', :controller => 'blog' %></li>
+                                        <li><%= link_to 'Resources', :controller => 'resources' %></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="footlist">
-                        <ul>
-                            <li><%= link_to 'Widgets', widgets_path %>
-                            <li><%= link_to 'Developers/API', :controller => 'about', :action => 'code' %></li>
-                            <li><a href="/contact/">Contact Us</a></li>
-                        </ul>
-                    </div>
-                    <div class="footlist last">
-                        <ul>
-                            <li><%= link_to 'Wiki', '/wiki' %></li>
-                            <li><%= link_to 'Blog', :controller => 'blog' %></li>
-                            <li><%= link_to 'Resources', :controller => 'resources' %></li>
-                        </ul>
-                    </div>
-<!-- sign up starts here -->
-                    <div class="sign_up">
+                    <div class="span6 border-left">
+                        <p>
+                            <a id="sfLogo" href="http://www.sunlightfoundation.com">Sunlight Foundation</a
+                        </p>
+                        <p>Founded in 2006, the Sunlight Foundation is a non-partisan non-profit that uses cutting-edge technology and ideas to make government transparent and accountable. Visit <a href="http://sunlightfoundation.com">SunlightFoundation.com</a> to learn more.</p>
+                        <div class="sign_up">
                         <h4>Like this project and want to discover others like it?</h4>
                         <span class="tip">Join the Sunlight Foundation's open government community to learn more</span>
                         <form action="/subscribe/" method="post" id="sfapp-subscribe-form" class="form-inline">
@@ -46,19 +57,10 @@
                             <button type="submit" class="btn btn-sunlight">Sign Up</button>
                         </form>
                     </div>
-<!-- sunlight foundation founded starts here -->
-                    <div class="stars_divider">
-                        <a id="sfLogo" href="http://www.sunlightfoundation.com">Sunlight Foundation</a>
-                    <p id="privacyPolicy">Founded in 2006, the Sunlight Foundation is a non-partisan non-profit that uses cutting-edge technology and ideas to make government transparent and accountable. Visit <a href="http://sunlightfoundation.com">SunlightFoundation.com</a> to learn more.</p>
                     </div>
-
                 </div>
             </div>
-
         </div>
-
-
-
     </div>
 </div>
 

@@ -112,6 +112,9 @@
                     <a href="#" class="add-on dropdown-toggle" data-toggle="dropdown"><i class="icon-cog hide-text">Advanced Options</i></a>
                     <input name="q" class="span3" id="search-field" type="text" value="<%= @query.blank? ? '' : @query %>" />
                     <button class="add-on inset"><i class="icon-search hide-text">Search</i></button>
+                    <span id="autocomplete-spin" class="add-on" style="display: none;">
+                        <%= image_tag 'spin.gif', :alt => 'Working...' %>
+                    </span>
                     <div class="dropdown-menu">
                         <div id="search_in">
                             <p>Search in:</p>

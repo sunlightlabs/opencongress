@@ -1,12 +1,12 @@
 <%= content_for :stylesheets do %>
 <style>
-    .bootstrap-enabled strong {
-        font-weight: 500;
-    }
+    .bootstrap-enabled strong { font-weight: 500; }
+
     #content {
         font-family: "franklin-gothic-urw", sans-serif;
         font-weight: 400;
     }
+
     .two-up { width: 46%; box-sizing: border-box; float: left; }
     .two-up:nth-child(even) { margin-right: 4%; }
 
@@ -15,132 +15,126 @@
         background: #c4d9df;
         color: #fff;
     }
+
     #hero h1 {
         float: none;
         width: 800px;
         margin: 60px auto 40px;
         font-weight: 300;
-        font-size: 30px;
         font-style: normal;
+        font-size: 30px;
         line-height: 120%;
     }
+
     .bootstrap-enabled .form-search .input-append .search-query{
+        width: 450px;
         height: 25px;
         padding: 10px 20px;
-        border-radius: 25PX;
-        width: 450px;
-        border: 1px solid #ddd;
-        font-family: "franklin-gothic-urw";
-        font-size: 18px;
-        font-style: italic;
         margin-left: -16px; 
+        border: 1px solid #ddd;
+        border-radius: 25PX;
+        font-family: "franklin-gothic-urw";
+        font-style: italic;
+        font-size: 18px;
     }
-    .bootstrap-enabled .form-search .input-append .search-query::input-placeholder {
-        color: #ccc;
-    }
-    .bootstrap-enabled .form-search .input-append .search-query::-webkit-input-placeholder { /* WebKit browsers */
-        color: #ccc;
-    }
-    .bootstrap-enabled .form-search .input-append .search-query:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-        color: #ccc;
-    }
-    .bootstrap-enabled .form-search .input-append .search-query::-moz-placeholder { /* Mozilla Firefox 19+ */
-        color: #ccc;
-    }
-    .bootstrap-enabled .form-search .input-append .search-query:-ms-input-placeholder { /* Internet Explorer 10+ */
-        color: #ccc;
-    }
-    #hero .input-append {
-    }
+
+    .bootstrap-enabled .form-search .input-append .search-query::-webkit-input-placeholder { color: #ccc; }
+    .bootstrap-enabled .form-search .input-append .search-query:-moz-placeholder { color: #ccc; }
+    .bootstrap-enabled .form-search .input-append .search-query::-moz-placeholder { color: #ccc; }
+    .bootstrap-enabled .form-search .input-append .search-query:-ms-input-placeholder { color: #ccc; }
+    .bootstrap-enabled .form-search .input-append .search-query::input-placeholder { color: #ccc; }    
+
     #hero button.search {
-        background: none;
+        position: relative;
+        width: 24px;
+        height: 24px;
+        margin-left: -40px;
         border: 0;
         border-top: 0;
         border-bottom: 0; 
-        box-shadow: none;
-        -webkit-box-shadow: none;
-        outline: 0;
-        height: 24px;
-        width: 24px;
+        background: none;
         background-image: url('../images/icon-search.png');
-        position: relative;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        outline: 0;
         z-index: 10;
-        margin-left: -40px;
         opacity: 0.7;
     }
-    #hero button.search:hover, #hero button.search:active {
-        opacity: 1;
-    }    
+
+    #hero button.search:hover, #hero button.search:active { opacity: 1; }  
+
     p.featured {
         margin-top: 15px;
         font-size: 14px;
     }
-    .featured a {
-        text-decoration: underline;
-    }
+
+    .featured a { text-decoration: underline; }
+
     #in_session {
-        font-size: 15px;
-        font-weight: 300;
-        border: 1px solid rgba(255,255,255, .4);
         width: 475px;
         height: 50px;
         margin: 50px auto;
+        border: 1px solid rgba(255,255,255, .4);
+        font-weight: 300;
+        font-size: 15px;
     }
+
     h4.inset {
+        width: 220px;
+        margin: -10px auto 10px;        
+        background: #c4d9df;
+        font-weight: 300;
         text-transform: uppercase;
         font-size: 16px;
-        font-weight: 300;
-        background: #c4d9df;
-        width: 190px;
-        margin: -10px auto 10px;        
     }
-    ul.status-lights {
-        margin: 0;
-    }
+
+    ul.status-lights { margin: 0; }
+
     ul.status-lights li {
         display: inline;
         color: #666;
     }
-    ul.status-lights li:first-child{
-        margin-right: 20px;
-    }    
+
+    ul.status-lights li:first-child{ margin-right: 20px; }
+
     ul.status-lights li:before {
         content: "";
         display: inline-block;
-        width: 10px;
-        height: 10px;
-        border: 2px solid #fff;
-        border-radius: 10px;
-        margin-right: 8px;
         position: relative;
         top: 2px;     
+        width: 10px;
+        height: 10px;
+        margin-right: 8px;
+        border: 2px solid #fff;
+        border-radius: 10px;
        -moz-box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
        -webkit-box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
        box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
     }
-    ul.status-lights li.on:before {
-        background: #afe075;
-    }    
-    ul.status-lights li.off:before {
-        background: #d05b5b;
-    }    
+
+    ul.status-lights li.on:before { background: #afe075; }    
+    ul.status-lights li.off:before { background: #d05b5b; }
+
     #belt {
         background: #72919d;
     }
+
     #belt h2 {
         font-weight: 300;
-        font-size: 24px;
         font-style: normal;
-    }    
+        font-size: 24px;
+    }
+
     .announcement {
         width: 250px;
         height: 220px;
         padding: 20px 30px; 
         border: 1px dotted #fff;
         background: #efc20d;
-        color: #666;
         font-weight: 300;        
+        color: #666;
     }
+
     .announcement h2 {
         padding-bottom: 10px;
         margin-bottom: 10px;
@@ -148,19 +142,17 @@
         line-height: 120%;
         color: #fff;
     }
-    #superlatives h3 {
-        text-align: center;
-    }
-    .superlative {
-        background: #fff;
-    }
+
+    #superlatives h3 { text-align: center; }
+    
+    .superlative { background: #fff; }
+    
     #content_footer {
-        background: #cedcdf;
         height: 190px;
+        background: #cedcdf;
     }
-    .icbiaselect-display {
-        border: 1px solid #ccc;
-    }
+
+    .icbiaselect-display { border: 1px solid #ccc; }
 
 </style>
 <% end %>

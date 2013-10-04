@@ -6028,68 +6028,272 @@ span.yellow-star {
 /* ========================================= */
 /* site chrome tweaks from homepage redesign */
 /* ========================================= */
-.bootstrap-enabled .dropdown .dropdown-menu {
+
+/* Logo Position fix */
+a.logo { background: url('../images/oc-logo.png') no-repeat 0px 6px; }
+a.logo:hover { background-position: 0px -100px; }
+
+/* Nav width fix */
+#nav { width: 1002px; }
+
+
+/* Register & Login Buttons */
+
+#register-btn.btn.large.btn-primary {
+  position: relative;
+  left: 18px;
+  width: 98px;
+  height: 18px;
+  padding: 5px;
+  margin: 10px 10px 0 0;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  background: #50a4ed;
+  font-family: 'franklin-gothic-urw';
+  font-weight: 400;
+  font-size: 12px;
+  text-shadow: none;
+}
+
+#register-btn.btn.large.btn-primary:before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 102px;
+  height: 22px;
+  border: 1px dotted #78b8f0;
+}
+
+#register-btn.btn.large.btn-primary:hover { background: #4b9ade; }
+#register-btn.btn.large.btn-primary:before:hover { border: 1px dotted #80c3ff; }
+#login-btn.btn.large.dropdown-toggle {
+  position: relative;
+  left: 20px;
+  width: 98px;
+  height: 18px;
+  padding: 5px;
+  margin: 10px 0 0 0;  
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  background: #666;
+  font-family: 'franklin-gothic-urw';
+  font-weight: 400;
+  font-size: 12px;
+  text-shadow: none;
+  color: #fff;
+}
+
+#login-btn.btn.large.dropdown-toggle:before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 102px;
+  height: 22px;
+  border: 1px dotted #888;
+}
+
+#login-btn.btn.large.dropdown-toggle:hover {
+  background: #555;
+}
+
+
+/* Login Dropdown */
+
+.bootstrap-enabled #user_account .dropdown-menu {
+  width: 234px;
+  left: 18px;
   margin-top: 15px;
-  box-sizing: border-box;
-  padding: 10px;
+  border-radius: 3px;
 }
-.bootstrap-enabled .dropdown.login .dropdown-menu {
-  left: auto;
-  right: -20px;
+
+.bootstrap-enabled #user_account .dropdown-menu:before {
+  left: 174px;
 }
-.bootstrap-enabled .dropdown.login.arrowed .dropdown-menu:before,
-.bootstrap-enabled .dropdown.login.arrowed .dropdown-menu:after {
-  left: auto;
-  right: 30px;
+
+.bootstrap-enabled #user_account .dropdown-menu:after {
+  left: 175px;
 }
-.bootstrap-enabled .dropdown.login.arrowed .dropdown-menu:after {
-  right: 31px;
+
+.bootstrap-enabled .login form {
+  width: 200px;
+  padding: 5px 17px;
+  margin: auto;
+  border-bottom: 1px solid #eee;
 }
-.bootstrap-enabled .login legend {font-size: 14px; font-weight: bold; border-bottom: none;}
-.bootstrap-enabled .login form button { width: 100%; display: block; }
-.bootstrap-enabled .search {
+
+.bootstrap-enabled .login legend {
+  margin-bottom: 5px;
+  border-bottom: none;
+  font-weight: normal;
+  font-size: 14px;
+  color: #444;
+}
+
+.bootstrap-enabled #user_account .dropdown-menu input{
+  width: 180px;
+  padding: 6px 8px;
+  margin-bottom: 15px;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  font-family: 'franklin-gothic-urw';
+  font-size: 14px;
+  color: #444;
+}
+
+.bootstrap-enabled #user_account .dropdown-menu input[type=password]{
+  letter-spacing: -1px;
+}
+
+.bootstrap-enabled #user_account .dropdown-menu input::-webkit-input-placeholder { /* WebKit browsers */
+    color: #ccc;
+    letter-spacing: 0;
+}
+
+.bootstrap-enabled #user_account .dropdown-menu input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #ccc;
+    letter-spacing: 0;
+}
+
+.bootstrap-enabled #user_account .dropdown-menu input::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #ccc;
+    letter-spacing: 0;
+}
+
+.bootstrap-enabled #user_account .dropdown-menu input:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: #ccc;
+    letter-spacing: 0;    
+}
+
+.bootstrap-enabled #user_account .dropdown-menu input::input-placeholder {
+    color: #ccc;
+    letter-spacing: 0;
+}  
+
+.bootstrap-enabled .login form button {
+  display: inline-block;
+  width: 195px;
+  padding: 5px;
+  margin-bottom: 10px;
+  border: 0;
+  border-radius: 3px;
+  background: #50a4ed;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  font-family: 'franklin-gothic-urw';
+  opacity: 1;
+}
+
+.bootstrap-enabled .login form button:hover, .bootstrap-enabled .login form button:focus {
+  background: #4b9ade;
+}
+
+#user_account .dropdown-menu a {
+  display: block;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#user_account .dropdown-menu form a {
+  color: #bbb;
+}
+
+
+/* Search */
+
+.bootstrap-enabled #search .search {
+  left: 15px;
   margin-top: 8px;
 }
+
 .bootstrap-enabled .search.input-append .add-on,
 .bootstrap-enabled .search.input-prepend .add-on {
   height: auto;
-  padding-left: 4px;
-  padding-right: 4px;
+  opacity: .5;
 }
+
+.bootstrap-enabled .search.input-append .add-on:hover,
+.bootstrap-enabled .search.input-prepend .add-on:active {
+  opacity: .9;
+}
+
 .bootstrap-enabled .search input[type=text] {
   padding-right: 26px;
+  width: 165px;
 }
+
+/* Search Options Button & Dropdown */
+
 .bootstrap-enabled .search button.inset {
-  border: none;
-  box-shadow: none;
-  background: transparent;
   position: relative;
   right: 26px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
   z-index: 9;
 }
+
 .bootstrap-enabled .search .dropdown-menu {
-  left: -5px;
-  text-align: left;
+  width: 225px;
   padding: 0;
+  margin-top: 15px;
+  text-align: left;
 }
+
+#search a.add-on.dropdown-toggle { border: 1px solid #aaa; }
+
+#search a.add-on.dropdown-toggle:hover {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+#search a.add-on.dropdown-toggle:active {
+  border: 1px solid #ccc;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,.02)), to(rgba(0,0,0,.1)));
+  background: linear-gradient(to bottom, rgba(0,0,0,.02), rgba(0,0,0,.1));
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.bootstrap-enabled .search.dropdown.arrowed .dropdown-menu:before { left: 5px; }
+
 .bootstrap-enabled .search.dropdown.arrowed .dropdown-menu:after {
+  left: 6px;
   border-bottom-color: #eee;
 }
-.bootstrap-enabled .search .dropdown-menu ul {
-  margin-left: 0;
+
+.bootstrap-enabled .search .dropdown-menu ul { margin-left: 0; }
+
+.bootstrap-enabled .border-left {
+  padding-left: 20px;
+  border-left: 2px groove rgba(240, 240, 240, 0.3);
 }
+
 .bootstrap-enabled .search .dropdown-menu #sessions,
 .bootstrap-enabled .search .dropdown-menu #search_in {
   float: none;
-  border-left: none;
   width: auto;
   min-width: 180px;
   min-height: 0;
+  border-left: none;
 }
 
-.bootstrap-enabled .border-left {
-  border-left: 2px groove rgba(240, 240, 240, 0.3);
-  padding-left: 20px;
+#search_in p, #sessions p{
+  padding: 10px 20px;
+  font-size: 13px;  
+}
+
+#sessions label, #search_in label {
+  padding: 1px 10px;  
+  font-size: 13px;
+}
+
+#search_in p{
+  border-top-left-radius: 4px;   
+  border-top-right-radius: 4px;  
 }
 .bootstrap-enabled .search #autocomplete-spin {
   margin-left: 0;

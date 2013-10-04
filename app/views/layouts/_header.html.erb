@@ -29,8 +29,8 @@
                             </p>
                         <% else %>
                             <div class="dropdown login arrowed">
-                                <%= link_to "Register", {:controller => 'account', :action => 'login'}, { :class => "btn large btn-primary" } %>
-                                <a href="#" class="btn large dropdown-toggle" data-toggle="dropdown">
+                                <%= link_to "Register", {:controller => 'account', :action => 'login'}, { :class => "btn large btn-primary", :id => "register-btn"} %>
+                                <a href="#" class="btn large dropdown-toggle" id="login-btn" data-toggle="dropdown">
                                     Login
                                 </a>
                                 <div class="dropdown-menu">
@@ -43,7 +43,6 @@
                                         </fieldset>
                                         <a href="/account/forgot_password">Forgot Password?</a>
                                     </form>
-                                    <hr>
                                     <%= fb_connect_async_js %>
                                     <%= fb_login_and_redirect(request.url, {:text => 'Login with Facebook', :scope => 'email'}) %>
                                     <a href="/login">Login with your OpenID</a>
@@ -90,14 +89,14 @@
             <div id="search">
                 <div class="search input-prepend dropdown arrowed">
                     <a href="#" class="add-on dropdown-toggle" data-toggle="dropdown"><i class="icon-cog hide-text">Advanced Options</i></a>
-                    <input name="q" class="span3" id="search-field" type="text" value="<%= @query.blank? ? '' : @query %>" />
+                    <input name="q" class="span3" id="search-field" type="text" value="<%= @query.blank? ? '' : @query %>" placeholder="Search" />
                     <button class="add-on inset"><i class="icon-search hide-text">Search</i></button>
                     <span id="autocomplete-spin" class="add-on" style="display: none;">
                         <%= image_tag 'spin.gif', :alt => 'Working...' %>
                     </span>
                     <div class="dropdown-menu">
                         <div id="search_in">
-                            <p>Search in:</p>
+                            <p>Search in</p>
                             <ul class="search-options">
                                 <li><label><input checked="checked" name="search_bills" type="checkbox" value="1" /> Bills</label></li>
                                 <li><label><input checked="checked" name="search_people" type="checkbox" value="1" /> Congresspeople</label></li>
@@ -107,7 +106,7 @@
                             </ul>
                         </div>
                         <div id="sessions">
-                            <p>Sessions:</p>
+                            <p>Sessions</p>
                             <ul class="search-options">
                                 <% Settings.available_congresses.each do |c| %>
                                     <li><label><%= check_box_tag "search_congress[#{c}]", "#{c}", c == Settings.default_congress ? true : false %> <%= c.ordinalize %> Congress</label></li>

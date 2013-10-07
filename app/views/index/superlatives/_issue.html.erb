@@ -1,0 +1,14 @@
+<a href="">
+<div class="media superlative two-up">
+    <div class="media-body">
+        <h4><%= issue.term rescue nil %></h4>
+        <p class="stats">
+            <% if superlative == :popular %>
+                <strong><%= issue.page_views_count %></strong> views
+            <% else %>
+                <%= pluralize(issue.bill_count, 'Bill') %>
+            <% end %>
+        </p>
+    </div>
+</div>
+</a>

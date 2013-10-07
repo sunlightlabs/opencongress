@@ -20,6 +20,8 @@ class RollCall < ActiveRecord::Base
   }
   scope :on_passage, lambda { where("question ILIKE 'On Passage%' OR question ILIKE 'On Motion to Concur in Senate%' OR question ILIKE 'On Concurring%'") }
 
+  default_scope order("date ASC")
+
   with_options :class_name => 'RollCallVote' do |rc|
     rc.has_many :aye_votes, :conditions => { :roll_call_votes => { :vote => ['Aye', 'Yea', '+'] } }
     rc.has_many :nay_votes, :conditions => { :roll_call_votes => { :vote => ['No', 'Nay', '-' ] } }
@@ -47,6 +49,39 @@ class RollCall < ActiveRecord::Base
     'On Agreeing to the Amendment'
   ]
 
+  @@PASSAGES = [
+    "agreed to",
+    "amendment agreed to",
+    "amendment germane",
+    "bill passed",
+    "cloture motion agreed to",
+    "concurrent resolution agreed to",
+    "conference report agreed to",
+    "decision of chair sustained",
+    "joint resolution passed",
+    "motion agreed to",
+    "motion to proceed agreed to",
+    "motion to reconsider agreed to",
+    "motion to table agreed to",
+    "nomination confirmed",
+    "passed",
+    "resolution agreed to",
+    "veto overridden",
+  ]
+  @@FAILURES = [
+    "amendment rejected",
+    "bill defeated",
+    "cloture motion rejected",
+    "cloture on the motion to proceed rejected",
+    "failed",
+    "joint resolution defeated",
+    "motion rejected",
+    "motion to recommit rejected",
+    "motion to table failed",
+    "motion to table motion to recommit rejected",
+    "resolution rejected",
+  ]
+
   def self.passage_types
     (@@BILL_PASSAGE_TYPES + @@AMDT_PASSAGE_TYPES).flatten
   end
@@ -65,6 +100,19 @@ class RollCall < ActiveRecord::Base
       self.democratic_position = true
     end
     self.save
+  end
+
+  def boolean_result
+    return true if @@PASSAGES.include? result.downcase or result =~ /passed|agreed to/i
+    return false if @@FAILURES.include? result.downcase or result =~ /rejected|defeated|failed/i
+  end
+
+  def passed?
+    boolean_result == true
+  end
+
+  def failed?
+    boolean_result == false
   end
 
   def atom_id

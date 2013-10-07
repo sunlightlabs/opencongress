@@ -83,6 +83,9 @@ class Bill < ActiveRecord::Base
 
   scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
   scope :major, where(:is_major => true)
+  scope :recently_acted, includes(:bill_titles, :actions).order("actions.date DESC")
+  scope :for_session, lambda {|sess| where("bills.session = ?", sess)}
+  scope :for_type, lambda {|type| where("bills.type = ?", @@TYPES[type])}
 
   @@DISPLAY_OBJECT_NAME = 'Bill'
 

@@ -1,0 +1,17 @@
+<a href="">
+<div class="media superlative two-up">
+    <span class="pull-left"><img alt="<%=h bill.title_common %>" class="media-object" src="/images/bill.png"></span>
+    <div class="media-body">
+        <h4><%= bill.typenumber %>&mdash;<span><%= truncate(bill.title_common, :length => 50) rescue nil %></h4>
+        <p class="stats">
+            <% if superlative == :popular %>
+                <strong><%= pluralize(bill.page_views_count, 'view') %></strong>
+                <span class="pull-right muted">Introduced <%= Time.at(bill.introduced).to_s :short %></span>
+            <% else %>
+                <% action = bill.actions.last %>
+                <%= "#{action.text} #{action.datetime.to_s :long}" %>
+            <% end %>
+        </p>
+    </div>
+</div>
+</a>

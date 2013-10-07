@@ -320,18 +320,40 @@
         // get local reps
         $.getJSON('/index/localized_search_placeholder.json', function(data){
             if(data.legislators.length){
-                var placeholder = [];
+                var target = $('#main_search'),
+                    items = [],
+                    old_placeholder = target.attr('placeholder'),
+                    new_placeholder = '',
+                    rand_btw = function(low, high){
+                        return Math.min(high, Math.max(low, Math.random()* ((low + high) / 2) ));
+                    }
+                    recursive_type = function(el, attr, dest, cb){
+                        var current = $(el).attr(attr),
+                            next;
+                        if(current == dest){
+                            if(cb){
+                                return cb();
+                            }
+                            return;
+                        }
+                        next = current.length > dest.length ? current.slice(0, current.length-1) : dest.slice(0, current.length+1);
+                        $(el).attr(attr, next);
+                        setTimeout(function(){ recursive_type(el, attr, dest, cb) }, rand_btw(50, 200));
+                    }
                 $(data.legislators).each(function(i, leg){
-                    placeholder.push(leg.firstname + ' ' + leg.lastname);
+                    items.push(leg.firstname + ' ' + leg.lastname);
                 });
-                $('#main_search').attr('placeholder', placeholder.join(', '));
+                new_placeholder = items.join(', ');
+                if(new_placeholder.length){
+                    recursive_type(target, 'placeholder', '', function(){
+                        recursive_type(target, 'placeholder', new_placeholder);
+                    });
+                }
             }
         });
     });
 })(jQuery)
 </script>
-<script type="text/javascript" src="//use.typekit.net/xev8qlf.js"></script>
-<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 <% end %>
 
 <div id="content" class="bootstrap-enabled">
@@ -354,7 +376,7 @@
 
                 <div id="in_session">
                     <h4 class="inset">Today in Congress</h4>
-                    <small><%= @updated_at.to_s :month_day %></small>
+                    <small><%= @updated_at.to_s(:month_day) %></small>
                     <ul class="status-lights">
                         <%= session_li('house', @sessions[:house_session]) %>
                         <%= session_li('senate', @sessions[:senate_session])%>

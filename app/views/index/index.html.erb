@@ -131,7 +131,7 @@
             <span class="votes"><span class="aye">Ayes</span> <%= r.ayes %>&nbsp;&nbsp;&nbsp;<span class="nay">Nays</span> <%= r.nays %></span>
             <span class="date"><%= r.date.strftime("%b %d, %Y") %></span>
 
-            <span class="type"><%= get_result_image(r.result) %> <%= r.roll_type %></span>
+            <span class="type"><%= get_result_image(r) %> <%= r.roll_type %></span>
 
           </a>
         </li>

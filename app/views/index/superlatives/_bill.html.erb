@@ -1,15 +1,16 @@
-<a href="<%= url_for :controller => 'bill', :action => 'show', :id => bill.ident %>">
+<a href="<%= url_for :controller => 'bill', :action => 'show', :id => bill.ident %>" title="<%=h bill.title_full_common %>">
 <div class="media superlative two-up">
     <span class="pull-left"><img alt="<%=h bill.title_common %>" class="media-object" src="/images/bill.png"></span>
     <div class="media-body">
-        <h4><%= bill.typenumber %>&mdash;<span><%= truncate(bill.title_common, :length => 50) rescue nil %></h4>
+        <h4><%= bill.typenumber %>&mdash;<span><%= truncate(bill.title_common, :length => 40) rescue nil %></h4>
         <p class="stats">
             <% if superlative == :popular %>
                 <strong><%= pluralize(bill.page_views_count, 'view') %></strong>
                 <span class="pull-right muted">Introduced <%= Time.at(bill.introduced).to_s :short %></span>
             <% else %>
                 <% action = bill.last_action %>
-                <%= "#{until_preposition(action.text)}, #{action.datetime.to_s :short}" %>
+                <strong><%= until_preposition(action.text) %></strong>
+                <span class="pull-right muted"><%= action.datetime.to_s :short %></span>
             <% end %>
         </p>
     </div>

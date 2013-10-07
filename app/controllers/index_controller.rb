@@ -120,6 +120,10 @@ class IndexController < ApplicationController
     if geoip
       @legislators = Person.in_state(geoip.state).where("district = ? or title = 'Sen.'", geoip.district.to_s).all
     end
+    ## Uncomment below for demo results
+    # if @legislators.empty?
+    #   @legislators = ObjectAggregate.popular('Person', Settings.default_count_time, 3)
+    # end
     respond_to do |format|
       format.json { render :json => {:legislators => @legislators.as_json(:only => [:bioguideid, :firstname, :lastname, :state, :district])}}
     end

@@ -1,4 +1,4 @@
-<a href="">
+<a href="<%= path_for :controller => 'bill', :action => 'show', :id => bill.ident %>">
 <div class="media superlative two-up">
     <span class="pull-left"><img alt="<%=h bill.title_common %>" class="media-object" src="/images/bill.png"></span>
     <div class="media-body">
@@ -8,8 +8,8 @@
                 <strong><%= pluralize(bill.page_views_count, 'view') %></strong>
                 <span class="pull-right muted">Introduced <%= Time.at(bill.introduced).to_s :short %></span>
             <% else %>
-                <% action = bill.actions.last %>
-                <%= "#{action.text} #{action.datetime.to_s :long}" %>
+                <% action = bill.last_action %>
+                <%= "#{until_preposition(action.text)}, #{action.datetime.to_s :short}" %>
             <% end %>
         </p>
     </div>

@@ -1,4 +1,4 @@
-<a href="">
+<a href="<%= path_for :controller => :people, :action => :show, :id => person.id %>">
 <div class="media superlative two-up">
     <span class="pull-left"><img alt="<%=h person.full_name %>" class="media-object" src="<%= person.photo_path(:thumb) %>"></span>
     <div class="media-body">

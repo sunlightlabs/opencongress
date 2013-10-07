@@ -7,8 +7,8 @@
         font-weight: 400;
     }
 
-    .two-up { width: 46%; box-sizing: border-box; float: left; }
-    .two-up:nth-child(even) { margin-right: 4%; }
+    .two-up { width: 46%; box-sizing: border-box; -moz-box-sizing:border-box; float: left; }
+    .two-up:nth-of-child(even) { margin-right: 4%; }
 
     #hero {
         height: 435px;
@@ -115,43 +115,194 @@
     ul.status-lights li.off:before { background: #d05b5b; }
 
     #belt {
+        position: relative;
         background: #72919d;
     }
 
     #belt h2 {
-        font-weight: 300;
+        font-weight: 400;
         font-style: normal;
         font-size: 24px;
     }
 
-    .announcement {
-        width: 250px;
-        height: 220px;
+    .bootstrap-enabled .span4.announcement {
+        position: absolute;
+        top: -17px;
+        left: -10px;
+        width: 330px;
+        height: 280px;
         padding: 20px 30px;
-        border: 1px dotted #fff;
         background: #efc20d;
-        font-weight: 300;
-        color: #666;
+        font-weight: 300;  
+        font-size: 14px;
+        line-height: 150%;
+        color: #555;
+    }
+
+    .bootstrap-enabled .span4.announcement:before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 312px;
+        height: 262px;
+        border: 1px dotted #fbdc5f;
     }
 
     .announcement h2 {
         padding-bottom: 10px;
         margin-bottom: 10px;
-        border-bottom: 3px double rgba(255,255,255, .5);
+        border-bottom: 4px double rgba(255,255,255, .5);
         line-height: 120%;
         color: #fff;
     }
 
-    #superlatives h3 { text-align: center; }
+    a.more{
+        background: none;
+        font-weight: 300;
+        font-size: 16px;
+        color: #fff;
+        text-decoration: underline;
+    }
 
-    .superlative { background: #fff; }
+    .bootstrap-enabled .span8.call-to-action {
+        position: relative;
+        height: 237px;
+        padding: 30px 0 0 40px;
+    }
+    .bootstrap-enabled .span8.call-to-action:before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -27px;
+        width: 681px;
+        height: 230px;
+        border: 2px solid #82a0af;
+        border-left: 0;
+        border-right: 0;
+    }
+    .bootstrap-enabled .span8.call-to-action h2 {
+        color: #cee7ff;
+    }
 
+    .bootstrap-enabled .span8.call-to-action p {
+        display: inline-block;
+        width: 325px;
+        font-weight: 300;
+        font-size: 18px;
+        line-height: 120%;
+        color: #fff;
+    }
+
+    #signup-btn {
+        position: relative;
+        top: -30px;
+        left: 15px;
+        width: 200px;
+        height: 52px;
+        padding: 0;
+        border: 0;
+        border-bottom: 3px solid #447cac;
+        background: #50a4ed;
+        font-size: 20px;
+        line-height: 52px;
+        color: #fff;
+        text-shadow: 0 -1px rgba(0,0,0,.25);
+    }
+    #signup-btn:before {
+        content: '';
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 190px;
+        height: 43px;
+        border: 1px solid rgba(255,255,255,.15);        
+        border-radius: 2px;
+    }
+    #superlatives {
+        padding-top: 20px;
+        background: #edf4f6;
+    }
+    #superlatives h3 {
+        margin-top: 50px;
+        font-weight: 400;
+        font-size: 20px;
+        text-align: center;
+        text-shadow: 0px 1px #fff;
+        color: #666;
+        /*position: relative;*/
+        background: #fff;
+        display: block;
+        margin: 50px auto 0;
+    }  
+
+    #superlatives h3.recent-activity { width: 410px;}
+    #superlatives h3.most-viewed { width: 375px;}
+
+    #superlatives h3:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 925px;
+        height: 1px;
+        border: 1px solid #999;
+    }
+
+    #superlatives h4 {
+        font-weight: 400;
+        font-size: 16px;
+        color: #448ccb;
+    }    
+    #superlatives option {
+        text-transform: none;
+    }
+    .superlative {
+        box-sizing: border-box;
+        -moz-box-sizing:border-box;
+        padding: 5px 20px;
+        background: #fff;
+    }
+    
     #content_footer {
         height: 190px;
         background: #cedcdf;
     }
 
-    .icbiaselect-display { border: 1px solid #ccc; }
+    .icbiaselect-display {
+        width: 210px;
+        border: 1px solid #ccc;
+        padding-left: 8px;
+        border-radius: 3px;
+        margin-left: 4px;
+        line-height: 32px;
+        display: inline-block;
+        text-align: left;
+        background: #fff;
+        position: relative;
+        color: #666;
+    }
+    .icbiaselect-display:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 30px;
+        height: 32px;
+        background: #d6effe url('../images/icon-dropdown.png') 8px 13px no-repeat;
+        border-radius: 3px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    #updated {
+        display: block;
+        margin: auto;
+    }    
+    #updated p {
+        text-align: center;
+        color: #aaa;
+    }
+    #updated p:before { content: "\2014  ";}
+    #updated p:after { content: " \2014";}
 
 </style>
 <% end %>
@@ -216,13 +367,13 @@
         <div class="row-fluid">
             <div class="span4 announcement">
                 <h2>Hello! From the<br> Sunlight Foundation</h2>
-                <p>The Sunlight Foundation is now the sole operator of OpenCongress. This site will continue to be a comprehensive, nonpartisan source for whatS happening in the United States Congress.</p>
-                <a class="more" href="http://sunlightfoundation.com/about">Learn more about Sunlight &raquo;</a>
+                <p>The Sunlight Foundation is now the sole operator of OpenCongress. This site will continue to be a comprehensive, nonpartisan source for what's happening in the United States Congress.</p>
+                <a class="more" href="http://sunlightfoundation.com/about">Learn more about Sunlight</a>
             </div>
-            <div class="span8 call-to-action">
+            <div class="span8 pull-right call-to-action">
                 <h2>Track Bills, Follow Lawmakers and More</h2>
                 <p>Create an OpenCongress account to get updates on lawmaking activity, bills and votes, and connect with other users on issues you care about.</p>
-                <div class="btn huge primary">Sign Up Now</div>
+                <div id="signup-btn" class="btn huge primary">Sign Up Now</div>
             </div>
         </div>
     </div>

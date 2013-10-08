@@ -88,7 +88,7 @@ class Person < ActiveRecord::Base
       photo_path = "photos/thumbs_102/#{id}.png" # :full
     end
 
-    if missing == :ignore_missing or File.exists?(File.join(Rails.root, 'public', 'images', photo_path))
+    if missing == :ignore_missing || File.exists?(File.join(Rails.root, 'public', 'images', photo_path))
       return photo_path
     else
       return "missing-#{style}.png"

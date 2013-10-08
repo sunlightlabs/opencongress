@@ -235,7 +235,7 @@ class ApplicationController < ActionController::Base
     end
 
     respond_to do |format|
-      format.html { render :file => "public/404.html", :status => :not_found }
+      format.html { render :file => "public/404.html", :status => :not_found, :layout => false }
       format.xml  { head :not_found }
       format.any  { head :not_found }
     end

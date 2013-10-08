@@ -277,11 +277,10 @@ class RollCallController < ApplicationController
                            .where(:where => chamber_name,
                                   :number => params[:number].to_i).first
       if @roll_call.nil?
-        flash[:warning] = "No such roll call."
         render_404 and return
       end
     else
-      notfound
+      render_404 and return
     end
 
     if @roll_call

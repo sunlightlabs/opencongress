@@ -171,6 +171,16 @@ class RollCall < ActiveRecord::Base
     DateTime.parse((doc/'table[@style="font-size: 90%"]').search("nobr")[1].inner_html)
   end
 
+  def display_title
+    if bill && (not bill.title_common.empty?)
+      bill.title_common
+    elsif not title.nil?
+      title
+    else
+      ""
+    end
+  end
+
   def short_identifier
     if self.amendment
        self.amendment.display_number

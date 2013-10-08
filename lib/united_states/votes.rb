@@ -73,7 +73,8 @@ module UnitedStates
       # No idea where these are set
       # roll_call.democratic_position
       # roll_call.republican_position
-      roll_call.title = rc_hash['question'][0..254]
+      roll_call.question = rc_hash['question'][0..254]
+      roll_call.title = nil if roll_call.title == roll_call.question
       roll_call.updated = rc_hash['+updated_at']
       roll_call.filename = rc_hash['source_url']
       roll_call.save! if roll_call.changed?
@@ -95,9 +96,8 @@ module UnitedStates
         else
           OCLogger.log "Roll call #{roll_call.number} references unrecognized bill #{rc_hash['bill']['type']}#{rc_hash['bill']['number']}"
         end
-
-        import_roll_call_votes rc_hash
       end
+      import_roll_call_votes rc_hash
     end
 
     def import_roll_call_votes (rc_hash)

@@ -173,9 +173,9 @@ class RollCall < ActiveRecord::Base
 
   def display_title
     if bill && (not bill.title_common.empty?)
-      bill.title_common
-    elsif not title.nil?
-      title
+      bill.title_official
+    elsif not question.nil?
+      question
     else
       ""
     end

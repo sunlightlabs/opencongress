@@ -33,8 +33,6 @@
     <%= javascript_include_tag 'ie8/IE8' %>
     <![endif]-->
 
-    <%= yield :stylesheets %>
-
     <script type="text/javascript">
      // Disable and pause carousel autoscrolling
      function mycarousel_initCallback(a){a.buttonNext.bind("click",function(){a.startAuto(0)});a.buttonPrev.bind("click",
@@ -63,6 +61,5 @@
     <%= render :partial => 'shared/analytics_foot' %>
     <%= javascript_include_tag "//assets.sunlightfoundation.com.s3.amazonaws.com/social/scripts/simple-socialite-pack.min.js" %>
 
-    <%= yield :javascripts %>
   </body>
 </html>

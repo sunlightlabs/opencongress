@@ -265,8 +265,6 @@ OpenCongress::Application.routes.draw do
 
   match '/donate' => redirect('http://sunlightfoundation.com/about/funding/')
 
-  # root :to => 'index#index', :as => :home
-  # Dev homepage
-  root :to => 'index#new', :as => :home
+  root :to => 'index#index', :as => :home
 
 end

@@ -1,6 +1,5 @@
 <a href="<%= url_for :controller => 'bill', :action => 'show', :id => bill.ident %>" title="<%=h bill.title_full_common %>">
-<div class="media superlative two-up">
-    <span class="pull-left"><img alt="<%=h bill.title_common %>" class="media-object" src="/images/bill.png"></span>
+<div class="media superlative bill two-up">
     <div class="media-body">
         <h4><%= bill.typenumber %>&mdash;<span><%= truncate(bill.title_common, :length => 40) rescue nil %></h4>
         <p class="stats">

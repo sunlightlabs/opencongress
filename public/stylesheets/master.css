@@ -6029,6 +6029,9 @@ span.yellow-star {
 /* site chrome tweaks from homepage redesign */
 /* ========================================= */
 
+/* Link color */
+.bootstrap-enabled a { color: #448ccb;}
+
 /* Logo Position fix */
 a.logo { background: url('../images/oc-logo.png') no-repeat 0px 6px; }
 a.logo:hover { background-position: 0px -100px; }

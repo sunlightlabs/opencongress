@@ -219,8 +219,14 @@
         border-radius: 2px;
     }
     #superlatives {
-        padding-top: 20px;
-        background: #edf4f6;
+        padding: 20px 0 50px;
+        background: #f5f5f5;
+        opacity: 1;
+    }
+
+    #superlatives .loading {
+        transition: opacity 200ms ease;
+        opacity: .4;
     }
     #superlatives h3 {
         margin-top: 50px;
@@ -230,25 +236,29 @@
         text-shadow: 0px 1px #fff;
         color: #666;
         display: block;
-        margin: 50px auto 0;
+        margin: 50px auto 30px;
+        text-transform: uppercase;
+        background: #edf4f6;
     }
 
     #superlatives h3.recent-activity { width: 410px;}
     #superlatives h3.most-viewed { width: 375px;}
 
-    #superlatives h3:after {
+    #superlatives h3:before {
         content: '';
-        position: absolute;
-        left: 0;
+        position: relative;
+        top: 20px;
+        display: block;
+        margin: auto;
         width: 925px;
-        height: 1px;
+        height: 0px;
         border: 1px solid #999;
     }
-
     #superlatives h4 {
         font-weight: 400;
         font-size: 16px;
         color: #448ccb;
+        margin-top: 18px;
     }
     #superlatives option {
         text-transform: none;
@@ -256,13 +266,35 @@
     .superlative {
         padding: 5px 20px;
         background: #fff;
-        margin: 20px 0 20px 20px;        
+        margin: 21px 0 21px 21px;        
+    }
+    .superlative:hover {
+        transition: background 150ms ease;
+        background: #f7fbff;   
+    }
+    .superlative.vote {
+        padding-left: 45px;
+        background-image: url('../images/icon-checkmark.png');
+        background-repeat: no-repeat;
+    }
+    #superlatives .superlative.vote h4 {
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+    .superlative.vote .detail {
+        color: #666;
+        margin-bottom: 6px;
+    }
+    .superlative .stats strong {
+        color: #666;
     }
 
-    #content_footer {
-        height: 190px;
-        background: #cedcdf;
-    }
+
+    .superlative.person .stats  {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }  
 
     .icbiaselect-display {
         width: 210px;
@@ -277,6 +309,7 @@
         position: relative;
         color: #666;
     }
+
     .icbiaselect-display:after {
         content: '';
         position: absolute;
@@ -289,16 +322,26 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }
-    #updated {
-        display: block;
-        margin: auto;
+    
+    #content_footer {
+        height: 180px;
+        background: #cedcdf;
+        padding-left: 45px;
+        font-size: 14px;
+        color: #666; 
+        line-height: 150%;
     }
-    #updated p {
-        text-align: center;
-        color: #aaa;
+    #content_footer h2 {
+        margin: 30px 0 15px;
+        font-size: 24px;
+        color: #fff;
+        font-weight: 400;
     }
-    #updated p:before { content: "\2014  ";}
-    #updated p:after { content: " \2014";}
+    #content_footer .phones {
+        position: relative;
+        bottom: 30px;
+        left: 50px;
+    }
 
 </style>
 <% end %>
@@ -405,6 +448,7 @@
                             <option value="/index/hp_recent?type=votes" selected>Votes</option>
                         </select>
                     </h3>
+                    <hr>
                 </div>
             </div>
             <div class="row-fluid">
@@ -439,7 +483,7 @@
                 <p>Download Sunlight's Congress app for <a href="">Android</a> and <a href="">iOS</a> devices to learn more about your elected representatives, get in touch with them and see what they're up to. Follow the latest conressional bills, see floor activity and explore votes from the palm of your hand.</p>
             </div>
             <div class="span5">
-                <a href="" class="phones"><img src="" alt="Screenshots of Congress apps for Android and iOS"></a>
+                <a href="" class="phones"><img src="../images/congress-apps.png" alt="Screenshots of Congress apps for Android and iOS"></a>
             </div>
         </div>
     </div>

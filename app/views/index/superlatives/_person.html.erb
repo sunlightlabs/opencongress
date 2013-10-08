@@ -1,12 +1,13 @@
 <a href="<%= url_for :controller => :people, :action => :show, :id => person.id %>">
-<div class="media superlative two-up">
-    <span class="pull-left"><img alt="<%=h person.full_name %>" class="media-object" src="<%= person.photo_path(:thumb) %>"></span>
+<div class="media superlative person two-up" style="background-image: url('http://www.opencongress.org/images/photos/thumbs_102/300047.png');">
+    <!-- <span class="pull-left hide-text" style="background-image:url(/images/<%= person.photo_path(:thumb) %>);"><%= person.full_name %></span> -->
+    <span class="pull-left hide-text" style="background: url('http://www.opencongress.org/images/photos/thumbs_102/300047.png';"><%= person.full_name %></span>
     <div class="media-body">
         <h4><%= person.full_name rescue nil %></h4>
         <p class="stats">
             <span class="muted"><%= person.party %>, <%= State::STATE_FOR_ABBREV[person.state] rescue "" %></span>
             <% if superlative == :popular %>
-                <strong class="pull-right muted"><%= person.page_views_count %></strong> views
+                <strong class="pull-right muted"><%= person.page_views_count %> views</strong>
             <% end %>
         </p>
     </div>

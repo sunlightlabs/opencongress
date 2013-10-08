@@ -266,11 +266,11 @@
     .superlative {
         padding: 5px 20px;
         background: #fff;
-        margin: 21px 0 21px 21px;        
+        margin: 21px 0 21px 21px;
     }
     .superlative:hover {
         transition: background 150ms ease;
-        background: #f7fbff;   
+        background: #f7fbff;
     }
     .superlative.vote {
         padding-left: 45px;
@@ -294,7 +294,7 @@
         width: 100%;
         padding: 0;
         margin: 0;
-    }  
+    }
 
     .icbiaselect-display {
         width: 210px;
@@ -322,13 +322,13 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }
-    
+
     #content_footer {
         height: 180px;
         background: #cedcdf;
         padding-left: 45px;
         font-size: 14px;
-        color: #666; 
+        color: #666;
         line-height: 150%;
     }
     #content_footer h2 {
@@ -414,8 +414,7 @@
                 </form>
 
                 <div id="in_session">
-                    <h4 class="inset">Today in Congress</h4>
-                    <small><%= @updated_at.to_s(:month_day) %></small>
+                    <h4 class="inset">Today in Congress &ndash; <%= @updated_at.to_time.to_s :month_day %></h4>
                     <ul class="status-lights">
                         <%= session_li('house', @sessions[:house_session]) %>
                         <%= session_li('senate', @sessions[:senate_session])%>

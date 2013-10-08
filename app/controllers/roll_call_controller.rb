@@ -295,8 +295,7 @@ class RollCallController < ApplicationController
   def roll_call_shared
     @master_chart = ofc2(400,220, "roll_call/master_piechart_data/#{@roll_call.id}")
 
-    @page_title = @roll_call.title.blank? ? "" : "#{@roll_call.title} - "
-    @page_title += "#{@roll_call.chamber} Roll Call ##{@roll_call.number} Details"
+    @page_title = "#{@roll_call.chamber} Roll Call ##{@roll_call.number} Details: #{@roll_call.display_title}"
 
     @title_desc = SiteText.find_title_desc('roll_call_show')
   end

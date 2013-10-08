@@ -3,7 +3,7 @@
     .bootstrap-enabled strong { font-weight: 500; }
 
     #content {
-        font-family: "franklin-gothic-urw", sans-serif;
+        font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
         font-weight: 400;
     }
 
@@ -113,6 +113,8 @@
     ul.status-lights li.on:before { background: #afe075; }
     ul.status-lights li.off:before { background: #d05b5b; }
 
+    /* Sunlight Takeover and Call-to-action */
+
     #belt {
         position: relative;
         background: #72919d;
@@ -180,9 +182,8 @@
         border-left: 0;
         border-right: 0;
     }
-    .bootstrap-enabled .span8.call-to-action h2 {
-        color: #cee7ff;
-    }
+
+    .bootstrap-enabled .span8.call-to-action h2 { color: #cee7ff;}
 
     .bootstrap-enabled .span8.call-to-action p {
         display: inline-block;
@@ -218,6 +219,9 @@
         border: 1px solid rgba(255,255,255,.15);
         border-radius: 2px;
     }
+
+    /* Superlative Section */
+
     #superlatives {
         padding: 20px 0 50px;
         background: #f5f5f5;
@@ -228,6 +232,9 @@
         transition: opacity 200ms ease;
         opacity: .4;
     }
+
+    /* Superlative Header, Rule and Dropdown */
+
     #superlatives h3 {
         margin-top: 50px;
         font-weight: 400;
@@ -238,63 +245,35 @@
         display: block;
         margin: 50px auto 30px;
         text-transform: uppercase;
-        background: #edf4f6;
     }
 
-    #superlatives h3.recent-activity { width: 410px;}
-    #superlatives h3.most-viewed { width: 375px;}
-
-    #superlatives h3:before {
-        content: '';
+    #superlatives h3 span.rule {
         position: relative;
-        top: 20px;
-        display: block;
-        margin: auto;
-        width: 925px;
+    }
+
+    #superlatives h3 span.rule:before,
+    #superlatives h3 span.rule:after {
+        content: "";
+        position: absolute;
         height: 0px;
-        border: 1px solid #999;
-    }
-    #superlatives h4 {
-        font-weight: 400;
-        font-size: 16px;
-        color: #448ccb;
-        margin-top: 18px;
-    }
-    #superlatives option {
-        text-transform: none;
-    }
-    .superlative {
-        padding: 5px 20px;
-        background: #fff;
-        margin: 21px 0 21px 21px;        
-    }
-    .superlative:hover {
-        transition: background 150ms ease;
-        background: #f7fbff;   
-    }
-    .superlative.vote {
-        padding-left: 45px;
-        background-image: url('../images/icon-checkmark.png');
-        background-repeat: no-repeat;
-    }
-    #superlatives .superlative.vote h4 {
-        margin-top: 10px;
-        margin-bottom: 0;
-    }
-    .superlative.vote .detail {
-        color: #666;
-        margin-bottom: 6px;
-    }
-    .superlative .stats strong {
-        color: #666;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #fff;
+        top: 10px;
+        width: 252px;
     }
 
+    #superlatives h3.most-viewed span.rule:before,
+    #superlatives h3.most-viewed span.rule:after { width: 276px;}
 
-    .superlative.person .stats  {
-        width: 100%;
-        padding: 0;
-        margin: 0;
-    }  
+    #superlatives h3 span.rule:before {
+        right: 100%;
+        margin-right: 10px;
+    }   
+
+    #superlatives h3 span.rule:after {
+        left: 100%;
+        margin-left: 10px;
+    }
 
     .icbiaselect-display {
         width: 210px;
@@ -322,6 +301,92 @@
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }
+
+    #superlatives option {
+        text-transform: none;
+    }
+
+    .superlative h4 {
+        font-weight: 400;
+        font-size: 16px;
+        color: #448ccb;
+        margin-top: 18px;
+    }
+
+    
+    /* General Superlatives */
+
+    .superlative {
+        padding: 5px 20px;
+        background: #fff;
+        margin: 21px 0 21px 21px;        
+    }
+
+    .superlative:hover {
+        transition: background-color 150ms ease;
+        background-color: #f7fbff;   
+    }
+
+    /* Votes Superlatives */
+
+    .superlative.vote { padding-left: 90px;}
+
+    #superlatives .superlative.vote h4 {
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+    
+    #superlatives .superlative.vote.passed {
+        background-image: url('../images/icon-checkmark.png');
+        background-repeat: no-repeat;
+        background-position: 22px center;
+    }
+    
+    #superlatives .superlative.vote.failed {
+        background-image: url('../images/icon-x.png');
+        background-repeat: no-repeat;        
+        background-position: 22px center;
+    }
+
+    #superlatives .superlative.vote span.pull-left { display: none;}
+
+    .superlative.vote .detail {
+        color: #666;
+        margin-bottom: 6px;
+    }
+    
+    .superlative .stats strong { color: #666;}
+
+    /* Votes Senators and Reps */
+
+    .superlative.person {
+        position: relative;
+        padding-left: 110px;
+        background-repeat: no-repeat;
+        background-position: left center;
+    }
+    
+    .superlative.person .headshot{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 90px;
+        height: 90px;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
+        filter: gray; /* IE6-9 */
+        -webkit-filter: grayscale(100%);       
+    }    
+    
+    .superlative.person .stats  {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }  
+    
+    /* Congress app callout */
     
     #content_footer {
         height: 180px;
@@ -331,12 +396,14 @@
         color: #666; 
         line-height: 150%;
     }
+    
     #content_footer h2 {
         margin: 30px 0 15px;
         font-size: 24px;
         color: #fff;
         font-weight: 400;
     }
+    
     #content_footer .phones {
         position: relative;
         bottom: 30px;
@@ -443,12 +510,11 @@
             <!-- Recent Activity -->
             <div class="row-fluid">
                 <div class="span12">
-                    <h3>Recent Activity in <select class="ajax-load" data-target="#superlatives_recent">
+                    <h3 class="recent-activity"><span class="rule">Recent Activity in <select class="ajax-load" data-target="#superlatives_recent">
                             <option value="/index/hp_recent?type=bills">Bills</option>
                             <option value="/index/hp_recent?type=votes" selected>Votes</option>
                         </select>
-                    </h3>
-                    <hr>
+                    </span></h3>
                 </div>
             </div>
             <div class="row-fluid">
@@ -459,14 +525,14 @@
             <!-- Most Viewed -->
             <div class="row-fluid">
                 <div class="span12">
-                    <h3>Most Viewed <select class="ajax-load" data-target="#superlatives_popular">
+                    <h3 class="most-viewed"><span class="rule">Most Viewed <select class="ajax-load" data-target="#superlatives_popular">
                             <option value="/index/hp_popular?type=bills">Bills</option>
                             <option value="/index/hp_popular?type=votes">Votes</option>
                             <option value="/index/hp_popular?type=issues">Issues</option>
                             <option value="/index/hp_popular?type=senators">Senators</option>
                             <option value="/index/hp_popular?type=representatives">Representatives</option>
                         </select>
-                    </h3>
+                    </span></h3>
                 </div>
             </div>
             <div class="row-fluid">

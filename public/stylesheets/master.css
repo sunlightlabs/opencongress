@@ -6052,7 +6052,7 @@ a.logo:hover { background-position: 0px -100px; }
   border: 1px solid #d0d0d0;
   border-radius: 3px;
   background: #50a4ed;
-  font-family: 'franklin-gothic-urw';
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
   font-weight: 400;
   font-size: 12px;
   text-shadow: none;
@@ -6080,7 +6080,7 @@ a.logo:hover { background-position: 0px -100px; }
   border: 1px solid #d0d0d0;
   border-radius: 3px;
   background: #666;
-  font-family: 'franklin-gothic-urw';
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
   font-weight: 400;
   font-size: 12px;
   text-shadow: none;
@@ -6140,7 +6140,7 @@ a.logo:hover { background-position: 0px -100px; }
   margin-bottom: 15px;
   border: 1px solid #d0d0d0;
   border-radius: 3px;
-  font-family: 'franklin-gothic-urw';
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
   font-size: 14px;
   color: #444;
 }
@@ -6184,7 +6184,7 @@ a.logo:hover { background-position: 0px -100px; }
   background: #50a4ed;
   -webkit-box-shadow: none;
   box-shadow: none;
-  font-family: 'franklin-gothic-urw';
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
   opacity: 1;
 }
 

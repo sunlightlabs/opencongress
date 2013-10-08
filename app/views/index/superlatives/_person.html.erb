@@ -1,7 +1,6 @@
 <a href="<%= url_for :controller => :people, :action => :show, :id => person.id %>">
-<div class="media superlative person two-up" style="background-image: url('http://www.opencongress.org/images/photos/thumbs_102/300047.png');">
-    <!-- <span class="pull-left hide-text" style="background-image:url(/images/<%= person.photo_path(:thumb) %>);"><%= person.full_name %></span> -->
-    <span class="pull-left hide-text" style="background: url('http://www.opencongress.org/images/photos/thumbs_102/300047.png';"><%= person.full_name %></span>
+<div class="media superlative person two-up">
+    <div class="headshot pull-left hide-text" style="background-image:url(/images/<%= person.photo_path(:thumb) %>);"><%= person.full_name %></div>
     <div class="media-body">
         <h4><%= person.full_name rescue nil %></h4>
         <p class="stats">

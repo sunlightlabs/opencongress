@@ -452,7 +452,9 @@
             </div>
             <div class="row-fluid">
                 <div class="span12" id="superlatives_recent">
-                <%= render :partial => "index/superlatives/vote", :collection => @recent_votes, :as => :vote, :locals => { :superlative => :recent } %>
+                <% @type = 'vote'
+                   @more_url = url_for(:controller => :roll_call, :action => :all) %>
+                <%= render :partial => "superlative", :locals => { :partial => 'index/superlatives/vote', :collection => @recent_votes, :as => :vote, :locals => { :superlative => :recent }} %>
                 </div>
             </div>
             <!-- Most Viewed -->
@@ -470,7 +472,9 @@
             </div>
             <div class="row-fluid">
                 <div class="span12" id="superlatives_popular">
-                <%= render :partial => "index/superlatives/bill", :collection => @popular_bills, :as => :bill, :locals => { :superlative => :popular } %>
+                <% @type = 'bill'
+                   @more_url = url_for(:controller => :bill, :action => :popular) %>
+                <%= render :partial => "superlative", :locals => {:partial => "index/superlatives/bill", :collection => @popular_bills, :as => :bill, :locals => { :superlative => :popular }} %>
                 </div>
             </div>
         </div>

@@ -20,8 +20,6 @@ class RollCall < ActiveRecord::Base
   }
   scope :on_passage, lambda { where("question ILIKE 'On Passage%' OR question ILIKE 'On Motion to Concur in Senate%' OR question ILIKE 'On Concurring%'") }
 
-  default_scope order("date ASC")
-
   with_options :class_name => 'RollCallVote' do |rc|
     rc.has_many :aye_votes, :conditions => { :roll_call_votes => { :vote => ['Aye', 'Yea', '+'] } }
     rc.has_many :nay_votes, :conditions => { :roll_call_votes => { :vote => ['No', 'Nay', '-' ] } }

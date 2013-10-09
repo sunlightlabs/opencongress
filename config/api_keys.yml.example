@@ -18,23 +18,31 @@ defaults: &defaults
   # The Wiki credentials can by found/set in your wiki's LocalSettings.php file.
   wiki_pass: xxx
   wiki_key: xxx
-  wiki_callback_key: xx
+  wiki_callback_key: xxx
   # The Google Maps key must be enabled for Javascript maps v2
   google_maps: xxx
-  airbrake: xxx
+  # Sentry catches and reports application errors
   sentry_dsn: xxx
+  # Postmark sends outbound mail
   postmark: xxx
-  bitly: xxx
-  aws_access_key_id: xxx
-  aws_secret_access_key: xxx
+  # Formageddon powers the contact your rep features
   formageddon_password: xxx
   formageddon_get_replies_key: xxx
+  formageddon_password: xxx
+  formageddon_get_replies_key: xxx
+  # The Phaxio API sends faxes to Members of Congress as a fallback for formageddon
   phaxio_key: xxx
   phaxio_secret: xxx
+  # Akismet catches spam on group and comment posts
   akismet: xxx
+  # Sunlight uses Blue State Digital to manage mailing lists
+  bsd: xxx
+  bitly: xxx
   google_analytics: xxx
   chartbeat_id: xxx
   facebook_app_id: xxx
+  aws_access_key_id: xxx
+  aws_secret_access_key: xxx
 
 development:
   <<: *defaults

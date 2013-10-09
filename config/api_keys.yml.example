@@ -28,8 +28,6 @@ defaults: &defaults
   # Formageddon powers the contact your rep features
   formageddon_password: xxx
   formageddon_get_replies_key: xxx
-  formageddon_password: xxx
-  formageddon_get_replies_key: xxx
   # The Phaxio API sends faxes to Members of Congress as a fallback for formageddon
   phaxio_key: xxx
   phaxio_secret: xxx

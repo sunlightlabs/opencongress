@@ -57,8 +57,9 @@
       <input type="hidden" name="person1" value="<%= @person.id %>">
       <% compare_people = @person.senator? ? Person.senators : Person.voting_representatives %>
       <% compare_people.delete @person %>
-      <%= select_tag "person2", options_from_collection_for_select(compare_people, "id", "select_list_name"), :onchange => "$('person_vote_compare_select').submit();" %>
+      <%= select_tag "person2", options_from_collection_for_select(compare_people, "id", "select_list_name") %>
       <% if @person.representative? %><input type="hidden" name="representatives" value="true"><% end %>
+      <input type="submit" value="Go">
     </form>
   </div>
 <% end %>

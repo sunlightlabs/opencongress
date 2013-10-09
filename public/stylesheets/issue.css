@@ -220,6 +220,6 @@ table.money th, table.money td {
 }
 @media screen {
     #zipcode_lookup:after {
-        top: 125px;
+        top: 96px;
     }
 }

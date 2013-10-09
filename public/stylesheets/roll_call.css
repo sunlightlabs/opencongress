@@ -200,7 +200,7 @@ background-position: -2px 84px;
 #zipcode_lookup:after{
   content: "";
   position: absolute;
-  top: 125px;
+  top: 96px;
   left: 384px;
   height: 427px;
   width: 28px;

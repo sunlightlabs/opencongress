@@ -9,13 +9,13 @@
                 <strong><%= vote.page_views_count %> views</strong>
             <% else %>
                 <% if vote.passed? %>
-                    <strong>Ayes: <%= vote.ayes %></strong> &bull;
+                    <strong class="ayes">Ayes: <%= vote.ayes %></strong>
                     <span class="muted">Nays: <%= vote.nays %></span>
                 <% elsif vote.failed? %>
-                    <span class="muted">Ayes: <%= vote.ayes %></span> &bull;
+                    <span class="muted ayes">Ayes: <%= vote.ayes %></span>
                     <strong>Nays: <%= vote.nays %></strong>
                 <% else %>
-                    <span class="muted">Ayes: <%= vote.ayes %></span> &bull;
+                    <span class="muted">Ayes: <%= vote.ayes %></span>
                     <span class="muted">Nays: <%= vote.nays %></span>
                 <% end %>
             <% end %>

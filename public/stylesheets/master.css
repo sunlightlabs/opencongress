@@ -160,11 +160,11 @@ a.logo{
   padding-top:78px;
   overflow: hidden;
   height: 0;
-  background: url('../images/oc-logo.png') no-repeat 17px 6px;
+  /*background: url('../images/oc-logo.png') no-repeat 17px 6px;*/
   }
 
 a.logo:hover{
-  background: url('../images/oc-logo.png') no-repeat 17px -100px;
+  /*background: url('../images/oc-logo.png') no-repeat 17px -100px;*/
   }
 
 
@@ -6145,34 +6145,13 @@ a.logo:hover { background-position: 0px -100px; }
   color: #444;
 }
 
-.bootstrap-enabled #user_account .dropdown-menu input[type=password]{
-  letter-spacing: -1px;
-}
+.bootstrap-enabled #user_account .dropdown-menu input[type=password]{ letter-spacing: -1px;}
 
-.bootstrap-enabled #user_account .dropdown-menu input::-webkit-input-placeholder { /* WebKit browsers */
-    color: #ccc;
-    letter-spacing: 0;
-}
-
-.bootstrap-enabled #user_account .dropdown-menu input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color: #ccc;
-    letter-spacing: 0;
-}
-
-.bootstrap-enabled #user_account .dropdown-menu input::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color: #ccc;
-    letter-spacing: 0;
-}
-
-.bootstrap-enabled #user_account .dropdown-menu input:-ms-input-placeholder { /* Internet Explorer 10+ */
-    color: #ccc;
-    letter-spacing: 0;    
-}
-
-.bootstrap-enabled #user_account .dropdown-menu input::input-placeholder {
-    color: #ccc;
-    letter-spacing: 0;
-}  
+.bootstrap-enabled #user_account .dropdown-menu input::-webkit-input-placeholder { color: #bbb; letter-spacing: 0;}
+.bootstrap-enabled #user_account .dropdown-menu input:-moz-placeholder { color: #bbb; letter-spacing: 0; opacity: 1;}
+.bootstrap-enabled #user_account .dropdown-menu input::-moz-placeholder { color: #bbb; letter-spacing: 0; opacity: 1;}
+.bootstrap-enabled #user_account .dropdown-menu input:-ms-input-placeholder { color: #bbb; letter-spacing: 0;}
+.bootstrap-enabled #user_account .dropdown-menu input::input-placeholder { color: #bbb; letter-spacing: 0;}  
 
 .bootstrap-enabled .login form button {
   display: inline-block;
@@ -6204,6 +6183,7 @@ a.logo:hover { background-position: 0px -100px; }
 
 
 /* Search */
+/*#search { position: relative;}*/
 
 .bootstrap-enabled #search .search {
   left: 15px;
@@ -6225,6 +6205,12 @@ a.logo:hover { background-position: 0px -100px; }
   padding-right: 26px;
   width: 165px;
 }
+
+.bootstrap-enabled .search input[type=text]::-webkit-input-placeholder { color: #bbb;}
+.bootstrap-enabled .search input[type=text]:-moz-placeholder { color: #bbb; opacity: 1;}
+.bootstrap-enabled .search input[type=text]::-moz-placeholder { color: #bbb; opacity: 1;}
+.bootstrap-enabled .search input[type=text]:-ms-input-placeholder { color: #bbb;}
+.bootstrap-enabled .search input[type=text]::input-placeholder { color: #bbb;}
 
 /* Search Options Button & Dropdown */
 
@@ -6302,11 +6288,129 @@ a.logo:hover { background-position: 0px -100px; }
 .bootstrap-enabled .search #autocomplete-spin {
   margin-left: 0;
   margin-top: 0;
-  right: 22px;
-  background-color: #fff;
+  right: 27px;
+  opacity: 1;
+  border: 0;
+  top: 1px;
+  width: 16px;
+  padding: 4px;
+  background: #fff;
 }
 
+.bootstrap-enabled #search-autocomplete-choices {
+  background: #fff;
+  left: 30px;
+  margin: 0;
+  padding: 0;  
+  border: 1px solid #ccc;
+  font-size: 10px;
+  max-height: 385px;
+  overflow: scroll;  
+  overflow-y: scroll;
+  overflow-x: hidden;  
+  line-height: 18px;
+  margin-top: -1px;
+  width: 197px !important;
+}
 .bootstrap-enabled #search-autocomplete-choices h2 {
   padding: 0 10px;
   color: #666;
+
+}
+
+/* Updated Footer*/
+
+#footerstars_wrapper {
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
+  font-size: 13px;  
+}
+
+/* Subscribe form */
+
+#footerstars_wrapper .sign_up h4{
+  letter-spacing: 0;
+  color: #fff;
+  font-weight: 400;
+  font-style: normal;
+  margin-bottom: 5px
+}
+#footerstars_wrapper .sign_up .tip{
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
+  font-size: 13px;  
+  color: #666
+}
+
+#footerstars_wrapper .sign_up input::-webkit-input-placeholder { color: #bbb;}
+#footerstars_wrapper .sign_up input:-moz-placeholder { color: #bbb; opacity: 1;}
+#footerstars_wrapper .sign_up input::-moz-placeholder { color: #bbb; opacity: 1;}
+#footerstars_wrapper .sign_up input:-ms-input-placeholder { color: #bbb;}
+#footerstars_wrapper .sign_up input::input-placeholder { color: #bbb;}
+
+#footerstars_wrapper .sign_up input {
+  padding-left: 10px;
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;  
+  font-size: 13px;
+  border-radius: 3px;
+}
+
+.sign_up input.signUpEmail {
+  width: 200px;
+}
+.sign_up input.signUpZip {
+  width: 60px;
+}
+.sign_up .btn.btn-sunlight {
+  border-radius: 3px;
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;  
+  font-size: 13px;  
+  font-style: normal;
+  font-weight: 400;
+  line-height: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  transition: background 100ms ease;
+}
+.sign_up .btn.btn-sunlight:hover { background: #466474;}
+.sign_up .btn.btn-sunlight:active { background: #425f6e;
+}
+
+#footerstars_wrapper p{
+  color: #666;
+}
+
+#footerstars_wrapper .time{
+  color: #fff;
+}
+
+#footerstars_wrapper a {
+  color: #666;
+  text-decoration: underline;
+}
+#footerstars_wrapper a:hover {
+  color: #448ccb;
+  text-decoration: underline;
+}
+
+.ir {
+    font: 0/0 a;
+    text-shadow: none;
+    color: transparent;
+}
+
+#oc-logo-small {
+  display: block;
+  height: 45px;
+  width: 165px;  
+  margin-bottom: 20px;
+  background: url('../images/oc-logo-small.png') no-repeat left bottom;
+}
+
+#sf-logo-small {
+  display: block;
+  height: 45px;
+  width: 135px;
+  margin-bottom: 20px;
+  background: url('../images/sf-logo-small.png') no-repeat left bottom;
 }

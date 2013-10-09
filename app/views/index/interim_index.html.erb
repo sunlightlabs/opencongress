@@ -7,7 +7,16 @@
         font-weight: 400;
     }
 
-    .two-up { width: 450px; height: 90px; box-sizing: border-box; -moz-box-sizing:border-box; float: left; }
+    .two-up { width: 450px; height: 90px; -moz-box-sizing:border-box; box-sizing: border-box; float: left; }
+
+    a.more,
+    a.more:hover,
+    a.more:active{
+        background: none;
+        padding: 0;
+    }
+
+    /* Hero and Homepage Search */
 
     #hero {
         height: 435px;
@@ -25,7 +34,7 @@
         line-height: 120%;
     }
 
-    .bootstrap-enabled .form-search .input-append .search-query{
+    .bootstrap-enabled .form-search .input-append .search-query {
         width: 450px;
         height: 25px;
         padding: 10px 20px;
@@ -38,11 +47,11 @@
         margin-left: -16px;
     }
 
-    .bootstrap-enabled .form-search .input-append .search-query::-webkit-input-placeholder { color: #ccc; }
-    .bootstrap-enabled .form-search .input-append .search-query:-moz-placeholder { color: #ccc; }
-    .bootstrap-enabled .form-search .input-append .search-query::-moz-placeholder { color: #ccc; }
-    .bootstrap-enabled .form-search .input-append .search-query:-ms-input-placeholder { color: #ccc; }
-    .bootstrap-enabled .form-search .input-append .search-query::input-placeholder { color: #ccc; }
+    .bootstrap-enabled .form-search .input-append .search-query::-webkit-input-placeholder { color: #bbb;}
+    .bootstrap-enabled .form-search .input-append .search-query:-moz-placeholder { color: #bbb; opacity: 1;}
+    .bootstrap-enabled .form-search .input-append .search-query::-moz-placeholder { color: #bbb; opacity: 1;}
+    .bootstrap-enabled .form-search .input-append .search-query:-ms-input-placeholder { color: #bbb;}
+    .bootstrap-enabled .form-search .input-append .search-query::input-placeholder { color: #bbb;}
 
     #hero button.search {
         position: relative;
@@ -59,15 +68,19 @@
         outline: 0;
         z-index: 10;
         opacity: 0.7;
+        transition: opacity 100ms ease;
     }
 
-    #hero button.search:hover, #hero button.search:active { opacity: 1; }
+    #hero button.search:hover, #hero button.search:active { opacity: 1;}
+
     p.featured {
         margin-top: 15px;
         font-size: 14px;
     }
 
     .featured a { text-decoration: underline; }
+
+    /* Today in Congress Status */
 
     #in_session {
         width: 475px;
@@ -113,7 +126,7 @@
     ul.status-lights li.on:before { background: #afe075; }
     ul.status-lights li.off:before { background: #d05b5b; }
 
-    /* Sunlight Takeover and Call-to-action */
+    /* Sunlight Announcement and Call-to-action */
 
     #belt {
         position: relative;
@@ -140,30 +153,35 @@
         color: #555;
     }
 
-    .bootstrap-enabled .span4.announcement:before {
-        content: '';
+    .bootstrap-enabled .span4.announcement>div {
         position: absolute;
-        top: 8px;
-        left: 8px;
+        top: 9px;
+        left: 9px;
+        -moz-box-sizing:border-box;
+        box-sizing: border-box;
         width: 312px;
         height: 262px;
-        border: 1px dotted #fbdc5f;
+        padding: 10px 20px;
+        border: 1px dotted #fae17d;
     }
 
     .announcement h2 {
         padding-bottom: 10px;
         margin-bottom: 10px;
-        border-bottom: 4px double rgba(255,255,255, .5);
+        border-bottom: 4px double #fae17d;
         line-height: 120%;
         color: #fff;
     }
 
-    a.more{
-        background: none;
-        font-weight: 300;
+    .announcement a.more {
         font-size: 16px;
+        font-weight: 300;
         color: #fff;
-        text-decoration: underline;
+    }
+
+    .announcement a.more:hover {
+        text-decoration: none;
+        border-bottom: 1px dotted #fff;
     }
 
     .bootstrap-enabled .span8.call-to-action {
@@ -208,6 +226,7 @@
         line-height: 52px;
         color: #fff;
         text-shadow: 0 -1px rgba(0,0,0,.25);
+        transition: background 100ms ease;
     }
     #signup-btn:before {
         content: '';
@@ -219,6 +238,17 @@
         border: 1px solid rgba(255,255,255,.15);
         border-radius: 2px;
     }
+
+    #signup-btn:hover { background: #4b9ade;}
+    
+    #signup-btn:active {
+        margin-top: 1px;
+        border-bottom: 2px solid #447cac;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
 
     /* Superlative Section */
 
@@ -233,7 +263,20 @@
         opacity: .4;
     }
 
-    /* Superlative Header, Rule and Dropdown */
+    #superlatives a.more {
+        display: block;
+        margin: -6px 22px 0 0;
+        font-size: 12px;
+        font-weight: 400;
+        text-transform: capitalize;
+        text-decoration: none;
+        color: #448ccb;
+    }
+
+    #superlatives a.more:hover { text-decoration: underline;}
+
+
+    /* Superlative Headers */
 
     #superlatives h3 {
         margin-top: 50px;
@@ -249,7 +292,6 @@
 
     #superlatives h3 span.rule {
         position: relative;
-<<<<<<< HEAD
     }
 
     #superlatives h3 span.rule:before,
@@ -259,56 +301,13 @@
         height: 0px;
         border-top: 1px solid #ccc;
         border-bottom: 1px solid #fff;
-        top: 10px;
+        top: 12px;
         width: 252px;
-=======
-        top: 20px;
-        display: block;
-        margin: auto;
-        width: 925px;
-        height: 0px;
-        border: 1px solid #999;
-    }
-    #superlatives h4 {
-        font-weight: 400;
-        font-size: 16px;
-        color: #448ccb;
-        margin-top: 18px;
-    }
-    #superlatives option {
-        text-transform: none;
-    }
-    .superlative {
-        padding: 5px 20px;
-        background: #fff;
-        margin: 21px 0 21px 21px;
-    }
-    .superlative:hover {
-        transition: background 150ms ease;
-        background: #f7fbff;
-    }
-    .superlative.vote {
-        padding-left: 45px;
-        background-image: url('../images/icon-checkmark.png');
-        background-repeat: no-repeat;
-    }
-    #superlatives .superlative.vote h4 {
-        margin-top: 10px;
-        margin-bottom: 0;
-    }
-    .superlative.vote .detail {
-        color: #666;
-        margin-bottom: 6px;
-    }
-    .superlative .stats strong {
-        color: #666;
->>>>>>> f7fe42fd2b013eecbec1c1cb6389943fb66acc62
     }
 
     #superlatives h3.most-viewed span.rule:before,
     #superlatives h3.most-viewed span.rule:after { width: 276px;}
 
-<<<<<<< HEAD
     #superlatives h3 span.rule:before {
         right: 100%;
         margin-right: 10px;
@@ -317,13 +316,9 @@
     #superlatives h3 span.rule:after {
         left: 100%;
         margin-left: 10px;
-=======
-    .superlative.person .stats  {
-        width: 100%;
-        padding: 0;
-        margin: 0;
->>>>>>> f7fe42fd2b013eecbec1c1cb6389943fb66acc62
     }
+
+    /* Dropdown Select */
 
     .icbiaselect-display {
         width: 210px;
@@ -352,10 +347,10 @@
         border-bottom-left-radius: 0;
     }
 
-<<<<<<< HEAD
-    #superlatives option {
-        text-transform: none;
-    }
+    .icbiaselect:hover .icbiaselect-display:after { background-color: #caeafc;}
+    .icbiaselect:hover .icbiaselect-display { background-color: #fbfbfb;}
+
+    #superlatives option { text-transform: none;}
 
     .superlative h4 {
         font-weight: 400;
@@ -364,7 +359,6 @@
         margin-top: 18px;
     }
 
-    
     /* General Superlatives */
 
     .superlative {
@@ -408,6 +402,12 @@
     
     .superlative .stats strong { color: #666;}
 
+    .superlative .stats .ayes:after {
+        content: "\00B7";
+        margin: 0 8px 0 8px;
+        color: #999;
+    }
+
     /* Votes Senators and Reps */
 
     .superlative.person {
@@ -439,19 +439,17 @@
     
     /* Congress app callout */
     
-=======
->>>>>>> f7fe42fd2b013eecbec1c1cb6389943fb66acc62
     #content_footer {
         height: 180px;
         background: #cedcdf;
         padding-left: 45px;
         font-size: 14px;
-        color: #666;
+        color: #666; 
         line-height: 150%;
     }
     
     #content_footer h2 {
-        margin: 30px 0 15px;
+        margin: 30px 0 10px;
         font-size: 24px;
         color: #fff;
         font-weight: 400;
@@ -534,7 +532,7 @@
                 </form>
 
                 <div id="in_session">
-                    <h4 class="inset">Today in Congress &ndash; <%= @updated_at.to_time.to_s :month_day %></h4>
+                    <h4 class="inset">Today in Congress: <%= @updated_at.to_time.to_s :month_day %></h4>
                     <ul class="status-lights">
                         <%= session_li('house', @sessions[:house_session]) %>
                         <%= session_li('senate', @sessions[:senate_session])%>
@@ -546,9 +544,11 @@
     <div id="belt" class="container-fluid">
         <div class="row-fluid">
             <div class="span4 announcement">
-                <h2>Hello! From the<br> Sunlight Foundation</h2>
-                <p>The Sunlight Foundation is now the sole operator of OpenCongress. This site will continue to be a comprehensive, nonpartisan source for what's happening in the United States Congress.</p>
-                <a class="more" href="http://sunlightfoundation.com/about">Learn more about Sunlight</a>
+                <div>
+                    <h2>Hello! From the<br> Sunlight Foundation</h2>
+                    <p>The Sunlight Foundation is now the sole operator of OpenCongress. This site will continue to be a comprehensive, nonpartisan source for what's happening in the United States Congress.</p>
+                    <a class="more" href="http://sunlightfoundation.com/about">Learn more about Sunlight &raquo;</a>
+                </div>
             </div>
             <div class="span8 pull-right call-to-action">
                 <h2>Track Bills, Follow Lawmakers and More</h2>

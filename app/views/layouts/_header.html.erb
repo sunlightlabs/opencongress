@@ -45,8 +45,7 @@
                                         </fieldset>
                                         <a href="/account/forgot_password">Forgot Password?</a>
                                     </form>
-                                    <%#= fb_connect_async_js # FB Init is done by socialite %>
-                                    <%= fb_login_and_redirect(request.url, {:text => 'Login with Facebook', :scope => 'email,user_location,user_about_me'}) %>
+                                    <%= fb_login_and_redirect request.url, :text => 'Login with Facebook', :scope => 'email,user_location,user_about_me' %>
                                     <a href="/login">Login with your OpenID</a>
                                 </div>
                             </div>

@@ -1318,15 +1318,19 @@ Global object for classes
       */
 
       ShareButton = (function() {
+        var _ref1;
 
-        ShareButton.customNames = function() {
-          var _ref1;
-          return (_ref1 = this._customNames) != null ? _ref1 : this._customNames = {
+        if ((_ref1 = ShareButton._customNames) == null) {
+          ShareButton._customNames = {
             "twitter-share": "Twitter",
             "facebook-like": "Facebook",
             "pinterest-pinit": "Pinterest",
             "googleplus-one": "Google Plus"
           };
+        }
+
+        ShareButton.customNames = function() {
+          return this._customNames;
         };
 
         ShareButton.registerCustomName = function(name, displayName) {
@@ -1383,9 +1387,52 @@ Global object for classes
 
       ShareBar = (function() {
 
+        ShareBar._container = $("<table style='vertical-align:middle;'><tbody></tbody></table>");
+
+        ShareBar._defaults = {
+          layout: 'horizontal',
+          shortURLs: 'never',
+          showTooltips: false
+        };
+
+        ShareBar._services = {
+          "twitter-simple": {},
+          "twitter-share": {},
+          "twitter-follow": {},
+          "twitter-mention": {},
+          "twitter-hashtag": {},
+          "twitter-embed": {},
+          "facebook-like": {},
+          "facebook-share": {},
+          "googleplus-simple": {},
+          "googleplus-one": {},
+          "linkedin-share": {},
+          "linkedin-simple": {},
+          "linkedin-recommend": {},
+          "pinterest-pinit": {},
+          "spotify-play": {},
+          "hackernews-share": {},
+          "github-watch": {},
+          "github-fork": {},
+          "github-follow": {},
+          "tumblr-simple": {},
+          "email-simple": {}
+        };
+
+        ShareBar._serviceMappings = {
+          "twitter": "twitter-simple",
+          "twitter-tweet": "twitter-share",
+          "facebook": "facebook-share",
+          "googleplus": "googleplus-simple",
+          "google-plusone": "googleplus-one",
+          "linkedin": "linkedin-simple",
+          "pinterest": "pinterest-pinit",
+          "tumblr": "tumblr-simple",
+          "email": "email-simple"
+        };
+
         ShareBar.container = function() {
-          var _ref1;
-          return (_ref1 = this._container) != null ? _ref1 : this._container = $("<table style='vertical-align:middle;'><tbody></tbody></table>");
+          return this._container.clone();
         };
 
         ShareBar.setContainer = function(str) {
@@ -1393,12 +1440,7 @@ Global object for classes
         };
 
         ShareBar.defaults = function() {
-          var _ref1;
-          return (_ref1 = this._defaults) != null ? _ref1 : this._defaults = {
-            layout: 'horizontal',
-            shortURLs: 'never',
-            showTooltips: false
-          };
+          return this._defaults;
         };
 
         ShareBar.setDefault = function(key, val) {
@@ -1411,45 +1453,11 @@ Global object for classes
         };
 
         ShareBar.services = function() {
-          var _ref1;
-          return (_ref1 = this._services) != null ? _ref1 : this._services = {
-            "twitter-simple": {},
-            "twitter-share": {},
-            "twitter-follow": {},
-            "twitter-mention": {},
-            "twitter-hashtag": {},
-            "twitter-embed": {},
-            "facebook-like": {},
-            "facebook-share": {},
-            "googleplus-simple": {},
-            "googleplus-one": {},
-            "linkedin-share": {},
-            "linkedin-simple": {},
-            "linkedin-recommend": {},
-            "pinterest-pinit": {},
-            "spotify-play": {},
-            "hackernews-share": {},
-            "github-watch": {},
-            "github-fork": {},
-            "github-follow": {},
-            "tumblr-simple": {},
-            "email-simple": {}
-          };
+          return this._services;
         };
 
         ShareBar.serviceMappings = function() {
-          var _ref1;
-          return (_ref1 = this._serviceMappings) != null ? _ref1 : this._serviceMappings = {
-            "twitter": "twitter-simple",
-            "twitter-tweet": "twitter-share",
-            "facebook": "facebook-share",
-            "googleplus": "googleplus-simple",
-            "google-plusone": "googleplus-one",
-            "linkedin": "linkedin-simple",
-            "pinterest": "pinterest-pinit",
-            "tumblr": "tumblr-simple",
-            "email": "email-simple"
-          };
+          return this._serviceMappings;
         };
 
         ShareBar.registerButton = function(opts) {
@@ -1495,7 +1503,7 @@ Global object for classes
           this.rendered = this.constructor.container();
           cursor = this.rendered.find('tbody');
           if (this.options.layout === 'horizontal') {
-            cursor = this.rendered.append('<tr></tr>').find('tr');
+            cursor = cursor.append('<tr></tr>').find('tr');
           }
           $.each(this.buttons, function(i, button) {
             var btn;
@@ -1676,7 +1684,7 @@ Global object for classes
       */
 
       return $(function() {
-        var initShareBar, register, selector;
+        var initFB, initShareBar, register, selector, trackBasic, trackTwitter;
         debug("running onready bootstrap");
         selector = '.share-buttons[data-socialite], .share-buttons[data-gigya]';
         initShareBar = function(el) {
@@ -1708,16 +1716,69 @@ Global object for classes
             return register(this);
           });
         } catch (e) {
-          $('body').delegate('register.simplesocialite', selector, function() {
+          $('body').delegate(selector, 'register.simplesocialite', function() {
             return register(this);
           });
         }
-        return $(selector).each(function() {
-          var el, trigger;
-          el = this;
-          trigger = $(el).attr('data-gigya') || $(el).attr('data-socialite');
-          return register(el);
+        $(selector).each(function() {
+          return register(this);
         });
+        /*
+              Set up GA tracking for the basic social networks and for clicks
+              that bubble through `.socialite-instance`s, if _gaq is present
+        */
+
+        if (window._gaq != null) {
+          initFB = function() {
+            FB.Event.subscribe('edge.create', function(url) {
+              debug('tracking facebook');
+              return _gaq.push(['_trackSocial', 'facebook', 'like', url]);
+            });
+            return FB.Event.subscribe('edge.remove', function(url) {
+              return _gaq.push(['_trackSocial', 'facebook', 'unlike', url]);
+            });
+          };
+          window._fbAsyncInit = window.fbAsyncInit;
+          window.fbAsyncInit = function() {
+            if (typeof window._fbAsyncInit === 'function') {
+              window._fbAsyncInit();
+            }
+            return initFB();
+          };
+          if (window.FB != null) {
+            initFB();
+          }
+          if (window.twttr != null) {
+            trackTwitter = function(evt) {
+              var path;
+              debug('tracking twitter');
+              try {
+                path = evt && evt.target && evt.target.nodeName === 'IFRAME' ? $.optionsFromQueryString(evt.target.src.split('?')[1]).url : null;
+              } catch (e) {
+                path = null;
+              }
+              return _gaq.push(['_trackSocial', 'twitter', 'tweet', path || location.href]);
+            };
+            twttr.ready(function(twttr) {
+              return twttr.events.bind('tweet', trackTwitter);
+            });
+          }
+          trackBasic = function(evt) {
+            var button, el;
+            if ($(evt.target).hasClass('.socialite-instance')) {
+              el = $(evt.target);
+            } else {
+              el = $(evt.target).parents('.socialite-instance').eq(0);
+            }
+            button = el.attr('class').split(' ')[1];
+            if (button.match(/twitter/) && (window.twttr != null)) {
+              return;
+            }
+            debug("tracking " + button);
+            return _gaq.push(['_trackSocial', button, 'share', location.href]);
+          };
+          return (($().on != null) && $('body').on('click', '.socialite-instance', trackBasic)) || $('body').delegate('.socialite-instance', 'click', trackBasic);
+        }
       });
     }
   };
@@ -1730,4 +1791,3 @@ Global object for classes
   check();
 
 }).call(this);
-

@@ -4,7 +4,9 @@
         <div class="container-fluid">
             <div class="row-fluid">
                 <div class="span3 pull-right">
-                    <div class="share-buttons pull-right" data-socialite="auto" data-services="facebook-like, twitter-tweet"></div>
+                    <div class="share-buttons pull-right" data-socialite="auto" data-services="facebook-like, twitter-tweet"
+                         data-twitter-tweet-options="url=<%=u Settings.base_url %>&amp;text=<%=u "Discover who represents you in Congress, find relevant legislation and learn how to take action." %>&amp;via=OpenCongress"
+                         data-facebook-like-options="layout=button_count"></div>
                 </div>
             </div>
             <div class="row-fluid">
@@ -43,8 +45,8 @@
                                         </fieldset>
                                         <a href="/account/forgot_password">Forgot Password?</a>
                                     </form>
-                                    <%= fb_connect_async_js %>
-                                    <%= fb_login_and_redirect(request.url, {:text => 'Login with Facebook', :scope => 'email'}) %>
+                                    <%#= fb_connect_async_js # FB Init is done by socialite %>
+                                    <%= fb_login_and_redirect(request.url, {:text => 'Login with Facebook', :scope => 'email,user_location,user_about_me'}) %>
                                     <a href="/login">Login with your OpenID</a>
                                 </div>
                             </div>

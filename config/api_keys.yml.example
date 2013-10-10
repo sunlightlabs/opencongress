@@ -35,10 +35,16 @@ defaults: &defaults
   akismet: xxx
   # Sunlight uses Blue State Digital to manage mailing lists
   bsd: xxx
-  bitly: xxx
-  google_analytics: xxx
-  chartbeat_id: xxx
+  # Facebook login is provided via interfacing with a FB app maintained by OC
   facebook_app_id: xxx
+  facebook_secret: xxx
+  facebook_api_key: xxx
+  # URL Shortening
+  bitly: xxx
+  # Analytics
+  google_analytics: xx
+  chartbeat_id: zzz
+  # Cloudfront
   aws_access_key_id: xxx
   aws_secret_access_key: xxx
 

@@ -1,0 +1,14 @@
+defaults: &defaults
+  <%= "app_id: #{ApiKeys.facebook_app_id} " %>
+  <%= "secret: #{ApiKeys.facebook_secret}" %>
+  <%= "api_key: #{ApiKeys.facebook_api_key}" %>
+  <%= "callback_url: #{Settings.facebook_callback_url}" %>
+
+development:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+
+production:
+  <<: *defaults

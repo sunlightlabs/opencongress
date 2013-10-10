@@ -1,0 +1,26 @@
+<a href="<%= vote.vote_url %>" title="<%=h vote.display_title %>">
+<div class="media superlative vote <%= vote.passed? && 'passed' || vote.failed? && 'failed' || '' %> two-up">
+    <span class="pull-left"><%= get_result_image(vote, :class => "media-object") %></span>
+    <div class="media-body">
+        <h4><%= truncate(vote.display_title, :length => 45) %></h4>
+        <p class="detail"><strong><%= vote.roll_type %></strong></p>
+        <p class="stats">
+            <% if superlative == :popular %>
+                <strong><%= vote.page_views_count %> views</strong>
+            <% else %>
+                <% if vote.passed? %>
+                    <strong class="ayes">Ayes: <%= vote.ayes %></strong>
+                    <span class="muted">Nays: <%= vote.nays %></span>
+                <% elsif vote.failed? %>
+                    <span class="muted ayes">Ayes: <%= vote.ayes %></span>
+                    <strong>Nays: <%= vote.nays %></strong>
+                <% else %>
+                    <span class="muted">Ayes: <%= vote.ayes %></span>
+                    <span class="muted">Nays: <%= vote.nays %></span>
+                <% end %>
+            <% end %>
+            <time class="pull-right muted"><%= vote.chamber %>, <%= vote.date.to_s :short_time %></time>
+        </p>
+    </div>
+</div>
+</a>

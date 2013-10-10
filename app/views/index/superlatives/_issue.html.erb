@@ -1,0 +1,14 @@
+<a href="<%= url_for :controller => :issue, :action => :show, :id => issue.id %>">
+<div class="media superlative issue two-up">
+    <div class="media-body">
+        <h4><%= issue.term rescue nil %></h4>
+        <p class="stats">
+            <% if superlative == :popular %>
+                <strong><%= issue.page_views_count %> views</strong>
+            <% else %>
+                <%= pluralize(issue.bill_count, 'Bill') %>
+            <% end %>
+        </p>
+    </div>
+</div>
+</a>

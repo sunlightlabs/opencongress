@@ -19,6 +19,8 @@
     <script>
       var $j = jQuery.noConflict();
     </script>
+    <script type="text/javascript" src="//use.typekit.net/xev8qlf.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     <%= include_javascripts :frontpage  %>
     <%= csrf_meta_tag %>
     <%= remote_forgery_protection %>
@@ -32,6 +34,8 @@
     <!--[if lt IE 7]>
     <%= javascript_include_tag 'ie8/IE8' %>
     <![endif]-->
+
+    <%= yield :stylesheets %>
 
     <script type="text/javascript">
      // Disable and pause carousel autoscrolling
@@ -52,7 +56,9 @@
 
     <div id="wrapper">
       <%= render :partial => 'layouts/header' %>
-
+      <%= render :partial => 'shared/notices' %>
+      <%= render :partial => 'layouts/banner' %>
+      <%= render :partial => 'layouts/user_nav' %>
       <%= yield %>
 
     </div> <!-- // wrapper -->
@@ -61,5 +67,6 @@
     <%= render :partial => 'shared/analytics_foot' %>
     <%= javascript_include_tag "//assets.sunlightfoundation.com.s3.amazonaws.com/social/scripts/simple-socialite-pack.min.js" %>
 
+    <%= yield :javascripts %>
   </body>
 </html>

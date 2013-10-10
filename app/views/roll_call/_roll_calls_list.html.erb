@@ -1,25 +1,25 @@
 <% if rolls.size > 0 %>
   <ul class="rolls_list">
-  	<li class="help"></li>
-  	<% rolls.each do |roll| %>  
-    	<li>
-    		<a href="<%= roll.vote_url %>">
+    <li class="help"></li>
+    <% rolls.each do |roll| %>
+      <li>
+        <a href="<%= roll.vote_url %>">
         <%= render :partial => 'roll_call/make_hot', :object => roll %>
         <span><%= roll.display_title %></span>
-    		<span class="type"><%= get_result_image(roll.result) %> <%= roll.question %></span>
-    		<% if roll.key_vote? %>
-                <span class="pvs_category">Key Vote in <strong><%= roll.key_vote_category_name %></strong></span> 
-    		<% end %>
-    		<span>
-    		<span class="date"><%= roll.date.strftime("%b %d, %Y") %></span>
-    		<span class="aye">Ayes</span> <%= roll.ayes %>&nbsp;&nbsp;&nbsp;<span class="nay">Nays</span> <%= roll.nays %></a>
-    	</li>
-  	<% end %>
+        <span class="type"><%= get_result_image(roll) %> <%= roll.question %></span>
+        <% if roll.key_vote? %>
+                <span class="pvs_category">Key Vote in <strong><%= roll.key_vote_category_name %></strong></span>
+        <% end %>
+        <span>
+        <span class="date"><%= roll.date.strftime("%b %d, %Y") %></span>
+        <span class="aye">Ayes</span> <%= roll.ayes %>&nbsp;&nbsp;&nbsp;<span class="nay">Nays</span> <%= roll.nays %></a>
+      </li>
+    <% end %>
   </ul>
 <% else %>
-	<% if params[:controller] == 'roll_call' and params[:action] == 'search'%>
-		Your search returned zero results.
-	<% else %>
-		No votes on this bill.
-	<% end %>
+  <% if params[:controller] == 'roll_call' and params[:action] == 'search'%>
+    Your search returned zero results.
+  <% else %>
+    No votes on this bill.
+  <% end %>
 <% end %>

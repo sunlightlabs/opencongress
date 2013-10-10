@@ -8,7 +8,8 @@ javascripts:
         - public/javascripts/effects.js
         - public/javascripts/dragdrop.js
         - public/javascripts/controls.js
-        - public/javascripts/jquery-1.5.2.min.js
+        - public/javascripts/jquery-1.7.0.min.js
+        - public/javascripts/bootstrap.min.js
         - public/javascripts/application.js
     widget:
         - public/javascripts/underscore-1.1.6.js
@@ -61,6 +62,7 @@ stylesheets:
         - public/stylesheets/master.css
         - public/stylesheets/jqModal.css
         - public/stylesheets/jquery.rating.css
+        - public/stylesheets/bootstrap-custom.min.css
     frontpage:
         - public/stylesheets/960.css
         - public/stylesheets/classes.css
@@ -72,6 +74,7 @@ stylesheets:
         - public/stylesheets/jqModal.css
         - public/stylesheets/jquery.jcarousel.css
         - public/stylesheets/search.css
+        - public/stylesheets/bootstrap-custom.min.css
     districts:
         - public/stylesheets/states.css
         - public/stylesheets/districts.css

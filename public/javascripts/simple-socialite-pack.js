@@ -525,6 +525,8 @@ window.Socialite = (function(window, document, undefined)
                     }
                 }
             };
+            // this prevents socialite from appending the script tag.
+            return false;
         }
     });
 

@@ -492,132 +492,132 @@ window.Socialite = (function(window, document, undefined)
     });
 
 
-    // Facebook
-    // http://developers.facebook.com/docs/reference/plugins/like/
-    // http://developers.facebook.com/docs/reference/javascript/FB.init/
+    // // Facebook
+    // // http://developers.facebook.com/docs/reference/plugins/like/
+    // // http://developers.facebook.com/docs/reference/javascript/FB.init/
 
-    Socialite.network('facebook', {
-        script: {
-            src : '//connect.facebook.net/{{language}}/all.js',
-            id  : 'facebook-jssdk'
-        },
-        append: function(network)
-        {
-            var fb       = document.createElement('div'),
-                settings = Socialite.settings.facebook,
-                events   = { onlike: 'edge.create', onunlike: 'edge.remove', onsend: 'message.send' };
-            fb.id = 'fb-root';
-            document.body.appendChild(fb);
-            network.script.src = network.script.src.replace('{{language}}', settings.lang);
-            // Don't nuke existing fbAsyncInit-s. This will cause a warning about FB.init being called twice.
-            if(window.fbAsyncInit){
-              window._fbAsyncInit = window.fbAsyncInit;
-            }
-            window.fbAsyncInit = function() {
-                window._fbAsyncInit && _fbAsyncInit();
-                !window._fbAsyncInit && window.FB.init({
-                      appId: settings.appId,
-                      xfbml: true
-                });
-                for (var e in events) {
-                    if (typeof settings[e] === 'function') {
-                        window.FB.Event.subscribe(events[e], settings[e]);
-                    }
-                }
-            };
-            // this prevents socialite from appending the script tag.
-            return false;
-        }
-    });
-
-    Socialite.widget('facebook', 'like', {
-        init: function(instance)
-        {
-            var el = document.createElement('div');
-            el.className = 'fb-like';
-            Socialite.copyDataAttributes(instance.el, el);
-            instance.el.appendChild(el);
-            if (window.FB && window.FB.XFBML) {
-                window.FB.XFBML.parse(instance.el);
-            }
-        }
-    });
-
-
-    // // Twitter
-    // // https://dev.twitter.com/docs/tweet-button/
-    // // https://dev.twitter.com/docs/intents/events/
-    // // https://developers.google.com/analytics/devguides/collection/gajs/gaTrackingSocial#twitter
-
-    // Socialite.network('twitter', {
+    // Socialite.network('facebook', {
     //     script: {
-    //         src     : '//platform.twitter.com/widgets.js',
-    //         id      : 'twitter-wjs',
-    //         charset : 'utf-8'
+    //         src : '//connect.facebook.net/{{language}}/all.js',
+    //         id  : 'facebook-jssdk'
     //     },
-    //     append: function()
+    //     append: function(network)
     //     {
-    //         var notwttr  = (typeof window.twttr !== 'object'),
-    //             settings = Socialite.settings.twitter,
-    //             events   = ['click', 'tweet', 'retweet', 'favorite', 'follow'];
-    //         if (notwttr) {
-    //             window.twttr = (t = { _e: [], ready: function(f) { t._e.push(f); } });
+    //         var fb       = document.createElement('div'),
+    //             settings = Socialite.settings.facebook,
+    //             events   = { onlike: 'edge.create', onunlike: 'edge.remove', onsend: 'message.send' };
+    //         fb.id = 'fb-root';
+    //         document.body.appendChild(fb);
+    //         network.script.src = network.script.src.replace('{{language}}', settings.lang);
+    //         // Don't nuke existing fbAsyncInit-s. This will cause a warning about FB.init being called twice.
+    //         if(window.fbAsyncInit){
+    //           window._fbAsyncInit = window.fbAsyncInit;
     //         }
-    //         window.twttr.ready(function(twttr)
-    //         {
-    //             for (var i = 0; i < events.length; i++) {
-    //                 var e = events[i];
-    //                 if (typeof settings['on' + e] === 'function') {
-    //                     twttr.events.bind(e, settings['on' + e]);
+    //         window.fbAsyncInit = function() {
+    //             window._fbAsyncInit && _fbAsyncInit();
+    //             !window._fbAsyncInit && window.FB.init({
+    //                   appId: settings.appId,
+    //                   xfbml: true
+    //             });
+    //             for (var e in events) {
+    //                 if (typeof settings[e] === 'function') {
+    //                     window.FB.Event.subscribe(events[e], settings[e]);
     //                 }
     //             }
-    //             Socialite.activateAll('twitter');
-    //         });
-    //         return notwttr;
+    //         };
+    //         // this prevents socialite from appending the script tag.
+    //         return false;
     //     }
     // });
 
-    // var twitterInit = function(instance)
-    // {
-    //     var el = document.createElement('a');
-    //     el.className = instance.widget.name + '-button';
-    //     Socialite.copyDataAttributes(instance.el, el);
-    //     el.setAttribute('href', instance.el.getAttribute('data-default-href'));
-    //     el.setAttribute('data-lang', instance.el.getAttribute('data-lang') || Socialite.settings.twitter.lang);
-    //     instance.el.appendChild(el);
-    // };
-
-    // var twitterActivate = function(instance)
-    // {
-    //     if (window.twttr && typeof window.twttr.widgets === 'object' && typeof window.twttr.widgets.load === 'function') {
-    //         window.twttr.widgets.load();
-    //     }
-    // };
-
-    // Socialite.widget('twitter', 'share',   { init: twitterInit, activate: twitterActivate });
-    // Socialite.widget('twitter', 'follow',  { init: twitterInit, activate: twitterActivate });
-    // Socialite.widget('twitter', 'hashtag', { init: twitterInit, activate: twitterActivate });
-    // Socialite.widget('twitter', 'mention', { init: twitterInit, activate: twitterActivate });
-
-    // Socialite.widget('twitter', 'embed', {
-    //     process: function(instance)
-    //     {
-    //         instance.innerEl = instance.el;
-    //         if (!instance.innerEl.getAttribute('data-lang')) {
-    //             instance.innerEl.setAttribute('data-lang', Socialite.settings.twitter.lang);
-    //         }
-    //         instance.el = document.createElement('div');
-    //         instance.el.className = instance.innerEl.className;
-    //         instance.innerEl.className = '';
-    //         instance.innerEl.parentNode.insertBefore(instance.el, instance.innerEl);
-    //         instance.el.appendChild(instance.innerEl);
-    //     },
+    // Socialite.widget('facebook', 'like', {
     //     init: function(instance)
     //     {
-    //         instance.innerEl.className = 'twitter-tweet';
-    //     },
-    //     activate: twitterActivate
+    //         var el = document.createElement('div');
+    //         el.className = 'fb-like';
+    //         Socialite.copyDataAttributes(instance.el, el);
+    //         instance.el.appendChild(el);
+    //         if (window.FB && window.FB.XFBML) {
+    //             window.FB.XFBML.parse(instance.el);
+    //         }
+    //     }
     // });
+
+
+    // Twitter
+    // https://dev.twitter.com/docs/tweet-button/
+    // https://dev.twitter.com/docs/intents/events/
+    // https://developers.google.com/analytics/devguides/collection/gajs/gaTrackingSocial#twitter
+
+    Socialite.network('twitter', {
+        script: {
+            src     : '//platform.twitter.com/widgets.js',
+            id      : 'twitter-wjs',
+            charset : 'utf-8'
+        },
+        append: function()
+        {
+            var notwttr  = (typeof window.twttr !== 'object'),
+                settings = Socialite.settings.twitter,
+                events   = ['click', 'tweet', 'retweet', 'favorite', 'follow'];
+            if (notwttr) {
+                window.twttr = (t = { _e: [], ready: function(f) { t._e.push(f); } });
+            }
+            window.twttr.ready(function(twttr)
+            {
+                for (var i = 0; i < events.length; i++) {
+                    var e = events[i];
+                    if (typeof settings['on' + e] === 'function') {
+                        twttr.events.bind(e, settings['on' + e]);
+                    }
+                }
+                Socialite.activateAll('twitter');
+            });
+            return notwttr;
+        }
+    });
+
+    var twitterInit = function(instance)
+    {
+        var el = document.createElement('a');
+        el.className = instance.widget.name + '-button';
+        Socialite.copyDataAttributes(instance.el, el);
+        el.setAttribute('href', instance.el.getAttribute('data-default-href'));
+        el.setAttribute('data-lang', instance.el.getAttribute('data-lang') || Socialite.settings.twitter.lang);
+        instance.el.appendChild(el);
+    };
+
+    var twitterActivate = function(instance)
+    {
+        if (window.twttr && typeof window.twttr.widgets === 'object' && typeof window.twttr.widgets.load === 'function') {
+            window.twttr.widgets.load();
+        }
+    };
+
+    Socialite.widget('twitter', 'share',   { init: twitterInit, activate: twitterActivate });
+    Socialite.widget('twitter', 'follow',  { init: twitterInit, activate: twitterActivate });
+    Socialite.widget('twitter', 'hashtag', { init: twitterInit, activate: twitterActivate });
+    Socialite.widget('twitter', 'mention', { init: twitterInit, activate: twitterActivate });
+
+    Socialite.widget('twitter', 'embed', {
+        process: function(instance)
+        {
+            instance.innerEl = instance.el;
+            if (!instance.innerEl.getAttribute('data-lang')) {
+                instance.innerEl.setAttribute('data-lang', Socialite.settings.twitter.lang);
+            }
+            instance.el = document.createElement('div');
+            instance.el.className = instance.innerEl.className;
+            instance.innerEl.className = '';
+            instance.innerEl.parentNode.insertBefore(instance.el, instance.innerEl);
+            instance.el.appendChild(instance.innerEl);
+        },
+        init: function(instance)
+        {
+            instance.innerEl.className = 'twitter-tweet';
+        },
+        activate: twitterActivate
+    });
 
 
     // Google+

@@ -509,6 +509,11 @@
                 }
             }
         });
+        // If main search is empty when clicked, use the placeholder as search terms
+        $('#main_search').next('button').mousedown(function(){
+            var target = $('#main_search');
+            if(! target.val()) target.val(target.attr('placeholder').split(', ')[0]);
+        });
     });
 })(jQuery)
 </script>
@@ -519,10 +524,16 @@
         <div class="row-fluid">
             <div class="span12 centered">
                 <h1>Enter a lawmaker&rsquo;s name, issue area or bill number to search OpenCongress. Discover who represents you, find relevant legislation and learn how to take action.</h1>
-                <form class="form-search" action="#" method="post">
+                <form class="form-search" action="/search/result" method="get">
                     <div class="input-append">
-                        <input class="search-query" id="main_search" type="text" placeholder="<%= @popular_legislators.first.full_name %>, <%= @popular_bills.first.typenumber %>">
+                        <input class="search-query" id="main_search" type="text" name="q" placeholder="<%= @popular_legislators.first.full_name %>, <%= @popular_bills.first.typenumber %>">
                         <button class="search"></button>
+                        <input type="hidden" name="search_congress[113]" value="113">
+                        <input type="hidden" name="search_bills" value="1">
+                        <input type="hidden" name="search_people" value="1">
+                        <input type="hidden" name="search_committees" value="1">
+                        <input type="hidden" name="search_issues" value="1">
+                        <input type="hidden" name="search_comments" value="1">
                     </div>
                     <p class="featured">
                         Popular Searches:

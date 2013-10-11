@@ -66,8 +66,6 @@
     <div class="clear">&nbsp;</div>
     <%= render :partial => 'layouts/footer' %>
     <%= render :partial => 'shared/analytics_foot' %>
-    <%# This must go ahead of socialite %>
-    <%= fb_connect_async_js.sub(/\(function\(\).+}\(\)\);/m, '').html_safe %>
     <%= javascript_include_tag "simple-socialite-pack.js" %>
     <script>
       Socialite.setup({

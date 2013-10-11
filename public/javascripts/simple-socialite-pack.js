@@ -492,56 +492,56 @@ window.Socialite = (function(window, document, undefined)
     });
 
 
-    // // Facebook
-    // // http://developers.facebook.com/docs/reference/plugins/like/
-    // // http://developers.facebook.com/docs/reference/javascript/FB.init/
+    // Facebook (Customized)
+    // http://developers.facebook.com/docs/reference/plugins/like/
+    // http://developers.facebook.com/docs/reference/javascript/FB.init/
 
-    // Socialite.network('facebook', {
-    //     script: {
-    //         src : '//connect.facebook.net/{{language}}/all.js',
-    //         id  : 'facebook-jssdk'
-    //     },
-    //     append: function(network)
-    //     {
-    //         var fb       = document.createElement('div'),
-    //             settings = Socialite.settings.facebook,
-    //             events   = { onlike: 'edge.create', onunlike: 'edge.remove', onsend: 'message.send' };
-    //         fb.id = 'fb-root';
-    //         document.body.appendChild(fb);
-    //         network.script.src = network.script.src.replace('{{language}}', settings.lang);
-    //         // Don't nuke existing fbAsyncInit-s. This will cause a warning about FB.init being called twice.
-    //         if(window.fbAsyncInit){
-    //           window._fbAsyncInit = window.fbAsyncInit;
-    //         }
-    //         window.fbAsyncInit = function() {
-    //             window._fbAsyncInit && _fbAsyncInit();
-    //             !window._fbAsyncInit && window.FB.init({
-    //                   appId: settings.appId,
-    //                   xfbml: true
-    //             });
-    //             for (var e in events) {
-    //                 if (typeof settings[e] === 'function') {
-    //                     window.FB.Event.subscribe(events[e], settings[e]);
-    //                 }
-    //             }
-    //         };
-    //         // this prevents socialite from appending the script tag.
-    //         return false;
-    //     }
-    // });
+    Socialite.network('facebook', {
+        script: {
+            src : '#',
+            id  : 'facebook-jssdk'
+        },
+        append: function(network)
+        {
+            var fb       = document.createElement('div'),
+                settings = Socialite.settings.facebook,
+                events   = { onlike: 'edge.create', onunlike: 'edge.remove', onsend: 'message.send' };
+            fb.id = 'fb-root';
+            document.body.appendChild(fb);
+            network.script.src = network.script.src.replace('{{language}}', settings.lang);
+            // Defer to existing fbAsyncInit and let it call FB.init
+            if(window.fbAsyncInit){
+              window._fbAsyncInit = window.fbAsyncInit;
+            }
+            window.fbAsyncInit = function() {
+                window._fbAsyncInit && _fbAsyncInit();
+                (! window._fbAsyncInit && window._fbAsyncInit.toString().match('FB.init(')) && window.FB.init({
+                      appId: settings.appId,
+                      xfbml: true
+                });
+                for (var e in events) {
+                    if (typeof settings[e] === 'function') {
+                        window.FB.Event.subscribe(events[e], settings[e]);
+                    }
+                }
+            };
+            // this prevents socialite from appending the script tag.
+            return false;
+        }
+    });
 
-    // Socialite.widget('facebook', 'like', {
-    //     init: function(instance)
-    //     {
-    //         var el = document.createElement('div');
-    //         el.className = 'fb-like';
-    //         Socialite.copyDataAttributes(instance.el, el);
-    //         instance.el.appendChild(el);
-    //         if (window.FB && window.FB.XFBML) {
-    //             window.FB.XFBML.parse(instance.el);
-    //         }
-    //     }
-    // });
+    Socialite.widget('facebook', 'like', {
+        init: function(instance)
+        {
+            var el = document.createElement('div');
+            el.className = 'fb-like';
+            Socialite.copyDataAttributes(instance.el, el);
+            instance.el.appendChild(el);
+            if (window.FB && window.FB.XFBML) {
+                window.FB.XFBML.parse(instance.el);
+            }
+        }
+    });
 
 
     // Twitter

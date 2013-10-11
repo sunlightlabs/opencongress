@@ -208,7 +208,7 @@ Ajax.Responders.register({
 
     if ($('loading') && Ajax.activeRequestCount==0)
       Effect.Fade('loading',{duration:0.5,queue:'end'});
-       }
+  }
 });
 
 function ToggleNotebookForm(field){

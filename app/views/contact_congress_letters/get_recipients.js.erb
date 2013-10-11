@@ -28,6 +28,13 @@
   <% end %>
 
   <% if @letter_start %>
-    $j('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').val("<%= @letter_start %> " + $j('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').val());
+    $j('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').each(function(){
+      var val = $j(this).val();
+      if(val.match(/<%= @letter_pat %>/)){
+        $j(this).val(val.replace(/<%= @letter_pat %>/g, '<%= @letter_start %>'))
+      }else{
+        $j(this).val('<%= @letter_start %>' + val);
+      }
+    });
   <% end %>
 <% end %>

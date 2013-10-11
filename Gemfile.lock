@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: a00c3285a112973012bcb20075ca7357888c8c2a
+  revision: 6b58176697dcdec16cd396c2c686876ae11a9743
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
@@ -198,7 +198,7 @@ GEM
     httmultiparty (0.3.10)
       httparty (>= 0.7.3)
       multipart-post
-    http-cookie (1.0.1)
+    http-cookie (1.0.2)
       domain_name (~> 0.5)
     http_parser.rb (0.5.3)
     httparty (0.11.0)
@@ -300,8 +300,6 @@ GEM
     rack (1.2.8)
     rack-contrib (1.1.0)
       rack (>= 0.9.1)
-    rack-mini-profiler (0.1.28)
-      rack (>= 1.1.3)
     rack-mount (0.6.14)
       rack (>= 1.0.0)
     rack-openid (1.3.1)
@@ -471,7 +469,6 @@ DEPENDENCIES
   pry-stack_explorer
   rabl
   rack-contrib
-  rack-mini-profiler
   rack-openid
   rails (~> 3.0.20)
   rails_best_practices

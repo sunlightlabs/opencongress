@@ -77,7 +77,7 @@ display: block !important;
 
 .regarding{
 font-size: 11px;
-float: right;	
+float: right;
 }
 
 .blog_search ul{
@@ -227,7 +227,7 @@ font-size: 11px;
 
 ul#people_list li.person a.name span{
 display: block;
-font-weight: normal;
+font-weight: 400;
 margin-top: 2px;
 font-size: 12px;
 text-decoration: none;

@@ -513,6 +513,7 @@ window.Socialite = (function(window, document, undefined)
             window.fbAsyncInit = function() {
                 if(typeof window._fbAsyncInit == 'function'){
                     _fbAsyncInit();
+                    window._fbAsyncInit = null;
                 }else{
                     window.FB.init({
                         appId: settings.appId,

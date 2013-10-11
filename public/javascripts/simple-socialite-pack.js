@@ -492,13 +492,13 @@ window.Socialite = (function(window, document, undefined)
     });
 
 
-    // Facebook (Customized)
+    // Facebook
     // http://developers.facebook.com/docs/reference/plugins/like/
     // http://developers.facebook.com/docs/reference/javascript/FB.init/
 
     Socialite.network('facebook', {
         script: {
-            src : '#',
+            src : '//connect.facebook.net/{{language}}/all.js',
             id  : 'facebook-jssdk'
         },
         append: function(network)
@@ -507,26 +507,24 @@ window.Socialite = (function(window, document, undefined)
                 settings = Socialite.settings.facebook,
                 events   = { onlike: 'edge.create', onunlike: 'edge.remove', onsend: 'message.send' };
             fb.id = 'fb-root';
-            document.body.appendChild(fb);
+            document.getElementById('fb-root') || document.body.appendChild(fb);
             network.script.src = network.script.src.replace('{{language}}', settings.lang);
-            // Defer to existing fbAsyncInit and let it call FB.init
-            if(window.fbAsyncInit){
-              window._fbAsyncInit = window.fbAsyncInit;
-            }
+            if(typeof window.fbAsyncInit == 'function') window._fbAsyncInit = window.fbAsyncInit;
             window.fbAsyncInit = function() {
-                window._fbAsyncInit && _fbAsyncInit();
-                (! window._fbAsyncInit && window._fbAsyncInit.toString().match('FB.init(')) && window.FB.init({
-                      appId: settings.appId,
-                      xfbml: true
-                });
+                if(typeof window._fbAsyncInit == 'function'){
+                    _fbAsyncInit();
+                }else{
+                    window.FB.init({
+                        appId: settings.appId,
+                        xfbml: true
+                    });
+                }
                 for (var e in events) {
                     if (typeof settings[e] === 'function') {
                         window.FB.Event.subscribe(events[e], settings[e]);
                     }
                 }
             };
-            // this prevents socialite from appending the script tag.
-            return false;
         }
     });
 

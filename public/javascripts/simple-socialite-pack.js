@@ -506,10 +506,9 @@ window.Socialite = (function(window, document, undefined)
             var fb       = document.createElement('div'),
                 settings = Socialite.settings.facebook,
                 events   = { onlike: 'edge.create', onunlike: 'edge.remove', onsend: 'message.send' };
-            // Too many fb-roots and all.js's make homer something something
-            // fb.id = 'fb-root';
-            // document.body.appendChild(fb);
-            // network.script.src = network.script.src.replace('{{language}}', settings.lang);
+            fb.id = 'fb-root';
+            document.body.appendChild(fb);
+            network.script.src = network.script.src.replace('{{language}}', settings.lang);
             // Don't nuke existing fbAsyncInit-s. This will cause a warning about FB.init being called twice.
             if(window.fbAsyncInit){
               window._fbAsyncInit = window.fbAsyncInit;

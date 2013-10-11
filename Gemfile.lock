@@ -300,6 +300,8 @@ GEM
     rack (1.2.8)
     rack-contrib (1.1.0)
       rack (>= 0.9.1)
+    rack-mini-profiler (0.1.28)
+      rack (>= 1.1.3)
     rack-mount (0.6.14)
       rack (>= 1.0.0)
     rack-openid (1.3.1)
@@ -469,6 +471,7 @@ DEPENDENCIES
   pry-stack_explorer
   rabl
   rack-contrib
+  rack-mini-profiler
   rack-openid
   rails (~> 3.0.20)
   rails_best_practices

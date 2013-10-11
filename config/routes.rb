@@ -267,6 +267,6 @@ OpenCongress::Application.routes.draw do
 
   # root :to => 'index#index', :as => :home
   # Dev homepage
-  root :to => 'index#new', :as => :home
+  root :to => 'index#index', :as => :home
 
 end

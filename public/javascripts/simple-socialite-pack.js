@@ -509,8 +509,13 @@ window.Socialite = (function(window, document, undefined)
             fb.id = 'fb-root';
             document.body.appendChild(fb);
             network.script.src = network.script.src.replace('{{language}}', settings.lang);
+            // Don't nuke existing fbAsyncInit-s. This will cause a warning about FB.init being called twice.
+            if(window.fbAsyncInit){
+              window._fbAsyncInit = window.fbAsyncInit;
+            }
             window.fbAsyncInit = function() {
-                window.FB.init({
+                window._fbAsyncInit && _fbAsyncInit();
+                !window._fbAsyncInit && window.FB.init({
                       appId: settings.appId,
                       xfbml: true
                 });

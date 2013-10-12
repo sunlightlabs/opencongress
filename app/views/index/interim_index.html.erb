@@ -20,7 +20,7 @@
 
     #hero {
         height: 435px;
-        background: #c4d9df;
+        background: #c4d9df url('../images/oc-banner-bg.jpg');
         color: #fff;
     }
 
@@ -95,7 +95,7 @@
     h4.inset {
         width: 220px;
         margin: -10px auto 10px;
-        background: #c4d9df;
+        background: #c4d9df url('../images/oc-banner-bg.jpg') center 100px;
         font-weight: 300;
         text-transform: uppercase;
         font-size: 16px;
@@ -132,6 +132,7 @@
     #belt {
         position: relative;
         background: #72919d;
+        background: url('../images/cta-bg.png') right center no-repeat, url('../images/pattern-teal.png');
     }
 
     #belt h2 {
@@ -152,6 +153,19 @@
         font-size: 14px;
         line-height: 150%;
         color: #555;
+        box-shadow: 2px 2px 8px rgba(0,0,0,.15);
+    }
+
+    .bootstrap-enabled .span4.announcement:before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-left: 9px solid transparent;
+        border-right: 0px solid transparent;
+        border-bottom: 8px solid #ccac2a;
     }
 
     .bootstrap-enabled .span4.announcement>div {
@@ -255,7 +269,8 @@
 
     #superlatives {
         padding: 20px 0 50px;
-        background: #f5f5f5;
+        background: #f8f8f8;
+        background: url('../images/light-grunge-top.png') center top no-repeat, url('../images/light-grunge-bottom.png') center bottom no-repeat, url('../images/pattern-white-texture.png');
         opacity: 1;
     }
 
@@ -441,14 +456,32 @@
     /* Congress app callout */
 
     #content_footer {
+        position: relative;
         height: 180px;
-        background: #cedcdf;
+        background: #c9d6d9;
+        background-image: -ms-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
+        background-image: -moz-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
+        background-image: -o-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #C9D6D9), color-stop(.5, #CEDCDF));
+        background-image: -webkit-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
+        background-image: linear-gradient(to bottom, #C9D6D9 0%, #CEDCDF 50%);   
         padding-left: 45px;
         font-size: 14px;
         color: #666;
         line-height: 150%;
     }
 
+    #content_footer:before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 0;
+        height: 8px;
+        width: 100%;
+        padding-right: 65px; 
+        background: url('../images/zigzag.png');
+    }
+    
     #content_footer h2 {
         margin: 30px 0 10px;
         font-size: 24px;

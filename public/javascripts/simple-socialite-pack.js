@@ -509,11 +509,11 @@ window.Socialite = (function(window, document, undefined)
             fb.id = 'fb-root';
             document.getElementById('fb-root') || document.body.appendChild(fb);
             network.script.src = network.script.src.replace('{{language}}', settings.lang);
-            if(typeof window.fbAsyncInit == 'function') window._fbAsyncInit = window.fbAsyncInit;
+            if(typeof window.fbAsyncInit == 'function') window.oldFbAsyncInit = window.fbAsyncInit;
             window.fbAsyncInit = function() {
-                if(typeof window._fbAsyncInit == 'function'){
-                    _fbAsyncInit();
-                    window._fbAsyncInit = null;
+                if(typeof window.oldFbAsyncInit === 'function'){
+                    oldFbAsyncInit();
+                    window.oldFbAsyncInit = null;
                 }else{
                     window.FB.init({
                         appId: settings.appId,

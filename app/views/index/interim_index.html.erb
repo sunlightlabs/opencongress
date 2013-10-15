@@ -465,8 +465,7 @@
         background-image: -o-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
         background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #C9D6D9), color-stop(.5, #CEDCDF));
         background-image: -webkit-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
-        background-image: linear-gradient(to bottom, #C9D6D9 0%, #CEDCDF 50%);   
-        padding-left: 45px;
+        background-image: linear-gradient(to bottom, #C9D6D9 0%, #CEDCDF 50%);
         font-size: 14px;
         color: #666;
         line-height: 150%;
@@ -474,14 +473,15 @@
 
     #content_footer:before {
         content: '';
-        position: absolute;
+        position: relative;
+        display: block;
         top: -8px;
         left: 0;
         height: 8px;
-        width: 1002px;
+        margin: 0 -20px;
         background: url('../images/zigzag.png');
     }
-    
+
     #content_footer h2 {
         margin: 30px 0 10px;
         font-size: 24px;
@@ -491,9 +491,14 @@
 
     #content_footer .phones {
         position: relative;
-        bottom: 20px;
+        top: -28px;
         left: 50px;
     }
+
+    #content_footer .callout-text {
+        padding-left: 20px;
+    }
+
 
 </style>
 <% end %>
@@ -645,12 +650,12 @@
     </div>
     <div id="content_footer" class="container-fluid">
         <div class="row-fluid">
-            <div class="span7">
+            <div class="span7 callout-text">
                 <h2>Download the Congress App</h2>
-                <p>Download Sunlight's Congress app for <a href="">Android</a> and <a href="">iOS</a> devices to learn more about your elected representatives, get in touch with them and see what they're up to. Follow the latest conressional bills, see floor activity and explore votes from the palm of your hand.</p>
+                <p>Download Sunlight's Congress app for <a href="http://congress.sunlightfoundation.com/android">Android</a> and <a href="http://congress.sunlightfoundation.com/ios">iOS</a> devices to learn more about your elected representatives, get in touch with them and see what they're up to. Follow the latest conressional bills, see floor activity and explore votes from the palm of your hand.</p>
             </div>
-            <div class="span5">
-                <a href="" class="phones"><img src="../images/congress-apps.png" alt="Screenshots of Congress apps for Android and iOS"></a>
+            <div class="span5 callout-images">
+                <a href="http://congress.sunlightfoundation.com" class="phones"><img src="../images/congress-apps.png" alt="Screenshots of Congress apps for Android and iOS"></a>
             </div>
         </div>
     </div>

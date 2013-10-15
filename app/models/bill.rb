@@ -1040,9 +1040,12 @@ class Bill < ActiveRecord::Base
     if title.nil?
       ""
     else
-      prefix = UnitedStates::Bills.abbreviation_for bill_type
-      "#{prefix}#{number} #{title.title}"
+      "#{title_prefix} #{number}: #{title.title}"
     end
+  end
+
+  def title_prefix
+    prefix = UnitedStates::Bills.abbreviation_for bill_type
   end
 
   def title_for_share

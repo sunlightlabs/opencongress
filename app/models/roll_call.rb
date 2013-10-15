@@ -227,6 +227,16 @@ class RollCall < ActiveRecord::Base
     end
   end
 
+  def bill_or_amendment_title
+    if bill and amendment
+      "#{amendment.display_number} to #{bill.title_full_common}"
+    elsif bill
+      "#{bill.title_full_common}"
+    else
+      nil
+    end
+  end
+
   def short_identifier
     if self.amendment
        self.amendment.display_number

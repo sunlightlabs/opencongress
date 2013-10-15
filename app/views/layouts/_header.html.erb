@@ -16,19 +16,19 @@
                 <div class="span8">
                     <div id="user_account">
                         <% if logged_in? %>
-                            <p>
-                                Welcome <b><%= link_to h(current_user.login), user_profile_url(current_user.login) %></b> |
+                            <div class="logged-in">
+                                <span>Welcome, <%= link_to h(current_user.login), user_profile_url(current_user.login), {:id=> "username"} %></span>
                                 <% if can_blog? %>
                                     <% link_opts = {:controller => 'admin/site_text_pages', :action => 'edit', :pageparams => params }
                                        link_opts.merge!({:page_text_editable_type => @user_object.class.name.capitalize, :page_text_editable_id => @user_object.id}) if @user_object %>
-                                    <%= link_to 'Manage SEO/Site Text for this Page', link_opts %> |
+                                    | <%= link_to 'Manage SEO/Site Text for this Page', link_opts %>
                                 <% end %>
                                 <% if @facebook_user %>
                                     <%= fb_logout_link("Logout", url_for(:controller => 'logout', :only_path => false)) %>
                                 <% else %>
-                                    <%= link_to "Logout", logout_path %>
+                                    <%= link_to "Logout", logout_path, {:class => "btn large btn-primary", :id => "logout-btn"}%>
                                 <% end %>
-                            </p>
+                            </div>
                         <% else %>
                             <div class="dropdown login arrowed">
                                 <%= link_to "Register", {:controller => 'account', :action => 'login'}, { :class => "btn large btn-primary", :id => "register-btn"} %>

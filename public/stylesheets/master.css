@@ -214,14 +214,6 @@ a.logo:hover{
 
 
 
-#user_account a{
-  padding: 0px 0 0 4px;
-  }
-
-#user_account b a{
-  padding:0px;
-  }
-
 
 
 
@@ -1164,6 +1156,7 @@ margin: 0 !important;
   background: url('../images/user_nav_bg.png') 0 0 repeat-x;
   _background: url('../images/user_nav_bg.gif') 0 0 repeat-x;
   border-bottom: 1px solid #aaa;
+  border-left: 1px solid #c2c2c2;
   }
 
 .user_nav h3{
@@ -1184,6 +1177,8 @@ margin: 0 !important;
   font-size: 11px;
   text-decoration: none;
   }
+
+.user_nav .profile_link a{ border-right: 1px solid #c2c2c2;}
 
 .user_nav a span{
   display: block;
@@ -6074,6 +6069,7 @@ a.logo:hover { background-position: 0px -100px; }
 
 #register-btn.btn.large.btn-primary:hover { background: #4b9ade; }
 #register-btn.btn.large.btn-primary:before:hover { border: 1px dotted #80c3ff; }
+
 #login-btn.btn.large.dropdown-toggle {
   position: relative;
   left: 20px;
@@ -6105,6 +6101,41 @@ a.logo:hover { background-position: 0px -100px; }
   background: #555;
 }
 
+/* Logged in state */
+
+#user_account .logged-in {
+  position: relative;
+  top: 12px;
+  left: 10px;
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
+}
+
+#user_account .logged-in span {
+  font-size: 15px;
+}
+
+#user_account #username {
+  font-weight: 400;
+}
+
+#user_account #logout-btn {
+  position: relative;
+  top: -2px;
+  left: 10px;
+  width: 48px;
+  height: 18px;
+  padding: 5px;
+  border: 1px solid #d0d0d0;
+  border-radius: 3px;
+  background: #666;
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  text-shadow: none;
+  color: #fff;
+}  
+
+#user_account #logout-btn:hover {background: #555;}
 
 /* Login Dropdown */
 

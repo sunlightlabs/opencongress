@@ -6312,27 +6312,28 @@ a.logo:hover { background-position: 0px -100px; }
 }
 
 .bootstrap-enabled #search-autocomplete-choices {
-  background: #fff;
   left: 30px;
+  width: 197px !important;
+  max-height: 385px;
   margin: 0;
+  margin-top: -1px;
   padding: 0;  
   border: 1px solid #ccc;
+  background: #fff;
   font-size: 10px;
-  max-height: 385px;
+  line-height: 18px;
   overflow: scroll;  
   overflow-y: scroll;
   overflow-x: hidden;  
-  line-height: 18px;
-  margin-top: -1px;
-  width: 197px !important;
 }
+
 .bootstrap-enabled #search-autocomplete-choices h2 {
   padding: 0 10px;
   color: #666;
-
 }
 
 /* Updated Footer*/
+.footer-wrapper-old { margin-bottom: -23px;}
 
 #footerstars_wrapper {
   font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
@@ -6342,12 +6343,13 @@ a.logo:hover { background-position: 0px -100px; }
 /* Subscribe form */
 
 #footerstars_wrapper .sign_up h4{
-  letter-spacing: 0;
-  color: #fff;
+  margin-bottom: 5px;
   font-weight: 400;
   font-style: normal;
-  margin-bottom: 5px
+  letter-spacing: 0;
+  color: #466474;
 }
+
 #footerstars_wrapper .sign_up .tip{
   font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
   font-size: 13px;  
@@ -6362,9 +6364,9 @@ a.logo:hover { background-position: 0px -100px; }
 
 #footerstars_wrapper .sign_up input {
   padding-left: 10px;
+  border-radius: 3px;
   font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;  
   font-size: 13px;
-  border-radius: 3px;
 }
 
 .sign_up input.signUpEmail {
@@ -6374,34 +6376,30 @@ a.logo:hover { background-position: 0px -100px; }
   width: 60px;
 }
 .sign_up .btn.btn-sunlight {
+  height: 30px;
+  padding: 0;
+  border: 0;
   border-radius: 3px;
+  box-shadow: none;
   font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;  
   font-size: 13px;  
   font-style: normal;
   font-weight: 400;
   line-height: 30px;
-  height: 30px;
-  padding: 0;
-  border: 0;
-  box-shadow: none;
   transition: background 100ms ease;
 }
 .sign_up .btn.btn-sunlight:hover { background: #466474;}
 .sign_up .btn.btn-sunlight:active { background: #425f6e;
 }
 
-#footerstars_wrapper p{
-  color: #666;
-}
-
-#footerstars_wrapper .time{
-  color: #fff;
-}
+#footerstars_wrapper p{ color: #666;}
+#footerstars_wrapper .time{ color: #466474;}
 
 #footerstars_wrapper a {
   color: #666;
   text-decoration: underline;
 }
+
 #footerstars_wrapper a:hover {
   color: #448ccb;
   text-decoration: underline;

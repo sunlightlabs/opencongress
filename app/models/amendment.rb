@@ -5,7 +5,15 @@ class Amendment < ActiveRecord::Base
   belongs_to :key_vote_category, :class_name => "PvsCategory", :foreign_key => :key_vote_category_id
   
   def display_number
-    (/^s/.match(number) ? "S.Amdt." : "H.Amdt") + number[1..-1]
+    if number.nil? or number.empty?
+      ""
+    else
+      prefix = case number[0]
+               when 'h' then 'H.Amdt'
+               when 's' then 'S.Amdt'
+               end
+      "#{prefix} #{number[1..-1]}"
+    end
   end
   
   def offered_date_short

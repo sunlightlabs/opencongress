@@ -4,23 +4,36 @@
     <div>
       <span class="date roll"><%= @roll_call.date.strftime("%B %d, %Y") %></span>  
 
-      Roll call number <strong><%= @roll_call.number %></strong> 
-
-      <% if @roll_call.amendment %>
-        (Amendment number <%= @roll_call.amendment.display_number %>) 
-      <% end %> 
-
-      in the <%= @roll_call.chamber %>
+      Roll call number <strong><%= @roll_call.number %></strong> in the <%= @roll_call.chamber %>
     </div>
     <div>
       <strong>Question</strong>
       <em class="fontweightnormal"><%= @roll_call.question %></em>
+    </div>
 
+      <% if @roll_call.bill %>
+        <div>
+          <strong>Bill:</strong>
+          <a href="<%= bill_path(@roll_call.bill.ident) %>">
+            <%= @roll_call.bill.title_full_common %>
+          </a>
 
-      <% if @roll_call.amendment %>
-        Amendment purpose
-        <%= @roll_call.amendment.purpose %>
+          <% if @roll_call.amendment %>
+            <div>
+              <strong>Amendment:</strong>
+              <%= @roll_call.amendment.display_number %>
+            </div>
+
+            <div>
+              <strong>Amendment purpose:</strong>
+              <%= @roll_call.amendment.purpose %>
+            </div>
+          <% end %> 
+        </div>
       <% end %>
+
+
+    <div>
     </div>
   </div>
 

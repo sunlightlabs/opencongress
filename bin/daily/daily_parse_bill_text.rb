@@ -12,6 +12,7 @@ require 'rexml/document'
 require 'ostruct'
 require 'date'
 require 'yaml'
+require 'fileutils'
 
 include REXML
 
@@ -200,8 +201,12 @@ def parse_from_file(bill, text_version, filename)
 
 #    outfile = File.new("#{Settings.oc_billtext_path}/#{Settings.default_congress}/#{bill.bill_type}/#{bill.bill_type}#{bill.number}#{text_version}.gen.html", "w+")
 
-    outfile = File.new("#{Settings.oc_billtext_path}/#{Settings.default_congress}/#{bill_abbrev}/#{bill_abbrev}#{bill.number}#{text_version}.gen.html-oc", "w+")
-    OCLogger.log "Storing bill text in #{Settings.oc_billtext_path}/#{Settings.default_congress}/#{bill_abbrev}/#{bill_abbrev}#{bill.number}#{text_version}.gen.html-oc"
+    # TODO: Import guard to make sure we don't mess stuff up when default_congress is over
+    outfilename = "#{Settings.oc_billtext_path}/#{Settings.default_congress}/#{bill_abbrev}/#{bill_abbrev}#{bill.number}#{text_version}.gen.html-oc"
+    outdir = File.dirname(outfilename)
+    FileUtils.mkdir_p(outdir)
+    outfile = File.new(outfilename, "w+")
+    OCLogger.log "Storing bill text in #{outfilename}."
     doc.write outfile
   else
     OCLogger.log "Bill text not updated for #{filename}; skipping."

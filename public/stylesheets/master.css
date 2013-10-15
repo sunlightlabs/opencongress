@@ -359,16 +359,9 @@ width: 300px;
 margin: 25px 30px 10px;
 }
 
-
-
-/*div#search{
-margin: 4px 0 0 0;
-float: right;
-width: 323px;
-position: relative;
-
-}*/
-
+#search {
+  position: relative;
+}
 
 .search_button{
 position: absolute;
@@ -6316,29 +6309,15 @@ a.logo:hover { background-position: 0px -100px; }
   width: 197px !important;
   max-height: 385px;
   margin: 0;
-<<<<<<< HEAD
-  padding: 0;
-=======
   margin-top: -1px;
-  padding: 0;  
->>>>>>> design
+  padding: 0;
   border: 1px solid #ccc;
   background: #fff;
   font-size: 10px;
-<<<<<<< HEAD
-  max-height: 385px;
+  line-height: 18px;
   overflow: scroll;
   overflow-y: scroll;
   overflow-x: hidden;
-  line-height: 18px;
-  margin-top: -1px;
-  width: 197px !important;
-=======
-  line-height: 18px;
-  overflow: scroll;  
-  overflow-y: scroll;
-  overflow-x: hidden;  
->>>>>>> design
 }
 
 .bootstrap-enabled #search-autocomplete-choices h2 {
@@ -6378,12 +6357,8 @@ a.logo:hover { background-position: 0px -100px; }
 
 #footerstars_wrapper .sign_up input {
   padding-left: 10px;
-<<<<<<< HEAD
-  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
-=======
   border-radius: 3px;
-  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;  
->>>>>>> design
+  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
   font-size: 13px;
 }
 
@@ -6398,14 +6373,9 @@ a.logo:hover { background-position: 0px -100px; }
   padding: 0;
   border: 0;
   border-radius: 3px;
-<<<<<<< HEAD
+  box-shadow: none;
   font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
   font-size: 13px;
-=======
-  box-shadow: none;
-  font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;  
-  font-size: 13px;  
->>>>>>> design
   font-style: normal;
   font-weight: 400;
   line-height: 30px;
@@ -6448,4 +6418,10 @@ a.logo:hover { background-position: 0px -100px; }
   width: 135px;
   margin-bottom: 20px;
   background: url('../images/sf-logo-small.png') no-repeat left bottom;
+}
+
+.three-up {
+  width: 30%;
+  margin-right: 2%;
+  float: left;
 }

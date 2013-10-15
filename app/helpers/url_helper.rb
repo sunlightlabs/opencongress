@@ -3,7 +3,7 @@ module UrlHelper
 	def link_to_shown_url(url, opts = {})
 	  link_to url, url, opts
   end
-	
+
   def link_to_item(item, attribute, action, controller = nil, show_views = false, trunc = false)
     link_text = ""
     link_text += trunc ? "<span class=\"title\">#{truncate(item.send(attribute), :length => trunc)}</span>".html_safe :
@@ -25,7 +25,11 @@ module UrlHelper
   def link_to_person(person)
     link_to person.name, :controller => 'people', :action => 'show', :id => person
   end
-  
+
+  def link_to_seated_person(person)
+    link_to person.seated_name, :controller => 'people', :action => 'show', :id => person
+  end
+
   def link_to_bill(bill)
     link_to bill.title_full_common, bill_url(bill)
   end
@@ -41,7 +45,7 @@ module UrlHelper
       url_for :controller => object.class.name.downcase, :action => 'show', :id => object
     end
   end
- 
+
   def url_for_internal(link)
     case link.notebookable.type.to_s
     when 'Bill'
@@ -54,10 +58,10 @@ module UrlHelper
       url_for contact_congress_letter_path(link.notebookable)
     when 'Commentary'
       link.url
-    end    
+    end
   end
 
-  def link_to_internal(link)    
+  def link_to_internal(link)
     link_to link.title, url_for_internal(link)
   end
 
@@ -65,24 +69,24 @@ module UrlHelper
   def server_url_for(options = {})
     url_for options.update(:only_path => false)
   end
-  
-  
-  def with_subdomain(subdomain)  
+
+
+  def with_subdomain(subdomain)
     subdomain = (subdomain || '')
     subdomain += '.' unless subdomain.empty?
 
     # Using HOST here instead of request.domain because
     # HOST can be 'staging.opengovernment.org' whereas request.domain in that case
     # would be simply 'opengovernment.org'
-    [subdomain, HOST, request.port_string].join  
+    [subdomain, HOST, request.port_string].join
   end
-  
-  def url_for(options = nil)    
-    if options.kind_of?(Hash) && options.has_key?(:subdomain)  
-      options[:host] = with_subdomain(options.delete(:subdomain))  
+
+  def url_for(options = nil)
+    if options.kind_of?(Hash) && options.has_key?(:subdomain)
+      options[:host] = with_subdomain(options.delete(:subdomain))
     end
 
-    super  
+    super
   end
 
 end

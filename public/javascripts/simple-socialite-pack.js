@@ -506,6 +506,7 @@ window.Socialite = (function(window, document, undefined)
             var fb       = document.createElement('div'),
                 settings = Socialite.settings.facebook,
                 events   = { onlike: 'edge.create', onunlike: 'edge.remove', onsend: 'message.send' };
+
             fb.id = 'fb-root';
             document.getElementById('fb-root') || document.body.appendChild(fb);
             network.script.src = network.script.src.replace('{{language}}', settings.lang);
@@ -526,6 +527,8 @@ window.Socialite = (function(window, document, undefined)
                     }
                 }
             };
+            // this prevents socialite from appending the script tag.
+            return false;
         }
     });
 

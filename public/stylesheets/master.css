@@ -6043,6 +6043,13 @@ a.logo:hover { background-position: 0px -100px; }
 /* Nav width fix */
 #nav { width: 1002px; }
 
+/* Socialite */
+
+#header .share-buttons {
+  position: relative;
+  top: 16px;
+  left: 23px;
+}
 
 /* Register & Login Buttons */
 
@@ -6185,6 +6192,9 @@ a.logo:hover { background-position: 0px -100px; }
   color: #bbb;
 }
 
+#user_account .dropdown-menu .fb_iframe_widget {
+  margin: 20px 45px 15px;
+}
 
 /* Search */
 /*#search { position: relative;}*/

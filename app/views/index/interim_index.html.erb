@@ -75,12 +75,14 @@
 
     #hero button.search:hover, #hero button.search:active { opacity: 1;}
 
-    p.featured {
+    .form-search .featured {
         margin-top: 15px;
         font-size: 14px;
     }
 
-    .featured a { text-decoration: underline; }
+    .form-search .featured a { text-decoration: underline; }
+    .form-search .featured a:after { content: ','; }
+    .form-search .featured a:last-child:after { content: ''; }
 
     /* Today in Congress Status */
 
@@ -170,7 +172,7 @@
         border-bottom: 8px solid #ccac2a;
     }
 
-    .bootstrap-enabled .span4.announcement>div {
+    .bootstrap-enabled .span4.announcement > div {
         position: absolute;
         top: 9px;
         left: 9px;

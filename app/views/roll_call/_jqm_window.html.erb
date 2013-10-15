@@ -1,9 +1,37 @@
-        <div id='<%= vote_name_suitable_for_id(vote_name(vote_type)) %>_<%= party %>' class='jqmWindow scrolling'>
-          <div class='ie'><a href='#' class='jqmClose'>Close</a></div><h4><%= party %> <%= person_type %>s Voting '<%= vote_name(vote_type) %>'</h4>
-          <% @roll_call.roll_call_votes.each do |vote| %>
-            <% if vote.vote == vote_type and (party == 'All' or vote.person.party == party or (party == 'Other' and not ['Democrat', 'Republican'].include?(vote.person.party))) %>
-              <%= link_to_person vote.person %><br />
-            <% end %>
+        <% vote_type_text = vote_name(vote_type) %>
+        <div id='<%= vote_name_suitable_for_id(vote_type_text) %>_<%= party %>' class='jqmWindow scrolling'>
+          <div class='ie'><a href='#' class='jqmClose hide-text'>Close</a></div><h4><%= party %> <%= person_type %>s Voting '<%= vote_type_text %>'</h4>
+          <% if party == 'All' %>
+              <div class="three-up">
+                  <h3>Democrats</h3>
+                  <ul>
+                      <% @roll_call.send("democrat_#{vote_type_text.downcase.sub('not voting', 'abstain')}_votes".to_sym).each do |vote| %>
+                      <%= link_to_seated_person vote.person %><br />
+                      <% end %>
+                  </ul>
+              </div>
+              <div class="three-up">
+                  <h3>Republicans</h3>
+                  <ul>
+                      <% @roll_call.send("republican_#{vote_type_text.downcase.sub('not voting', 'abstain')}_votes".to_sym).each do |vote| %>
+                      <%= link_to_seated_person vote.person %><br />
+                      <% end %>
+                  </ul>
+              </div>
+              <div class="three-up">
+                  <h3>Independents / Third Party</h3>
+                  <ul>
+                      <% @roll_call.send("independent_#{vote_type_text.downcase.sub('not voting', 'abstain')}_votes".to_sym).each do |vote| %>
+                      <%= link_to_seated_person vote.person %><br />
+                      <% end %>
+                  </ul>
+              </div>
+          <% else %>
+              <% @roll_call.roll_call_votes.each do |vote| %>
+                <% if vote.vote == vote_type and (party == 'All' or vote.person.party == party or (party == 'Other' and not ['Democrat', 'Republican'].include?(vote.person.party))) %>
+                  <%= link_to_person vote.person %><br />
+                <% end %>
+              <% end %>
           <% end %>
         </div>
 

@@ -359,16 +359,9 @@ width: 300px;
 margin: 25px 30px 10px;
 }
 
-
-
-/*div#search{
-margin: 4px 0 0 0;
-float: right;
-width: 323px;
-position: relative;
-
-}*/
-
+#search {
+  position: relative;
+}
 
 .search_button{
 position: absolute;
@@ -6425,4 +6418,10 @@ a.logo:hover { background-position: 0px -100px; }
   width: 135px;
   margin-bottom: 20px;
   background: url('../images/sf-logo-small.png') no-repeat left bottom;
+}
+
+.three-up {
+  width: 30%;
+  margin-right: 2%;
+  float: left;
 }

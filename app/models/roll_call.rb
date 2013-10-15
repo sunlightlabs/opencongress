@@ -27,7 +27,7 @@ class RollCall < ActiveRecord::Base
     rc.has_many :non_votes, :conditions => { :roll_call_votes => { :vote => ['Not Voting', '0'] } }
   end
 
-  with_options :class_name => 'RollCallVote', :include => :person do |rc|
+  with_options :class_name => 'RollCallVote', :include => :person, :order => "people.lastname ASC" do |rc|
     rc.has_many :democrat_votes, :conditions => "people.party='Democrat'"
     rc.has_many :democrat_aye_votes, :conditions => "people.party='Democrat' AND roll_call_votes.vote='+'"
     rc.has_many :democrat_nay_votes, :conditions => "people.party='Democrat' AND roll_call_votes.vote='-'"
@@ -37,6 +37,11 @@ class RollCall < ActiveRecord::Base
     rc.has_many :republican_aye_votes, :conditions => "people.party='Republican' AND roll_call_votes.vote='+'"
     rc.has_many :republican_nay_votes, :conditions => "people.party='Republican' AND roll_call_votes.vote='-'"
     rc.has_many :republican_abstain_votes, :conditions => "people.party='Republican' AND roll_call_votes.vote='0'"
+
+    rc.has_many :independent_votes, :conditions => "people.party NOT IN ('Democrat', 'Republican')"
+    rc.has_many :independent_aye_votes, :conditions => "people.party NOT IN ('Democrat', 'Republican') AND roll_call_votes.vote='+'"
+    rc.has_many :independent_nay_votes, :conditions => "people.party NOT IN ('Democrat', 'Republican') AND roll_call_votes.vote='-'"
+    rc.has_many :independent_abstain_votes, :conditions => "people.party NOT IN ('Democrat', 'Republican') AND roll_call_votes.vote='0'"
   end
 
   @@BILL_PASSAGE_TYPES = [

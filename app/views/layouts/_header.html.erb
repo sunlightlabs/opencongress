@@ -36,15 +36,16 @@
                                     Login
                                 </a>
                                 <div class="dropdown-menu">
-                                    <form action="" class="centered">
+                                    <%= form_for :user, :url => '/account/login', :class => "centered" do |f| %>
                                         <fieldset>
                                             <legend>Log into OpenCongress</legend>
-                                            <input type="text" placeholder="username">
-                                            <input type="password" placeholder="password">
+                                            <%= f.text_field :login, :placeholder => "username" %>
+                                            <%= f.password_field :password, :placeholder => "password" %>
+                                            <%= hidden_field_tag('login_action', login_action) if (login_action ||= nil) %>
                                             <button type="submit" class="btn btn-primary">Login</button>
                                         </fieldset>
                                         <a href="/account/forgot_password">Forgot Password?</a>
-                                    </form>
+                                    <% end %>
                                     <%= fb_login_and_redirect request.url, :text => 'Login with Facebook', :scope => 'email,user_location,user_about_me' %>
                                     <a href="/login">Login with your OpenID</a>
                                 </div>

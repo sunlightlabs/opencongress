@@ -5,8 +5,8 @@ class AddSpammableFieldsToNotebookItems < ActiveRecord::Migration
       t.string  :ip_address
       t.boolean :spam
       t.boolean :censored
-      t.index :spam
-      t.index :censored
+      # t.index :spam
+      # t.index :censored
     end
   end
 

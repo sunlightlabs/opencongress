@@ -6,7 +6,7 @@
         <p class="stats">
             <span class="muted"><%= person.party %>, <%= State::STATE_FOR_ABBREV[person.state] rescue "" %></span>
             <% if superlative == :popular %>
-                <strong class="pull-right muted"><%= person.page_views_count %> views</strong>
+                <strong class="pull-right muted"><%= pluralize(person.view_count, 'view' %> this week</strong>
             <% end %>
         </p>
     </div>

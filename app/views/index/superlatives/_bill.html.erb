@@ -4,7 +4,7 @@
         <h4><%= bill.typenumber %>&mdash;<span><%= truncate(bill.title_common, :length => 40) rescue nil %></h4>
         <p class="stats">
             <% if superlative == :popular %>
-                <strong><%= pluralize(bill.page_views_count, 'view') %></strong>
+                <strong><%= pluralize(bill.view_count, 'view') %> this week</strong>
                 <span class="pull-right muted">Introduced <%= Time.at(bill.introduced).to_s :short %></span>
             <% else %>
                 <% action = bill.last_action %>

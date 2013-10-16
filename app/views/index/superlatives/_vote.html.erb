@@ -6,7 +6,7 @@
         <p class="detail"><strong><%= vote.roll_type %></strong></p>
         <p class="stats">
             <% if superlative == :popular %>
-                <strong><%= vote.page_views_count %> views</strong>
+                <strong><%= pluralize(vote.view_count, 'view') %> this week</strong>
             <% else %>
                 <% if vote.passed? %>
                     <strong class="ayes">Ayes: <%= vote.ayes %></strong>

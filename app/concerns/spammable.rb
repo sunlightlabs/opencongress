@@ -22,6 +22,9 @@ module Spammable
       include Rakismet::Model
       before_save :check_for_spam, :unless => :persisted?
       alias_method :is_spam?, :spam?
+      scope :spam, where("spam=TRUE")
+      scope :ham, where("spam=FALSE AND censored=FALSE")
+      scope :censored, where("censored=TRUE AND spam=FALSE")
     end
   end
 
@@ -47,5 +50,4 @@ module Spammable
     end
     save
   end
-
 end

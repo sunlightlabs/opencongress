@@ -71,15 +71,3 @@
                :locals => { :more_url => (@person.videos.size > 2) ? link_to("See more videos (#{@person.videos.size} total)", { :controller => 'people', :action => 'videos', :id => @person }, :class => "arrow") : nil } %>
   </div>
 <% end %>
-
-<div class="padding">
-  <% if @featured_person_text %>
-    <h2>Featured Members of Congress</h2>
-    <div id="featured_person">
-      <p class="bold behave">On <%= @featured_person_text.created_at.strftime("%B %d, %Y") %> <%= @person.popular_name %> was featured on the homepage of OpenCongress:</p>
-      <blockquote>
-        <%= @featured_person_text.text %>
-      </blockquote>
-    </div>
-  <% end %>
-</div>

@@ -29,7 +29,7 @@
           <% else %>
               <% @roll_call.roll_call_votes.each do |vote| %>
                 <% if vote.vote == vote_type and (party == 'All' or vote.person.party == party or (party == 'Other' and not ['Democrat', 'Republican'].include?(vote.person.party))) %>
-                  <%= link_to_person vote.person %><br />
+                  <%= link_to_seated_person vote.person %><br />
                 <% end %>
               <% end %>
           <% end %>

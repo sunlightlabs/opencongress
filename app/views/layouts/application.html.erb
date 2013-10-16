@@ -133,6 +133,7 @@
   <div class="clear">&nbsp;</div>
   <%= render :partial => 'layouts/footer' %>
   <%= render :partial => 'shared/analytics_foot' %>
+  <%= fb_connect_async_js %>
   <%= javascript_include_tag "simple-socialite-pack.js" %>
   <%= javascript_include_tag "socialite/socialite.opencongress.js" %>
   <script>
@@ -153,7 +154,6 @@
     displayName: 'Email'
   });
   </script>
-  <%= fb_connect_async_js %>
 
 </body>
 </html>

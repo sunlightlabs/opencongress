@@ -4,18 +4,16 @@
 %div{:class => "person_box_big", :style => "background-color:#{bgcolor};margin-bottom:3px;"}
   = link_to image_tag(person.photo_path(:thumb, :ignore_missing), :class => "photo legislator-photo-thumb", :alt => 'photo'), person_url(person.id)
   %p
-    - if dist = person.district_rel
-      = link_to "#{dist.ordinalized_number} District", state_district_path(person.state, person.district), :class => 'title'
+    - if person.district
+      = link_to "#{person.district.to_i.ordinalize} District", state_district_path(person.state, person.district), :class => 'title'
       %span= link_to person.full_name, person_url(person.id)
-      - if dist.group
-        %span= link_to("MyOC Group", group_path(dist.group.id))
+      - if person.district_rel
+        %span= link_to("MyOC Group", group_path(person.district_rel.group.id))
     - else
       = link_to person.full_name, person_url(person.id), :class => 'title'
     %span= person.party
-    - if person == @senators.first
-      %strong
-      = pluralize(person.consecutive_years, 'year')
-      in office
+    - if person.consecutive_years == 0
+      First year in office
     - else
       = pluralize(person.consecutive_years, 'year')
       in office

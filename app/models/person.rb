@@ -1058,10 +1058,12 @@ class Person < ActiveRecord::Base
     (representative? && district != '0')
   end
 
+  def state_rel
+    @state_rel ||= State.find_by_abbreviation(state)
+  end
+
   def district_rel
-    if state_rel = State.find_by_abbreviation(state)
-      return District.where(:district_number => district, :state_id => state_rel).try(:first)
-    end
+    @district_rel ||= District.where(:district_number => district, :state_id => state_rel).try(:first) if state_rel
   end
 
   def parse_facets(facets, primary_facet, selected_facets)

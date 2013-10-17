@@ -20,28 +20,16 @@ class RollCall < ActiveRecord::Base
   }
   scope :on_passage, lambda { where("question ILIKE 'On Passage%' OR question ILIKE 'On Motion to Concur in Senate%' OR question ILIKE 'On Concurring%'") }
 
-  with_options :class_name => 'RollCallVote' do |rc|
-    rc.has_many :aye_votes, :conditions => { :roll_call_votes => { :vote => ['Aye', 'Yea', '+'] } }
-    rc.has_many :nay_votes, :conditions => { :roll_call_votes => { :vote => ['No', 'Nay', '-' ] } }
-    rc.has_many :present_votes, :conditions => { :roll_call_votes => { :vote => ['P', 'Present' ] } }
-    rc.has_many :non_votes, :conditions => { :roll_call_votes => { :vote => ['Not Voting', '0'] } }
+  # All combinations of aye_votes, democrat_votes, democrat_aye_votes, etc.
+  %W(aye nay abstain present).each do |vote|
+    define_method("#{vote}_votes") { roll_call_votes.send("#{vote}s".to_sym)}
+    %W(democrat republican independent).each do |party|
+      define_method("#{party}_#{vote}_votes") { roll_call_votes.send("#{vote}s".to_sym).send("#{party}s".to_sym) }
+    end
   end
-
-  with_options :class_name => 'RollCallVote', :include => :person, :order => "people.lastname ASC" do |rc|
-    rc.has_many :democrat_votes, :conditions => "people.party='Democrat'"
-    rc.has_many :democrat_aye_votes, :conditions => "people.party='Democrat' AND roll_call_votes.vote='+'"
-    rc.has_many :democrat_nay_votes, :conditions => "people.party='Democrat' AND roll_call_votes.vote='-'"
-    rc.has_many :democrat_abstain_votes, :conditions => "people.party='Democrat' AND roll_call_votes.vote='0'"
-
-    rc.has_many :republican_votes, :conditions => "people.party='Republican'"
-    rc.has_many :republican_aye_votes, :conditions => "people.party='Republican' AND roll_call_votes.vote='+'"
-    rc.has_many :republican_nay_votes, :conditions => "people.party='Republican' AND roll_call_votes.vote='-'"
-    rc.has_many :republican_abstain_votes, :conditions => "people.party='Republican' AND roll_call_votes.vote='0'"
-
-    rc.has_many :independent_votes, :conditions => "people.party NOT IN ('Democrat', 'Republican')"
-    rc.has_many :independent_aye_votes, :conditions => "people.party NOT IN ('Democrat', 'Republican') AND roll_call_votes.vote='+'"
-    rc.has_many :independent_nay_votes, :conditions => "people.party NOT IN ('Democrat', 'Republican') AND roll_call_votes.vote='-'"
-    rc.has_many :independent_abstain_votes, :conditions => "people.party NOT IN ('Democrat', 'Republican') AND roll_call_votes.vote='0'"
+  alias_method :non_votes, :abstain_votes
+  %W(democrat republican independent).each do |party|
+    define_method("#{party}_votes") { roll_call_votes.send("#{party}s".to_sym)}
   end
 
   @@BILL_PASSAGE_TYPES = [
@@ -91,13 +79,13 @@ class RollCall < ActiveRecord::Base
 
   #  before_save :set_party_lines
   def set_party_lines
-    if self.republican_nay_votes.count >= self.republican_aye_votes.count
+    if republican_nay_votes.count >= republican_aye_votes.count
       self.republican_position = false
     else
       self.republican_position = true
     end
 
-    if self.democrat_nay_votes.count >= self.democrat_aye_votes.count
+    if democrat_nay_votes.count >= democrat_aye_votes.count
       self.democratic_position = false
     else
       self.democratic_position = true
@@ -184,19 +172,19 @@ class RollCall < ActiveRecord::Base
   end
 
   def affirmative_type
-    Set['Aye', 'Yea', '+'].intersection(vote_counts.keys).first or 'Aye'
+    Set.new(RollCallVote::AFFIRMATIVE_VALUES).intersection(vote_counts.keys).first or 'Aye'
   end
 
   def negative_type
-    Set['No', 'Nay', '-'].intersection(vote_counts.keys).first or 'Nay'
+    Set.new(RollCallVote::NEGATIVE_VALUES).intersection(vote_counts.keys).first or 'Nay'
   end
 
   def present_type
-    Set['P', 'Present'].intersection(vote_counts.keys).first or 'Present'
+    Set.new(RollCallVote::PRESENT_VALUES).intersection(vote_counts.keys).first or 'Present'
   end
 
   def non_vote_type
-    Set['Not Voting', '0'].intersection(vote_counts.keys).first or 'Not Voting'
+    Set.new(RollCallVote::ABSTAIN_VALUES).intersection(vote_counts.keys).first or 'Not Voting'
   end
 
   def RollCall.latest_votes_for_unique_bills(num = 3)

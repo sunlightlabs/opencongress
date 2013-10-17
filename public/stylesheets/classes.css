@@ -970,8 +970,9 @@ float: left;
 }
 
 #groups_nav .groupname{
-width: 115px;
+width: 95%;
 overflow: hidden;
+text-overflow: ellipsis;
 float: left;
 }
 

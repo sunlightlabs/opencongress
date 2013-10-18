@@ -66,11 +66,11 @@ class AddUniqueIndexToCommitteeThomasId < ActiveRecord::Migration
       end
     end
 
-    # add_index :committees, :thomas_id, :unique => true
+    add_index :committees, :thomas_id, :unique => true
   end
 
   def self.down
-    # remove_index :committees, :thomas_id
+    remove_index :committees, :thomas_id
   end
 end
 

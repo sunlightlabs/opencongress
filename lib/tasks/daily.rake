@@ -375,7 +375,6 @@ namespace :update do
     :in_session,
     :expire_cached_bill_fragments, :expire_cached_person_fragments
   ]
-  task :initial_migration => [ :unitedstates_rsync, :rsync, :congress_legislators, :committees ]
   task :parse_all => [ :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule]
   task :govtrack => [ :rsync, :bill_text ]
   task :committee_info => [:committee_reports, :committee_schedule]

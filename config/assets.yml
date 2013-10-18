@@ -76,6 +76,7 @@ stylesheets:
         - public/stylesheets/jquery.jcarousel.css
         - public/stylesheets/search.css
         - public/stylesheets/bootstrap-custom.min.css
+        - public/stylesheets/interim_index.css
     districts:
         - public/stylesheets/states.css
         - public/stylesheets/districts.css

@@ -110,6 +110,9 @@ module UnitedStates
         leg_person.phone = leg_hash['+current_term']['phone']
         leg_person.contact_webform = leg_hash['+current_term']['contact_form']
         leg_person.congress_office = leg_hash['+current_term']['address']
+
+        state = State.find_or_create_by_abbreviation(leg_hash['+current_term']['state'])
+        district = state.districts.find_or_create_by_district_number(leg_hash['+current_term']['district'])
       end
 
       leg_person.save! if leg_person.changed?

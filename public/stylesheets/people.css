@@ -1172,7 +1172,7 @@ padding: 3px 0;
     font-style: italic;
 }
 
-.partner_logo img {
+.partner_logo .logos {
     float: left;
     padding-right: 20px;
 }

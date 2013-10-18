@@ -46,23 +46,25 @@
 
   <% unless @fundraisers.empty? %>
     <h2 style="margin-top: 30px;">Fundraisers</h2>
-    <p>Below are the three latest fundraising events for <%= @person.popular_name %>.</p>
+    <p>Below are the three most recent fundraising events for <%= @person.popular_name %>.</p>
 
     <% @fundraisers[0..2].each do |f| %>
       <%= render :partial => 'fundraiser', :object => f %>
     <% end %>
 
-    <div class="fundraiser_more_button"><p><span><%= link_to "See all events (#{@fundraisers.size})", { :controller => 'people', :action => 'fundraisers', :id => @person }, :class => 'med_button' %></span></p></div>
+    <div class="fundraiser_more_button"><p><span><%= link_to "See all events (#{@fundraisers.size})", { :controller => 'people', :action => 'fundraisers', :id => @person }, :class => 'button small blue' %></span></p></div>
 
     <div class="partner_logo">
-    <%= link_to image_tag('partners/opensecrets.png'), "http://opensecrets.org" %>
-    <p>Campaign contribution data provided by <%= link_to "OpenSecrets.org", "http://OpenSecrets.org" %>,
-      the nonpartisan guide to money in politics. * Contribution data is
-      constantly being updated and this page may not be entirely up to date.
-      For the most current info visit
-      <a href="http://www.opensecrets.org/politicians/summary.php?cycle=<%= Settings.current_opensecrets_cycle %>&cid=<%= @person.osid %>"><%= @person.popular_name.possessive %> OpenSecrets profile</a>.</p>
+    <div class="logos">
+      <%= link_to image_tag('partners/influenceexplorer.png'), "http://influenceexplorer.com", :target => "_blank" %><br />
+      <%= link_to image_tag('partners/partytime.png'), "http://politicalpartytime.org", :target => "_blank" %>
     </div>
-
-    <div class="fundraiser_footer"><p>Fundraiser data provided by <a href="http://politicalpartytime.org" target="_new">Political Party Time</a>.</p></div>
+    <p>Campaign finance figures via the Sunlight Foundation’s <%= link_to "InfluenceExplorer.com", "http://influenceexplorer.com", :target => "_blank" %>
+       (data provided by the <%= link_to "Center for Responsive Politics", "http://opensecrets.org", :target => "_blank" %>).
+       Contribution data is constantly being updated; for the most current information visit <%= @person.popular_name.possessive %>
+       Influence Explorer page. Fundraiser data provided by <%= link_to "Sunlight’s Political Party Time", "http://politicalpartytime.org", :target => "_blank" %>
+       and is determined by the availability of event information.
+    </p>
+    </div>
   <% end %>
 </div>

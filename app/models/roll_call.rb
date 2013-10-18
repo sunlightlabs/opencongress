@@ -151,13 +151,17 @@ class RollCall < ActiveRecord::Base
       subject_bill = bill
     end
 
-    if subject_bill
-      root_category = Subject.root_category
-      subjects = subject_bill.subjects.where(:parent_id => root_category.id)
-      subjects.map(&:term).join(', ')
-    else
-      ""
-    end
+    return "" if subject_bill.nil?
+
+    root_category = Subject.root_category
+    subjects = subject_bill.subjects.where(:parent_id => root_category.id)
+
+    return "" if subjects.count == 0
+
+    first_subject = subjects.shift.term
+    return first_subject if subjects.count == 0
+
+    "#{first_subject} and #{subjects.count} others"
   end
 
   def vote_counts

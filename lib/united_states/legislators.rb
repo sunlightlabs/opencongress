@@ -111,8 +111,17 @@ module UnitedStates
         leg_person.contact_webform = leg_hash['+current_term']['contact_form']
         leg_person.congress_office = leg_hash['+current_term']['address']
 
-        state = State.find_or_create_by_abbreviation(leg_hash['+current_term']['state'])
-        district = state.districts.find_or_create_by_district_number(leg_hash['+current_term']['district'])
+        if leg_hash['+current_term']['state']
+          state_abbrev = leg_hash['+current_term']['state']
+          state_name = State::ABBREVIATIONS.invert.fetch(state_abbrev, nil)
+
+          unless state_name.nil?
+            state = State.find_or_create_by_abbreviation_and_name(state_abbrev, state_name)
+            if leg_hash['+current_term']['district']
+              state.districts.find_or_create_by_district_number(leg_hash['+current_term']['district'])
+            end
+          end
+        end
       end
 
       leg_person.save! if leg_person.changed?

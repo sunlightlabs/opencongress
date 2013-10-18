@@ -6,7 +6,30 @@ class District < ActiveRecord::Base
   has_many :watch_dogs
   has_one :current_watch_dog, :class_name => "WatchDog", :conditions => ["is_active = ?", true], :order => "created_at desc"
   has_one :group
+  after_create :create_default_group
 
+  def default_group_description
+    user_guide_url = Rails.application.routes.url_helpers.howtouse_url(:host => URI.parse(Settings.base_url).host)
+    "This is an automatically generated OpenCongress Group for users in #{possessive_state_district_text}. This group allows you to connect with others on the site from your district."
+  end
+
+  def create_default_group
+    if group.nil?
+      owner = User.find_by_login(Settings.default_group_owner_login)
+      return if owner.nil?
+
+      grp = Group.new(:user_id => owner.id,
+                      :name => "OpenCongress #{district_state_text} Group",
+                      :description => default_group_description,
+                      :join_type => "INVITE_ONLY",
+                      :invite_type => "MODERATOR",
+                      :post_type => "ANYONE",
+                      :publicly_visible => true,
+                      :district_id => self.id
+                     )
+      grp.save!
+    end
+  end
 
   def user_count
     User.for_district(state.abbreviation, district_number).count
@@ -167,6 +190,10 @@ class District < ActiveRecord::Base
 
   def district_state_text
     self.state.abbreviation + "-" + self.district_number.to_s
+  end
+
+  def possessive_state_district_text
+    "#{state.name.possessive} #{ordinalized_number} district"
   end
 
   def freebase_url_name

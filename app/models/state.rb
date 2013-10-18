@@ -29,6 +29,30 @@ class State < ActiveRecord::Base
   end
 
   has_one :group
+  after_create :create_default_group
+
+  def default_group_description
+    user_guide_url = Rails.application.routes.url_helpers.howtouse_url(:host => URI.parse(Settings.base_url).host)
+    "This is an automatically generated OpenCongress Group for users in #{name}. This group allows you to connect with others on the site from your state."
+  end
+
+  def create_default_group
+    if group.nil?
+      owner = User.find_by_login(Settings.default_group_owner_login)
+      return if owner.nil?
+
+      grp = Group.new(:user_id => owner.id,
+                      :name => "OpenCongress #{name} Group",
+                      :description => default_group_description,
+                      :join_type => "INVITE_ONLY",
+                      :invite_type => "MODERATOR",
+                      :post_type => "ANYONE",
+                      :publicly_visible => true,
+                      :state_id => self.id
+                     )
+      grp.save!
+    end
+  end
 
   def to_param
     abbreviation

@@ -38,6 +38,24 @@ class Group < ActiveRecord::Base
     "#{id}_#{name.gsub(/[^A-Za-z]+/i, '_').gsub(/\s/, '_')}"
   end
 
+  def default_description
+    if is_district_group?
+      district.default_group_description
+    elsif is_state_group?
+      state.default_group_description
+    else
+      nil
+    end
+  end
+
+  def reset_description!
+    desc = default_description
+    unless desc.nil?
+      self.description = desc
+      save!
+    end
+  end
+
   def display_object_name
     'Group'
   end

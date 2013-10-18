@@ -24,7 +24,7 @@
       = group_image(@group)
 
     = @group.description
-    - if @group.state || @group.district
+    - if @group.is_state_group? || @group.is_district_group? || @group.is_issue_group?
       Learn more about managing your profile and group settings in our
       =link_to("User guide", :controller => :about, :action => :howtouse)
   

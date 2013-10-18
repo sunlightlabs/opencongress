@@ -25,12 +25,49 @@ class Subject < ActiveRecord::Base
   has_many :pvs_categories, :through => :pvs_category_mappings
 
   before_save :count_bills
+  after_save :create_default_group, :if => :is_category?
 
   acts_as_bookmarkable
 
   scope :active, includes(:bills).where("bills.session" => Bill.available_sessions.last)
   scope :with_major_bills, includes(:bills).where(:bills => { :is_major => true })
   scope :top_level, lambda { where(:parent_id => Subject.root_category.id) }
+
+  def is_category?
+    is_child_of(Subject.root_category)
+  end
+
+  def default_group
+    owner = User.find_by_login(Settings.default_group_owner_login)
+    return if owner.nil?
+    groups.where(:user_id => owner.id).first
+  end
+
+  def has_default_group?
+    !default_group.nil?
+  end
+
+  def default_group_description
+    "This is an automatically generated OpenCongress Group for tracking this issue area. Join this group to follow updates on major actions and key votes for related legislation and to connect with others interested."
+  end
+
+  def create_default_group
+    if not has_default_group?
+      owner = User.find_by_login(Settings.default_group_owner_login)
+      return if owner.nil?
+
+      grp = Group.new(:user_id => owner.id,
+                      :name => "OpenCongress #{term} Group",
+                      :description => default_group_description,
+                      :join_type => "INVITE_ONLY",
+                      :invite_type => "MODERATOR",
+                      :post_type => "ANYONE",
+                      :publicly_visible => true,
+                      :subject_id => self.id
+                     )
+      grp.save!
+    end
+  end
 
   def self.root_category
     find_by_term("\u22a4")

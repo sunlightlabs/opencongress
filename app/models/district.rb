@@ -9,7 +9,6 @@ class District < ActiveRecord::Base
   after_create :create_default_group
 
   def default_group_description
-    user_guide_url = Rails.application.routes.url_helpers.howtouse_url(:host => URI.parse(Settings.base_url).host)
     "This is an automatically generated OpenCongress Group for users in #{possessive_state_district_text}. This group allows you to connect with others on the site from your district."
   end
 

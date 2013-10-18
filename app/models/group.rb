@@ -43,6 +43,8 @@ class Group < ActiveRecord::Base
       district.default_group_description
     elsif is_state_group?
       state.default_group_description
+    elsif is_issue_group?
+      subject.default_group_description
     else
       nil
     end
@@ -58,6 +60,11 @@ class Group < ActiveRecord::Base
 
   def display_object_name
     'Group'
+  end
+
+  def is_issue_group?
+    return false if subject.nil?
+    subject.default_group == self
   end
 
   def is_state_group?

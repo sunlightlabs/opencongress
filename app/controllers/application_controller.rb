@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
   before_filter :is_authorized?
   before_filter :set_simple_comments
   before_filter :last_updated
+  after_filter :cache_control
 
   def facebook_check
     return unless session[:nofacebook].nil?
@@ -275,6 +276,12 @@ class ApplicationController < ActionController::Base
 
   def last_updated
     @updated_at = CongressSession.order(["date desc"]).first.date
+  end
+
+  def cache_control
+    unless logged_in?
+      expires_in 3.hours, :public => true, 'max-stale' => 0
+    end
   end
 
   protected

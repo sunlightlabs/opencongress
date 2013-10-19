@@ -1,5 +1,6 @@
 class AddAllIndices < ActiveRecord::Migration
   def self.up
+    Rails.logger.info "WARNING: This migration, #{self.class.name}, includes a bunch of commented out concurrent indexes that you'll need to run manually."
     # CREATE INDEX CONCURRENTLY users_state_index ON users USING btree (state);
     # CREATE INDEX CONCURRENTLY users_state_district_index ON users USING btree (state, district);
     # CREATE INDEX CONCURRENTLY index_users_on_status ON users USING btree (status);

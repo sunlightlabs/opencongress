@@ -99,7 +99,11 @@
             <div class="span8 pull-right call-to-action">
                 <h2>Track Bills, Follow Lawmakers and More</h2>
                 <p>Create an OpenCongress account to get updates on lawmaking activity, bills and votes, and connect with other users on issues you care about.</p>
-                <div id="signup-btn" class="btn huge primary">Sign Up Now</div>
+                <% if logged_in? %>
+                    <a href="<%= url_for :controller => 'profile', :login => current_user.login, :action => 'watchdog' %>" id="signup-btn" class="btn huge primary">See Your Reps</a>
+                <% else %>
+                    <a href="/login" id="signup-btn" class="btn huge primary">Sign Up Now</a>
+                <% end %>
             </div>
         </div>
     </div>

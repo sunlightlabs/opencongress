@@ -40,8 +40,8 @@ module PeopleHelper
     end
   end
 
-	def person_type_small(person_type)
-	  case person_type.downcase
+  def person_type_small(person_type)
+    case person_type.downcase
     when /^rep/
       "Rep."
     else
@@ -67,7 +67,7 @@ module PeopleHelper
   end
 
   def top_voting_similarities
-	  total_people = (@person.title == "Sen.") ? 100 : 440
+    total_people = (@person.title == "Sen.") ? 100 : 440
 
     stats = @person.person_stats
     verb = (@person.is_sitting?) ? 'votes' : 'voted'
@@ -128,15 +128,15 @@ module PeopleHelper
     end
   end
 
-	def sponsored_bill_stats
-    high_sponsor_rank = (@person.title == "Sen.") ? Person.sen.includes(:person_stats).maximum("sponsored_bills_rank") : Person.rep.includes(:person_stats).maximum("sponsored_bills_rank")
-    high_cosponsor_rank = (@person.title == "Sen.") ? Person.sen.includes(:person_stats).maximum("cosponsored_bills_rank") : Person.rep.includes(:person_stats).maximum("cosponsored_bills_rank")
- 
+  def sponsored_bill_stats
+    high_sponsor_rank = (@person.title == "Sen.") ? Person.sen.includes(:person_stats).maximum("person_stats.sponsored_bills_rank") : Person.rep.includes(:person_stats).maximum("person_stats.sponsored_bills_rank")
+    high_cosponsor_rank = (@person.title == "Sen.") ? Person.sen.includes(:person_stats).maximum("person_stats.cosponsored_bills_rank") : Person.rep.includes(:person_stats).maximum("person_stats.cosponsored_bills_rank")
+
     output = ""
     unless @person.person_stats.sponsored_bills.nil?
       output += "<li>" +
-  	          link_to(@person.person_stats.sponsored_bills, {:controller => 'people', :action => 'bills', :id => @person}) +
-  	          " Sponsored Bills (Ranks #{@person.person_stats.sponsored_bills_rank} of #{high_sponsor_rank}) "
+              link_to(@person.person_stats.sponsored_bills, {:controller => 'people', :action => 'bills', :id => @person}) +
+              " Sponsored Bills (Ranks #{@person.person_stats.sponsored_bills_rank} of #{high_sponsor_rank}) "
       unless @person.person_stats.sponsored_bills_passed.nil?
         output += @person.person_stats.sponsored_bills_passed.to_s +
           " Made Into Law (Ranks #{@person.person_stats.sponsored_bills_passed_rank} of #{high_sponsor_rank})</li>"
@@ -147,41 +147,41 @@ module PeopleHelper
 
     unless @person.person_stats.cosponsored_bills.nil?
       output += "<li>" +
-          	  link_to(@person.person_stats.cosponsored_bills, {:controller => 'people', :action => 'bills', :id => @person}) +
-          	  " Co-Sponsored Bills (Ranks #{@person.person_stats.cosponsored_bills_rank} of #{high_cosponsor_rank}) "
+              link_to(@person.person_stats.cosponsored_bills, {:controller => 'people', :action => 'bills', :id => @person}) +
+              " Co-Sponsored Bills (Ranks #{@person.person_stats.cosponsored_bills_rank} of #{high_cosponsor_rank}) "
       unless @person.person_stats.cosponsored_bills_passed.nil?
         output += @person.person_stats.cosponsored_bills_passed.to_s +
-            	  " Made Into Law (Ranks #{@person.person_stats.cosponsored_bills_passed_rank} of #{high_cosponsor_rank})" 
-      end        
+                " Made Into Law (Ranks #{@person.person_stats.cosponsored_bills_passed_rank} of #{high_cosponsor_rank})"
+      end
       output += "</li>"
     else
       output += "<li>No Co-Sponsored Bills</li>"
     end
 
     return output.blank? ? "Data unavailable at this time." : output.html_safe
-	end
+  end
 
 
-	def alphalist(person)
-		out = '<div class="alphabet_links">'
-		alpha = []
-		letter = ''
-		person.each do |person|
-			if person.lastname.to_s[0,1] != letter
-				letter = person.lastname.to_s[0,1]
-				alpha << letter
-			end
-		end
-		alpha.each do |x|
-			out += "<a href=\"\##{x}\">#{x}</a>"
-			unless x == alpha.last
-				out += "&middot;"
-			end
-		end
-		out += "</div>"
-	end
+  def alphalist(person)
+    out = '<div class="alphabet_links">'
+    alpha = []
+    letter = ''
+    person.each do |person|
+      if person.lastname.to_s[0,1] != letter
+        letter = person.lastname.to_s[0,1]
+        alpha << letter
+      end
+    end
+    alpha.each do |x|
+      out += "<a href=\"\##{x}\">#{x}</a>"
+      unless x == alpha.last
+        out += "&middot;"
+      end
+    end
+    out += "</div>"
+  end
 
-	def rc_compare(vo, xml = false)
+  def rc_compare(vo, xml = false)
     vote1 = RollCallVote.find_by_roll_call_id_and_person_id(vo.id,@person1.id)
     vote2 = RollCallVote.find_by_roll_call_id_and_person_id(vo.id,@person2.id)
 

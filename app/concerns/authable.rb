@@ -87,9 +87,10 @@ module Authable
   # Activates the user in the database.
   def activate!
     @activated = true
-    self.update_attribute(:activated_at, Time.now)
-    self.update_attribute(:activation_code, nil)
-    self.update_attribute(:status, 1)
+    self.activated_at = Time.now
+    self.activateion_code = nil
+    self.status = 1
+    self.save
   end
 
   # Returns true if the user has just been activated.

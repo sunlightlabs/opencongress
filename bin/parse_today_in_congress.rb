@@ -16,7 +16,7 @@ begin
 
   unless (CongressSession.find_by_date_and_chamber(date, 'house'))
     not_in_session = (doc.to_s =~ /There are no events scheduled today/)
-    
+
     CongressSession.create({ :date => date, :chamber => 'house', :is_in_session => !not_in_session})
     puts "Session for house:#{date} added to DB."
   else
@@ -32,13 +32,15 @@ begin
 
   if s_session && (s_session = /(.*) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d+), (\d+)/.match(s_session))
     junk, month, day_of_month, year = s_session.captures
-  
+
     date = Date.strptime("#{month} #{day_of_month} #{year}", "%b %d %Y")
 
-    unless (CongressSession.find_by_date_and_chamber(date, 'senate'))
+    ss = CongressSession.find_by_date_and_chamber(date, 'senate')
+    unless ss
       CongressSession.create({ :date => date, :chamber => 'senate', :is_in_session => true})
       puts "Session for senate:#{date} added to DB."
     else
+      ss.touch
       puts "Session for senate:#{date} already in DB. Skipping."
     end
   end
@@ -54,9 +56,9 @@ end
 ##
 
 # File.open("#{GOVTRACK_DATA_PATH}/congress.nextsession.house", "r") do |f|
-#   f.each_line do |line| 
+#   f.each_line do |line|
 #     date = Time.at(line.to_i)
-# 
+#
 #     unless (CongressSession.find_by_date_and_chamber(date, 'house'))
 #       CongressSession.create({ :date => date, :chamber => 'house', :is_in_session => true})
 #       puts "Session for house:#{date} added to DB."
@@ -65,11 +67,11 @@ end
 #     end
 #   end
 # end
-# 
+#
 # File.open("#{GOVTRACK_DATA_PATH}/congress.nextsession.senate", "r") do |f|
-#   f.each_line do |line| 
+#   f.each_line do |line|
 #     date = Time.at(line.to_i)
-# 
+#
 #     unless (CongressSession.find_by_date_and_chamber(date, 'senate'))
 #       CongressSession.create({ :date => date, :chamber => 'senate', :is_in_session => true})
 #       puts "Session for senate:#{date} added to DB."

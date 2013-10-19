@@ -275,7 +275,7 @@ class ApplicationController < ActionController::Base
   end
 
   def last_updated
-    @updated_at = CongressSession.order(["date desc"]).first.date
+    @updated_at = CongressSession.order(["updated_at desc"]).first.updated_at
   end
 
   def cache_control

@@ -72,7 +72,7 @@
                     <p class="featured">
                         Popular Searches:
                         <% @searches.each do |search| %>
-                            <%= link_to search.text, "/search/result?q=#{search.text}" %>
+                            <%= link_to search.text, "/search/result?q=#{search.text}search_congress%5B#{Settings.default_congress}%5D=#{Settings.default_congress}&search_bills=1&search_people=1&search_committees=1&search_issues=1&search_comments=1" %>
                         <% end %>
                     </p>
                 </form>

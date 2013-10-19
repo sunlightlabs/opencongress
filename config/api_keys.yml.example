@@ -9,6 +9,7 @@ defaults: &defaults
   bing: xxx
   # The MapQuest API is used for geolocating user addresses in order to
   # lookup congressional districts.
+  # Community edition keys get 5000 daily geocodes for free, keep tabs here: http://developer.mapquest.com/web/tools/account/reporting
   mapquest: xxx
   # The Sunlight API key is used to map zip codes and lat/lng pairs to
   # congressional districts.

@@ -254,7 +254,7 @@ EOT
 		end
 	end
 	def id_class
-		"id=\"#{@admin_styles ? 'index' : controller.controller_name}\" class=\"#{params[:person_type]? params[:person_type] : controller.action_name}\""
+		"id=\"#{@admin_styles ? 'index' : controller.controller_name}\" class=\"#{params[:person_type]? params[:person_type] : controller.action_name} #{logged_in? ? 'logged-in' : 'logged-out'}\""
 	end
 	def class_class
 	  "class=\"#{controller.controller_name} #{params[:person_type]? params[:person_type] : controller.action_name}\""

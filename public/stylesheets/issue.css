@@ -222,4 +222,7 @@ table.money th, table.money td {
     #zipcode_lookup:after {
         top: 96px;
     }
+    .logged-in #zipcode_lookup:after {
+        top: 126px;
+    }
 }

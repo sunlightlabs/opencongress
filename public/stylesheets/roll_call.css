@@ -206,6 +206,7 @@ background-position: -2px 84px;
   width: 28px;
   background: url('../images/zip_arrow.png');
 }
+.logged-in #zipcode_lookup:after { top: 126px; }
 .jcarousel-skin-tango{
 clear: both;
 padding-top: 0px !important;

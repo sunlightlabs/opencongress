@@ -409,6 +409,7 @@ padding: 31px 0 0 0;
   width: 28px;
   background: url('../images/zip_arrow.png');
 }
+.logged-in #zipcode_lookup:after{ top: 126px; }
 #zipcode_lookup h3{
 color: #4e6426;
 font-size: 14px;

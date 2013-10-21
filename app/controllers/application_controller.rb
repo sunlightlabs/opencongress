@@ -279,8 +279,10 @@ class ApplicationController < ActionController::Base
   end
 
   def cache_control
-    unless logged_in?
-      expires_in 3.hours, :public => true, 'max-stale' => 0
+    if logged_in?
+      expires_in 0.hours, :private => true, 'no-cache' => true
+    else
+      expires_in 3.hours, :public => true
     end
   end
 

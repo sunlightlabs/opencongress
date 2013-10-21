@@ -88,7 +88,7 @@ module Authable
   def activate!
     @activated = true
     self.activated_at = Time.now
-    self.activateion_code = nil
+    self.activation_code = nil
     self.status = 1
     self.save
   end

@@ -1,7 +1,7 @@
 require 'authenticated_system'
 
 class ApplicationController < ActionController::Base
-  protect_from_forgery
+  protect_from_forgery :if => :logged_in?
 
   include AuthenticatedSystem
   include SimpleCaptcha::ControllerHelpers
@@ -225,9 +225,12 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
-    unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
-      session[:return_to] = request.fullpath
-    end
+    # This seems a bit blunt. Since we should only need a return_to when dealing with authentication, the
+    # need to set this should be isolated to the authentication system. If we uncomment this it will thwart
+    # caching by requiring an active session.
+    # unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
+      # session[:return_to] = request.fullpath
+    # end
   end
 
 

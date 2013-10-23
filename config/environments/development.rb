@@ -1,3 +1,4 @@
+require 'strip_empty_sessions'
 OpenCongress::Application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
   config.cache_store = :mem_cache_store, '127.0.0.1:11211', { :namespace => 'opencongress_development' }
@@ -25,4 +26,6 @@ OpenCongress::Application.configure do
   config.action_dispatch.best_standards_support = :builtin
 
   config.faxable.deliver_faxes = false
+
+  config.middleware.insert_before "ActionDispatch::Cookies", "StripEmptySessions", :key => "_opencongress_session", :path => "/", :httponly => true
 end

@@ -278,6 +278,7 @@ class AccountController < ApplicationController
     end
     redirect_loc = session[:return_to]
     self.current_user.forget_me if logged_in?
+    request.env["cookie.logout"] = true
     cookies.delete :auth_token
     cookies.delete '_session_id'
     cookies.delete 'ocloggedin'

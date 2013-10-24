@@ -10,7 +10,7 @@
             target.addClass('loading').load(trigger.prop('value'), function(){target.removeClass('loading')});
         });
         // get local reps
-        $.getJSON('/index/localized_search_placeholder.json', function(data){
+        $.getJSON('/index/localized_search_placeholder.json?<%= Time.now.tv_sec %>', function(data){
             if(data.legislators.length){
                 var target = $('#main_search'),
                     items = [],

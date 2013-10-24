@@ -278,7 +278,6 @@ class AccountController < ApplicationController
     end
     redirect_loc = session[:return_to]
     self.current_user.forget_me if logged_in?
-    request.env["cookie.logout"] = true
     cookies.delete :auth_token
     cookies.delete '_session_id'
     cookies.delete 'ocloggedin'
@@ -303,7 +302,7 @@ class AccountController < ApplicationController
     force_fb_cookie_delete
 
     reset_session
-    session[:return_to] = redirect_loc
+    # session[:return_to] = redirect_loc
     flash[:notice] = "You have been logged out."
 
     #redirect_back_or_default('/')

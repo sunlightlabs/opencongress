@@ -159,11 +159,6 @@ OpenCongress::Application.routes.draw do
     get 'get_replies', :on => :collection
   end
 
-  match 'howtouse' => 'about#howtouse'
-  match 'userguide' => redirect('/howtouse')
-
-  resources :contact, :only => [:index, :create]
-
   scope :controller => 'account' do
     for action in %w{ login why logout signup welcome contact_congress}
       match action, :action => action
@@ -260,10 +255,17 @@ OpenCongress::Application.routes.draw do
   match 'house_reconciliation' => 'index#house_reconciliation'
   match 'pipa' => 'index#pipa'
 
+  match '/donate' => redirect('http://sunlightfoundation.com/about/funding/')
+  match '/about/privacy_policy' => redirect("terms")
+  match '/about/terms_of_service' => redirect("terms")
+  match 'terms' => 'about#terms'
+  match 'howtouse' => 'about#howtouse'
+  match '/userguide' => redirect("/howtouse")
+
+  resources :contact, :only => [:index, :create]
+
   match ':controller(/:action(/:id))'
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
-
-  match '/donate' => redirect('http://sunlightfoundation.com/about/funding/')
 
   # root :to => 'index#index', :as => :home
   # Dev homepage

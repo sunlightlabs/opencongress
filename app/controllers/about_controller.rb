@@ -53,8 +53,8 @@ class AboutController < ApplicationController
     @page_title = "Screencast"
   end
 
-  def terms_of_service
-     @page_title = "Terms of Service and Comment Policy"
+  def terms
+     @page_title = "Terms of Service and Privacy Policy"
   end
 
   def privacy_policy

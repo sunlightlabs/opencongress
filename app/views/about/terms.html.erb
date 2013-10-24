@@ -1,0 +1,13 @@
+<div id="heading"><h2>OpenCongress Terms of Service &amp; Privacy Policy - Updated September 2013</h2></div>
+<div class="padding" id="privacyPolicy">
+
+  <p>
+    <%= %w(#terms_of_service #licensing_terms #privacy_policy).map{|id| link_to(id.titleize[1..-1], id)}.join(' &bull; ').html_safe %>
+  </p>
+  <br><br>
+  <%= render :partial => 'about/terms_of_service' %>
+  <br><br>
+  <%= render :partial => 'about/licensing_terms' %>
+  <br><br>
+  <%= render :partial => 'about/privacy_policy' %>
+</div>

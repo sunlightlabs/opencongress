@@ -96,7 +96,7 @@ class Comment < ActiveRecord::Base
     return parent.commentable_link if commentable_type.nil?
     case commentable_type
     when 'Person', 'Committee', 'Article'
-      {:controller => self.commentable_type.pluralize.downcase, :action => 'show', :id => commentable.to_param}
+      {:controller => commentable_type.pluralize.downcase, :action => 'show', :id => commentable.to_param}
     when 'Bill'
       {:controller => 'bill', :action => 'show', :id => commentable.ident}
     when 'Subject'
@@ -104,8 +104,10 @@ class Comment < ActiveRecord::Base
     when 'BillTextNode'
       {:controller => 'bill', :action => 'text', :id => commentable.bill_text_version.bill.ident,
               :version => commentable.bill_text_version.version, :nid => commentable.nid }
+    when 'ContactCongressLetter'
+      {:controller => 'contact_congress_letters', :action => 'show', :id => commentable.to_param}
     else
-      {:controller => 'index' }
+      {:controller => 'index'}
     end
 
   end
@@ -185,8 +187,10 @@ class Comment < ActiveRecord::Base
       return specific_object.term
     elsif self.commentable_type == "Article"
       return specific_object.title
+    elsif self.commentable_type == "ContactCongressLetter"
+      return "A Letter to Congress RE: #{specific_object.subject}"
     else
-      return {:controller => 'index' }
+      return "A page on OpenCongress"
     end
 
   end

@@ -16,6 +16,9 @@ class StripEmptySessions
   def call(env)
     logger = @logger || env['rack.errors']
 
+    logger.write("=====================================\n")
+    logger.write(pp(env, ''))
+
     request_cookies = env['rack.request.cookie_hash'] || {}
 
     @session_cookie_in_request = request_cookies.keys.include?(@session_cookie_name)

@@ -13,7 +13,8 @@ OpenCongress::Application.configure do
 
                                     # These are the cookies that will be forcibly expired after a user who
                                     # is logged out views a page that does not require customization.
-                                    :extra_cookies => ["sessionid", "csrfokten", "fbsr_#{facebook_app_id}"]
+                                    :extra_cookies => ["sessionid", "csrfokten", "fbsr_#{facebook_app_id}"],
+                                    :extra_cookie_pattern => /fbm_.+/
                                   })
 end
 

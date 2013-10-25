@@ -9,6 +9,7 @@ class StripEmptySessions
     @flash_message_cookie_name = options[:flashmsg_cookie]
     @bogus_keys = options.fetch(:bogus_keys, []).uniq
     @cookies_to_reset = options.fetch(:extra_cookies, []) + [@session_cookie_name, @logged_in_cookie_name, @flash_message_cookie_name]
+    @regexp_cookies_to_reset = options[:extra_cookie_pattern]
   end
 
   def call(env)
@@ -72,10 +73,11 @@ class StripEmptySessions
       # cachable by varnish.
 
       set_cookie_lines = []
-      @cookies_to_reset.each do |cookie_name|
-        if request_cookies.keys.include?(cookie_name)
-          set_cookie_lines << build_cookie(cookie_name, :value => nil, :expires => Time.new(1970, 1, 1))
-        end
+      request_cookies.keys.select {|cookie_name|
+        @cookies_to_reset.include?(cookie_name) || (@regexp_cookies_to_reset.present? && cookie_name =~ @regexp_cookies_to_reset)
+      }
+      .each do |cookie_name |
+        set_cookie_lines << build_cookie(cookie_name, :value => nil, :expires => Time.new(1970, 1, 1))
       end
       logger.write("Deleting: #{pp set_cookie_lines}")
     end

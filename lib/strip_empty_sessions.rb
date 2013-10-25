@@ -22,16 +22,18 @@ class StripEmptySessions
     logger.write("Request cookies were: #{pp request_cookies}")
 
     @session_cookie_in_request = request_cookies.keys.include?(@session_cookie_name)
+    @logged_in_before_request = request_cookies.keys.include?(@logged_in_cookie_name) && @session_cookie_in_request
 
     status, headers, body = @app.call(env)
 
     set_cookie_lines = headers.fetch('Set-Cookie', '').lines.map(&:strip).to_a
     logger.write("Received set-cookie from backend: #{pp set_cookie_lines}, from headers: #{pp headers}")
 
-    @logged_in_after_response = set_cookie_lines.select{ |c| c.starts_with?("#{@logged_in_cookie_name}=true") }.to_a.empty? == false
+    @logged_out_by_response = set_cookie_lines.select{ |c| c.starts_with?("#{@logged_in_cookie_name}=;") }.any?
+    @logged_in_by_request = set_cookie_lines.select{ |c| c.starts_with?("#{@logged_in_cookie_name}=true") }.any?
+    @logged_in_after_response = (@logged_in_before_request || @logged_in_by_request) && !@logged_out_by_response
 
     session_data = req.session.clone
-
     @flash_msg_in_session = session_data.keys.include?("flash")
 
     @session_is_sparse = (session_data.keys - @bogus_keys).empty?

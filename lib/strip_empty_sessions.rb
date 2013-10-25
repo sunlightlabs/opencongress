@@ -71,6 +71,7 @@ class StripEmptySessions
           set_cookie_lines << build_cookie(cookie_name, :value => nil, :expires => Time.new(1970, 1, 1))
         end
       end
+      logger.write("Deleting: #{pp set_cookie_lines, ''}")
     end
 
     if set_cookie_lines.empty?

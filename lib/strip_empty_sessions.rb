@@ -87,7 +87,7 @@ class StripEmptySessions
         end
         cookie_opts = {:value => nil, :expires => Time.new(1970, 1, 1)}
         cookie_opts.merge!({:domain => domain}) if cookie_name =~ /^fbm_/ && domain.present?
-        set_cookie_lines << build_cookie(cookie_name, :value => nil, :expires => Time.new(1970, 1, 1))
+        set_cookie_lines << build_cookie(cookie_name, cookie_opts)
       end
       logger.write("Deleting: #{pp set_cookie_lines}")
     end

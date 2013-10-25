@@ -1,8 +1,6 @@
 require 'pp'
 
 class StripEmptySessions
-  ENV_SESSION_KEY = 'rack.session'
-
   def initialize(app, options = {})
     @app = app
     @options = options
@@ -15,12 +13,13 @@ class StripEmptySessions
 
   def call(env)
     req = Rack::Request.new(env)
-    logger = @logger || req.env['rack.errors']
+    logger = @logger || env['rack.errors']
 
     logger.write("=====================================\n")
-    logger.write("#{pp req.env['rack.request']}")
+    logger.write(req.path)
 
-    request_cookies = req.env['rack.request.cookie_hash'] || {}
+    request_cookies = req.cookies.clone
+    logger.writer("Request cookies were: #{pp request_cookies}")
 
     @session_cookie_in_request = request_cookies.keys.include?(@session_cookie_name)
 
@@ -30,7 +29,7 @@ class StripEmptySessions
 
     @logged_in_after_response = set_cookie_lines.select{ |c| c.starts_with?("#{@logged_in_cookie_name}=true") }.to_a.empty? == false
 
-    session_data = req.env[ENV_SESSION_KEY]
+    session_data = req.session.clone
 
     @flash_msg_in_session = session_data.keys.include?("flash")
 

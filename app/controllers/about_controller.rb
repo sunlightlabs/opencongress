@@ -1,7 +1,6 @@
 class AboutController < ApplicationController
   skip_before_filter :has_accepted_tos?
   skip_before_filter :has_district?
-  skip_before_filter :store_location, :only => ["privacy_policy","terms_of_service"]
 
   def index
     @page_title = 'About Open Congress'

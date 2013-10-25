@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   include UrlHelper
 
   before_filter :facebook_check
-  before_filter :store_location
+  before_filter :clear_return_to
   before_filter :current_tab
   before_filter :has_accepted_tos?
   before_filter :has_district?
@@ -224,16 +224,6 @@ class ApplicationController < ActionController::Base
     @site_text_page = OpenStruct.new if @site_text_page.nil?
   end
 
-  def store_location
-    # This seems a bit blunt. Since we should only need a return_to when dealing with authentication, the
-    # need to set this should be isolated to the authentication system. If we uncomment this it will thwart
-    # caching by requiring an active session.
-    # unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
-      # session[:return_to] = request.fullpath
-    # end
-  end
-
-
   def render_404(exception = nil)
     if exception
       logger.info "Rendering 404 with exception: #{exception.message}"
@@ -289,6 +279,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+  def clear_return_to
+    session.delete(:return_to) rescue nil
+  end
+
   def dump_session
     logger.info session.to_yaml
   end

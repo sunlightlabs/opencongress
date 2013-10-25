@@ -1,7 +1,6 @@
 class IssueController < ApplicationController
   before_filter :issue_profile_shared, :only => [:show, :comments, :defunct]
   before_filter :page_view, :only => :show
-  skip_before_filter :store_location, :except => [:index, :most_viewed, :show, :top_twenty_bills, :top_viewed_bills]
 
   PER_PAGE = 1000
 

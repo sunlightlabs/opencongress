@@ -4,10 +4,6 @@ class ProfileController < ApplicationController
   before_filter :can_view_tab, :only => [:actions, :items_tracked, :bills, :my_votes, :comments, :person, :issues, :watchdog]
   before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
-  skip_before_filter :store_location, :only => [:track,:tracked_bill_status,
-                                                :tracked_votes,:tracked_commentary_news,:tracked_commentary_blogs,
-                                                :edit_profile, :watchdog, :remove_vote, :remove_bill_bookmark,
-                                                :remove_person_bookmark, :remove_bookmark, :pn_ajax, :update_privacy]
 
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])

@@ -3,7 +3,6 @@ class UserFeedsController < ApplicationController
   before_filter :get_user_login
   before_filter :is_permitted_tracked?, :except => [:actions,:comments,:votes]
   before_filter :is_permitted_actions?, :only => [:actions,:comments,:votes]
-  skip_before_filter :store_location
 
   def tracked_items
 

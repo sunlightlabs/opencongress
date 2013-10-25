@@ -5,7 +5,6 @@ class FriendsController < ApplicationController
   before_filter :get_user
   before_filter :login_required, :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
   before_filter :must_be_owner, :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
-  skip_before_filter :store_location, :only => [:add, :invite]
 
   # GET /friends
   # GET /friends.xml

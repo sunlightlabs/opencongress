@@ -3,8 +3,7 @@ class ArticlesController < ApplicationController
   verify :method => :post, :only => [ :destroy, :create, :update ],
          :redirect_to => { :action => :list }
 
-  skip_before_filter :store_location, :except => [:index, :list, :view]
-  before_filter :get_blogroll
+    before_filter :get_blogroll
 
   public
     def index

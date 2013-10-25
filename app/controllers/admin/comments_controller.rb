@@ -1,6 +1,5 @@
 class Admin::CommentsController < Admin::IndexController
   before_filter :admin_login_required
-  skip_before_filter :store_location, :only => ["bulk_operations"]
 
 
   def index

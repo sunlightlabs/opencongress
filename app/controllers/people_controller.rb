@@ -6,7 +6,6 @@ class PeopleController < ApplicationController
   before_filter :page_view, :only => :show
   #before_filter :person_profile_shared, :only => [:show, :comments, :bills, :voting_history, :money, :news_blogs, :videos, :news, :blogs]
   before_filter :person_profile_shared, :only => [:show, :comments, :bills, :voting_history, :money, :videos]
-  skip_before_filter :store_location, :only => [:rate,:atom_top_commentary,:atom_news,:atom_blogs,:atom_topnews,:atom_topblogs,:atom_featured,:atom,:atom_top20]
 
 
   def index

@@ -8,7 +8,6 @@ class BillController < ApplicationController
   before_filter :aavtabs, :only => [:actions, :amendments, :votes, :actions_votes]
   before_filter :get_range, :only => [:hot]
   before_filter :login_required, :only => [:bill_vote, :hot_bill_vote]
-  skip_before_filter :store_location, :only => [:bill_vote, :status_text, :user_stats_ajax, :atom, :atom_blogs, :atom_news, :atom_top20, :atom_top_commentary, :atom_topblogs, :atom_topnews]
 
   TITLE_MAX_LENGTH = 150
 

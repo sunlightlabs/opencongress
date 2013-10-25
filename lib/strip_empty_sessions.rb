@@ -1,4 +1,5 @@
 class StripEmptySessions
+  ENV_SESSION_KEY = 'rack.session'
 
   def initialize(app, options = {})
     @app = app
@@ -13,7 +14,7 @@ class StripEmptySessions
   def call(env)
     logger = @logger || env['rack.errors']
 
-    request_cookies = env['rack.request.cookie_hash']
+    request_cookies = env['rack.request.cookie_hash'] || {}
 
     @session_cookie_in_request = request_cookies.keys.include?(@session_cookie_name)
 
@@ -55,7 +56,7 @@ class StripEmptySessions
       # The user is logged out, the page is not customized for them, and
       # we don't have any session data needed to customize future pages.
       # Drop all existing Set-Cookie headers and add new ones to expire
-      # the cookies seen in the request so that future requests are 
+      # the cookies seen in the request so that future requests are
       # cachable by varnish.
 
       set_cookie_lines = []
@@ -79,6 +80,8 @@ class StripEmptySessions
 
   # Copied from the cookie session middleware.
   def build_cookie(key, value)
+    # No known use for path-restricted cookies
+    value.merge!(:path => '/')
     case value
     when Hash
       domain  = "; domain="  + value[:domain] if value[:domain]

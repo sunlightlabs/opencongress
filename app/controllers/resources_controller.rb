@@ -9,8 +9,7 @@ class ResourcesController < ApplicationController
     'healthcare_panel' => 'HEALTHCARE'}
 
   before_filter :login_required, :only => "writerep"
-  skip_before_filter :store_location, :except => [:index]
-  after_filter :record_referrer, :only => PANEL_ACTIONS.keys
+    after_filter :record_referrer, :only => PANEL_ACTIONS.keys
 
   def index
     @page_title = "OpenCongress Resources"

@@ -2,9 +2,10 @@ class AccountController < ApplicationController
   before_filter :login_from_cookie, :except => [:reset_password]
   before_filter :login_required, :only => [:index, :welcome, :accept_tos, :determine_district, :change_pw,
                                            :mailing_list, :partner_mailing_list]
+  skip_before_filter :clear_return_to, :only => [:login, :index, :accept_tos, :determine_district, :change_pw, :mailing_list, :partner_mailing_list]
+  before_filter :get_return_location, :only => [:login, :index, :signup]
   after_filter :check_wiki, :only => [:login, :activate]
 
-  skip_before_filter :store_location
   skip_before_filter :has_accepted_tos?, :only => [:accept_tos, :logout]
   skip_before_filter :is_authorized?, :only => [:logout]
   skip_before_filter :has_district?, :only => [:determine_district, :logout, :accept_tos]
@@ -532,111 +533,121 @@ class AccountController < ApplicationController
   end
 
   protected
-    def open_id_authentication(identity_url)
-      # Pass optional :required and :optional keys to specify what sreg fields you want.
-      # Be sure to yield registration, a third argument in the #authenticate_with_open_id block.
-      authenticate_with_open_id(identity_url, :required => [:nickname, :email]) do |status, identity_url, registration|
-        if status.successful?
-          if self.current_user = User.find_by_identity_url(identity_url)
-            # registration is a hash containing the valid sreg keys given above
-            # use this to map them to fields of your user model
-            #              {'login=' => 'nickname', 'email=' => 'email', 'full_name=' => 'fullname'}.each do |attr, reg|
-            #                current_user.send(attr, registration[reg]) unless registration[reg].blank?
-            #              end
-            unless self.current_user.save
-              flash[:error] = "Error saving the fields from your OpenID profile: #{current_user.errors.full_messages.to_sentence}"
-            end
+
+  def get_return_location
+    referrer_hash = ActionController::Routing::Routes.recognize_path(request.referrer)
+    if !(referrer_hash[:controller] == 'account' && %w(login signup index).include?(referrer_hash[:action])) && request.referrer =~ /^https?:\/\/#{Regexp.escape(Settings.base_url.sub(/^https?:\/\//, ''))}/
+    # unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
+      session[:return_to] = request.referrer
+    end
+  end
+
+  def open_id_authentication(identity_url)
+    # Pass optional :required and :optional keys to specify what sreg fields you want.
+    # Be sure to yield registration, a third argument in the #authenticate_with_open_id block.
+    authenticate_with_open_id(identity_url, :required => [:nickname, :email]) do |status, identity_url, registration|
+      if status.successful?
+        if self.current_user = User.find_by_identity_url(identity_url)
+          # registration is a hash containing the valid sreg keys given above
+          # use this to map them to fields of your user model
+          #              {'login=' => 'nickname', 'email=' => 'email', 'full_name=' => 'fullname'}.each do |attr, reg|
+          #                current_user.send(attr, registration[reg]) unless registration[reg].blank?
+          #              end
+          unless self.current_user.save
+            flash[:error] = "Error saving the fields from your OpenID profile: #{current_user.errors.full_messages.to_sentence}"
+          end
+        else
+         u = User.new()
+          {'login=' => 'nickname', 'email=' => 'email', 'full_name=' => 'fullname'}.each do |attr, reg|
+            u.send(attr, registration[reg]) unless registration[reg].blank?
+          end
+          if u.save && self.current_user = User.find_by_identity_url(identity_url)
+            logger.info "rock on"
           else
-           u = User.new()
-            {'login=' => 'nickname', 'email=' => 'email', 'full_name=' => 'fullname'}.each do |attr, reg|
-              u.send(attr, registration[reg]) unless registration[reg].blank?
-            end
-            if u.save && self.current_user = User.find_by_identity_url(identity_url)
-              logger.info "rock on"
-            else
-              session[:idurl] = identity_url
-              redirect_to :action => 'new_openid' and return
-            end
+            session[:idurl] = identity_url
+            redirect_to :action => 'new_openid' and return
           end
         end
       end
     end
+  end
 
   private
-    def activate_redirect(url = welcome_url)
-      if session[:formageddon_unsent_threads]
-        redirect_to '/contact_congress_letters/delayed_send'
-        return
-      elsif session[:group_invite_url]
-        redirect_to session[:group_invite_url]
-        return
-      else
-        redirect_to url
-        return
-      end
+
+  def activate_redirect(url = welcome_url)
+    if session[:formageddon_unsent_threads]
+      redirect_to '/contact_congress_letters/delayed_send'
+      return
+    elsif session[:group_invite_url]
+      redirect_to session[:group_invite_url]
+      return
+    else
+      redirect_to url
+      return
     end
+  end
 
 
-    def root_url
-      home_url
-    end
-    def process_login_actions
-      if session[:login_action] && session[:login_action][:url]
-        if ['support_bill', 'oppose_bill'].include?(session[:login_action][:action])
-          if session[:login_action][:bill]
-            bill = Bill.find_by_ident(session[:login_action][:bill])
-            if bill
-              position = case session[:login_action][:action]
-                         when 'support_bill' then :support
-                         when 'oppose_bill' then :oppose
-                         else nil
-                         end
-              if position
-                BillVote.establish_user_position(bill, current_user, position)
-              end
+  def root_url
+    home_url
+  end
+  def process_login_actions
+    if session[:login_action] && session[:login_action][:url]
+      if ['support_bill', 'oppose_bill'].include?(session[:login_action][:action])
+        if session[:login_action][:bill]
+          bill = Bill.find_by_ident(session[:login_action][:bill])
+          if bill
+            position = case session[:login_action][:action]
+                       when 'support_bill' then :support
+                       when 'oppose_bill' then :oppose
+                       else nil
+                       end
+            if position
+              BillVote.establish_user_position(bill, current_user, position)
             end
           end
         end
+      end
 
-        if session[:login_action] and session[:login_action][:action_result]
-          if session[:login_action][:action_result] == 'track'
-            case session[:login_action][:url]
-            when /\/bill\/([0-9]{3}-\w{2,})\//
-              ident = $1
-              if ident
-                bill = Bill.find_by_ident(ident)
-                if bill
-                  bookmark = Bookmark.new(:user_id => current_user.id)
-                  bill.bookmarks << bookmark
-                end
-              end
-            when /\/([^\/]+)\/[^\/]+\/(\d+)/
-              obj = $1
-              id = $2
-              if id && obj
-                object = Object.const_get(obj)
-                this_object = object.find_by_id(id)
-                if this_object
-                  bookmark = Bookmark.new(:user_id => current_user.id)
-                  this_object.bookmarks << bookmark
-                end
+      if session[:login_action] and session[:login_action][:action_result]
+        if session[:login_action][:action_result] == 'track'
+          case session[:login_action][:url]
+          when /\/bill\/([0-9]{3}-\w{2,})\//
+            ident = $1
+            if ident
+              bill = Bill.find_by_ident(ident)
+              if bill
+                bookmark = Bookmark.new(:user_id => current_user.id)
+                bill.bookmarks << bookmark
               end
             end
-          elsif session[:login_action][:action_result] == 'contact_congress'
-            session[:formageddon_unsent_threads].each do |t|
-              thread = Formageddon::FormageddonThread.find(t)
-
-              thread.formageddon_sender = current_user
-
-              # force the email on the letters to the user email
-              thread.sender_email = current_user.email
-
-              thread.save
+          when /\/([^\/]+)\/[^\/]+\/(\d+)/
+            obj = $1
+            id = $2
+            if id && obj
+              object = Object.const_get(obj)
+              this_object = object.find_by_id(id)
+              if this_object
+                bookmark = Bookmark.new(:user_id => current_user.id)
+                this_object.bookmarks << bookmark
+              end
             end
-
-            session[:return_to] = "/contact_congress_letters/delayed_send"
           end
+        elsif session[:login_action][:action_result] == 'contact_congress'
+          session[:formageddon_unsent_threads].each do |t|
+            thread = Formageddon::FormageddonThread.find(t)
+
+            thread.formageddon_sender = current_user
+
+            # force the email on the letters to the user email
+            thread.sender_email = current_user.email
+
+            thread.save
+          end
+
+          session[:return_to] = "/contact_congress_letters/delayed_send"
         end
       end
     end
+  end
 end

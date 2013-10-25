@@ -17,7 +17,7 @@ class StripEmptySessions
     logger = @logger || env['rack.errors']
 
     logger.write("=====================================\n")
-    logger.write(pp env['rack.request'])
+    logger.write("#{pp env['rack.request']}")
 
     request_cookies = env['rack.request.cookie_hash'] || {}
 

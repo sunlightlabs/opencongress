@@ -19,7 +19,7 @@ class StripEmptySessions
     logger.write(req.path)
 
     request_cookies = req.cookies.clone
-    logger.writer("Request cookies were: #{pp request_cookies}")
+    logger.write("Request cookies were: #{pp request_cookies}")
 
     @session_cookie_in_request = request_cookies.keys.include?(@session_cookie_name)
 

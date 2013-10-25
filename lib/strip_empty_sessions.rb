@@ -1,3 +1,5 @@
+require 'pp'
+
 class StripEmptySessions
   ENV_SESSION_KEY = 'rack.session'
 
@@ -52,6 +54,7 @@ class StripEmptySessions
       # there is data in the session beyond the session id and csrf token.
       # They are probably being shuffled through a login step prior to
       # commenting or creating a letter. Leave the headers alone.
+      logger.write("Session has: #{pp(session_data, '')}")
     else
       # The user is logged out, the page is not customized for them, and
       # we don't have any session data needed to customize future pages.

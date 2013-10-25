@@ -73,10 +73,17 @@ class StripEmptySessions
       # cachable by varnish.
 
       set_cookie_lines = []
-      request_cookies.keys.select {|cookie_name|
+      request_cookies.select {|cookie_name, cookie|
         @cookies_to_reset.include?(cookie_name) || (@regexp_cookies_to_reset.present? && cookie_name =~ @regexp_cookies_to_reset)
       }
-      .each do |cookie_name |
+      .each do |cookie_name, cookie|
+        # Facebook login cookies have a value like 'domain=.example.com', which
+        # we can use to determine what domain we should expire the cookie on.
+        # if the cookie name matches and we have a valid domain, then merge in
+        # a domain property to build_cookie
+        domain = cookie.scan(/^base_domain=([^;]+)/).first.first rescue nil
+        cookie_opts = {:value => nil, :expires => Time.new(1970, 1, 1)}
+        cookie_opts.merge!({:domain => domain}) if cookie_name =~ /^fbm_/ && domain.present?
         set_cookie_lines << build_cookie(cookie_name, :value => nil, :expires => Time.new(1970, 1, 1))
       end
       logger.write("Deleting: #{pp set_cookie_lines}")

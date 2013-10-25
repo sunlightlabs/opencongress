@@ -20,7 +20,6 @@ class StripEmptySessions
     logger.write(req.path)
 
     request_cookies = req.cookies.clone
-    logger.write("Request cookies were: #{pp request_cookies}")
 
     @session_cookie_in_request = request_cookies.keys.include?(@session_cookie_name)
     @logged_in_before_request = request_cookies.keys.include?(@logged_in_cookie_name) && @session_cookie_in_request
@@ -28,7 +27,6 @@ class StripEmptySessions
     status, headers, body = @app.call(env)
 
     set_cookie_lines = headers.fetch('Set-Cookie', '').lines.map(&:strip).to_a
-    logger.write("Received set-cookie from backend: #{pp set_cookie_lines}, from headers: #{pp headers}")
 
     @logged_out_by_response = set_cookie_lines.select{ |c| c.starts_with?("#{@logged_in_cookie_name}=;") }.any?
     @logged_in_by_request = set_cookie_lines.select{ |c| c.starts_with?("#{@logged_in_cookie_name}=true") }.any?
@@ -82,6 +80,11 @@ class StripEmptySessions
         # if the cookie name matches and we have a valid domain, then merge in
         # a domain property to build_cookie
         domain = cookie.scan(/^base_domain=([^;]+)/).first.first rescue nil
+        if domain
+          logger.write("#{cookie_name} has domain #{domain}")
+        else
+          logger.write("#{cookie_name} has no domain.")
+        end
         cookie_opts = {:value => nil, :expires => Time.new(1970, 1, 1)}
         cookie_opts.merge!({:domain => domain}) if cookie_name =~ /^fbm_/ && domain.present?
         set_cookie_lines << build_cookie(cookie_name, :value => nil, :expires => Time.new(1970, 1, 1))

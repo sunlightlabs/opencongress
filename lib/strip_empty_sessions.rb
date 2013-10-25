@@ -26,6 +26,7 @@ class StripEmptySessions
     status, headers, body = @app.call(env)
 
     set_cookie_lines = headers.fetch('Set-Cookie', '').lines.map(&:strip).to_a
+    logger.write("Received set-cookie from backend: #{pp set_cookie_lines}, from headers: #{pp headers}")
 
     @logged_in_after_response = set_cookie_lines.select{ |c| c.starts_with?("#{@logged_in_cookie_name}=true") }.to_a.empty? == false
 

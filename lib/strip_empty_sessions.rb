@@ -17,7 +17,7 @@ class StripEmptySessions
     logger = @logger || env['rack.errors']
 
     logger.write("=====================================\n")
-    logger.write(pp(env, ''))
+    logger.write(pp env['rack.request'])
 
     request_cookies = env['rack.request.cookie_hash'] || {}
 
@@ -59,7 +59,7 @@ class StripEmptySessions
       # there is data in the session beyond the session id and csrf token.
       # They are probably being shuffled through a login step prior to
       # commenting or creating a letter. Leave the headers alone.
-      logger.write("Session has: #{pp(session_data, '')}")
+      logger.write("Session has: #{pp session_data}")
     else
       logger.write("Nothing special going on here...")
       # The user is logged out, the page is not customized for them, and
@@ -74,7 +74,7 @@ class StripEmptySessions
           set_cookie_lines << build_cookie(cookie_name, :value => nil, :expires => Time.new(1970, 1, 1))
         end
       end
-      logger.write("Deleting: #{pp(set_cookie_lines, '')}")
+      logger.write("Deleting: #{pp set_cookie_lines}")
     end
 
     if set_cookie_lines.empty?

@@ -16,8 +16,8 @@ class StripEmptySessions
     req = Rack::Request.new(env)
     logger = @logger || env['rack.errors']
 
-    logger.write("=====================================\n")
-    logger.write(req.path)
+    # logger.write("=====================================\n")
+    # logger.write(req.path)
 
     request_cookies = req.cookies.clone
 
@@ -37,18 +37,18 @@ class StripEmptySessions
 
     @session_is_sparse = (session_data.keys - @bogus_keys).empty?
 
-    logger.write("@session_cookie_in_request = #{@session_cookie_in_request}\n")
-    logger.write("@logged_in_after_response = #{@logged_in_after_response}\n")
-    logger.write("@flash_msg_in_session = #{@flash_msg_in_session}\n")
-    logger.write("@session_is_sparse = #{@session_is_sparse}\n")
+    # logger.write("@session_cookie_in_request = #{@session_cookie_in_request}\n")
+    # logger.write("@logged_in_after_response = #{@logged_in_after_response}\n")
+    # logger.write("@flash_msg_in_session = #{@flash_msg_in_session}\n")
+    # logger.write("@session_is_sparse = #{@session_is_sparse}\n")
 
 
     if @logged_in_after_response
-      logger.write("User is logged in")
+      # logger.write("User is logged in")
       # We do nothing here. Logged-in users should never be cached.
       # The session cookie should prevent caching.
     elsif @flash_msg_in_session
-      logger.write("Session has flash message only")
+      # logger.write("Session has flash message only")
       # Reponses that contain flash messages are customized for the user
       # despite being logged out. We add an ocflashmessage cookie to
       # signal to varnish that the response should not be cached.
@@ -61,9 +61,9 @@ class StripEmptySessions
       # there is data in the session beyond the session id and csrf token.
       # They are probably being shuffled through a login step prior to
       # commenting or creating a letter. Leave the headers alone.
-      logger.write("Session has: #{pp session_data}")
+      # logger.write("Session has: #{pp session_data}")
     else
-      logger.write("Nothing special going on here...")
+      # logger.write("Nothing special going on here...")
       # The user is logged out, the page is not customized for them, and
       # we don't have any session data needed to customize future pages.
       # Drop all existing Set-Cookie headers and add new ones to expire
@@ -80,16 +80,16 @@ class StripEmptySessions
         # if the cookie name matches and we have a valid domain, then merge in
         # a domain property to build_cookie
         domain = cookie.scan(/^base_domain=([^;]+)/).first.first rescue nil
-        if domain
-          logger.write("#{cookie_name} has domain #{domain}")
-        else
-          logger.write("#{cookie_name} has no domain.")
-        end
+        # if domain
+        #   logger.write("#{cookie_name} has domain #{domain}")
+        # else
+        #   logger.write("#{cookie_name} has no domain.")
+        # end
         cookie_opts = {:value => nil, :expires => Time.new(1970, 1, 1)}
         cookie_opts.merge!({:domain => domain}) if cookie_name =~ /^fbm_/ && domain.present?
         set_cookie_lines << build_cookie(cookie_name, cookie_opts)
       end
-      logger.write("Deleting: #{pp set_cookie_lines}")
+      # logger.write("Deleting: #{pp set_cookie_lines}")
     end
 
     if set_cookie_lines.empty?

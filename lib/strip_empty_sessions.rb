@@ -14,12 +14,13 @@ class StripEmptySessions
   end
 
   def call(env)
-    logger = @logger || env['rack.errors']
+    req = Rack::Request.new(env)
+    logger = @logger || req.env['rack.errors']
 
     logger.write("=====================================\n")
-    logger.write("#{pp env['rack.request']}")
+    logger.write("#{pp req.env['rack.request']}")
 
-    request_cookies = env['rack.request.cookie_hash'] || {}
+    request_cookies = req.env['rack.request.cookie_hash'] || {}
 
     @session_cookie_in_request = request_cookies.keys.include?(@session_cookie_name)
 
@@ -29,7 +30,7 @@ class StripEmptySessions
 
     @logged_in_after_response = set_cookie_lines.select{ |c| c.starts_with?("#{@logged_in_cookie_name}=true") }.to_a.empty? == false
 
-    session_data = env[ENV_SESSION_KEY]
+    session_data = req.env[ENV_SESSION_KEY]
 
     @flash_msg_in_session = session_data.keys.include?("flash")
 

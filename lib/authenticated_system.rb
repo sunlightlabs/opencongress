@@ -87,8 +87,13 @@ module AuthenticatedSystem
 
     # Redirect to the URI stored by the most recent store_location call or
     # to the passed default.
-    def redirect_back_or_default(default)
-      session[:return_to] && session[:return_to] != request.request_uri ? redirect_to(session[:return_to]) : redirect_to(default)
+    def redirect_back_or_default(default, options = {})
+      destination = (session[:return_to] && session[:return_to] != request.request_uri) ? session[:return_to] : default
+      if options[:uncacheable] == true
+        destination += (destination =~ /\?/) ? '&' : '?'
+        destination += Time.now.tv_sec.to_s
+      end
+      redirect_to(destination)
       session[:return_to] = nil
     end
 

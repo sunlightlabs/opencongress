@@ -39,9 +39,11 @@ class StripEmptySessions
 
 
     if @logged_in_after_response
+      logger.write("User is logged in")
       # We do nothing here. Logged-in users should never be cached.
       # The session cookie should prevent caching.
     elsif @flash_msg_in_session
+      logger.write("Session has flash message only")
       # Reponses that contain flash messages are customized for the user
       # despite being logged out. We add an ocflashmessage cookie to
       # signal to varnish that the response should not be cached.
@@ -56,6 +58,7 @@ class StripEmptySessions
       # commenting or creating a letter. Leave the headers alone.
       logger.write("Session has: #{pp(session_data, '')}")
     else
+      logger.write("Nothing special going on here...")
       # The user is logged out, the page is not customized for them, and
       # we don't have any session data needed to customize future pages.
       # Drop all existing Set-Cookie headers and add new ones to expire

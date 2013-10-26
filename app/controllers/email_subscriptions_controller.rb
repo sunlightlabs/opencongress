@@ -21,7 +21,7 @@ class EmailSubscriptionsController < ApplicationController
     response = submit_to_bsd
     respond_to do |format|
       if response.code == "302" && response.body =~ /thanks/
-        format.json { render :json => {:success => true}}
+        format.json { render :json => {:success => true, :message => "Thanks for subscribing!"}}
         format.text { render :text => "success"}
         format.html { redirect_to "/thanks"}
       else
@@ -39,6 +39,7 @@ class EmailSubscriptionsController < ApplicationController
     if params[:name].present?
       params[:firstname], params[:lastname] = params[:name].split(' ', 2)
     end
+    params[:zip] = params[:zipcode] if params[:zipcode].present?
 
     result = BlueStateDigital.subscribe_to_email params
     return result[:response]

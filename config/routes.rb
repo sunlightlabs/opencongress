@@ -256,8 +256,8 @@ OpenCongress::Application.routes.draw do
   match 'pipa' => 'index#pipa'
 
   match '/donate' => redirect('http://sunlightfoundation.com/about/funding/')
-  match '/about/privacy_policy' => redirect("terms")
-  match '/about/terms_of_service' => redirect("terms")
+  match '/about/privacy_policy' => redirect("/terms")
+  match '/about/terms_of_service' => redirect("/terms")
   match 'terms' => 'about#terms'
   match 'howtouse' => 'about#howtouse'
   match '/userguide' => redirect("/howtouse")

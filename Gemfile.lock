@@ -295,8 +295,7 @@ GEM
     pry-stack_explorer (0.4.9)
       binding_of_caller (>= 0.7)
       pry (~> 0.9.11)
-    rabl (0.8.6)
-      activesupport (>= 2.3.14)
+    rabl (0.2.8)
     rack (1.2.8)
     rack-contrib (1.1.0)
       rack (>= 0.9.1)
@@ -469,7 +468,7 @@ DEPENDENCIES
   pry-nav
   pry-rescue
   pry-stack_explorer
-  rabl
+  rabl (~> 0.2.8)
   rack-contrib
   rack-mini-profiler
   rack-openid

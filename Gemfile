@@ -20,7 +20,7 @@ gem 'sass'
 # gem "sass-rails"  #<= after upgrading past rails 3.1
 
 # RABL for API / JSON
-gem 'rabl'
+gem 'rabl', "~> 0.2.8"
 
 # Background tasks
 gem 'delayed_job', '~> 2.1'

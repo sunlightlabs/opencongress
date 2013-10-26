@@ -12,7 +12,7 @@ class ApiController < ApplicationController
   before_filter :lookup_bill, :only => [:opencongress_users_tracking_bill_are_also_tracking, :opencongress_users_supporting_bill_are_also, :opencongress_users_opposing_bill_are_also]
   before_filter :lookup_person, :only => [:opencongress_users_opposing_person_are_also, :opencongress_users_supporting_person_are_also, :opencongress_users_tracking_person_are_also_tracking]
   before_filter :lookup_state, :only => [:opencongress_users_tracking_in_state, :opencongress_users_tracking_in_state_district]
-  
+
   before_filter :handle_per_page, :only => [:bills]
 
   def index
@@ -29,7 +29,7 @@ class ApiController < ApplicationController
     seperator = "AND"
     seperator = params[:seperator] if params[:seperator] == "OR"
     conditions = {}
-    
+
     parameter_map = {
       :osid => :osid,
       :lastname => :last_name,
@@ -51,10 +51,10 @@ class ApiController < ApplicationController
     if params[:user_approval_from] && params[:user_approval_to]
       conditions[:user_approval] = params[:user_approval_from].to_f..params[:user_approval_to].to_f
     end
-    
+
     @people = Person.where(conditions).paginate(:per_page => @per_page, :page => params[:page])
   end
-  
+
   def most_blogged_representatives_this_week
     respond_with Person.find_by_most_commentary('blog', 'rep', @per_page, Settings.default_count_time)
   end
@@ -86,7 +86,7 @@ class ApiController < ApplicationController
   def opencongress_users_tracking_bill_are_also_tracking
     render_via_builder_template("api/users_tracking_also_tracking.xml.builder", @bill)
   end
-    
+
   def opencongress_users_supporting_bill_are_also
     render_via_builder_template("api/users_supporting.xml.builder", @bill)
   end
@@ -105,7 +105,7 @@ class ApiController < ApplicationController
     @object = @state.districts.find_by_district_number(0) unless @object
     render_via_builder_template("api/users_tracking_also_tracking_location.xml.builder", @object)
   end
-  
+
   def bills
     seperator = "AND"
     seperator = params[:seperator] if params[:seperator] == "OR"
@@ -116,7 +116,7 @@ class ApiController < ApplicationController
     parameter_map.each do |k, v|
       conditions[k] = params[v] if params[v]
     end
-    
+
     @bills = Bill.paginate(:conditions => conditions, :page => params[:page], :per_page => @per_page)
   end
 
@@ -127,10 +127,10 @@ class ApiController < ApplicationController
     elsif params[:ident]
       these_idents = params[:ident].split(',')
     end
-    
+
     @bills = Bill.find_all_by_ident(these_idents, find_options = {})
   end
-  
+
   def comments
     if ['Bill','Person'].include?(params[:object_type])
       @comments = Comment.paginate(:order => "comments.root_id desc, comments.lft ASC", :conditions => {:commentable_type => params[:object_type], :commentable_id => params[:object_id]}, :page => params[:page], :per_page => @per_page)
@@ -151,7 +151,7 @@ class ApiController < ApplicationController
       do_render_paginated(@bills, :style => :full)
     end
   end
-  
+
   def bills_by_query
     query_stripped = prepare_tsearch_query(params[:q])
     @bills = Bill.full_text_search(query_stripped, {:congresses => [Settings.default_congress,Settings.default_congress - 1,Settings.default_congress - 2,Settings.default_congress - 3], :page => 1})
@@ -162,23 +162,23 @@ class ApiController < ApplicationController
     @bills = Bill.major
     do_render(@bills)
   end
-  
+
   def stalled_bills
     original_chamber = (params[:passing_chamber] == 's') ? 's' : 'h'
     session = (Settings.available_congresses.include?(params[:session])) ? params[:session] : Settings.default_congress
-    
+
     @bills = Bill.find_stalled_in_second_chamber(original_chamber, session)
     do_render(@bills)
   end
-  
+
   def most_blogged_bills_this_week
     do_render(Bill.find_by_most_commentary('blog', 10, Settings.default_count_time), :style => :simple)
   end
-  
+
   def bills_in_the_news_this_week
     do_render(Bill.find_by_most_commentary('news', 10, Settings.default_count_time), :style => :simple)
   end
-  
+
   def most_viewed_bills_this_week
     @bills = ObjectAggregate.popular('Bill', Settings.default_count_time + 30.days, 10) || Bill.find(:first)
     do_render(@bills)
@@ -193,12 +193,12 @@ class ApiController < ApplicationController
     @order = "current_support_pb desc"
     render_bill_aggregates(@order)
   end
-  
+
   def most_opposed_bills_this_week
     @order =  "support_count_1 desc"
     render_bill_aggregates(@order)
   end
-  
+
   def most_commented_this_week
     @bills = Bill.select("bills.*, ca.comments_this_week").joins("join (select commentable_id, count(*) as comments_this_week from comments where commentable_type = 'Bill' and created_at > '#{1.week.ago.to_s}' group by commentable_id) ca on (bills.id = ca.commentable_id)").order("ca.comments_this_week desc").limit(20)
     respond_with @bills, :template => 'api/bills'
@@ -206,19 +206,19 @@ class ApiController < ApplicationController
 
   def user_stats
     @user_aggregates = {}
-    
+
     @user_aggregates[:user_daily_stats] = User.find_by_sql(["select count(*) as signups, count(distinct activated_at) as activations, date_trunc('day', created_at) as day from users where created_at > ? group by date_trunc('day', created_at)", 3.years.ago])
-  
+
     @user_aggregates[:comment_daily_stats] = Comment.find_by_sql(["select count(*) as count, date_trunc('day', created_at) as day from comments where created_at > ? group by date_trunc('day', created_at)", 3.years.ago])
 
     respond_with @user_aggregates
   end
-  
+
   def bill_roll_calls
     bills = Bill.find_all_by_id(params[:bill_id])
-    do_render(bills, :except => [:current_support_pb, :support_count_1, :rolls, :hot_bill_category_id, :support_count_2, :vote_count_2], :include => [:roll_calls])    
+    do_render(bills, :except => [:current_support_pb, :support_count_1, :rolls, :hot_bill_category_id, :support_count_2, :vote_count_2], :include => [:roll_calls])
   end
-  
+
   def issues
     conditions = {}
     if params[:issue_id]
@@ -230,7 +230,7 @@ class ApiController < ApplicationController
     elsif params[:include_recent_actions].blank?
       issues = Subject.find(:all, :conditions => conditions, :include => [:bills])
       render :xml => issues.to_xml(:include => [:bills])
-    else      
+    else
       issues = Subject.find(:all, :conditions => conditions, :include => {:bills => :most_recent_actions})
       render :xml => issues.to_xml(:include => {:bills => {:include => :most_recent_actions}})
     end
@@ -242,18 +242,18 @@ class ApiController < ApplicationController
     @issues = Subject.full_text_search(query_stripped, :page => 1)
     render :xml => @issues.to_xml
   end
-  
+
   def bills_by_issue_id
     issues = Subject.find_all_by_id(params[:issue_id])
     render :xml => issues.to_xml(:include => {:recently_introduced_bills => {:methods => :title_common}})
-  end    
+  end
 
   private
-  
+
   def record_hit
-    # TODO: This really isn't the most efficient thing to do; we shouldn't be 
+    # TODO: This really isn't the most efficient thing to do; we shouldn't be
     # adding a new database row every time someone hits the API.
-    # Look into storing this somewhere else (key/value store?) or 
+    # Look into storing this somewhere else (key/value store?) or
     # storing it after the request is done.
 
     if params[:key].blank?
@@ -275,7 +275,7 @@ class ApiController < ApplicationController
   end
 
   def set_default_format
-    # If we default this in the routes file, it will unfortunately 
+    # If we default this in the routes file, it will unfortunately
     # disallow the format to be set via :action(.:format) AS WELL AS via a format= param
     # And we need to allow a format= param for backwards compatibility.
 
@@ -299,7 +299,7 @@ class ApiController < ApplicationController
   def lookup_person
     @person = Person.find_by_id(params[:id])
   end
-  
+
   def lookup_state
     @state = State.find_by_abbreviation(params[:id])
   end
@@ -315,7 +315,7 @@ class ApiController < ApplicationController
     respond_with do |format|
       format.xml { render template_name, :locals => {:obj => obj} }
       format.json { render :json => Hash.from_xml(render_to_string(template_name, :locals => {:obj => obj}, :layout => false)) }
-    end      
+    end
   end
 
   def handle_per_page
@@ -333,5 +333,5 @@ class ApiController < ApplicationController
       format.xml { render :xml => object.to_xml(parameters) }
     end
   end
-  
+
 end

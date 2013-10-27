@@ -8,6 +8,7 @@ class ApplicationController < ActionController::Base
   include Facebooker2::Rails::Controller
   include UrlHelper
 
+  around_filter :maintenance
   before_filter :facebook_check
   before_filter :clear_return_to
   before_filter :current_tab
@@ -298,4 +299,23 @@ class ApplicationController < ActionController::Base
       )
     end
   end
+
+  def maintenance
+    notice = "OpenCongress is performing database maintenance. Login is currently disabled."
+    if !!(request.path =~ /^\/signup/)
+      flash[:notice] = notice
+      redirect_back_or_default('/') and return
+    end
+    if logged_in?
+      @was_logged_in = true
+    end
+    if logged_in? && !(request.path =~ /^\/logout/)
+      redirect_to '/logout' and return
+    end
+    yield
+    if @was_logged_in && !!(request.path =~ /^\/logout/)
+      flash[:notice] = notice
+    end
+  end
+
 end

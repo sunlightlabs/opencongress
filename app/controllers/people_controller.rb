@@ -481,8 +481,8 @@ class PeopleController < ApplicationController
     @person = Person.find(params[:id])
     @title_desc = SiteText.find_explain('voting_history')
 
-    @page = params[:page]
-    @page = "1" unless @page
+    @page = params[:page].to_i
+    @page = "1" unless (@page and @page != 0)
 
     @q = params[:q]
     unless @q.nil?

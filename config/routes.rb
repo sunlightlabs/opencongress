@@ -88,7 +88,7 @@ OpenCongress::Application.routes.draw do
     match 'news/:id(/:page)', :action => 'news', :as => :news_person
     match 'blogs/:id(/:page)', :action => 'blogs', :as => :blogs_person
     match 'votes_with_party/:chamber/:party', :action => 'votes_with_party'
-    match 'voting_history/:id/:page', :action => 'voting_history'
+    match 'voting_history/:id/:page', :action => 'voting_history', :constraints => { :page => /\d+/ }
     match 'compare.:format', :action => 'compare'
     match 'show/:id', :action => 'show', :as => 'person'
   end

@@ -1195,7 +1195,7 @@ class Person < ActiveRecord::Base
   def Person.top20_viewed(person_type = nil)
     case person_type
     when 'sen'
-      people = ObjectAggregate.popular('Person', Settings.default_count_time, 540).select{|p| p.title == 'Rep.'}[0..20]
+      people = ObjectAggregate.popular('Person', Settings.default_count_time, 540).select{|p| p.title == 'Sen.'}[0..20]
     when 'rep'
       people = ObjectAggregate.popular('Person', Settings.default_count_time, 540).select{|p| p.title == 'Rep.'}[0..20]
     else

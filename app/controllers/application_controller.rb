@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   include Facebooker2::Rails::Controller
   include UrlHelper
 
-  around_filter :maintenance
+  # around_filter :maintenance
   before_filter :facebook_check
   before_filter :clear_return_to
   before_filter :current_tab

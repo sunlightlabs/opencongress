@@ -156,10 +156,8 @@ class Bill < ActiveRecord::Base
       # if should be implemented
       bts = BillTitle.find_by_sql(["SELECT bill_titles.* FROM bill_titles WHERE bill_id=?", id])
 
-      stripped_type = type_name_govtrack.gsub(/[\.\/]+/,"").downcase # ie, 'hconres'
-
       self.build_bill_fulltext if self.bill_fulltext.nil?
-      self.bill_fulltext.fulltext = "#{type_name_govtrack}#{number} #{type_name_govtrack} #{number} #{bill_type}#{number} #{stripped_type}#{number} #{stripped_type} #{number} #{bts.collect(&:title).join(" ")} #{plain_language_summary}"
+      self.bill_fulltext.fulltext = "#{bill_type}#{number} #{bill_type} #{number} #{bts.collect(&:title).join(" ")} #{plain_language_summary}"
       self.bill_fulltext.save
 
       # also, set the lastaction field unless it's a brand new record
@@ -999,11 +997,6 @@ class Bill < ActiveRecord::Base
   end
 
   ## bill title methods
-
-  #Legacy method to fix govtrack import of full bill text with right paragraph ids --KBD
-  def type_name_govtrack
-    @@TYPES[bill_type]
-  end
 
   def type_name
     UnitedStates::Bills.abbreviation_for bill_type

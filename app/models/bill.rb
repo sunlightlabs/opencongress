@@ -146,7 +146,7 @@ class Bill < ActiveRecord::Base
     "#{bill_type}#{number}-#{session}"
   end
 
-#  before_save :update_bill_fulltext_search_table
+  before_save :update_bill_fulltext_search_table
 
   def update_bill_fulltext_search_table
     if self.id

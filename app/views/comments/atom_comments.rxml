@@ -12,8 +12,7 @@ xml.feed "xmlns" => "http://www.w3.org/2005/Atom" do
     xml.entry do
       name = c.user ? h(c.user.login) : 'Anonymous'
       xml.title   "New comment by #{name}"
-      link = {:only_path, c.commentable_link}
-      xml.link    "rel" => "alternate", "href" => url_for(link)
+      xml.link    "rel" => "alternate", "href" => url_for(c.commentable_link, :only_path => true)
       xml.updated(c.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"))
       xml.id      c.atom_id
       xml.author  { xml.name name }

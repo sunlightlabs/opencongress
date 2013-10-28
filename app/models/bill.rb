@@ -93,18 +93,19 @@ class Bill < ActiveRecord::Base
   @@TYPES = {"h" => "H.R.", "s" => "S.", "hj" => "H.J.Res.", "sj" => "S.J.Res.", "hc" => "H.Con.Res.", "sc" => "S.Con.Res.", "hr" => "H.Res.", "sr" => "S.Res."}
   @@TYPES_ORDERED = [ "s", "sj",  "sc",  "sr", "h", "hj", "hc", "hr" ]
 
+  @@GOVTRACK_TYPE_LOOKUP = {
+    "hconres" => "hc",
+    "hjres" => "hj",
+    "hr" => "h",
+    "hres" => "hr",
+    "s" => "s",
+    "sconres" => "sc",
+    "sjres" => "sj",
+    "sres" => "sr"
+  }
+
   def reverse_abbrev_lookup
-      lookup =  {
-        "hconres" => "hc",
-        "hjres" => "hj",
-        "hr" => "h",
-        "hres" => "hr",
-        "s" => "s",
-        "sconres" => "sc",
-        "sjres" => "sj",
-        "sres" => "sr"
-      }
-    return lookup[self.bill_type]
+    return @@GOVTRACK_TYPE_LOOKUP[self.bill_type]
   end
 
 #This can also be removed when we completely get rid of GovTrack
@@ -117,6 +118,10 @@ class Bill < ActiveRecord::Base
   end
 
   class << self
+
+    def govtrack_reverse_lookup (typename)
+      return @@GOVTRACK_TYPE_LOOKUP.invert[typename]
+    end
 
     def available_sessions(relation = Bill.scoped)
       relation.select("DISTINCT session").map(&:session).uniq.sort
@@ -925,10 +930,10 @@ class Bill < ActiveRecord::Base
       if match
         match.captures
       else
-        pattern = /(\d+)-(hconres|hjres|hr|hres|s|sconres|sjres|sres)(\d+)/
+        pattern = /(\d+)-(hc|hj|h|hr|s|sc|sj|sr)(\d+)/
         match = pattern.match(bill_id)
         if match
-          [match.captures[1],
+          [Bill.govtrack_reverse_lookup(match.captures[1]),
            match.captures[2],
            match.captures[0]]
         else

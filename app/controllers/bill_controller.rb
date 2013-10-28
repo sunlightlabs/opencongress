@@ -5,6 +5,7 @@ class BillController < ApplicationController
   before_filter :page_view, :only => [:show, :text]
   before_filter :get_params, :only => [:index, :all, :popular, :pending, :hot, :most_commentary, :readthebill]
   before_filter :bill_profile_shared, :only => [:show, :comments, :votes, :actions, :amendments, :text, :actions_votes, :videos, :topnews, :topblogs, :letters]
+  before_filter :lookup_bill_by_ident, :only => [:atom, :atom_news, :atom_blogs, :atom_topnews, :atom_topblogs]
   before_filter :aavtabs, :only => [:actions, :amendments, :votes, :actions_votes]
   before_filter :get_range, :only => [:hot]
   before_filter :login_required, :only => [:bill_vote, :hot_bill_vote]
@@ -294,9 +295,12 @@ class BillController < ApplicationController
     end
   end
 
-  def atom
+  def lookup_bill_by_ident
     bill_type, number, session = Bill.ident params[:id]
     @bill = Bill.find_by_session_and_bill_type_and_number session, bill_type, number, :include => :actions
+  end
+
+  def atom
     @posts = []
     expires_in 60.minutes, :public => true
 
@@ -304,7 +308,6 @@ class BillController < ApplicationController
   end
 
   def atom_news
-    @bill = Bill.find_by_ident(params[:id])
     expires_in 60.minutes, :public => true
     @commentaries = @bill.news
     @commentary_type = 'news'
@@ -313,7 +316,6 @@ class BillController < ApplicationController
   end
 
   def atom_blogs
-    @bill = Bill.find_by_ident(params[:id])
     @commentaries = @bill.blogs
     @commentary_type = 'blog'
     expires_in 60.minutes, :public => true
@@ -322,7 +324,6 @@ class BillController < ApplicationController
   end
 
   def atom_topnews
-    @bill = Bill.find_by_ident(params[:id])
     @commentaries = @bill.news.find(:all, :conditions => "commentaries.average_rating > 5", :limit => 5)
     @commentary_type = 'topnews'
     expires_in 60.minutes, :public => true
@@ -331,7 +332,6 @@ class BillController < ApplicationController
   end
 
   def atom_topblogs
-    @bill = Bill.find_by_ident(params[:id])
     @commentaries = @bill.blogs.find(:all, :conditions => "commentaries.average_rating > 5", :limit => 5)
     @commentary_type = 'topblog'
     expires_in 60.minutes, :public => true

@@ -97,9 +97,15 @@ module RollCallHelper
     vote_type.gsub(/ /, '_').downcase
   end
 
-  def chart_html_for_vote_type (vote_type, width=400, height=220, params={})
+  def chart_html_for_vote_type (vote_type, width=400, height=220, options={})
+    # @roll_call is used from roll_call/show while options[:roll_call] is used from the _vote.html.erb partial on bill pages.
+    roll_call = options.fetch(:roll_call, nil)
+    roll_call ||= @roll_call
+
+    params = options.fetch(:params, {})
     params['breakdown_type'] = vote_type
-    ofc2(width, height, "roll_call/partyvote_piechart_data/#{@roll_call.id}?" + params.to_param)
+
+    ofc2(width, height, "roll_call/partyvote_piechart_data/#{roll_call.id}?" + params.to_param)
   end
 
   def roll_call_css_class (rollcall)

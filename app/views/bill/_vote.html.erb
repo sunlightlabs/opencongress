@@ -28,13 +28,13 @@
 
       <div class="pies clear">
         <div class="pie-chart" id='roll_call_Aye_chart_<%= vote.id %>'>
-          <%= chart_html_for_vote_type(vote.affirmative_type, 165, 120, :radius => 40, :disclaimer_off => true).html_safe %>
+          <%= chart_html_for_vote_type(vote.affirmative_type, 165, 120, :roll_call => vote, :params => { :radius => 40, :disclaimer_off => true }).html_safe %>
         </div>
         <div class="pie-chart" id='roll_call_Nay_chart_<%= vote.id %>'>
-          <%= chart_html_for_vote_type(vote.negative_type, 165, 120, :radius => 40, :disclaimer_off => true).html_safe %>
+          <%= chart_html_for_vote_type(vote.negative_type, 165, 120, :roll_call => vote, :params => { :radius => 40, :disclaimer_off => true }).html_safe %>
         </div>
         <div class="pie-chart last" id='roll_call_Abstain_chart_<%= vote.id %>'>
-          <%= chart_html_for_vote_type(vote.present_type, 165, 120, :radius => 40, :disclaimer_off => true).html_safe %>
+          <%= chart_html_for_vote_type(vote.present_type, 165, 120, :roll_call => vote, :params => { :radius => 40, :disclaimer_off => true }).html_safe %>
         </div>
       </div>
   

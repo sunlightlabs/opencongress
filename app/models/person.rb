@@ -816,7 +816,7 @@ class Person < ActiveRecord::Base
 
     legs = Person.where(:id => legs.map{ |l| l.govtrack_id })
     [legs.select{ |l| l.title == 'Sen.' },
-     legs.select{ |l| l.title == 'Rep.' }]
+     legs.select{ |l| %w(Del. Rep.).include? l.title }]
   end
 
   def Person.find_current_senators_by_state(state)
@@ -827,7 +827,7 @@ class Person < ActiveRecord::Base
 
   def Person.find_current_representatives_by_state_and_district(state, district)
     Person.on_date(Date.today)
-          .where(:title => 'Rep.',
+          .where(:title => ['Rep.', 'Del'.],
                  :state => state,
                  :district => district.to_s)
   end

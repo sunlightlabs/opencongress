@@ -517,7 +517,7 @@ class PeopleController < ApplicationController
   end
 
   def bills
-    @page = params[:page]
+    @page = params[:page].to_i
     @page = "1" unless @page
 
     @q = params[:q]
@@ -532,7 +532,8 @@ class PeopleController < ApplicationController
                                      bills.id = bill_fulltext.bill_id AND
                                      bills.sponsor_id = ?
                                ORDER BY bills.hot_bill_category_id, bills.lastaction DESC", Settings.default_congress, query_stripped, @person.id],
-                               :per_page => 30, :page => @page)
+                               :per_page => 30,
+                               :page => @page)
 
        @cosponsored_bills = Bill.paginate_by_sql(
                    ["SELECT bills.* FROM bills, bills_cosponsors, bill_fulltext
@@ -542,10 +543,13 @@ class PeopleController < ApplicationController
                                       bills.id = bills_cosponsors.bill_id AND
                                       bills_cosponsors.person_id=?
                                 ORDER BY bills.hot_bill_category_id, bills.lastaction DESC", Settings.default_congress, query_stripped, @person.id],
-                                :per_page => 30, :page => @page)
+                                :per_page => 30,
+                                :page => @page)
       @page_title = "Sponsored Bills Search #{@person.name}"
     else
-      @sponsored_bills = @person.bills.paginate(:include => [:last_action], :per_page => 50, :page => @page)
+      @sponsored_bills = @person.bills.paginate(:include => [:last_action],
+                                                :per_page => 50,
+                                                :page => @page)
       @cosponsored_bills = @person.bills_cosponsored.paginate(:include => [:last_action], :per_page => 50, :page => @page)
     end
 

@@ -91,6 +91,7 @@ OpenCongress::Application.routes.draw do
     match 'voting_history/:id/:page', :action => 'voting_history', :constraints => { :page => /\d+/ }
     match 'compare.:format', :action => 'compare'
     match 'show/:id', :action => 'show', :as => 'person'
+    match 'bills/:id', :action => 'bills', :constraints => { :page => /^\d+/ }
   end
 
   match 'person/*path' => redirect("/people/%{path}")

@@ -12,8 +12,6 @@ class ArticlesController < ApplicationController
 
     def show
       view
-      return if params[:goto_comment]
-      render :action => 'view'
     end
 
     def list

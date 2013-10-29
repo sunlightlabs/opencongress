@@ -247,11 +247,10 @@ class Person < ActiveRecord::Base
                              ORDER BY view_count DESC) aggregates
                             ON people.id=aggregates.aggregatable_id
     WHERE roles.role_type = ?
-      AND ((roles.startdate <= ?
+      AND (roles.startdate <= ?
             AND roles.enddate >= ?)
-       OR roles.startdate = ?)
  ORDER BY #{order} #{lim};",
-   chamber, Date.today, Date.today, OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]])
+   chamber, Date.today, Date.today])
   end
 
   def Person.rep_random_news(limit = 1, since = Settings.default_count_time)

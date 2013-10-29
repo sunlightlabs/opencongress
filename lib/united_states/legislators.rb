@@ -136,6 +136,15 @@ module UnitedStates
       roles = person.roles.where("startdate = ? OR enddate = ?", term_hash['+start'], term_hash['+end'])
       if roles.count == 1
         role = roles.first
+        if role.startdate != term_hash['+start']
+          OCLogger.log "Updating startdate from #{role.startdate} to #{term_hash['+start']} for legislators #{person.govtrack_id}"
+          role.startdate = term_hash['+start']
+        end
+
+        if role.enddate != term_hash['+end']
+          OCLogger.log "Updating enddate from #{role.enddate} to #{term_hash['+end']} for legislators #{person.govtrack_id}"
+          role.enddate = term_hash['+end']
+        end
       else
         if roles.count > 1
           roles.destroy_all

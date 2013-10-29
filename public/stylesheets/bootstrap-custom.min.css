@@ -7,6 +7,7 @@
  *
  * Designed and built with all the love in the world @twitter by @mdo and @fat.
  */
+ #header table, #header table td { border:none; }
 .bootstrap-enabled {
   /* Allow for input prepend/append in search forms */
   /* White icons with optional class, or on hover/focus/active states of certain elements */

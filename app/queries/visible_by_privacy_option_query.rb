@@ -46,7 +46,7 @@ class VisibleByPrivacyOptionQuery
   end
 
   def excludes(objects)
-    return self if objects.nil?
+    return self if (objects.nil? or objects == :false)
     if objects.respond_to? :collect
       ids = objects.collect(&:id)
     else

@@ -11,7 +11,7 @@ class ArticlesController < ApplicationController
     end
 
     def show
-      view
+      return view
     end
 
     def list

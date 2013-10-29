@@ -152,7 +152,8 @@ class AccountController < ApplicationController
 
   def facebook_complete
     @page_title = 'Facebook Connect'
-
+    id = @facebook_user.id rescue nil
+    flash[:error] = "There was a problem signing you in to Facebook" and redirect_to('/') and return if id.nil?
     @user = User.where(['facebook_uid=?', @facebook_user.id]).first
     if @user.nil?
       @user = User.new
@@ -160,6 +161,7 @@ class AccountController < ApplicationController
 
     if request.post?
       @user.update_attributes(params[:user])
+      @user.accepted_tos_at = Time.now if params[:user][:accept_tos].present?
       @user.facebook_uid = @facebook_user.id
       @user.email = @facebook_user.email
 

@@ -26,6 +26,7 @@ class ApplicationController < ActionController::Base
     unless params[:fbcancel].nil?
       force_fb_cookie_delete
       @facebook_user = nil
+      session[:facebook_user] = nil
       session[:nofacebook] = true
 
       flash.now[:notice] = "Facebook Connect has been cancelled."
@@ -34,9 +35,9 @@ class ApplicationController < ActionController::Base
 
     # check to see if the user is logged into and has connected to OC
     begin
-      if current_facebook_user and current_facebook_client
+      if current_facebook_user && current_facebook_client
         begin
-          @facebook_user = Mogli::User.find(current_facebook_user.id, current_facebook_client)
+          @facebook_user = Mogli::User.find(current_facebook_user.id, current_facebook_client, :email, :name, :first_name, :last_name)
         rescue Mogli::Client::HTTPException
           force_fb_cookie_delete
           @facebook_user = nil
@@ -50,7 +51,11 @@ class ApplicationController < ActionController::Base
       @facebook_user = nil
     end
 
+    # TODO: Use omniauth or other, this is terrible.
+    @facebook_user = session[:facebook_user] if @facebook_user.nil? && session[:facebook_user].present?
+
     if @facebook_user
+      session[:facebook_user] = @facebook_user
       # the user isn't logged in, try to find the account based on email
       if current_user == :false
         oc_user = User.where(["email=?", @facebook_user.email]).first
@@ -71,8 +76,7 @@ class ApplicationController < ActionController::Base
       if oc_user
         # if, for some reason, we don't have these fields, require them
         if oc_user.login.blank? or oc_user.zipcode.blank? or !oc_user.accepted_tos?
-          redirect_to :controller => 'account', :action => 'facebook_complete' unless params[:action] == 'facebook_complete'
-          return
+          redirect_to :controller => 'account', :action => 'facebook_complete' and return unless params[:action] == 'facebook_complete'
         end
 
         # make sure we have facebook uid
@@ -89,8 +93,7 @@ class ApplicationController < ActionController::Base
         self.current_user = oc_user
       else
         # new user.  redirect to get essential info
-        redirect_to :controller => 'account', :action => 'facebook_complete' unless params[:action] == 'facebook_complete'
-        return
+        redirect_to :controller => 'account', :action => 'facebook_complete' and return unless params[:action] == 'facebook_complete'
       end
     end
   end

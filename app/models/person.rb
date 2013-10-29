@@ -700,12 +700,12 @@ class Person < ActiveRecord::Base
 
     if party == 'Democrat'
       peeps.collect! {|p|
-        p.votes_with_party_percentage = (p.votes_democratic_position.to_f/p.total_session_votes.to_f) * 100
+        p.votes_with_party_percentage = p.total_session_votes ? (p.votes_democratic_position.to_f/p.total_session_votes.to_f) * 100 : 0
         p
       }
-    else
+    else # TODO this assumes all non-dems are republicans
       peeps.collect! {|p|
-        p.votes_with_party_percentage = (p.votes_republican_position.to_f/p.total_session_votes.to_f) * 100
+        p.votes_with_party_percentage = p.total_session_votes ? (p.votes_republican_position.to_f/p.total_session_votes.to_f) * 100 : 0
         p
       }
     end

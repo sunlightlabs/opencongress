@@ -127,7 +127,8 @@ class FriendsController < ApplicationController
   end
 
   def tracking_bill
-    @object = @bill = Bill.find_by_ident(params[:id])
+    bill_type, number, session = Bill.ident params[:id]
+    @object = @bill = Bill.find_by_session_and_bill_type_and_number session, bill_type, number
     @users = VisibleByPrivacyOptionQuery.new(
         User.tracking_bill(@bill),
         :observer => current_user,

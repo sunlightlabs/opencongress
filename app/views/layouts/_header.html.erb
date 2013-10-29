@@ -46,7 +46,7 @@
                                         </fieldset>
                                         <a href="/account/forgot_password">Forgot Password?</a>
                                     <% end %>
-                                    <%= fb_login_and_redirect request.url, :text => 'Login with Facebook', :scope => 'email,user_location,user_about_me' %>
+                                    <%= fb_login_and_redirect "#{request.url}?#{Time.now.tv_sec}", :text => 'Login with Facebook', :scope => 'email,user_location,user_about_me' %>
                                     <a href="/login">Login with your OpenID</a>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@
                     </div>
                 </div>
 
-                <div id="search-autocomplete-choices" class="autocomplete"></div>
+                <div id="search-autocomplete-choices" class="autocomplete" style="display:none;"></div>
             </div>
         </form>
     </div>

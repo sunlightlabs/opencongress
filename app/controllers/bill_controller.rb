@@ -421,26 +421,28 @@ class BillController < ApplicationController
     @versions = @bill.bill_text_versions.find(:all, :conditions => "bill_text_versions.previous_version IS NULL")
     if @versions.empty?
       @bill_text = "We're sorry but OpenCongress does not have the full bill text at this time.  Try at <a href='http://thomas.loc.gov/cgi-bin/query/z?c#{@bill.session}:#{@bill.typenumber}:'>THOMAS</a>."
+      @page_title = "Missing Text of #{@bill.typenumber}"
       @commented_nodes = []
-      return
+      @top_nodes = []
+      @commented_nodes = []
+      @version = nil
+    else
+      @version = @versions.first unless (params[:version].blank? or @versions.first.version != params[:version])
+
+      v = @bill.bill_text_versions.find(:first, :conditions => ["bill_text_versions.previous_version=?", @versions.first.version])
+      until v.nil?
+        @versions << v
+        @version = v unless (params[:version].blank? or v.version != params[:version])
+        v = @bill.bill_text_versions.find(:first, :conditions => ["bill_text_versions.previous_version=?", v.version])
+      end
+      @version = @versions.last if @version.nil?
+
+      @page_title = "Text of #{@bill.typenumber} as #{@version.pretty_version}"
+
+      @nid = params[:nid].blank? ? nil : params[:nid]
+      @commented_nodes = @version.bill_text_nodes.find(:all, :include => :comments)
+      @top_nodes = @version.top_comment_nodes
     end
-
-    @version = @versions.first unless (params[:version].blank? or @versions.first.version != params[:version])
-
-    v = @bill.bill_text_versions.find(:first, :conditions => ["bill_text_versions.previous_version=?", @versions.first.version])
-    until v.nil?
-      @versions << v
-      @version = v unless (params[:version].blank? or v.version != params[:version])
-      v = @bill.bill_text_versions.find(:first, :conditions => ["bill_text_versions.previous_version=?", v.version])
-    end
-    @version = @versions.last if @version.nil?
-
-    @page_title = "Text of #{@bill.typenumber} as #{@version.pretty_version}"
-
-    @nid = params[:nid].blank? ? nil : params[:nid]
-    @commented_nodes = @version.bill_text_nodes.find(:all, :include => :comments)
-    @top_nodes = @version.top_comment_nodes
-
 
     begin
       # open html from file

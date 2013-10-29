@@ -624,7 +624,7 @@ class AccountController < ApplicationController
               end
             end
           when /\/([^\/]+)\/[^\/]+\/(\d+)/
-            obj = $1
+            obj = {'people' => 'Person', 'issues' => 'Subject', 'committee' => 'Committee'}[$1]
             id = $2
             if id && obj
               object = Object.const_get(obj)

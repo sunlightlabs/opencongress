@@ -9,7 +9,7 @@
 
 
 
-<% if @user.id == current_user.id %>
+<% if logged_in? && @user == current_user %>
 <div style="float:right;width:100px;">
   <%= image_tag("private.png", :alt => "private", :title => "Private", :id => 'Privacy', :style => "float:left;margin-right:5px;") %>
 <%= form_for :privacy_option, @user.privacy_option, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>

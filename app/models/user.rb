@@ -153,7 +153,7 @@ class User < ActiveRecord::Base
   scope :supporting_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
   scope :opposing_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
   scope :ranking_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating is not null")}
-  scope :tracking_person, lambda {|person| includes(:bookmarked_people).where("person.id" => person.id) }
+  scope :tracking_person, lambda {|person| includes(:bookmarked_people).where("people.id" => person.id) }
   scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subject.id" => subject.id) }
   scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committee.id" => committee.id) }
 

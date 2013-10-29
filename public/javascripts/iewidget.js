@@ -106,13 +106,13 @@
             };
 
             _FetchTopIndustries(options.get('recipient'))
-            .done(display_top_industries); 
+            .done(display_top_industries);
         };
 
         var FetchTopContributors = function (infex_id, options) {
             options = new Options(defaults, options);
             options.require('cycle');
-            var url = 'http://transparencydata.com/api/1.0/aggregates/pol/f990d08287c34c389cfabe3cbf3dde99/contributors.json';
+            var url = 'http://transparencydata.com/api/1.0/aggregates/pol/:id:/contributors.json'.replace(':id:', infex_id);
             var params = { 'apikey': options.get('apikey'), 'cycle': options.get('cycle') };
             return $.ajax({url: url, crossDomain: true, data: params, dataType: 'jsonp'});
         };
@@ -145,7 +145,7 @@
                                  b.span({'class': 'total-contrib money'}, c.total_amount));
                          });
                 }).appendTo(options.get('target'));
-                
+
                 $(options.get('target')).find('span.money').formatCurrency({roundToDecimalPlace: 0});
             };
 

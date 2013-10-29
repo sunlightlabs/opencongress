@@ -47,7 +47,7 @@ module UrlHelper
   end
 
   def url_for_internal(link)
-    case link.notebookable.type.to_s
+    case link.notebookable_type.to_s
     when 'Bill'
       bill_url(link.notebookable)
     when 'Subject'

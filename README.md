@@ -102,4 +102,4 @@ We are currently focused on getting the code up to speed--more friendly for deve
 
 ## License
 
-OpenCongress is distributed under the [BSD 3-clause license](http://opensource.org/licenses/BSD-3-Clause).
+OpenCongress is distributed under the [GPLv3](http://opensource.org/licenses/GPL-3.0).

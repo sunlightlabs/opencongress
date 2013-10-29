@@ -40,7 +40,7 @@ class SearchController < ApplicationController
         @search_news = params[:search_news] ? true : false
         @search_blogs = params[:search_blogs] ? true : false
         @search_commentary = params[:search_commentary] ? true : false
-        @search_comments = params[:search_comments] ? true : false
+        @search_comments = false
         @search_gossip_blog = params[:search_gossip_blog] ? true : false
 
         @search_commentary = false # temporary

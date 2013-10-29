@@ -9,6 +9,10 @@ class DistrictsController < ApplicationController
   # GET /states/:state_id/districts/:id
   def show
     @district = @state.districts.find_by_district_number(params[:id])
+    if @district.rep.nil?
+      # The district is not represented. It was most likely a victim of a recent census.
+      render_404 and return
+    end
 
     @representative = Person.find_current_representative_by_state_and_district(@state.abbreviation, @district.district_number)
 

@@ -32,8 +32,11 @@ Tracked by <%= link_to b.person.bookmarks.count, :controller => 'friends', :acti
                     <strong>Voted <%= i.to_s %></strong> <%= i.roll_call.question.nil? ? "" : "on the question:" %>
                     <%= link_to (i.roll_call.question || i.roll_call.title), :only_path => false, :controller => 'roll_call', :action => 'show', :id => i.roll_call %>
                     <br />
-                    regarding <%= link_to(i.roll_call.bill.typenumber, bill_path(i.roll_call.bill))%>:
-                    <%= i.roll_call.bill.title_common if i.roll_call.bill %>
+                    <% if i.roll_call.bill %>
+                      <%# If this is a nomination or house speaker election then we won't have a bill. %>
+                      regarding <%= link_to(i.roll_call.bill.typenumber, bill_path(i.roll_call.bill))%>:
+                      <%= i.roll_call.bill.title_common if i.roll_call.bill %>
+                    <% end %>
                 </p>
             </li>
          <% else %>

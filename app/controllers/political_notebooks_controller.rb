@@ -70,6 +70,7 @@ private
 
   def get_user
     @user = User.find_by_login(params[:login])
+    render_404 and return if @user.nil?
   end
 
   def get_notebook

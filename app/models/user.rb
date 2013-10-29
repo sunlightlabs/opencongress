@@ -154,8 +154,8 @@ class User < ActiveRecord::Base
   scope :opposing_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
   scope :ranking_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating is not null")}
   scope :tracking_person, lambda {|person| includes(:bookmarked_people).where("people.id" => person.id) }
-  scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subject.id" => subject.id) }
-  scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committee.id" => committee.id) }
+  scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subjects.id" => subject.id) }
+  scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committees.id" => committee.id) }
 
   scope :mypn_spammers, includes(:political_notebook => [:notebook_items]).where("notebook_items.spam = ?", true).order("users.login ASC")
 

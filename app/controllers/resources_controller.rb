@@ -232,8 +232,10 @@ class ResourcesController < ApplicationController
     object_type = params[:object_class]
     id = params[:object_id]
 
-    klass = Object.const_get object_type
-    item = klass.find_by_id(id)
+    klass = Object.const_get object_type rescue nil
+    item = klass.find_by_id(id) rescue nil
+    render_404 and return if item.nil?
+
     render :partial => 'shared/email_friend_form', :locals => { :item => item }, :layout => false
   end
 
@@ -241,8 +243,10 @@ class ResourcesController < ApplicationController
     object_type = params[:object_class]
     id = params[:object_id]
 
-    klass = Object.const_get object_type
-    item = klass.find_by_id(id)
+    klass = Object.const_get object_type rescue nil
+    item = klass.find_by_id(id) rescue nil
+    render_404 and return if item.nil?
+
     render :partial => 'shared/email_friend_form_popup', :locals => { :item => item }, :layout => 'popup'
   end
 
@@ -256,8 +260,9 @@ class ResourcesController < ApplicationController
     object_type = params[:email][:object_type]
     id = params[:email][:object_id]
 
-    klass = Object.const_get object_type
-    item = klass.find_by_id(id)
+    klass = Object.const_get object_type rescue nil
+    item = klass.find_by_id(id) rescue nil
+    render_404 and return if item.nil?
 
     friend_email = FriendEmail.new
     friend_email.emailable = item

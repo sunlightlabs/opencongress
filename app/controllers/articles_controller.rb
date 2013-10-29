@@ -11,7 +11,7 @@ class ArticlesController < ApplicationController
     end
 
     def show
-      return view
+      redirect_to :action => :view, :params => params
     end
 
     def list

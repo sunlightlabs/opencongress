@@ -10,8 +10,6 @@ class AccountController < ApplicationController
   skip_before_filter :is_authorized?, :only => [:logout]
   skip_before_filter :has_district?, :only => [:determine_district, :logout, :accept_tos]
 
-  skip_after_filter :cache_control
-
   include OpenIdAuthentication
 
 #  observer :user_observer
@@ -576,6 +574,12 @@ class AccountController < ApplicationController
     end
   end
 
+  protected
+
+  def cache_control
+    expires_now
+  end
+
   private
 
   def activate_redirect(url = welcome_url)
@@ -591,10 +595,10 @@ class AccountController < ApplicationController
     end
   end
 
-
   def root_url
     home_url
   end
+
   def process_login_actions
     if session[:login_action] && session[:login_action][:url]
       if ['support_bill', 'oppose_bill'].include?(session[:login_action][:action])

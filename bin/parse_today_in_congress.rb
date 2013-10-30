@@ -14,12 +14,14 @@ begin
   doc = Hpricot(open("http://www.house.gov/legislative/date/#{Time.now.year}-#{'%02d' % Time.now.month}-#{'%02d' % Time.now.day}"))
   date = Date.today
 
-  unless (CongressSession.find_by_date_and_chamber(date, 'house'))
+  hs = CongressSession.find_by_date_and_chamber(date, 'house')
+  unless hs
     not_in_session = (doc.to_s =~ /There are no events scheduled today/)
 
     CongressSession.create({ :date => date, :chamber => 'house', :is_in_session => !not_in_session})
     puts "Session for house:#{date} added to DB."
   else
+    hs.touch
     puts "Session for house:#{date} already in DB. Skipping."
   end
 rescue

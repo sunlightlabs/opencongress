@@ -133,7 +133,7 @@ class FriendsController < ApplicationController
         User.tracking_bill(@bill),
         :observer => current_user,
         :property => :my_tracked_items,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @page_title = "Users Tracking #{@bill.typenumber}"
     filter_by_locality
   end
@@ -144,7 +144,7 @@ class FriendsController < ApplicationController
         User.tracking_person(@person),
         :observer => current_user,
         :property => :my_tracked_items,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @page_title = "Users Tracking #{@person.short_name}"
     filter_by_locality
   end
@@ -155,7 +155,7 @@ class FriendsController < ApplicationController
         User.tracking_issue(@issue),
         :observer => current_user,
         :property => :my_tracked_items,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @page_title = "Users Tracking #{@issue.term}"
     filter_by_locality
   end
@@ -166,7 +166,7 @@ class FriendsController < ApplicationController
         User.tracking_committee(@committee),
         :observer => current_user,
         :property => :my_tracked_items,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @page_title = "Users Tracking the #{@committee.name} Committee"
     filter_by_locality
   end
@@ -177,7 +177,7 @@ class FriendsController < ApplicationController
         User.supporting_person(@person),
         :observer => current_user,
         :property => :my_tracked_items,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @page_title = "Users Supporting #{@person.short_name}"
     filter_by_locality
   end
@@ -188,7 +188,7 @@ class FriendsController < ApplicationController
         User.opposing_person(@person),
         :observer => current_user,
         :property => :my_tracked_items,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @page_title = "Users Opposing #{@person.short_name}"
     filter_by_locality
   end
@@ -199,7 +199,7 @@ class FriendsController < ApplicationController
         User.supporting_bill(@bill),
         :observer => current_user,
         :property => :my_tracked_items,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @page_title = "Users Supporting #{@bill.typenumber}"
     filter_by_locality
   end
@@ -210,7 +210,7 @@ class FriendsController < ApplicationController
         User.opposing_bill(@bill),
         :observer => current_user,
         :property => :my_tracked_items,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @page_title = "Users Opposing #{@bill.typenumber}"
     filter_by_locality
   end
@@ -222,12 +222,12 @@ class FriendsController < ApplicationController
         User.for_state(@user.state),
         :observer => current_user,
         :property => :my_location,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
     @in_district = VisibleByPrivacyOptionQuery.new(
         User.for_district(@user.state, @user.district),
         :observer => current_user,
         :property => :my_location,
-        :excludes => @user).with_relations.all
+        :excludes => @user).all
   end
 
   def import_contacts

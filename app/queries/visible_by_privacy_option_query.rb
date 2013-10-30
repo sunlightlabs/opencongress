@@ -21,17 +21,23 @@ class VisibleByPrivacyOptionQuery
     @statuses = PrivacyOption.get_option_values
 
     raise ArgumentError, 'Specified property is not a valid privacy option' unless PrivacyOption.get_option_keys.include?(@property)
+    observer_id = @observer.id rescue 0
+    if observer_id > 0
+      where_clause = ["privacy_options.#{@property} = :public_value
+                       OR (privacy_options.#{@property} = :friends_value
+                       AND friends.friend_id = :observer_id)
+                       OR users.id = :observer_id", {
+                        :public_value => @statuses[:public],
+                        :friends_value => @statuses[:friends],
+                        :observer_id => (@observer.id rescue 0)
+                        }]
+    else
+      where_clause = ["privacy_options.#{@property} = :public_value", {:public_value => @statuses[:public] }]
+    end
     @relation = relation
       .includes(:friends)
       .includes(:privacy_option)
-      .where("privacy_options.#{@property} = :public_value
-             OR (privacy_options.#{@property} = :friends_value
-                 AND friends.friend_id = :observer_id)
-             OR users.id = :observer_id", {
-        :public_value => @statuses[:public],
-        :friends_value => @statuses[:friends],
-        :observer_id => (@observer.id rescue 0)
-      })
+      .where(*where_clause)
 
     unless options[:excludes].nil?
       excludes options[:excludes]

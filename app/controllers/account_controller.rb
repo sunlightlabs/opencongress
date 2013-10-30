@@ -273,6 +273,8 @@ class AccountController < ApplicationController
     @page_title = 'Confirm Your Email Address'
     @user = User.find_by_login(params[:login], :conditions => ["activated_at is null"])
     @contact_congress_signup = session[:formageddon_unsent_threads].nil? ? false : true
+
+    render_404 if @user.nil?
   end
 
   def logout

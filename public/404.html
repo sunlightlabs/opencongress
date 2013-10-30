@@ -178,10 +178,13 @@
   <script>
   (function(){
     if (location.host == 'www.opencongress.org') {
+      console.log('check');
       var _gaq=_gaq || [];
       _gaq.push(['_setAccount', 'UA-1208819-1']);
       _gaq.push(['_trackEvent', 'Errors', '404', location.href]);
+      console.log(_gaq);
       (function(){
+        console.log('getting script');
         var ga=document.createElement('script');
         ga.type='text/javascript';
         ga.async=true;
@@ -190,7 +193,7 @@
         s.parentNode.insertBefore(ga, s);
       })();
     }
-  });
+  })();
 
   </script>
 

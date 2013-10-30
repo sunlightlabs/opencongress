@@ -10,6 +10,8 @@ class AccountController < ApplicationController
   skip_before_filter :is_authorized?, :only => [:logout]
   skip_before_filter :has_district?, :only => [:determine_district, :logout, :accept_tos]
 
+  skip_after_filter :cache_control
+
   include OpenIdAuthentication
 
 #  observer :user_observer

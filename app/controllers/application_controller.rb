@@ -278,7 +278,7 @@ class ApplicationController < ActionController::Base
   def cache_control
     unless logged_in?
       # Wow! expires_in is horrible. It deletes the :private key always -- source here: http://apidock.com/rails/v3.0.9/ActionController/ConditionalGet/expires_in
-      expires_in 3.hours, :public => true
+      # expires_in 3.hours, :public => true
     end
   end
 

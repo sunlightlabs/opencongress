@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: 6b58176697dcdec16cd396c2c686876ae11a9743
+  revision: 52b306f11b2a88bb700e2b83df61c94eac8d5fd0
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
@@ -138,7 +138,7 @@ GEM
       activesupport (~> 3.0)
       daemons
     diff-lcs (1.2.4)
-    domain_name (0.5.13)
+    domain_name (0.5.14)
       unf (>= 0.0.5, < 1.0.0)
     em-websocket (0.5.0)
       eventmachine (>= 0.12.9)
@@ -389,7 +389,7 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.37)
-    unf (0.1.2)
+    unf (0.1.3)
       unf_ext
     unf_ext (0.0.6)
     unicode_utils (1.4.0)

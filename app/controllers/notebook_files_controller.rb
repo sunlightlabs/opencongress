@@ -7,6 +7,7 @@ class NotebookFilesController < NotebookItemsController
     @file = NotebookFile.new(params[:notebook_file])
     @file.political_notebook = @political_notebook
     @success = @file.save
+    @item = @file
 
     respond_to do |format|
       format.js {

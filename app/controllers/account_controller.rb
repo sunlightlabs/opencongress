@@ -358,7 +358,7 @@ class AccountController < ApplicationController
 
     if @user.nil?
       flash[:error] = "Password reset link not recognized.  Please try again."
-      redirect_to '/account/forgot_password'
+      redirect_to '/account/forgot_password' and return
     else
       return unless request.post?
 

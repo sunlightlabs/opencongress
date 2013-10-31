@@ -1348,7 +1348,7 @@ class Person < ActiveRecord::Base
   end
 
   def is_sitting?
-    title.blank? ? false : true
+    !latest_role.nil? && latest_role.enddate >= Date.today
   end
 
   def chamber

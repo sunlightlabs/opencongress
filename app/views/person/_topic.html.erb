@@ -1,6 +1,6 @@
 <div class="people_header clearfix">
   <div id="name">
-    <h3><em><%= @person.title_common %> <%= @person.full_name %></em></h3>
+    <h3><em><% if !@person.is_sitting? %>Former <% end %><%= @person.title %> <%= @person.full_name %></em></h3>
     <h5>
       <%= @person.party %> &nbsp;&bull;&nbsp;
       <%= link_to("#{@person.district.to_i.ordinalize} District", state_district_path(@person.state, @person.district)) + ', ' if @person.in_a_valid_district? %>

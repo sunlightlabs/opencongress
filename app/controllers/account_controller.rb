@@ -532,7 +532,7 @@ class AccountController < ApplicationController
         else
           flash[:notice] = "Failed Login"
         end
-        redirect_to user_profile_path(current_user.login)
+        redirect_to user_profile_path(current_user.login, { Time.now.to_i => '' })
       end
   end
 

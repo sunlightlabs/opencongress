@@ -379,6 +379,9 @@ class AccountController < ApplicationController
 
   def profile
     @user = User.find_by_login(params[:user])
+    if @user.nil?
+      render_404 and return
+    end
   end
 
   def change_pw

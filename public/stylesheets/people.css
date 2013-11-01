@@ -335,7 +335,6 @@ margin: 16px 0;
 height: 83px;
 }
 #sort_nav{
-height: 83px;
 width: 617px;
 float: left;
 }
@@ -1092,6 +1091,7 @@ font-size: 150px;
 height: 0px;
 padding-right: 14px;
 color: #f1edd6;
+opacity: 0.5;
 }
 #timeframe .news{
 padding-left: 260px;
@@ -1099,7 +1099,7 @@ padding-left: 260px;
 #timeframe .approval{
 padding-left: 438px;
 }
-#timeframe .popular{
+#timeframe_select.approval, #timeframe .popular{
 padding-left: 156px;
 }
 #timeframe .blog{

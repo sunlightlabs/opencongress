@@ -1125,6 +1125,9 @@ margin-left: 32px;
 .phone{
 padding-top: 10px;
 }
+.tweet-rep a {
+  display:inline;
+}
 #money_trail{
 padding: 30px;
 clear: both;

@@ -20,6 +20,7 @@ Person.all_sitting.each do |p|
     p.fax = doc.elements['response/legislator/fax'].text if doc.elements['response/legislator/fax']
     p.contact_webform = doc.elements['response/legislator/webform'].text if doc.elements['response/legislator/webform']
     p.sunlight_nickname = doc.elements['response/legislator/nickname'].text if doc.elements['response/legislator/nickname']
+    p.twitter_id = doc.elements['response/legislator/twitter_id'].text if doc.elements['response/legislator/twitter_id']
 
     p.save
 

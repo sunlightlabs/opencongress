@@ -3521,6 +3521,13 @@ _background:url('../images/sprites.gif') 0 0 no-repeat;
   background: url('../images/send_email.png') left 50% no-repeat;
 }
 
+.icon.twitter-bird:before {
+  background: url('../images/icon-twitter-bird.png') left 50% no-repeat;
+}
+.icon.twitter-reply:before {
+  background: url('../images/icon-twitter-reply.png') left 50% no-repeat;
+}
+
 .activity_stream .icon:before,
 .post_trigger .icon:before { background: none; }
 
@@ -6133,7 +6140,7 @@ a.logo:hover { background-position: 0px -100px; }
   font-size: 12px;
   text-shadow: none;
   color: #fff;
-}  
+}
 
 #user_account #logout-btn:hover {background: #555;}
 

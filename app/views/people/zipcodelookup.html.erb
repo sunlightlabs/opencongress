@@ -3,9 +3,9 @@
 </div>
 
 <div class="padding-left">
-  <div class="zip_search <%= 'no_results' if (@senators.nil? && @reps.nil?) %>">
+  <div class="zip_search <%= 'no_results' if @senators.blank? && @reps.blank? %>">
 
-  <% if @senators.nil? && @reps.nil? %>
+  <% if @senators.blank? && @reps.blank? %>
     <p class="margin-bottom">No results for ZIP code <b><%= @display_zip %></b>.</p>
   <% end %>
 
@@ -20,10 +20,10 @@
   </div>
 
   <div class="results">
-    <% if @senators.any? || @reps.any? %>
+    <% if @senators.present? || @reps.present? %>
       <p class="margin-top">Search results for ZIP code <b><%= @display_zip %></b>.</p>
 
-      <% if @senators.any? %>
+      <% if @senators.present? %>
         <div class="clearfix">
         <h3 class="foo">Senators Representing Your State</h3>
         <%= render :partial => 'people_list', :locals => { :people => @senators, :hide_help => true, :show_phone => true }%>

@@ -63,17 +63,21 @@ class SearchController < ApplicationController
         end
 
         if (@search_people)
-          people_for_name = Person.find(:all,
-                 :conditions => [ "(UPPER(firstname || ' ' || lastname)=? OR
-                                    UPPER(nickname || ' ' || lastname)=?)",
-                                    query_stripped.upcase, query_stripped.upcase ])
-          redirect_to person_url(people_for_name[0]) and return if people_for_name.size == 1
+          if !(query_stripped =~ /^[\d]{5}(-[\d]{4})?$/).nil?
+            @people = Person.find_current_congresspeople_by_zipcode(*query_stripped.split('-')).flatten.paginate(:per_page => 9, :page => @page)
+          else
+            people_for_name = Person.find(:all,
+                   :conditions => [ "(UPPER(firstname || ' ' || lastname)=? OR
+                                      UPPER(nickname || ' ' || lastname)=?)",
+                                      query_stripped.upcase, query_stripped.upcase ])
+            redirect_to person_url(people_for_name[0]) and return if people_for_name.size == 1
 
-          opts = {:page => @page}
-          # restrict search if the only congress checked is the current congress
-          opts[:only_current] = true if params[:search_congress].keys.count == 1 && !params[:search_congress][Settings.default_congress.to_s].nil?
+            opts = {:page => @page}
+            # restrict search if the only congress checked is the current congress
+            opts[:only_current] = true if params[:search_congress].keys.count == 1 && !params[:search_congress][Settings.default_congress.to_s].nil?
 
-          @people = Person.full_text_search(query_stripped, opts)
+            @people = Person.full_text_search(query_stripped, opts)
+          end
           @found_items += @people.total_entries
         end
 

@@ -3,9 +3,9 @@
 </div>
 
 <div class="padding-left">
-  <div class="zip_search <%= 'no_results' if @senators.none? and @reps.none? %>">
+  <div class="zip_search <%= 'no_results' if (@senators.nil? && @reps.nil?) %>">
 
-  <% if @senators.none? and @reps.none? %>
+  <% if @senators.nil? && @reps.nil? %>
     <p class="margin-bottom">No results for ZIP code <b><%= @display_zip %></b>.</p>
   <% end %>
 
@@ -20,7 +20,7 @@
   </div>
 
   <div class="results">
-    <% if @senators.any? or @reps.any? %>
+    <% if @senators.any? || @reps.any? %>
       <p class="margin-top">Search results for ZIP code <b><%= @display_zip %></b>.</p>
 
       <% if @senators.any? %>

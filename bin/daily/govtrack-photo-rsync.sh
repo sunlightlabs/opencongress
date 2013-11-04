@@ -32,17 +32,19 @@ do
   fi
 done
  
-for i in `find . -maxdepth 1 -name \*.jpeg -print | awk '{FS="/"}{print $2}'`
-do
-	for size in 0 1 2
-	do    	  
-convert $i -thumbnail ${sizes[size]} -depth 8 -quality 95 \
-     \( +clone  -threshold -1 \
-        -draw "fill black polygon 0,0 0,${rad[size]} ${rad[size]},0 fill white circle ${rad[size]},${rad[size]} ${rad[size]},0" \
-        \( +clone -flip \) -compose Multiply -composite \
-        \( +clone -flop \) -compose Multiply -composite \
-     \) +matte -compose CopyOpacity -composite thumbs_${sizes[size]}/`basename $i jpeg`png
+for i in $(find . -maxdepth 1 -name \*.jpeg -print | awk '{FS="/"}{print $2}'); do
+    for size in 0 1 2; do
+        govtrack_id=$(basename "$i" jpeg)
+        thumb_path="thumbs_${sizes[size]}/${govtrack_id}png"
+        if [ ! -e "${thumb_path}" -o "$i" -nt "${thumb_path}" ]; then
+            convert $i -thumbnail ${sizes[size]} -depth 8 -quality 95 \
+                \( +clone  -threshold -1 \
+                -draw "fill black polygon 0,0 0,${rad[size]} ${rad[size]},0 fill white circle ${rad[size]},${rad[size]} ${rad[size]},0" \
+                \( +clone -flip \) -compose Multiply -composite \
+                \( +clone -flop \) -compose Multiply -composite \
+                \) +matte -compose CopyOpacity -composite thumbs_${sizes[size]}/`basename $i jpeg`png
 
-   	echo "thumbs_${sizes[size]}/`basename $i jpeg`png... done"
-  	done 	
+            ls -lh "${thumb_path}"
+        fi
+    done
 done

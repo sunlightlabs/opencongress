@@ -8,7 +8,7 @@ class IndexController < ApplicationController
   include ActionView::Helpers::TextHelper
 
   def index
-    @sessions = CongressSession.sessions
+    @sessions = CongressSession.sessions(@updated_at.to_date)
     @searches = Search.top_search_terms(10).select{|t| t.text.length > 2 }[0..4]
     @popular_bills = ObjectAggregate.popular('Bill', Settings.default_count_time, 4)
     @recent_votes = RollCall.order("date DESC").first(4)

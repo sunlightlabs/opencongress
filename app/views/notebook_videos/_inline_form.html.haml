@@ -4,20 +4,20 @@
   = hidden_field_tag :item_type, 'NotebookVideo'
 
   %p
-    %label.require{:for => 'url'} URL*
+    %label.require{:for => 'url'} URL
     = f.text_field :url, :onchange=>"NotebookForm.setTitleFromUrl(this);", :class => 'field'
-    
+
   %p
-    %label.require{:for => 'title'} Embed code*
+    %label.require{:for => 'title'} Embed code
     = f.text_area :embed ,:rows => 4, :class => 'field', :onchange=>"NotebookForm.setTitleFromEmbed(this);"
 
   %p
-    %label.require{:for => 'title'} Title*
+    %label.require{:for => 'title'} Title
     %span#finding-title-status{ :style => "display:none" } finding title....
     = f.text_field :title, :class => 'field'
-    
+
   %p
-    %label.require{:for => 'description'} Description
+    %label{:for => 'description'} Description
     = f.text_area :description,:class => 'field', :rows => 4
-  
+
   = render 'notebook_items/inline_common', :f => f

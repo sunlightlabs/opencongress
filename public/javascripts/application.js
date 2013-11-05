@@ -76,118 +76,6 @@ function changePage(newLocId)
   }
 }
 
-NotebookForm = {
-  toggleForm: function(field){
-    div_name  = 'add-' + field;
-    form_name = 'add-' + field + '-form';
-
-    div = $(div_name);
-    showIt = !div.visible();
-
-    NotebookForm.hideAllForms();
-    // show the current one if it's a show request
-    if(showIt){
-      new Effect.BlindDown(div_name,{duration: 0.3});
-    }
-  },
-
-  hideAllForms: function(){
-    $('jqmWindow').hide();
-  },
-
-  hideAllFormsOld: function(){
-    // hide all of them
-    $$('div.notebook-form-div').each(Element.hide);
-    $$('form.notebook-form').each(function(el) {
-        Form.reset(el.id);
-    });
-    if($('notebook-items').childNodes.length > 1){
-      $('no-items').hide();
-    }else{
-      $('no-items').show();
-    }
-  },
-
-//value="(http://[^&]*\.com/v/[^&]*)
-
-  setTitleFromEmbed: function(embedField){
-    var result = "";
-    var embed = $F(embedField);
-    var regexp = /value=\"(http:\/\/[^&]*\.com\/v\/[^&]*)/ ;
-    var matches = embed.match(regexp);
-    if(matches.size() > 0){
-      match = matches[1];
-
-      titleField = Form.getInputs(embedField.form,'text','notebook_video[title]')[0];
-      urlField = Form.getInputs(embedField.form,'hidden','notebook_video[url]')[0];
-
-      titleField.disable();
-      titleField.value = 'Finding title...';
-
-      url = '';
-      //find youtube url
-      if(match.search("www.youtube.com")){
-        var regexp = /value="http:\/\/[^&]*\.com\/v\/([^&]*)/ ;
-        var matches = embed.match(regexp);
-        if(matches.size() > 0){
-          url = "http://youtube.com/watch?v=" + matches[1];
-          urlField.value = url;
-        }
-
-      }
-
-      if(url == ''){
-        return false;
-      }
-
-      //$('finding-title-status').show();
-      ajax = new Ajax.Request('/scrape_tools/get_url_title', {
-        parameters: {
-          url: url
-        }
-      ,
-      onSuccess:function(response){
-        result = response.responseText;
-        titleField.value = result;
-        titleField.enable();
-      }
-      });
-      return true;
-    }else{
-      alert('you must specify a valid embed');
-      return false
-    }
-  },
-
-  setTitleFromUrl: function(urlField){
-    var result = "";
-    var url = $F(urlField);
-    var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/ ;
-    if(regexp.test(url)){
-      titleElement = Form.getInputs(urlField.form,'text','notebook_link[title]')[0];
-      titleElement.disable();
-      titleElement.value = 'Finding title...';
-      //$('finding-title-status').show();
-      ajax = new Ajax.Request('/scrape_tools/get_url_title', {
-        parameters: {
-          url: url
-        }
-      ,
-      onSuccess:function(response){
-        result = response.responseText;
-  //      $('finding-title-status').hide();
-        titleElement.value = result;
-        titleElement.enable();
-      }
-      });
-      return true;
-    }else{
-      alert('you must specify a valid url');
-      return false
-    }
-  }
-}
-
 Ajax.Responders.register({
   onCreate: function(request) {
     // don't show the throbber if it's a search autocomplete request
@@ -309,6 +197,9 @@ NotebookForm = {
     var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/ ;
     if(regexp.test(url)){
       titleElement = Form.getInputs(urlField.form,'text','notebook_link[title]')[0];
+      if(typeof titleElement === 'undefined'){
+        titleElement = Form.getInputs(urlField.form,'text','notebook_video[title]')[0];
+      }
       titleElement.disable();
       titleElement.value = 'Finding title...';
       //$('finding-title-status').show();
@@ -452,5 +343,10 @@ BillText = {
       $($(this).attr('href')).addClass('active').siblings('.tab-pane').removeClass('active');
       $(this).parent('li').addClass('active').siblings('li').removeClass('active');
     });
+
+    // bind close buttons on groups/mypn *ducks*
+    $(document).on('click', '.close_add_notebook', function(){
+      NotebookForm.hideAllForms();
+    })
   });
 })(jQuery);

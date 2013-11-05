@@ -5,16 +5,16 @@
   = hidden_field_tag :type, 'Bill'
 
   %p
-    %label.require{:for => 'bill_type'} Bill Type*
+    %label.require{:for => 'bill_type'} Bill Type
     = f.select :bill_type, options_for_select(Bill.all_types.keys.map { |k| [Bill.all_types[k], k] })
-    
+
   %p
-    %label.require{:for => 'number'} Bill Number*
+    %label.require{:for => 'number'} Bill Number
     = f.text_field :bill_number, :class => 'field'
-  
+
   %p
-    %label.require{:for => 'description'} Description
+    %label{:for => 'description'} Description
     = f.text_area :description,:class => 'field', :rows => 4
 
-      
+
   = render 'notebook_items/inline_common', :f => f

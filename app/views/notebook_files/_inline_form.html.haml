@@ -4,16 +4,16 @@
   = hidden_field_tag :item_type, 'NotebookFile'
 
   %p
-    %label.require{:for => 'file'} Photo file*
+    %label.require{:for => 'file'} Photo file
     = f.file_field :file, :class => 'field'
-    
+
   %p
-    %label.require{:for => 'title'} Title*
+    %label.require{:for => 'title'} Title
     = f.text_field :title, :class => 'field'
-    
+
   %p
-    %label.require{:for => 'description'} Description
+    %label{:for => 'description'} Description
     = f.text_area :description, :class => 'field', :rows => 4
-  
+
   = render 'notebook_items/inline_common', :f => f
 

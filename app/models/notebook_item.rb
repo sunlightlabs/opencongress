@@ -49,7 +49,7 @@ class NotebookItem < ActiveRecord::Base
       errors.add(:embed, "can't include onload scripts") if embed =~ /onload=/i
       iframe_count = embed.match(/<iframe/i).length rescue 0
       src_count = embed.match(/<iframe[^>]*src=/i).length rescue 0
-      valid_src_count = embed.match(/<iframe[^>]*src=("|')https?:\/\/[^>]+("|')/i).length rescue 0
+      valid_src_count = embed.match(/<iframe[^>]*src=("|')(https?:)?\/\/[^>]+("|')/i).length rescue 0
       errors.add(:embed, "should reference only iframes with a valid url") if iframe_count > valid_src_count || src_count > valid_src_count
       errors.add(:embed, "can't include css behaviors") if embed =~ /<style.*behavior[\s]*:[\s]*('|")/im
     end

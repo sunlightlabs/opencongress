@@ -315,6 +315,8 @@ width: 170px;
 float: right;
 height: 80px;
 margin: 3px 20px 0 0;
+position: relative;
+z-index: 2;
 }
 .person .stats li{
 line-height: 2.5em;

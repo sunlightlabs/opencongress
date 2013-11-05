@@ -33,12 +33,14 @@
     -->
   </ul>
 
+  <% if %w(state name).include?(@sort.to_s) %>
   <ul id="jump" <%= "style='display:none;'" if @days %>>
     <h4>Jump</h4>
     <% ('a'..'z').each do |letter| %>
     <li><a href='#<%= letter.upcase %>'><%=letter%></a></li>
     <% end %>
   </ul>
+  <% end %>
 
   <%= render :partial => 'shared/timeframe_select' if @days %>
 

@@ -33,12 +33,21 @@
 
 - unless defined?(no_js)
   :javascript
-    var doSearch = function() {
+    var doSearch = function(url) {
       $j('#group_search_spinner').show();
       $j.ajax({
-        url:'#{groups_path(:format => "js")}?q=' + $j('#group_search_field').val() + '&subject=' +  $j('#group_issue').val() + '&sort=' + $j('#group_sort').val()
+        url: url || '#{groups_path(:format => "js")}?q=' + $j('#group_search_field').val() + '&subject=' +  $j('#group_issue').val() + '&sort=' + $j('#group_sort').val()
       });
     }
+
+    // if pagination links reference groups.js, ajax their url instead of navigating.
+    $j('.pagination a').live('click', function(e){
+      if ($j(this).attr('href').match('groups.js')) {
+        e.preventDefault();
+        e.stopPropagation();
+        doSearch($j(this).attr('href'));
+      };
+    });
 
     $j('#group_search_field').change(doSearch);
     $j('#group_issue').change(doSearch);

@@ -65,7 +65,7 @@ class SearchController < ApplicationController
         if (@search_people)
           if !(query_stripped =~ /^[\d]{5}(-[\d]{4})?$/).nil?
             # TODO: Why does this return nil, and are there implications to making it return []?
-            @people = Person.find_current_congresspeople_by_zipcode(*query_stripped.split('-')).flatten.paginate(:per_page => 9, :page => @page) rescue []
+            @people = (Person.find_current_congresspeople_by_zipcode(*query_stripped.split('-')).flatten rescue []).paginate(:per_page => 9, :page => @page)
           else
             people_for_name = Person.find(:all,
                    :conditions => [ "(UPPER(firstname || ' ' || lastname)=? OR

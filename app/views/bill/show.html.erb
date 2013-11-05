@@ -228,7 +228,7 @@
     </div>
   <% end %>
 
-  <% unless supporting_orgs.empty? and opposing_orgs.empty? %>
+  <% unless supporting_orgs.nil? and opposing_orgs.nil? %>
     <div class="margin-left">
       <%= render :partial => 'shared/maplight_source' %>
     </div>

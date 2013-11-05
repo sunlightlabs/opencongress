@@ -20,4 +20,8 @@ class CongressSession < ActiveRecord::Base
   def today?
     date == Date.today
   end
+
+  def for_date?(date_cmp)
+    date == date_cmp
+  end
 end

@@ -51,9 +51,9 @@ module IndexHelper
     }[rcall.boolean_result]
   end
 
-  def session_div(chamber, session)
-    out = %Q{<div class="#{chamber}_sesh #{(session and session.today?) ? 'in_session' : 'out_session'}"><strong>#{chamber.capitalize}:</strong> }
-    if session and session.today?
+  def session_div(chamber, session, date=(@updated_at.to_date rescue Date.today))
+    out = %Q{<div class="#{chamber}_sesh #{(session and session.for_date?(date)) ? 'in_session' : 'out_session'}"><strong>#{chamber.capitalize}:</strong> }
+    if session and session.for_date?(date)
       out += "In Session"
     elsif session
       out += "Returns #{session.date.strftime("%b")}. #{session.date.day.ordinalize}"
@@ -70,9 +70,9 @@ module IndexHelper
     %Q{<div class="recess next_recess">#{session.is_in_session ? 'Next Recess' : 'Returns'}: #{session.date.strftime('%B %d')}</div>}
   end
 
-  def session_li(chamber, session)
-    out = %Q{<li class="#{(session and session.today?) ? 'on' : 'off'}"><strong>#{chamber.capitalize}:</strong> }
-    if session and session.today?
+  def session_li(chamber, session, date=(@updated_at.to_date rescue Date.today))
+    out = %Q{<li class="#{(session and session.for_date?(date)) ? 'on' : 'off'}"><strong>#{chamber.capitalize}:</strong> }
+    if session and session.for_date?(date)
       out += "In Session"
     elsif session
       out += "Returns #{session.date.strftime("%b")}. #{session.date.day.ordinalize}"

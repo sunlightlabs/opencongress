@@ -496,6 +496,12 @@ a.track_small{
   _background: url('../images/large_buttons.gif') right -769px no-repeat;
   }
 
+/* for welcome page, scope shouldn't intersect with any other track buttons */
+#account a.track_small{
+  position:relative;
+  margin-top: -100px;
+}
+
 a.track_small:active{
   background: url('../images/large_buttons.png') right -794px no-repeat;
   _background: url('../images/large_buttons.gif') right -794px no-repeat;

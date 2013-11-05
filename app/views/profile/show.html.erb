@@ -110,9 +110,10 @@
       </p>
 
     <% if @user.can_view(:my_congressional_district, current_user) %>
-      <h3 class="margin-top">State Group</h3>
+      <% state_groups = @user.groups.where("state_id IS NOT NULL").where(:district_id => nil) %>
+      <h3 class="margin-top">State <%= pluralize(state_groups.count, 'Group').sub(/^\d+? /, '') %></h3>
       <ul class='container_16'>
-        <% @user.groups.where("state_id IS NOT NULL").each do |g| %>
+        <% state_groups.each do |g| %>
           <li class='grid_10 lined'>
             <span class='grid_1 alpha'>
               <div class='thumb smaller'><%= group_image(g) %></div>
@@ -130,9 +131,10 @@
       </ul>
 
       <div class="clear space">&nbsp;</div>
-      <h3 class="margin-top">Congressional District Group</h3>
+      <% district_groups =@user.groups.where("district_id IS NOT NULL") %>
+      <h3 class="margin-top">Congressional District <%= pluralize(district_groups.count, 'Group').sub(/^\d+? /, '') %></h3>
       <ul class='container_16'>
-        <% @user.groups.where("district_id IS NOT NULL").each do |g| %>
+        <% district_groups.each do |g| %>
           <li class='grid_10 lined'>
             <span class='grid_1 alpha'>
               <div class='thumb smaller'><%= group_image(g) %></div>

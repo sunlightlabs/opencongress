@@ -167,6 +167,10 @@ module UnitedStates
           if action.nil?
             action = bill.actions.new action_ident
           end
+          action.roll_call_number = act.fetch('roll', nil)
+          action.where = act.fetch('where', nil)
+          action.result = act.fetch('result', nil)
+          action.vote_type = act.fetch('vote_type', nil)
           action.save!
         end
       end

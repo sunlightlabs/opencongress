@@ -162,7 +162,7 @@ class Bill < ActiveRecord::Base
       bts = BillTitle.find_by_sql(["SELECT bill_titles.* FROM bill_titles WHERE bill_id=?", id])
 
       self.build_bill_fulltext if self.bill_fulltext.nil?
-      self.bill_fulltext.fulltext = "#{bill_type}#{number} #{bill_type} #{number} #{bts.collect(&:title).join(" ")} #{plain_language_summary}"
+      self.bill_fulltext.fulltext = "#{bill_type}#{number} #{bill_type} #{number} #{type_name}#{number} #{type_name} #{bts.collect(&:title).join(" ")} #{plain_language_summary}"
       self.bill_fulltext.save
 
       # also, set the lastaction field unless it's a brand new record

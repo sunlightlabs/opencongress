@@ -20,7 +20,7 @@ class GroupBillPositionsController < ApplicationController
     if @group.can_post?(current_user)
       @group_bill_position = @group.group_bill_positions.create(params[:group_bill_position])
 
-      redirect_to group_path(@group), :notice => "#{@group_bill_position.bill.typenumber} is now #{@group_bill_position.position}ed by #{@group.name}"
+      redirect_to group_path(@group), :notice => "#{@group.name} now #{@group_bill_position.position.pluralize} #{@group_bill_position.bill.typenumber}"
     else
       redirect_to group_path(@group), :error => "You don't have permission to post bill positions to the group!"
     end

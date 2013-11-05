@@ -16,12 +16,6 @@
 
       return false;
     });
-  - if @group.pvs_category and !@group.pvs_category.hot_bills.empty?
-    %h3 Hot Bills in '#{@group.pvs_category.name}'
-    
-    %ul
-      - @group.pvs_category.hot_bills.each do |b|
-        = render :partial => 'bill_for_add', :object => b
   %h3 Most-viewed Bills on OpenCongress
   %ul
     - ObjectAggregate.popular('Bill', Settings.default_count_time, 5).each do |b|

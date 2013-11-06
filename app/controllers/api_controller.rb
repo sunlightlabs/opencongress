@@ -155,7 +155,18 @@ class ApiController < ApplicationController
   def bills_by_query
     query_stripped = prepare_tsearch_query(params[:q])
     @bills = Bill.full_text_search(query_stripped, {:congresses => [Settings.default_congress,Settings.default_congress - 1,Settings.default_congress - 2,Settings.default_congress - 3], :page => 1})
-    do_render(@bills, :style => :full)
+    do_render(@bills, :collection_name => 'bills',
+                      :only => ["bill_type", "number", "sponsor_id",
+                                "topresident_date", "last_vote_roll",
+                                "session", "topresident_datetime",
+                                "last_speech", "id", "page_views_count",
+                                "caption", "last_vote_date", "introduced",
+                                "news_article_count", "summary",
+                                "blog_article_count", "last_vote_where",
+                                "plain_language_summary", "updated",
+                                "title_common", "title_full_common", "status",
+                                "typenumber", "last_action_at", "ident",
+                                "subjects", "permalink"])
   end
 
   def hot_bills
@@ -328,9 +339,20 @@ class ApiController < ApplicationController
   end
 
   def do_render(object, parameters = {})
+    collection_name = (parameters[:collection_name] && parameters[:collection_name].to_sym) || object.table.name.to_sym
+    parameters.delete(:collection_name)
+
+    if parameters[:only].empty? == false
+      parameters[:only] << collection_name
+    end
+    parameters[:only] = parameters[:only].map(&:to_sym)
     respond_with object do |format|
-      format.json { render :json => { object.table.name.to_sym => object }.to_json(parameters) }
-      format.xml { render :xml => object.to_xml(parameters) }
+      format.json {
+        render :json => { collection_name => object }.to_json(parameters)
+      }
+      format.xml {
+        render :xml => object.to_xml(parameters)
+      }
     end
   end
 

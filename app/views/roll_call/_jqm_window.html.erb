@@ -1,7 +1,7 @@
         <% vote_type_text = vote_name(vote_type) %>
         <div id='<%= vote_name_suitable_for_id(vote_type_text) %>_<%= party %>' class='jqmWindow scrolling'>
           <div class='ie'><a href='#' class='jqmClose hide-text'>Close</a></div><h4><%= party %> <%= person_type %>s Voting '<%= vote_type_text %>'</h4>
-          <% if party == 'All' %>
+          <% if party == 'All' && ['aye', 'nay', 'not voting', 'present'].include?(vote_type_text.downcase) %>
               <div class="three-up">
                   <h3>Democrats</h3>
                   <ul>

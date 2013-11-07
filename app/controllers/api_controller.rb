@@ -335,11 +335,9 @@ class ApiController < ApplicationController
     @range = 30.days.to_i
     @bills = Bill.find_all_by_most_user_votes_for_range(@range, :order => order, :limit => 20)
 
-    do_render(@bills,
+    do_render(@bills.to_a,
               :collection_name => :bills,
-              :except => [:current_support_pb, :support_count_1,
-                          :rolls, :hot_bill_category_id,
-                          :support_count_2, :vote_count_2])
+              :only => @@COMMON_BILL_FIELDS)
   end
 
   def render_via_builder_template(template_name, obj)

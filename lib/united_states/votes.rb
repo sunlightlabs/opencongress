@@ -136,6 +136,7 @@ module UnitedStates
         when 'nay', 'no' then '-'
         when 'present', 'p' then 'P'
         when 'not voting' then '0'
+        else label
       end
     end
   end

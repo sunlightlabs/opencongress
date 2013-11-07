@@ -342,10 +342,10 @@ class ApiController < ApplicationController
     collection_name = (parameters[:collection_name] && parameters[:collection_name].to_sym) || object.table.name.to_sym
     parameters.delete(:collection_name)
 
-    if parameters[:only].empty? == false
+    if parameters[:only].nil? == false && parameters[:only].empty? == false
       parameters[:only] << collection_name
+      parameters[:only] = parameters[:only].map(&:to_sym)
     end
-    parameters[:only] = parameters[:only].map(&:to_sym)
     respond_with object do |format|
       format.json {
         render :json => { collection_name => object }.to_json(parameters)

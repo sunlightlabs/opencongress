@@ -75,7 +75,8 @@ class SearchController < ApplicationController
 
             opts = {:page => @page}
             # restrict search if the only congress checked is the current congress
-            opts[:only_current] = true if params[:search_congress].keys.count == 1 && !params[:search_congress][Settings.default_congress.to_s].nil?
+            opts[:only_current] = true
+            opts[:only_current] = false if params.fetch(:search_congress, {}).keys != [Settings.default_congress.to_s]
 
             @people = Person.full_text_search(query_stripped, opts)
           end

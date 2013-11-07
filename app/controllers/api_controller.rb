@@ -1,5 +1,17 @@
 class ApiController < ApplicationController
 
+  @@COMMON_BILL_FIELDS = ["bill_type", "number", "sponsor_id",
+                          "topresident_date", "last_vote_roll",
+                          "session", "topresident_datetime",
+                          "last_speech", "id", "page_views_count",
+                          "caption", "last_vote_date", "introduced",
+                          "news_article_count", "summary",
+                          "blog_article_count", "last_vote_where",
+                          "plain_language_summary", "updated",
+                          "title_common", "title_full_common", "status",
+                          "typenumber", "last_action_at", "ident",
+                          "subjects", "permalink"]
+
   with_options :except => [:index, :key] do |o|
     o.before_filter :record_hit
     o.before_filter :set_default_format
@@ -158,17 +170,7 @@ class ApiController < ApplicationController
     query_stripped = prepare_tsearch_query(params[:q])
     @bills = Bill.full_text_search(query_stripped, {:congresses => [Settings.default_congress,Settings.default_congress - 1,Settings.default_congress - 2,Settings.default_congress - 3], :page => 1})
     do_render(@bills, :collection_name => 'bills',
-                      :only => ["bill_type", "number", "sponsor_id",
-                                "topresident_date", "last_vote_roll",
-                                "session", "topresident_datetime",
-                                "last_speech", "id", "page_views_count",
-                                "caption", "last_vote_date", "introduced",
-                                "news_article_count", "summary",
-                                "blog_article_count", "last_vote_where",
-                                "plain_language_summary", "updated",
-                                "title_common", "title_full_common", "status",
-                                "typenumber", "last_action_at", "ident",
-                                "subjects", "permalink"])
+                      :only => @@COMMON_BILL_FIELDS)
   end
 
   def hot_bills
@@ -181,20 +183,27 @@ class ApiController < ApplicationController
     session = (Settings.available_congresses.include?(params[:session])) ? params[:session] : Settings.default_congress
 
     @bills = Bill.find_stalled_in_second_chamber(original_chamber, session)
-    do_render(@bills)
+    do_render(@bills,
+              :collection_name => :bills)
   end
 
   def most_blogged_bills_this_week
-    do_render(Bill.find_by_most_commentary('blog', 10, Settings.default_count_time), :style => :simple)
+    do_render(Bill.find_by_most_commentary('blog', 10, Settings.default_count_time),
+              :style => :simple,
+              :collection_name => :bills)
   end
 
   def bills_in_the_news_this_week
-    do_render(Bill.find_by_most_commentary('news', 10, Settings.default_count_time), :style => :simple)
+    do_render(Bill.find_by_most_commentary('news', 10, Settings.default_count_time),
+              :style => :simple,
+              :collection_name => :bills)
   end
 
   def most_viewed_bills_this_week
     @bills = ObjectAggregate.popular('Bill', Settings.default_count_time + 30.days, 10) || Bill.find(:first)
-    do_render(@bills)
+    do_render(@bills,
+              :collection_name => :bills,
+              :only => @@COMMON_BILL_FIELDS)
   end
 
   def most_tracked_bills_this_week
@@ -229,7 +238,12 @@ class ApiController < ApplicationController
 
   def bill_roll_calls
     bills = Bill.find_all_by_id(params[:bill_id])
-    do_render(bills, :except => [:current_support_pb, :support_count_1, :rolls, :hot_bill_category_id, :support_count_2, :vote_count_2], :include => [:roll_calls])
+    do_render(bills,
+              :collection_name => :bills,
+              :except => [:current_support_pb, :support_count_1, :rolls,
+                          :hot_bill_category_id, :support_count_2,
+                          :vote_count_2],
+              :include => [:roll_calls])
   end
 
   def issues
@@ -321,7 +335,11 @@ class ApiController < ApplicationController
     @range = 30.days.to_i
     @bills = Bill.find_all_by_most_user_votes_for_range(@range, :order => order, :limit => 20)
 
-    do_render(@bills, :except => [:current_support_pb, :support_count_1, :rolls, :hot_bill_category_id, :support_count_2, :vote_count_2])
+    do_render(@bills,
+              :collection_name => :bills,
+              :except => [:current_support_pb, :support_count_1,
+                          :rolls, :hot_bill_category_id,
+                          :support_count_2, :vote_count_2])
   end
 
   def render_via_builder_template(template_name, obj)

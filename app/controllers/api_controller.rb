@@ -133,8 +133,10 @@ class ApiController < ApplicationController
 
   def comments
     if ['Bill','Person'].include?(params[:object_type])
-      @comments = Comment.paginate(:order => "comments.root_id desc, comments.lft ASC", :conditions => {:commentable_type => params[:object_type], :commentable_id => params[:object_id]}, :page => params[:page], :per_page => @per_page)
-
+      @comments = Comment.paginate(:order => "comments.root_id desc, comments.lft ASC",
+                                   :conditions => {:commentable_type => params[:object_type],
+                                                   :commentable_id => params[:object_id]},
+                                   :page => params[:page], :per_page => @per_page)
       respond_with @comments
     else
       render_404

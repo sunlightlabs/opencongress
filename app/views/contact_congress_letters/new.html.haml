@@ -5,7 +5,7 @@
   - elsif @issue
     = truncate(@issue.term, :length => 170)
 
-- if @bill
+- if @bill && @bill.sponsor
   %span.sponsor
     Sponsor:
     = @bill.sponsor.name

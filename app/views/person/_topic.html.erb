@@ -6,16 +6,18 @@
       <%= link_to("#{@person.district.to_i.ordinalize} District", state_district_path(@person.state, @person.district)) + ', ' if @person.in_a_valid_district? %>
       <%= "#{State.for_abbrev(@person.state)} &nbsp;&bull;&nbsp;".html_safe unless @person.state.blank? %> 
       <%= @person.is_sitting? ? "#{@person.consecutive_roles.size.ordinalize} Term" : "#{@person.consecutive_roles.size} Terms" %> &nbsp;&bull;&nbsp;
-      Sworn In <%= @person.consecutive_roles.last.startdate.strftime("%Y") %>
+      <% if @person.consecutive_roles.last %>
+        Sworn In <%= @person.consecutive_roles.last.startdate.strftime("%Y") %>
+      <% end %>
     </h5>
   </div>
 
   <div id="term">
-    <em><%= @person.is_sitting? ? "Current Term" : "Last Term" %></em>
-    <strong><%= "#{@person.roles_sorted.first.startdate.year} - #{@person.roles_sorted.first.enddate.year}" %></strong>
     <%  if @person.roles_sorted.size > 1 %>
-    <%= toggler("rolehistory_list", "View All", "Hide").html_safe %>
-    <ul id="rolehistory_list" style="display:none;"> 
+      <em><%= @person.is_sitting? ? "Current Term" : "Last Term" %></em>
+      <strong><%= "#{@person.roles_sorted.first.startdate.year} - #{@person.roles_sorted.first.enddate.year}" %></strong>
+      <%= toggler("rolehistory_list", "View All", "Hide").html_safe %>
+      <ul id="rolehistory_list" style="display:none;">
       <% @person.roles_sorted.each_with_index do |role, idx| %>
         <% if idx > 0 %>
           <li><strong><%= "#{role.startdate.year} - #{role.enddate.year}" %></strong></li>

@@ -12,7 +12,9 @@ if @success
     end
   end
 else
-  page.alert(@item.errors.full_messages.to_sentence)
+  if @item and @item.errors
+    page.alert(@item.errors.full_messages.to_sentence)
+  end
   if @group
     page << "$j('.add-spinner').hide();"
   end

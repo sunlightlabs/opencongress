@@ -22,7 +22,11 @@
     <td class="centered"><%= privileged(:location, :subject => u, :permission => :my_location) %></td>
     <td class="centered">
       <% if u.can_view(:my_last_login_date, current_user) %>
-        <%= "#{time_ago_in_words(u.last_login)} ago" %>
+        <% if u.last_login.nil? %>
+          never
+        <% else %>
+          <%= "#{time_ago_in_words(u.last_login)} ago" %>
+        <% end %>
       <% else %>
         <%= private_img %>
       <% end %>

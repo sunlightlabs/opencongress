@@ -8,7 +8,10 @@ class RollCall < ActiveRecord::Base
   has_many :roll_call_votes, :include => :person
 
   # TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
-  scope :for_ident, lambda { |ident| {:conditions => ["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?", *Bill.ident(ident)]} }
+  scope :for_ident, lambda { |ident|
+    where(["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?",
+           *RollCall.ident(ident)])
+  }
   scope :in_year, lambda { |y| { :conditions => ["date_part('year', roll_calls.date) = :y", :y => y] } }
   scope :in_congress, lambda { |cong|
     where(['date >= ? and date <= ?',
@@ -115,7 +118,7 @@ class RollCall < ActiveRecord::Base
   end
 
   def self.ident(param_id)
-    md = /(\d+)-([sh]?)(\d+)$/.match(canonical_name(param_id))
+    md = /(\d+)-([sh]?)(\d+)$/.match(param_id)
     md ? md.captures : [nil, nil, nil]
   end
 

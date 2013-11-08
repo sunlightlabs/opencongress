@@ -11,9 +11,10 @@ Type:<%= @roll_call.roll_type %>
 Question:<%= @roll_call.question %>
 <% if @roll_call.amendment %>Amendment purpose:<%= @roll_call.amendment.purpose %><% end %>
 Required percentage of 'Aye' votes:<%= @roll_call.required %> <%= numeric_percentage(@roll_call) %>
-Ayes:<%= @roll_call.ayes %> <%= aye_breakdown('plain') %>
-Nays:<%= @roll_call.nays %> <%= nay_breakdown('plain') %>
-Abstained:<%= @roll_call.abstains %> <%= abstain_breakdown('plain') %>
+Ayes:<%= @roll_call.ayes %> <%= count_for_affirmative_votes %>
+Nays:<%= @roll_call.nays %> <%= count_for_negative_votes %>
+Present:<%= @roll_call.nays %> <%= count_for_present_votes %>
+Not Voting:<%= @roll_call.abstains %> <%= count_for_non_votes %>
 Percentage of 'aye' votes:<%= "%2d" % ((@roll_call.ayes.to_f / @roll_call.total_votes.to_f) * 100) %>%
 Result:<%= @roll_call.result %>
 <% else %>

@@ -241,6 +241,7 @@ class RollCallController < ApplicationController
 
   def summary_text
     @roll_call = RollCall.find_by_ident(params[:id])
+    @vote_counts = @roll_call.roll_call_votes.group(:vote).count
     render_404 and return unless @roll_call
 
     render :layout => false

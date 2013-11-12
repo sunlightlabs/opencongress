@@ -35,6 +35,9 @@ class ScrapeToolsController < ApplicationController
         }
       rescue Timeout::Error
         nil
+      rescue SocketError
+        # These are usually DNS lookup failures.
+        nil
       end
     end
   end

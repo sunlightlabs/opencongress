@@ -297,6 +297,14 @@ class Bill < ActiveRecord::Base
     items.group_by{|x| x[:sort_date]}.to_a.sort{|a,b| b[0]<=>a[0]}
   end
 
+  def support_suggestions
+    [0, {}]
+  end
+
+  def oppose_suggestions
+    [0, {}]
+  end
+
   # Returns the number of people tracking this bill, as well as suggestions of what other people
   # tracking this bill are also tracking.
   def tracking_suggestions

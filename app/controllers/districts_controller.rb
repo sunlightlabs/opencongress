@@ -3,7 +3,7 @@ class DistrictsController < ApplicationController
 
   # GET /states/:state_id/districts
   def index
-    @districts = @state.districts
+    return redirect_to url_for(:controller => :states, :action => :show, :id => @state.abbreviation)
   end
 
   # GET /states/:state_id/districts/:id

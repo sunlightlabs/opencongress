@@ -5,6 +5,8 @@ class FriendsController < ApplicationController
   before_filter :get_user
   before_filter :login_required, :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
   before_filter :must_be_owner, :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
+  before_filter :find_bill_by_ident, :only => [:supporting_bill, :opposing_bill]
+  before_filter :find_person_by_govtrack_id, :only => [:supporting_person, :opposing_person]
 
   # GET /friends
   # GET /friends.xml
@@ -171,8 +173,13 @@ class FriendsController < ApplicationController
     filter_by_locality
   end
 
+  def find_person_by_govtrack_id
+    render_404 and return if params[:id].nil?
+    @object = @person = Person.find_by_govtrack_id(params[:id])
+    render_404 and return if @person.nil?
+  end
+
   def supporting_person
-    @object = @person = Person.find(params[:id])
     @users = VisibleByPrivacyOptionQuery.new(
         User.supporting_person(@person),
         :observer => current_user,
@@ -183,7 +190,6 @@ class FriendsController < ApplicationController
   end
 
   def opposing_person
-    @object = @person = Person.find(params[:id])
     @users = VisibleByPrivacyOptionQuery.new(
         User.opposing_person(@person),
         :observer => current_user,
@@ -193,8 +199,13 @@ class FriendsController < ApplicationController
     filter_by_locality
   end
 
-  def supporting_bill
+  def find_bill_by_ident
+    render_404 and return if params[:id].nil?
     @object = @bill = Bill.find_by_ident(params[:id])
+    render_404 and return if @bill.nil?
+  end
+
+  def supporting_bill
     @users = VisibleByPrivacyOptionQuery.new(
         User.supporting_bill(@bill),
         :observer => current_user,
@@ -205,7 +216,6 @@ class FriendsController < ApplicationController
   end
 
   def opposing_bill
-    @object = @bill = Bill.find_by_ident(params[:id])
     @users = VisibleByPrivacyOptionQuery.new(
         User.opposing_bill(@bill),
         :observer => current_user,

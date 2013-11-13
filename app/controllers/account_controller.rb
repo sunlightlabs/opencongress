@@ -524,6 +524,10 @@ class AccountController < ApplicationController
   end
 
   def add_openid
+    if params[:identity_url] == ''
+      flash[:notice] = "You cannot clear the OpenID URL."
+      redirect_to user_profile_path(current_user.login, { Time.now.to_i => '' })
+    else
       authenticate_with_open_id(params[:identity_url]) do |status, identity_url, registration|
         if status.successful?
           user = User.find_by_id(current_user.id)
@@ -538,6 +542,7 @@ class AccountController < ApplicationController
         end
         redirect_to user_profile_path(current_user.login, { Time.now.to_i => '' })
       end
+    end
   end
 
   protected

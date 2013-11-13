@@ -11,6 +11,7 @@ class AccountController < ApplicationController
   skip_before_filter :has_district?, :only => [:determine_district, :logout, :accept_tos]
 
   include OpenIdAuthentication
+  include AccountHelper
 
 #  observer :user_observer
 
@@ -458,7 +459,7 @@ class AccountController < ApplicationController
           session[:invite] = nil
         end
 
-        redirect_to confirmation_path(@user.login)
+        redirect_to confirmation_path(@user)
       rescue ActiveRecord::RecordInvalid
         render :action => 'new_openid'
       end

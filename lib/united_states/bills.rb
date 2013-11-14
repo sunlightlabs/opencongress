@@ -60,7 +60,7 @@ module UnitedStates
     # Creates Bill and BillCommittee models to reflect
     # data in the given hash. It's assumed that the hash
     # has decoded fields.
-    def import_bill (bill_hash)
+    def import_bill (bill_hash, options = {})
       bill = Bill.where(bill_ident(bill_hash)).first
       if bill.nil?
         bill = Bill.new bill_ident(bill_hash)
@@ -69,7 +69,7 @@ module UnitedStates
         OCLogger.log "Updating bill #{bill_hash['bill_id']}"
       end
 
-      if bill.updated.nil? or bill_hash['+updated_at'] > bill.updated
+      if options[:force] || bill.updated.nil? || bill_hash['+updated_at'] > bill.updated
         # Assign sponsor
         sponsor_id = bill_hash['sponsor'] && bill_hash['sponsor']['thomas_id']
         unless sponsor_id.nil?

@@ -100,9 +100,9 @@
                     <tr>
                       <td>
                         <% if friend.confirmed %>
-                          <% if friends.user.can_view(:my_location, current_user) %>
+                          <% if friend.user.can_view(:my_location, current_user) %>
                             <% if friend.user.district_tag %>
-                              <%= friends.user.district_tag %>
+                              <%= friend.user.district_tag %>
                             <% end %>
                           <% end %>
                         <% end %>

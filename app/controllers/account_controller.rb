@@ -321,6 +321,7 @@ class AccountController < ApplicationController
     @user = User.find_by_activation_code(params[:id])
     if @user and @user.activate!
       self.current_user = @user
+      cookies[:ocloggedin]="true"
 
       activate_redirect
     else

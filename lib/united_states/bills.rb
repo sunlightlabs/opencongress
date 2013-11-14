@@ -81,6 +81,18 @@ module UnitedStates
           end
         end
 
+        bill_hash.fetch('cosponsors', []).each do |cosponsor_hash|
+          cosponsor_id = cosponsor_hash['thomas_id']
+          cosponsor = Person.find_by_thomas_id(cosponsor_id)
+          if cosponsor.nil?
+            OCLogger.log "Bill data contains a co-sponsor id (#{cosponsor_id}) that does not exist in our database."
+          else
+            if not bill.co_sponsors.exists?(cosponsor)
+              bill.co_sponsors << cosponsor
+            end
+          end
+        end
+
         # TODO: What is the `pl` field for?
         # Where does rolls get set?
         # TODO: Fields I think we can drop because I can't find

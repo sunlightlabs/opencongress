@@ -1,5 +1,8 @@
 <p>
-  Bill Sponsor: <a href="<%= person_url(@bill.sponsor) %>"><%= @bill.sponsor.name %></a><br />
+  <% if @bill.sponsor %>
+    Bill Sponsor:
+    <a href="<%= person_url(@bill.sponsor) %>"><%= @bill.sponsor.name %></a><br />
+  <% end %>
   <% unless @bill.related_bills.empty? %>
     Related Bills: <%= @bill.related_bills.collect { |rb| "<a href=\"#{bill_path(rb)}\">#{rb.typenumber}</a>" }.join(", ").html_safe %><br />
   <% end %>

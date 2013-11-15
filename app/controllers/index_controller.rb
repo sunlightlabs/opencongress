@@ -7,6 +7,12 @@ class IndexController < ApplicationController
 
   include ActionView::Helpers::TextHelper
 
+  before_filter :require_type_param, :only => [:hp_recent, :hp_popular]
+
+  def require_type_param
+    render_404 and return if not params[:type]
+  end
+
   def index
     @sessions = CongressSession.sessions(@updated_at.to_date)
     @searches = Search.top_search_terms(10).select{|t| t.text.length > 2 }[0..4]

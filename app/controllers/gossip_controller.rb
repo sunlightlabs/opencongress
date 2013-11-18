@@ -2,6 +2,8 @@ class GossipController < ApplicationController
   verify :method => :post, :only => %w(update tip)
   before_filter :login_required, :only => [:admin]
   before_filter :can_gossip, :only => [:admin]
+  before_filter :dead_end, :except => [:admin]
+
 
   def index
     @page_title = "Congress Gossip"
@@ -13,7 +15,7 @@ class GossipController < ApplicationController
   def submit
     @page_title = "Send us a tip about Congress"
   end
-  
+
   def hot
     redirect_to :controller => 'bill', :action => 'hot'
   end
@@ -54,25 +56,33 @@ class GossipController < ApplicationController
       g.approved = false
     when "approve"
       g.approved = true
-    when "gossip page" 
+    when "gossip page"
       g.frontpage = false
     when "front page"
       g.frontpage = true
     end
 
     g.title = params['tip']['title']
-    g.tip = params['tip']['tip'] 
+    g.tip = params['tip']['tip']
     g.save
     redirect_to :action => 'admin'
   end
-  
+
   def atom
     @gossip = Gossip.latest
      expires_in 60.minutes, :public => true
-   
+
     render :layout => false
   end
+
+  protected
+
+  def dead_end
+    render_404 and return
+  end
+
   private
+
   def can_gossip
     if !(logged_in? && current_user.user_role.can_manage_text)
       redirect_to :controller => 'gossip', :action => 'index'

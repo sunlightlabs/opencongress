@@ -10,7 +10,7 @@ class SearchController < ApplicationController
   end
 
   def result
-    @query = params[:q]
+    @query = truncate(params[:q], :length => 255)
     @page = (params[:page] || 1).to_i
     @found_items = 0
     @congresses = params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"]

@@ -33,7 +33,13 @@ module Authable
   module ClassMethods
     # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
     def authenticate(login, password)
-      u = User.authorized.where(["lower(login) = ?", login.downcase]).first
+      if login.match(/^[\w\-_+\.]+@[\w\-_\.]+$/).nil?
+        # got a normal username
+        u = User.authorized.where(["lower(login) = ?", login.downcase]).first
+      else
+        # got an email address
+        u = User.authorized.where(["lower(email) = ?", login.downcase]).first
+      end
       if u && u.authenticated?(password)
         # u.update_attribute(:previous_login_date, u.last_login ? u.last_login : Time.now)
         # u.update_attribute(:last_login, Time.now)

@@ -3,44 +3,44 @@ class GroupInvitesController < ApplicationController
   # GET /group_invites.xml
   # def index
   #   @group_invites = GroupInvite.all
-  # 
+  #
   #   respond_to do |format|
   #     format.html # index.html.erb
   #     format.xml  { render :xml => @group_invites }
   #   end
   # end
-  # 
+  #
   # # GET /group_invites/1
   # # GET /group_invites/1.xml
   def show
     @group = Group.find(params[:group_id])
     @group_invite = GroupInvite.find(params[:id])
-    
+
     @page_title = "You've been invited!"
-    
+
     key = params[:key]
-    
+
     redirect_to groups_path and return if (key.blank? or @group_invite.key != key)
-  
+
     invite_user = @group_invite.user || User.find_by_email(@group_invite.email)
-    if invite_user
-      if logged_in? && (current_user != invite_user)
-        redirect_to group_path(@group), :notice => "Trying to accept invitation of another user! Log out of account first."
-        return
-      end
-      
+    if invite_user && current_user == invite_user
       if @group.can_join?(invite_user)
         membership = @group.group_members.find_or_create_by_user_id(invite_user.id)
         membership.status = 'MEMBER'
         membership.save
-        
+
         session[:group_invite_url] = nil
-        
+
         # we could log in the user in (if they're not already) here, but too sketchy from
         # a security standpoint
         redirect_to @group, :notice => "You have now joined #{@group.name}"
       else
-        redirect_to groups_path, :notice => "You are not allowed to join #{@group.name}"
+        if invite_user.groups.include?(@group)
+          redirect_to group_path(@group), :notice => "You are already a member of #{@group.name}."
+        else
+          redirect_to groups_path, :notice => "You are not allowed to join #{@group.name}."
+        end
+        @group_invite.destroy
       end
       return
     else
@@ -48,14 +48,18 @@ class GroupInvitesController < ApplicationController
         redirect_to group_path(@group), :notice => "Trying to accept invitation of another user! Log out of account first."
         return
       end
-      
+
       session[:group_invite_url] = group_group_invite_url(@group_invite.group, @group_invite, :key => @group_invite.key)
-      
-      # we just have an email so user has to finish registration
-      @user = User.new
-      @user.email = @group_invite.email
+      if invite_user
+        session[:return_to] = session[:group_invite_url]
+        redirect_to login_path, :notice => "Log in to join this group." and return
+      else
+        # we just have an email so user has to finish registration
+        @user = User.new
+        @user.email = @group_invite.email
+      end
     end
-    
+
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @group_invite }
@@ -74,7 +78,7 @@ class GroupInvitesController < ApplicationController
       redirect_to group_path(@group), :notice => "You are not allowed to send invitations to this group!"
       return
     end
-    
+
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @group_invite }
@@ -85,21 +89,21 @@ class GroupInvitesController < ApplicationController
   # def edit
   #   @group_invite = GroupInvite.find(params[:id])
   # end
-  # 
+  #
   # # POST /group_invites
   # # POST /group_invites.xml
   def create
     @group = Group.find(params[:group_id])
     @page_title = "Send Invitations to #{@group.name}"
-    
+
     unless @group.can_invite?(current_user)
       redirect_to group_path(@group), :notice => "You are not allowed to send invitations to this group!"
       return
     end
-    
+
     to_invite = params[:group_invite][:invite_string].split(/,/)
     to_invite.collect!{ |i| i.chomp.strip }
-    
+
     to_invite.each do |i|
       group_invite = nil
       users = User.where(["login=? or email=?", i, i])
@@ -110,11 +114,11 @@ class GroupInvitesController < ApplicationController
           group_invite = @group.group_invites.create(:email => i, :key => random_key)
         end
       end
-      
+
       GroupMailer.invite_email(group_invite).deliver if group_invite
     end
-    
-  
+
+
     respond_to do |format|
       if true
         format.html { redirect_to(@group, :notice => 'Group invitations were sent successfully!') }
@@ -123,12 +127,12 @@ class GroupInvitesController < ApplicationController
       end
     end
   end
-  # 
+  #
   # # PUT /group_invites/1
   # # PUT /group_invites/1.xml
   # def update
   #   @group_invite = GroupInvite.find(params[:id])
-  # 
+  #
   #   respond_to do |format|
   #     if @group_invite.update_attributes(params[:group_invite])
   #       format.html { redirect_to(@group_invite, :notice => 'Group invite was successfully updated.') }
@@ -139,13 +143,13 @@ class GroupInvitesController < ApplicationController
   #     end
   #   end
   # end
-  # 
+  #
   # # DELETE /group_invites/1
   # # DELETE /group_invites/1.xml
   # def destroy
   #   @group_invite = GroupInvite.find(params[:id])
   #   @group_invite.destroy
-  # 
+  #
   #   respond_to do |format|
   #     format.html { redirect_to(group_invites_url) }
   #     format.xml  { head :ok }

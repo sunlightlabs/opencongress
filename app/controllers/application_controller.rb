@@ -282,6 +282,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Redirect to the referrer or to the passed default.
+  def redirect_back_by_referer_or_default(default, options = {})
+    destination = request.referer || default
+    if options.delete(:uncacheable) == true
+      destination += (destination =~ /\?/) ? '&' : '?'
+      destination += Time.now.tv_sec.to_s
+    end
+    redirect_to(destination, options)
+  end
+
   protected
   def clear_return_to
     session.delete(:return_to) rescue nil

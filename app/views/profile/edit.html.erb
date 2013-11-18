@@ -27,13 +27,14 @@
         <li class="active"><a href="#general_information" class="button silver small fullyrounded push-right">General Information</a></li>
         <li><a href="#site_preferences" class="button silver small fullyrounded push-right">Site Preferences</a></li>
         <li><a href="#privacy_settings" class="button silver small fullyrounded push-right">Privacy Settings</a></li>
+        <li><a href="#change_password" class="button silver small fullyrounded push-right">Change Password</a></li>
       </ul>
     </div>
 
     <%= simple_form_for @user, :url => update_profile_path(@user.login), :action => :put,
                                :defaults => { :input_html => { :class => 'field' } } do |f| %>
       <%= field_set_tag "General Information", {:id => "general_information", :class => "tab-pane active"} do %>
-        <%= f.input :full_name, :required => true %>
+        <%= f.input :full_name %>
         <%= f.input :about, :as => :text, :input_html => { :rows => 6 } %>
         <%= f.input :email, :required => true %>
         <%= f.input :zipcode, :required => true, :maxlength => 5 %>
@@ -73,6 +74,12 @@
           <%= p.input :my_political_notebook %>
           <%= p.input :watchdog %>
         <% end %>
+      <% end %>
+
+      <%= field_set_tag "Change Password", {:id => "change_password", :class => "tab-pane"} do %>
+        <%= f.input :current_password, :as => :password %>
+        <%= f.input :password, :as => :password %>
+        <%= f.input :password_confirmation, :as => :password %>
       <% end %>
 
       <div class="form-actions">

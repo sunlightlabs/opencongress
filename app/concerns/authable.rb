@@ -13,7 +13,7 @@ module Authable
 
       attr_accessible :login, :password, :password_confirmation, :remember_token,
                       :captcha, :captcha_key
-      attr_accessor :password, :remember_token_expires_at
+      attr_accessor :password, :password_confirmation, :current_password, :remember_token_expires_at
       ##
       # Further, the following fields should be defined in your AR model
       #

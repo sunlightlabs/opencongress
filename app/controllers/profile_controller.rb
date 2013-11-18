@@ -20,6 +20,22 @@ class ProfileController < ApplicationController
 
   def update
     @user = current_user
+    if params[:user][:password].present? && params[:user][:password_confirmation].present?
+      old_pass = params[:user].delete(:current_password)
+      new_pass = params[:user].delete(:password)
+      if new_pass != params[:user].delete(:password_confirmation)
+        flash[:error] = "Passwords do not match, your profile was not updated."
+        redirect_to :back and return
+      end
+      if User.authenticate(@user.login, old_pass).is_a?(User)
+        @user.password = new_pass
+        @user.save
+        flash[:notice] = "Your password was changed."
+      else
+        flash[:error] = "Your old password was incorrect."
+        redirect_to :back and return
+      end
+    end
     if @user.update_attributes(params[:user])
       flash[:notice] = 'Your profile was updated.'
       redirect_to edit_profile_path(@user.login)

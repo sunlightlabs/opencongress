@@ -229,7 +229,7 @@ OpenCongress::Application.routes.draw do
 
   scope :controller => 'roll_call' do
     match 'roll_call/text/summary/:id', :action => 'summary_text'
-    match 'vote/:year/:chamber/:number(/:state)', :action => 'by_number', :year => /\d{4}/, :chamber => /[hs]/, :number => /\d+/, :state => /\w{2}/
+    match 'vote/:year/:chamber/:number(/:state)', :action => 'by_number', :year => /\d{4}/, :chamber => /[hs]/, :number => /\d+/, :state => /\w{2}/, :as => :roll_call
   end
 
   scope :controller => 'committee' do

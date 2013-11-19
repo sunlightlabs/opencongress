@@ -1,7 +1,7 @@
 class RollCallController < ApplicationController
   helper :index
   include RollCallHelper
-    before_filter :page_view, :only => [:show, :by_number]
+  before_filter :page_view, :only => [:show, :by_number]
   before_filter :can_blog, :only => [:update_hot]
   before_filter :no_users, :only => [:can_blog]
 

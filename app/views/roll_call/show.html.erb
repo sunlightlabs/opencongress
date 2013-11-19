@@ -8,9 +8,9 @@
 
 
 <div id="roll_call_details">
-  
+
   <% if @state_name %>
-  <p><strong><%= link_to '&larr; Full roll call', roll_call_path %></strong></p>
+  <p><strong><%= link_to '&larr; Full roll call'.html_safe, roll_call_path(:year => @roll_call.date.year, :chamber => @roll_call.where.first, :number => @roll_call.number) %></strong></p>
   <br />
   <h3 class="darkline">Votes by <%= person_type %> in <%= @state_name %></h3>
   <%= render :partial => 'person_votes', :locals => { :votes => @roll_call.roll_call_votes.for_state(@state_abbrev) } %>
@@ -22,7 +22,7 @@
        <h3 class="darkline">Votes by <%= person_type %></h3>
        <%= render :partial => 'person_votes', :locals => { :votes => @roll_call.roll_call_votes } %>
   <% end %>
-  
+
    <% unless @state_name %>
 
    <p>** Because of incomplete data, party breakdown visualizations may be inaccurate by one or two votes.</p>
@@ -57,4 +57,4 @@
   </div>
   <% end %>
 </div>
-  
+

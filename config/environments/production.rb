@@ -1,3 +1,6 @@
+# Use nginx for x-sendfile
+ActionController::Streaming::X_SENDFILE_HEADER = 'X-Accel-Redirect'
+
 OpenCongress::Application.configure do
   # Use a different cache store in production
   config.cache_classes = true

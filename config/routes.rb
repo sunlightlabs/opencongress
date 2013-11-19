@@ -116,8 +116,12 @@ OpenCongress::Application.routes.draw do
      match 'contact_congress' => 'contact_congress#index'
      match 'contact_congress/letters' => 'contact_congress#letters'
   end
-  match '/:controller(/:action(/:id))', :controller => /admin\/[^\/]+/
 
+  scope :module => 'admin' do
+    match 'contact_congress/status/:id' => 'contact_congress_letters#last'
+  end
+
+  match '/:controller(/:action(/:id))', :controller => /admin\/[^\/]+/
 
   match 'battle_royale' => 'battle_royale#index'
   match 'battle_royale/:action', :controller => 'battle_royale'

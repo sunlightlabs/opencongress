@@ -2,6 +2,9 @@ class ContactCongressLettersController < ApplicationController
 
   before_filter :page_view, :only => :show
 
+  SUCCESS_PATTERN = /SENT/
+  FAILURE_PATTERN = /SENT_AS_FAX|ERROR/
+
   def new
     @page_title = "Contact Congress"
 
@@ -284,6 +287,24 @@ class ContactCongressLettersController < ApplicationController
       render :text => "#{emails_received} emails, #{notifications_sent} notifications"
     else
       render :text => "Access denied."
+    end
+  end
+
+  def last
+    @person = Person.find_by_bioguideid(params[:id])
+    render_404 and return unless @person.present?
+    last_status = @person.formageddon_threads.first.formageddon_letters.first.status rescue nil
+    if (last_status =~ FAILURE_PATTERN).present?
+      img = 'fail.png'
+    elsif (last_status =~ SUCCESS_PATTERN).present?
+      img = 'success.png'
+    else
+      img = 'unknown.png'
+    end
+
+    respond_to do |format|
+      format.png {send_file "#{Rails.root}/public/images/contact-congress/#{img}", :type => 'image/png', :disposition => 'inline'}
+      format.text {render :text => last_status}
     end
   end
 

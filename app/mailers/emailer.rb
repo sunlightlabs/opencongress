@@ -42,24 +42,25 @@ class Emailer < ActionMailer::Base
   end
 
   def friend(to, from, subject, url, item_desc, message)
-    @subject    = subject
-    @recipients = to
-    @from       = "\"OpenCongress Friends\" <accounts@opencongress.org>"
-    @headers    = {}
-    @body['item_url'] = url
-    @body['item_desc'] = item_desc
-    @body['message'] = message
-    @body['from'] = from
+    @subject      = subject
+    @recipients   = to
+    @from         = "\"OpenCongress Friends\" <friends@opencongress.org>"
+    @sender_email = from
+    @headers      = { :reply_to => @sender_email }
+    @item_url     = url
+    @item_desc    = item_desc
+    @message      = message
   end
 
   def invite(to, from, url, message)
-    @recipients  = to
-    @from        = "\"OpenCongress Friends\" <accounts@opencongress.org>"
-    @subject     = "#{CGI::escapeHTML(from)} invites you to join OpenCongress"
-    @sent_on     = Time.now
-    @body[:message] = message
-    @body[:url] = url
-    @body[:from] = from
+    @recipients   = to
+    @from         = "\"OpenCongress Friends\" <friends@opencongress.org>"
+    @sender_email = from
+    @headers      = { :reply_to => @sender_email }
+    @url          = url
+    @message      = message
+    @subject      = "#{CGI::escapeHTML(from)} invites you to join OpenCongress"
+    @sent_on      = Time.now
   end
 
   def feedback(params)

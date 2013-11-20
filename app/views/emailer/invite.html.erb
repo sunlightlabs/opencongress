@@ -1,10 +1,8 @@
-<% if @message and !@message.empty? %><%= @message %><% end %>
-
-It's free to create your personal profile and takes only a minute, you can sign up here ::
+<%= "#{@message}\n\n" if @message.present? %>It's free to create your personal profile and takes only a minute, you can sign up here:
 
 <%= @url %>
 
 Thanks!
-http://www.opencongress.org
+The OpenCongress Team
 
-If you think you've received this message in error, let us know by contacting <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.
+If you think you've received this message in error, let us know by contacting <%= Settings.contact_us_email %>.

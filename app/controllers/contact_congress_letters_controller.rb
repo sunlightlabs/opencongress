@@ -4,6 +4,7 @@ class ContactCongressLettersController < ApplicationController
 
   SUCCESS_PATTERN = /SENT/
   FAILURE_PATTERN = /SENT_AS_FAX|ERROR/
+  UNKNOWN_PATTERN = /WARNING: Confirmation message not found.|START|CAPTCHA_REQUIRED/
 
   def new
     @page_title = "Contact Congress"
@@ -298,8 +299,10 @@ class ContactCongressLettersController < ApplicationController
       img = 'fail.png'
     elsif (last_status =~ SUCCESS_PATTERN).present?
       img = 'success.png'
-    else
+    elsif (last_status =~ UNKNOWN_PATTERN).present?
       img = 'unknown.png'
+    else
+      img = 'not_tried.png'
     end
 
     respond_to do |format|

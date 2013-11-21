@@ -6131,11 +6131,10 @@ a.logo:hover { background-position: 0px -100px; }
   font-weight: 400;
 }
 
-#user_account #logout-btn {
+#user_account .btn {
   position: relative;
   top: -2px;
   left: 10px;
-  width: 48px;
   height: 18px;
   padding: 5px;
   border: 1px solid #d0d0d0;
@@ -6147,8 +6146,22 @@ a.logo:hover { background-position: 0px -100px; }
   text-shadow: none;
   color: #fff;
 }
+#user_account .btn:hover {background: #555;}
 
-#user_account #logout-btn:hover {background: #555;}
+#user_account #logout-btn {
+  width: 48px;
+}
+
+/* Temporary Donate Button */
+#user_account .btn.btn-info {
+  background: #7db4c5;
+  border: 1px solid #abd2de;
+  text-shadow 0 0 1px rgba (0, 0, 0, 0.1);
+  padding: 5px 10px;
+}
+#user_account .btn.btn-info:hover {
+  background: #5299ad;
+}
 
 /* Login Dropdown */
 

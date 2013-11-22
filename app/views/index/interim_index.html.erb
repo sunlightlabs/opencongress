@@ -92,19 +92,32 @@
             <div class="span4 announcement">
                 <div>
                     <h2>Hello! From the<br> Sunlight Foundation</h2>
-                    <p>The Sunlight Foundation is now the sole operator of OpenCongress. This site will continue to be a comprehensive, nonpartisan source for what's happening in the United States Congress. <a href="http://sunlightfoundation.com/about">More about Sunlight</a></p>
-                    <a class="more" href="https://services.myngp.com/ngponlineservices/contribution.aspx?X=n2TMpep7%2bsFk9BYJI9NaIDO6yqgP2k7pRYdzfZeM4Gg%3d">Help Support OpenCongress &raquo;</a>
+                    <p>The Sunlight Foundation is now the sole operator of OpenCongress. This site will continue to be a comprehensive, nonpartisan source for what's happening in the United States Congress.</p>
+                    <a class="more" href="http://sunlightfoundation.com/about">Learn more about Sunlight &raquo;</a>
                 </div>
             </div>
+            <% unless logged_in? %>
+                <div class="span8 pull-right call-to-action" style="display:none">
+                    <h2>Track Bills, Follow Lawmakers and More</h2>
+                    <p>Create an OpenCongress account to get updates on lawmaking activity, bills and votes, and connect with other users on issues you care about.</p>
+                    <% if logged_in? %>
+                        <a href="<%= url_for :controller => 'profile', :login => current_user.login, :action => 'watchdog' %>" id="signup-btn" class="btn huge primary">See Your Reps</a>
+                    <% else %>
+                        <a href="/login" id="signup-btn" class="btn huge primary">Sign Up Now</a>
+                    <% end %>
+                </div>
+            <% end %>
             <div class="span8 pull-right call-to-action">
-                <h2>Track Bills, Follow Lawmakers and More</h2>
-                <p>Create an OpenCongress account to get updates on lawmaking activity, bills and votes, and connect with other users on issues you care about.</p>
-                <% if logged_in? %>
-                    <a href="<%= url_for :controller => 'profile', :login => current_user.login, :action => 'watchdog' %>" id="signup-btn" class="btn huge primary">See Your Reps</a>
-                <% else %>
-                    <a href="/login" id="signup-btn" class="btn huge primary">Sign Up Now</a>
-                <% end %>
+                <h2>We depend on the generosity of our supporters</h2>
+                <p>Sunlight produces dozens of tools to help you connect with government, track political influence and even power websites of your own. Now, we need your help.</p>
+                <a href="https://services.myngp.com/ngponlineservices/contribution.aspx?X=n2TMpep7%2bsFk9BYJI9NaIDO6yqgP2k7pRYdzfZeM4Gg%3d" id="signup-btn" class="btn huge primary">Donate Now</a>
             </div>
+            <script>
+            (function($){
+                var idx = (Math.random() * 1.4).round(); // this seems to set the bias to 60/40.
+                $('#belt .call-to-action').eq(idx).show().siblings('.call-to-action').hide();
+            })(jQuery);
+            </script>
         </div>
     </div>
     <div id="superlatives">

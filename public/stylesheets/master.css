@@ -6134,8 +6134,7 @@ a.logo:hover { background-position: 0px -100px; }
 #user_account .btn {
   position: relative;
   top: -2px;
-  left: 10px;
-  height: 18px;
+  height: auto;
   padding: 5px;
   border: 1px solid #d0d0d0;
   border-radius: 3px;

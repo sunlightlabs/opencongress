@@ -123,7 +123,6 @@ group :test, :development do
   gem 'pry-nav'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
-  gem 'debugger'
   gem 'rails_best_practices'
   gem 'simplecov',            :require => false
   gem 'rspec-rails',          '~> 2.4'
@@ -134,7 +133,6 @@ group :test, :development do
 end
 
 group :test do
-  gem 'autotest'
   gem 'silent-postgres'  # Quieter postgres log messages
   gem 'database_cleaner'
   gem 'vcr'

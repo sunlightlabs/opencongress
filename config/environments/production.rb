@@ -15,7 +15,7 @@ OpenCongress::Application.configure do
   config.action_mailer.delivery_method = :postmark
 
   # Send faxes
-  config.faxable.deliver_faxes = false
+  config.faxable.deliver_faxes = true
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   config.action_controller.asset_host = "http://d6ekjl42nohi3.cloudfront.net"

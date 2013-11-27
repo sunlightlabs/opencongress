@@ -3,7 +3,7 @@ class AddTimestampsToCongressSession < ActiveRecord::Migration
     change_table :congress_sessions do |t|
       t.timestamps
     end
-    CongressSession.order("date desc").first.touch
+    CongressSession.order("date desc").first.touch rescue nil
   end
 
   def self.down

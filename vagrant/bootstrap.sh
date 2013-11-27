@@ -17,12 +17,22 @@ Put your feet up and grab a cup of coffee or six, This will take a while.
 =========================================================================
 "
 
+# Set locale. Change to suit your needs.
+sudo update-locale LANG=en_US.utf8
+
 apt-get update
 apt-get remove apparmor -y
 apt-get install build-essential openssl xorg-dev libssl-dev libxrender-dev git-core postgresql-9.1 curl libxml2-dev libxslt-dev libmagick-dev libmagickwand-dev imagemagick libmysqlclient-dev libpq-dev ruby-dev -y
 
+# Do terrible things to the database template because I initialized the cluster wrong.
+sudo -u postgres psql -c "update pg_database set datistemplate=FALSE where datname='template1';"
+sudo -u postgres dropdb template1
+sudo -u postgres createdb -l $LANG -T template0 -O postgres -E 'UTF8' template1
+sudo -u postgres psql -c "update pg_database set datistemplate=TRUE where datname='template1';"
+
 # Install RVM
 \curl -L https://get.rvm.io | bash -s stable --ruby=1.9.3
+sudo chown -R vagrant /usr/local/rvm
 
 # Custom source build of qt/wkhtmltopdf for faxing
 if ! [[ -s /opt/wkhtmltopdf/bin/wkhtmltopdf ]] ; then
@@ -52,4 +62,3 @@ fi
 
 # source rvm & add opt/wkhtmltopdf/bin to $PATH in .bashrc
 echo 'if [[ -s /usr/local/rvm/scripts/rvm ]] ; then source /usr/local/rvm/scripts/rvm; fi; export PATH=/opt/wkhtmltopdf/bin:$PATH' > /etc/profile.d/vagrantup.sh
-

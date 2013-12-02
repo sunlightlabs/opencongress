@@ -56,15 +56,19 @@ class Formageddon::FormageddonLetter
 
   def send_fax(options={})
     recipient = options.fetch(:recipient, formageddon_thread.formageddon_recipient)
-    if defined? Settings.force_fax_recipient
-      send_as_fax(Settings.force_fax_recipient)
+    if recipient.fax.present?
+      if defined? Settings.force_fax_recipient
+        send_as_fax(Settings.force_fax_recipient)
+      else
+        send_as_fax(recipient.fax)
+      end
+      self.status = "SENT_AS_FAX"
+      self.status += ": Error was, #{options[:error_msg]}" if options[:error_msg].present?
+      self.save!
+      return @fax # TODO: This sucks, why did I do this?
     else
-      send_as_fax(recipient.fax)
+      return false
     end
-    self.status = "SENT_AS_FAX"
-    self.status += ": Error was, #{options[:error_msg]}" if options[:error_msg].present?
-    self.save!
-    return @fax
   end
 
   def as_html

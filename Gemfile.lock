@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: ca0a0e5c639f6ce2e7591ac977a5cb8d7b14bd99
+  revision: c7667d7973b71876d0ae4c663d2f16ad6d31a29b
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
@@ -128,7 +128,7 @@ GEM
       activesupport (~> 3.0)
       daemons
     diff-lcs (1.2.4)
-    domain_name (0.5.14)
+    domain_name (0.5.15)
       unf (>= 0.0.5, < 1.0.0)
     em-websocket (0.5.0)
       eventmachine (>= 0.12.9)
@@ -226,7 +226,7 @@ GEM
     mediacloth (0.6)
     memcache-client (1.8.5)
     method_source (0.8.1)
-    mime-types (1.25)
+    mime-types (1.25.1)
     mogli (0.0.44)
       hashie (>= 1.1.0)
       httmultiparty (>= 0.3.6)

@@ -72,7 +72,7 @@ class RollCallController < ApplicationController
 
   def partyvote_piechart_data
     @roll_call = RollCall.find_by_id(params[:id])
-    render_404 and return unless @roll_call
+    render_404 and return unless @roll_call.present? && params[:breakdown_type].present?
     radius = params[:radius] ||= 80
     votes = @roll_call.roll_call_votes.select { |rcv| rcv.vote == params[:breakdown_type] }
 

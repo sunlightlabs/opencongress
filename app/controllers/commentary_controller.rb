@@ -22,6 +22,7 @@ class CommentaryController < ApplicationController
   end
 
   def pn_ajax_multiple
+    render_404 and return unless params[:object_ids].present?
     logger.warn "object_ids #{params[:object_ids]}"
 
     commentary_ids = params[:object_ids].split(",")

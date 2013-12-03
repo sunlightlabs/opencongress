@@ -1,13 +1,13 @@
 - if @group.political_notebook.nil? or @group.political_notebook.notebook_items.empty?
-  %ul.activity_stream 
+  %ul.activity_stream
     %li
       %strong No one has posted anything to this group!
 - else
   %ul.activity_stream
-    - @group.political_notebook.notebook_items.each do |item|
+    - @group.political_notebook.notebook_items.ham.each do |item|
       - unless item.group_user.nil?
         = render :partial => "#{item.class.to_s.tableize}/group_item", :object => item
-  
+
   :javascript
     // this fixes youtube embeds from poking out over modals
     $j(document).ready(function() {

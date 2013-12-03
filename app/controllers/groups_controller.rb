@@ -37,7 +37,7 @@ class GroupsController < ApplicationController
         format.xml { redirect_to feed_group_political_notebook_notebook_items_path(@group) }
       end
     else
-      flash[:notice] = "The #{@group.name} group has been disabled because it's creator was banned."
+      flash[:notice] = "The #{@group.name} group has been disabled because its creator was banned."
       redirect_to(:action => 'index') and return
     end
   end

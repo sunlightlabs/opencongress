@@ -23,8 +23,8 @@ module Spammable
       before_save :check_for_spam, :unless => :persisted?
       alias_method :is_spam?, :spam?
       scope :spam, where("spam=TRUE")
-      scope :ham, where("spam=FALSE AND censored=FALSE")
-      scope :censored, where("censored=TRUE AND spam=FALSE")
+      scope :ham, where("(spam is NULL or spam=FALSE) AND (censored is NULL or censored=FALSE)")
+      scope :censored, where("censored=TRUE AND (spam is NULL or spam=FALSE)")
     end
   end
 

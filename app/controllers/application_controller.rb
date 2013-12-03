@@ -119,6 +119,7 @@ class ApplicationController < ActionController::Base
 
   def comment_redirect(comment_id)
     comment = Comment.find_by_id(comment_id)
+    render_404 and return unless comment.present?
     if comment.commentable_type == "Article"
       redirect_to comment.commentable_link.merge(:action => 'view', :comment_page => comment.page, :comment_id => comment_id)
     else

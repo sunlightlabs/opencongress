@@ -2,13 +2,13 @@
   <head>
     <style>
       html { font-size:100.01%; /* fixes some browser bugs */ }
-      
+
       body {
       	font:1em "Trebuchet MS",Verdana,Arial,Helvetica,sans-serif;
       	background: #<%= @bgcolor %>;
       	color: #<%= @textcolor %>;
       }
-    
+
       #bill_status {
         font-size: 12px;
       }
@@ -45,7 +45,7 @@
         margin: 0;
         padding: 0;
       }
-    
+
       li {
         margin: 0 5px 2px 5px;
         line-height: 14px;
@@ -56,7 +56,7 @@
   <body>
     <% if @bill %>
       <div id="bill_status">
-        <div class="syndicator_items">		
+        <div class="syndicator_items">
 			<div id="title">
             	<h1><%= @bill.typenumber %> <a href="/bill/<%= @bill.ident %>/atom" target="_top"><%= image_tag 'feed-icon-10x10.png', :border => '0' %></a></h1>
 
@@ -67,11 +67,13 @@
 	            <li><strong>Status:</strong> <%= @bill.status %></li>
 	            <% if @bill.next_step %><li><strong>Next step:</strong> <%= @bill.next_step %></li><% end %>
 	            <li><strong>Latest action:</strong> <%= @bill.last_action.text %></li>
-	            <li><strong>Sponsor:</strong> <%= @bill.sponsor.name %></li>
+              <% if @bill.sponsor.present? %>
+  	            <li><strong>Sponsor:</strong> <%= @bill.sponsor.name %></li>
+              <% end %>
 	      		</ul>
 			<div id="links">
             	<%= link_to 'View Bill >>', bill_path(@bill), :target => '_top' %><br />
-	            <%= link_to 'News Coverage', news_bill_path(@bill), :target => '_top' %> | 
+	            <%= link_to 'News Coverage', news_bill_path(@bill), :target => '_top' %> |
 	            <%= link_to 'Blog Coverage', blogs_bill_path(@bill), :target => '_top' %>
 			</div>
 			<div id="powered">

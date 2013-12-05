@@ -64,6 +64,8 @@ class AccountController < ApplicationController
       end
     end
 
+    capture_message("account_controller#login", :extra => {:session => session, :params => params})
+
     # Forum Integration
     if params[:modal]
       render :action => 'login_modal', :layout => false
@@ -200,9 +202,10 @@ class AccountController < ApplicationController
       @new_user.email = thread.sender_email
       @new_user.zipcode = thread.sender_zip5
       @new_user.zip_four = thread.sender_zip4
-      puts "setting zip_four to #{thread.sender_zip4}"
+      logger.info "setting zip_four to #{thread.sender_zip4}"
     end
 
+    # TODO: This smells, find out how it's hit and refactor
     if request.post?
       @new_user.update_attributes(params[:user])
 
@@ -662,7 +665,7 @@ class AccountController < ApplicationController
             # force the email on the letters to the user email
             thread.sender_email = current_user.email
 
-            thread.save
+            thread.save!
           end
 
           session[:return_to] = "/contact_congress_letters/delayed_send"

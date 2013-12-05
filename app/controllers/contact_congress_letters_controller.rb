@@ -220,6 +220,7 @@ class ContactCongressLettersController < ApplicationController
   end
 
   def delayed_send
+    capture_message('contact_congress_letters_controller#delayed_send', :extra => {:session => session})
     formageddon_params = session[:formageddon_params]
 
     threads = session[:formageddon_unsent_threads].map{ |t| Formageddon::FormageddonThread.find(t) }

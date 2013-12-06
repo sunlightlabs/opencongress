@@ -64,8 +64,6 @@ class AccountController < ApplicationController
       end
     end
 
-    capture_message("account_controller#login", :extra => {:session => session, :params => params})
-
     # Forum Integration
     if params[:modal]
       render :action => 'login_modal', :layout => false

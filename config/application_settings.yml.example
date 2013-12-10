@@ -100,6 +100,11 @@ defaults: &defaults
   bsd_api_id: example
   bsd_group_id: 555  # OpenCongress Updates
   bsd_affiliate_group_id: 556  # OpenCongress Partner Opt-In
+  
+  ## DEFAULT GROUP OWNER
+  # This is the username of whomever should be assigned as the owner of auto-created groups.
+  # Make sure this user exists when you set it!
+  default_group_owner_login: ''
 
 development:
   <<: *defaults

@@ -11,6 +11,9 @@ defaults: &defaults
   wiki_host: wiki.example.com
   wiki_base_url: http://wiki.example.com/
 
+  ## FACEBOOK LOGIN
+  facebook_callback_url: http://example.com/facebook
+
   ## USER IP BANNING
   # IP addrs can be banned at the proxy level. see banned_users_test.txt for formats
   ban_file: <%= Rails.root %>/config/banned_users.txt

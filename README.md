@@ -6,9 +6,9 @@ A Ruby on Rails application for gathering, displaying and tracking information a
 
 ### Vagrant
 
-By far, the fastest and easiest way to get started with OpenCongress is by downloading and installing our vagrant box:
+By far, the fastest and easiest way to get started with OpenCongress is by downloading and installing our vagrant box.
 
-<http://vagrant.sunlightfoundation.com/opencongress/ubuntu-precise-server-x86-opencongress.box>
+You can get vagrant at <http://vagrantup.com>
 
 Once you've installed vagrant, just run:
 

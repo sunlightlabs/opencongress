@@ -13,7 +13,7 @@ defaults: &defaults
 
   ## USER IP BANNING
   # IP addrs can be banned at the proxy level. see banned_users_test.txt for formats
-  ban_file: <%= Rails.root/config/banned_users.txt %>
+  ban_file: <%= Rails.root %>/config/banned_users.txt
   ban_format: :nginx # or :apache
 
   ## DATA FRESHNESS PARAMS

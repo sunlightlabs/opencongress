@@ -204,7 +204,7 @@ class AccountController < ApplicationController
     end
 
     # TODO: This smells, find out how it's hit and refactor
-    if request.post?
+    if request.post? && @new_user.present?
       @new_user.update_attributes(params[:user])
 
       if @new_user.save

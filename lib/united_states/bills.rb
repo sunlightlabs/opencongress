@@ -263,6 +263,8 @@ module UnitedStates
     def decode_amendment_hash (amdt_hash)
       amdt_hash['+status_at'] = Time.parse(amdt_hash['status_at'])
       amdt_hash['+updated_at'] = Time.parse(amdt_hash['updated_at'])
+      amdt_hash['+introduced_at'] = Time.parse(amdt_hash['introduced_at'])
+      amdt_hash['+proposed_at'] = Time.parse(amdt_hash['proposed_at'])
       amdt_hash['actions'].each do |action|
         action['+acted_at'] = Time.parse(action['acted_at'])
         action['+where'] = case action['where']

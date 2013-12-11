@@ -121,7 +121,7 @@ class AccountController < ApplicationController
         user.accepted_tos_at = Time.now
         user.save!
         self.current_user = User.find_by_id(user.id)
-        redirect_back_or_default(user_profile_path(:login => current_user.login))
+        activate_redirect(user_profile_path(:login => current_user.login))
       end
     end
   end

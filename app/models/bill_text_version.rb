@@ -104,6 +104,6 @@ class BillTextVersion < ActiveRecord::Base
     indexes :id,         :index => :not_analyzed
     indexes :bill,       :index => :not_analyzed, :as => proc { bill_id }
     indexes :version,    :index => :not_analyzed
-    indexes :text,       :as    => proc { text }
+    indexes :text,       :as    => proc { text rescue nil }
   end
 end

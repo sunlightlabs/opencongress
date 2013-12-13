@@ -1,6 +1,8 @@
 require_dependency 'viewable_object'
 class Subject < ActiveRecord::Base
   include ViewableObject
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
 
   validates_uniqueness_of :term, :case_sensitive => false
 
@@ -466,5 +468,9 @@ class Subject < ActiveRecord::Base
   private
   def url_name
     term.gsub(/[\.\(\)]/, "").gsub(/[-\s]+/, "_").downcase
+  end
+
+  mapping do
+    indexes :term
   end
 end

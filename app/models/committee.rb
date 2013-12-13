@@ -1,6 +1,8 @@
 require_dependency 'viewable_object'
 class Committee < ActiveRecord::Base
   include ViewableObject
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
   
   has_many :committee_people
   has_many :people, :through => :committee_people
@@ -314,5 +316,11 @@ class Committee < ActiveRecord::Base
   private
   def url_name
     proper_name.downcase.gsub(/[\s\-]+/, "_").gsub(/[,\'\(\)]/,"")
+  end
+
+  mapping do
+    indexes :name,             :as => proc { subcommittee_name || name }
+    indexes :is_subcommittee,  :as => proc { not parent.nil? }
+    indexes :thomas_id
   end
 end

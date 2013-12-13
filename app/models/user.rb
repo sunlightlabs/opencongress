@@ -6,6 +6,8 @@ require_dependency 'visible_by_privacy_option_query'
 # this model expects a certain database layout and its based on the name/login pattern.
 class User < ActiveRecord::Base
   include Authable
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
 
   # Note that some attrs are defined in authable_model
   # accept_tos is an unpersisted accessor for validation only
@@ -628,4 +630,15 @@ class User < ActiveRecord::Base
     self.twitter_config.destroy rescue nil
   end
 
+  mapping do
+    indexes :login
+    indexes :full_name
+    indexes :email
+    indexes :activated_at
+    indexes :last_login
+    indexes :zipcode
+    indexes :state_name,           :as => proc { state.name }
+    indexes :state_abbreviation,   :as => proc { state.abbreviation }
+    indexes :district
+  end
 end

@@ -1,4 +1,7 @@
 class Group < ActiveRecord::Base
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   has_attached_file :group_image, :styles => { :medium => "300x300>", :thumb => "100x100>" },
                                   :path => "#{Settings.group_images_path}/:id/:style/:filename",
                                   :url => "#{Settings.group_images_url}/:id/:style/:filename"
@@ -198,5 +201,14 @@ class Group < ActiveRecord::Base
 
       return !web_domain.nil? && (web_domain =~ /^#{email_domain}$/ or web_domain =~ /\.#{email_domain}$/)
     end
+  end
+
+  mapping do
+    indexes :name
+    indexes :description
+    indexes :state_name,           :as => proc { state && state.name }
+    indexes :state_abbreviation,   :as => proc { state && state.abbreviation }
+    indexes :subject_id,           :as => proc { subject && subject.id }, :index => :not_analyzed
+    indexes :subject_term,         :as => proc { subject && subject.term }
   end
 end

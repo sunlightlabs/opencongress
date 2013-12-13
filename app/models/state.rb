@@ -1,4 +1,7 @@
 class State < ActiveRecord::Base
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   ABBREVIATIONS = {
     "Alabama" => "AL",
     "Alaska" => "AK",
@@ -407,4 +410,8 @@ chs=#{size}&chl=Democrats (#{democrat_representatives.count})|Republicans (#{rep
   end
 
 
+  mapping do
+    indexes :name
+    indexes :abbreviation
+  end
 end

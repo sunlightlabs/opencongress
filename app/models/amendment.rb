@@ -1,4 +1,7 @@
 class Amendment < ActiveRecord::Base
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   belongs_to :bill
   has_many :actions
   has_many :roll_calls, :order => 'date'
@@ -22,5 +25,15 @@ class Amendment < ActiveRecord::Base
   
   def thomas_url
     "http://hdl.loc.gov/loc.uscongress/legislation.#{bill.session}#{number[0...1]}amdt#{number[1..-1]}"
+  end
+
+  mapping do
+    indexes :title
+    indexes :purpose
+    indexes :description
+    indexes :retreived_date
+    indexes :status_datetime
+    indexes :offered_datetime
+    indexes :bill_titles,           :as => proc { bill && bill.bill_titles.map(&:title) }
   end
 end

@@ -1,6 +1,7 @@
 require_dependency 'viewable_object'
 require_dependency 'geocoder'
 require_dependency 'wiki_connection'
+require_dependency 'united_states'
 
 class Person < ActiveRecord::Base
   include ViewableObject
@@ -1626,13 +1627,38 @@ class Person < ActiveRecord::Base
     super(SERIALIZATION_OPS.merge(ops))
   end
 
-  mapping do
-    indexes :govtrack_id,           :index => :not_analyzed
-    indexes :osid,                  :index => :not_analyzed
-    indexes :bioguideid,            :index => :not_analyzed
-    indexes :full_name,             :as    => proc { full_name }
-    indexes :official_name,         :as    => proc { name }
-    indexes :party
-    indexes :state
+
+  tire_settings = {
+    :analysis => {
+      :analyzer => {
+        :synonym => {
+          'filter' => ['synonym'],
+          'tokenizer' => 'standard'
+        }
+      },
+      :filter => {
+        :synonym => {
+          'type' => 'synonym',
+          'synonyms_path' => File.join(Rails.root, "config/synonyms/states.txt").to_s
+        }
+      }
+    }
+  }
+  settings(tire_settings) do 
+    mapping do
+      indexes :govtrack_id,           :index => :not_analyzed
+      indexes :osid,                  :index => :not_analyzed
+      indexes :bioguideid,            :index => :not_analyzed
+      indexes :firstname
+      indexes :middlename
+      indexes :lastname
+      indexes :nickname
+      indexes :state,                 :type => 'string', :analyzer => 'synonym'
+      indexes :full_name,             :as    => proc { full_name }
+      indexes :official_name,         :as    => proc { name }
+      indexes :party
+      indexes :state
+      indexes :congresses_active,     :as    => proc { congresses_active }
+    end
   end
 end

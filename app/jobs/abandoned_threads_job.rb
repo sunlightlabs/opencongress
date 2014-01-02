@@ -16,7 +16,7 @@ require 'o_c_logger'
 #
 module AbandonedThreadsJob
   def self.perform(params = {:remove => :orphaned, :reclaim => true})
-    if params[:reclaim].true?
+    if params[:reclaim]
       reclaim(params.reject{|k,v| [:reclaim, :remove].include?(k) })
     end
     clean(params.reject{|k,v| k == :reclaim })

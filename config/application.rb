@@ -28,6 +28,7 @@ module OpenCongress
     config.autoload_paths += %W(#{config.root}/app/models/views
                                 #{config.root}/app/queries
                                 #{config.root}/app/concerns
+                                #{config.root}/app/jobs
                                 )
 
     # Only load the plugins named here, in the order given (default is alphabetical).

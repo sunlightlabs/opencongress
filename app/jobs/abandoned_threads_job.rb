@@ -41,8 +41,10 @@ module AbandonedThreadsJob
 
   def self.dry_run(params = {:remove => :orphaned})
     destr = to_destroy(params.reject{|k,v| k == :reclaim })
+    destr_count = destr.count
     recl = to_send(params.reject{|k,v| [:reclaim, :remove].include?(k) })
-    OCLogger.log "#{destr.count} letters to be destroyed, #{recl.count} to send."
+    recl_count = recl.count
+    OCLogger.log "#{destr_count} letters to be destroyed, #{recl_count} to send."
     nil
   end
 

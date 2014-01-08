@@ -340,7 +340,7 @@ class BillController < ApplicationController
   end
 
   def atom_list
-    @chamber = %w(senate house).include?(params[:types]) ? params[:types] : 'all'
+    @chamber = %w(senate house).include?(params[:chamber]) ? params[:chamber] : 'all'
     @sort = %w(introduced).include?(params[:sort]) ? params[:sort] : 'lastaction'
     @bills = Bill
     @bills = @bills.send("#{@chamber}_bills".to_sym) if @chamber != 'all'

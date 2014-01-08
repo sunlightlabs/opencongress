@@ -339,6 +339,18 @@ class BillController < ApplicationController
     render :action => 'commentary_atom', :layout => false
   end
 
+  def atom_list
+    @chamber = %w(senate house).include?(params[:types]) ? params[:types] : 'all'
+    @sort = %w(introduced).include?(params[:sort]) ? params[:sort] : 'lastaction'
+    @bills = Bill
+    @bills = @bills.send("#{@chamber}_bills".to_sym) if @chamber != 'all'
+    @bills = @bills.order("#{@sort} DESC").limit(20)
+    @feed_title = "Recent Bills"
+    expires_in 60.minutes, :public => true
+
+    render :action => 'list_atom', :layout => false
+  end
+
   def atom_top20
     @bills = Bill.top20_viewed
     @date_method = :entered_top_viewed

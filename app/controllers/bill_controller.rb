@@ -345,7 +345,7 @@ class BillController < ApplicationController
     @sort = %w(introduced).include?(params[:sort]) ? params[:sort] : 'lastaction'
     @bills = Bill
     if @chamber != 'all'
-      @feed_title = "Recent #{@chamber} Bills"
+      @feed_title = "Recent #{@chamber.capitalize} Bills"
       @bills = @bills.send("#{@chamber}_bills".to_sym)
     end
     @bills = @bills.order("#{@sort} DESC").limit(20)

@@ -340,12 +340,15 @@ class BillController < ApplicationController
   end
 
   def atom_list
+    @feed_title = "Recent Bills"
     @chamber = %w(senate house).include?(params[:chamber]) ? params[:chamber] : 'all'
     @sort = %w(introduced).include?(params[:sort]) ? params[:sort] : 'lastaction'
     @bills = Bill
-    @bills = @bills.send("#{@chamber}_bills".to_sym) if @chamber != 'all'
+    if @chamber != 'all'
+      @feed_title = "Recent #{@chamber} Bills"
+      @bills = @bills.send("#{@chamber}_bills".to_sym)
+    end
     @bills = @bills.order("#{@sort} DESC").limit(20)
-    @feed_title = "Recent Bills"
     expires_in 60.minutes, :public => true
 
     render :action => 'list_atom', :layout => false

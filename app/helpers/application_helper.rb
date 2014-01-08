@@ -315,7 +315,7 @@ EOT
     end
   end
 
-  def bill_basic_atom_entry(xml, b, updated_method)
+  def bill_basic_atom_entry(xml, b, updated_method=false)
     xml.entry do
       xml.title   b.title_full_common
       xml.link    "rel" => "alternate", "href" => bill_url(b)

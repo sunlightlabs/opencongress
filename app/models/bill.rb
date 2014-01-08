@@ -81,12 +81,6 @@ class Bill < ActiveRecord::Base
     @bill_text = nil
   end
 
-  scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
-  scope :major, where(:is_major => true)
-  scope :recently_acted, includes(:bill_titles, :actions).order("actions.date DESC")
-  scope :for_session, lambda {|sess| where("bills.session = ?", sess)}
-  scope :for_type, lambda {|type| where("bills.type = ?", @@TYPES[type])}
-
   @@DISPLAY_OBJECT_NAME = 'Bill'
 
   #Added these back in to make govtrack bill import work to get the bill text that is marked up with the right paragraph ids
@@ -103,6 +97,13 @@ class Bill < ActiveRecord::Base
     "sjres" => "sj",
     "sres" => "sr"
   }
+
+  scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
+  scope :major, where(:is_major => true)
+  scope :recently_acted, includes(:bill_titles, :actions).order("actions.date DESC")
+  scope :for_session, lambda {|sess| where("bills.session = ?", sess)}
+  scope :senate_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 's'}))
+  scope :house_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'}))
 
   def reverse_abbrev_lookup
     return @@GOVTRACK_TYPE_LOOKUP[self.bill_type]

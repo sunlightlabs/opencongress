@@ -56,6 +56,7 @@ OpenCongress::Application.routes.draw do
     match 'most/viewed', :action => 'popular'
     match 'atom/most/viewed', :action => 'atom_top20'
     match 'atom/most/:type', :action => 'atom_top_commentary'
+    match 'atom/:chamber', :action => 'atom'
     match 'type/:bill_type(/:page)', :action => 'list_bill_type'
     match 'text/status/:id', :action => 'status_text'
     match 'upcoming/:id', :action => 'upcoming'

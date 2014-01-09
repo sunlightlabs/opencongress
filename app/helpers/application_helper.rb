@@ -327,6 +327,8 @@ EOT
         xml.updated b.last_action.datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
       end
 
+      xml.published DateTime.strptime(b.introduced.to_s, '%s').strftime("%Y-%m-%dT%H:%M:%SZ")
+
       xml.content "type" => "html" do
         xml.text! b.title_official
       end
@@ -375,6 +377,8 @@ EOT
       else
         xml.updated b.last_action.datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
       end
+
+      xml.published DateTime.strptime(b.introduced.to_s, '%s').strftime("%Y-%m-%dT%H:%M:%SZ")
 
       xml.content "type" => "html" do
         xml.text! b.title_official

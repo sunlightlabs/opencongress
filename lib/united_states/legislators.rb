@@ -119,10 +119,6 @@ module UnitedStates
             state = State.find_or_create_by_abbreviation_and_name(state_abbrev, state_name)
             if leg_hash['+current_term']['district']
               district = state.districts.find_or_create_by_district_number(leg_hash['+current_term']['district'])
-              if district.rep != leg_person
-                district.rep = leg_person
-                district.save! if district.changed?
-              end
             end
           end
         end

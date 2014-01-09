@@ -10,6 +10,10 @@ xml.feed "xmlns" => "http://www.w3.org/2005/Atom" do
   xml.id      "tag:opencongress.org,2007:/bill/#{@chamber}/#{@sort}"
 
   @bills.each do |b|
-    bill_basic_atom_entry(xml, b)
+    if @sort == 'lastaction'
+      bill_with_last_action_atom_entry(xml, b)
+    else
+      bill_basic_atom_entry(xml, b)
+    end
   end
 end

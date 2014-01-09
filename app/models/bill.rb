@@ -968,6 +968,10 @@ class Bill < ActiveRecord::Base
     "tag:opencongress.org,#{Time.at(introduced).strftime("%Y-%m-%d")}:/bill/#{ident}"
   end
 
+  def atom_id_as_entry_with_action
+    "tag:opencongress.org,#{Time.at(introduced).strftime("%Y-%m-%d")}:/bill/#{ident}/last_action"
+  end
+
   # used when sorting with other types of objects
   def sort_date
     Time.at(self.introduced)

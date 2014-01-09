@@ -333,7 +333,7 @@ EOT
     end
   end
 
-  def bill_action_atom_entry(xml, a)
+  def _get_title_preface(a)
     title_preface = ""
     case a.action_type
     when 'introduced'
@@ -346,16 +346,39 @@ EOT
       title_preface = 'Bill Enacted: '
     when 'vetoed'
       title_preface = 'Bill Vetoed: '
+    else
+      title_preface = 'Other Action: '
     end
+  end
 
+  def bill_action_atom_entry(xml, a)
     xml.entry do
-      xml.title   title_preface + a.bill.title_full_common
+      xml.title   _get_title_preface(a) + a.bill.title_full_common
       xml.link    "rel" => "alternate", "href" => bill_url(a.bill)
       xml.id      a.atom_id
       xml.updated a.datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
       xml.content "type" => "html" do
         xml.text! a.bill.title_official + "<br /><br />"
         xml.text!(a.datetime.strftime("%B %d, %Y: ") + a.text) if a.text
+      end
+    end
+  end
+
+  def bill_with_last_action_atom_entry(xml, b, updated_method=false)
+    xml.entry do
+      xml.title   _get_title_preface(b.last_action) + b.title_full_common
+      xml.link    "rel" => "alternate", "href" => bill_url(b)
+      xml.id      b.atom_id_as_entry_with_action
+
+      if updated_method
+        xml.updated b.stats.send(updated_method).strftime("%Y-%m-%dT%H:%M:%SZ")
+      else
+        xml.updated b.last_action.datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+      end
+
+      xml.content "type" => "html" do
+        xml.text! b.title_official
+        xml.text! "<br /><br />" + b.last_action.text rescue ""
       end
     end
   end

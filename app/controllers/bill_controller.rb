@@ -342,7 +342,7 @@ class BillController < ApplicationController
   def atom_list
     @feed_title = "Recent Bills"
     @chamber = %w(senate house).include?(params[:chamber]) ? params[:chamber] : 'all'
-    @sort = %w(introduced).include?(params[:sort]) ? params[:sort] : 'lastaction'
+    @sort = %w(lastaction).include?(params[:sort]) ? params[:sort] : 'introduced'
     @bills = Bill
     if @chamber != 'all'
       @feed_title = "Recent #{@chamber.capitalize} Bills"

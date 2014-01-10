@@ -167,8 +167,15 @@ class ApiController < ApplicationController
   end
 
   def bills_by_query
-    query_stripped = prepare_tsearch_query(params[:q])
-    @bills = Bill.full_text_search(query_stripped, {:congresses => [Settings.default_congress,Settings.default_congress - 1,Settings.default_congress - 2,Settings.default_congress - 3], :page => 1})
+    query_string = params[:q]
+    congresses = (Settings.default_congress-3..Settings.default_congress).to_a
+    @bills = Bill.search(:load => true, :page => 1) do
+      query do
+        string query_string
+      end
+      filter :terms, :congress => congresses
+    end 
+    
     do_render(@bills, :collection_name => 'bills',
                       :only => @@COMMON_BILL_FIELDS)
   end
@@ -207,18 +214,23 @@ class ApiController < ApplicationController
   end
 
   def most_tracked_bills_this_week
-    @order = "bookmark_count_1 desc"
-    render_bill_aggregates(@order)
+    bill_ids = (Bookmark.where(["bookmarkable_type = 'Bill' AND created_at >= ?", 7.days.ago])
+                        .group(:bookmarkable_id)
+                        .count(:order => "COUNT(bookmarkable_id) DESC",
+                               :limit => 20)
+                        .map(&:first))
+    @bills = Bill.find(bill_ids)
+    render_bill_aggregates
   end
 
   def most_supported_bills_this_week
-    @order = "current_support_pb desc"
-    render_bill_aggregates(@order)
+    @bills = Bill.most_user_votes_since(7.days.ago, :support => 0, :limit => 20)
+    render_bill_aggregates
   end
 
   def most_opposed_bills_this_week
-    @order =  "support_count_1 desc"
-    render_bill_aggregates(@order)
+    @bills = Bill.most_user_votes_since(7.days.ago, :support => 1, :limit => 20)
+    render_bill_aggregates
   end
 
   def most_commented_this_week
@@ -331,10 +343,8 @@ class ApiController < ApplicationController
     @state = State.find_by_abbreviation(params[:id])
   end
 
-  def render_bill_aggregates(order)
-    @range = 30.days.to_i
-    @bills = Bill.find_all_by_most_user_votes_for_range(@range, :order => order, :limit => 20)
-
+  def render_bill_aggregates
+    # Expects @bills to be set
     do_render(@bills.to_a,
               :collection_name => :bills,
               :only => @@COMMON_BILL_FIELDS)

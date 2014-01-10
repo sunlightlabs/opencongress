@@ -321,6 +321,7 @@ class Committee < ActiveRecord::Base
   mapping do
     indexes :name,             :as => proc { subcommittee_name || name }
     indexes :is_subcommittee,  :as => proc { not parent.nil? }
+    indexes :members,          :as => proc { members.map(&:full_name) }
     indexes :thomas_id
   end
 end

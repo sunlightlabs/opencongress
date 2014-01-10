@@ -1,6 +1,7 @@
 require_dependency 'person'
 class PeopleController < ApplicationController
   include ActionView::Helpers::NumberHelper
+  include ActionView::Helpers::TextHelper
 
   verify :method => :post, :only => [:most_viewed_text_update]
   before_filter :page_view, :only => :show
@@ -478,26 +479,26 @@ class PeopleController < ApplicationController
   end
 
   def voting_history
-    @person = Person.find(params[:id])
+    person = @person = Person.find(params[:id])
     @title_desc = SiteText.find_explain('voting_history')
 
-    @page = params[:page].to_i
-    @page = "1" unless (@page and @page != 0)
+    @page = (params[:page] && params[:page].to_i) || 1
+    @page = 1 unless @page > 0
 
-    @q = params[:q]
+    q = @q = truncate(params[:q], :length => 255)
     unless @q.nil?
-      query_stripped = prepare_tsearch_query(@q)
+      @roll_calls = RollCall.search do
+        query do
+          string q
+        end
+        filter :term, :voter_ids => person.id
+        sort do
+          by :datetime, 'desc'
+        end
+      end
 
-      @votes = RollCallVote.paginate_by_sql(
-                  ["SELECT roll_call_votes.* FROM roll_call_votes, roll_calls, bills, bill_fulltext
-                               WHERE bills.session=? AND
-                                     bill_fulltext.fti_names @@ to_tsquery('english', ?) AND
-                                     bills.id = bill_fulltext.bill_id AND
-                                     bills.id = roll_calls.bill_id AND
-                                     roll_calls.id = roll_call_votes.roll_call_id AND
-                                     roll_call_votes.person_id = ?
-                               ORDER BY bills.hot_bill_category_id, bills.lastaction DESC", Settings.default_congress, query_stripped, @person.id],
-                               :per_page => 30, :page => @page)
+      @votes = person.roll_call_votes.where(:roll_call_id => @roll_calls.map(&:id)).paginate(:page => @page, :per_page => 30)
+
       @page_title = "Voting History Search: #{@person.name}"
     else
       @votes = @person.votes.paginate(:page => @page)
@@ -520,37 +521,36 @@ class PeopleController < ApplicationController
     @page = params[:page].to_i
     @page = "1" unless @page
 
-    @q = params[:q]
+    q = @q = truncate(params[:q], :length => 255)
+    person = @person
 
     unless @q.nil?
-      query_stripped = prepare_tsearch_query(@q)
+      @sponsored_bills = Bill.search(:load => true, :page => @page, :per_page => 10) do
+        query do
+          string q
+        end
+        filter :term, :sponsor_id => person.id
+        sort do
+          by :lastaction, 'desc'
+        end
+      end
 
-      @sponsored_bills = Bill.paginate_by_sql(
-                  ["SELECT bills.* FROM bills, bill_fulltext
-                               WHERE bills.session=? AND
-                                      bill_fulltext.fti_names @@ to_tsquery('english', ?) AND
-                                     bills.id = bill_fulltext.bill_id AND
-                                     bills.sponsor_id = ?
-                               ORDER BY bills.hot_bill_category_id, bills.lastaction DESC", Settings.default_congress, query_stripped, @person.id],
-                               :per_page => 30,
-                               :page => @page)
+      @cosponsored_bills = Bill.search(:load => true, :page => @page, :per_page => 10) do
+        query do
+          string q
+        end
+        filter :term, :cosponsor_ids => person.id
+        sort do
+          by :lastaction, 'desc'
+        end
+      end
 
-       @cosponsored_bills = Bill.paginate_by_sql(
-                   ["SELECT bills.* FROM bills, bills_cosponsors, bill_fulltext
-                                WHERE bills.session=? AND
-                                      bill_fulltext.fti_names @@ to_tsquery('english', ?) AND
-                                      bills.id = bill_fulltext.bill_id AND
-                                      bills.id = bills_cosponsors.bill_id AND
-                                      bills_cosponsors.person_id=?
-                                ORDER BY bills.hot_bill_category_id, bills.lastaction DESC", Settings.default_congress, query_stripped, @person.id],
-                                :per_page => 30,
-                                :page => @page)
       @page_title = "Sponsored Bills Search #{@person.name}"
     else
       @sponsored_bills = @person.bills.paginate(:include => [:last_action],
-                                                :per_page => 50,
+                                                :per_page => 10,
                                                 :page => @page)
-      @cosponsored_bills = @person.bills_cosponsored.paginate(:include => [:last_action], :per_page => 50, :page => @page)
+      @cosponsored_bills = @person.bills_cosponsored.paginate(:include => [:last_action], :per_page => 10, :page => @page)
     end
 
     @search_text = "<span class='none'>Search Sponsored Bills</span>"

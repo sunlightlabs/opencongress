@@ -44,6 +44,8 @@ class GroupsController < ApplicationController
 
   def index
     @page_title = 'OpenCongress Groups'
+    @page = params.fetch(:page, 1).to_i
+    @page = 1 unless @page > 0
 
     unless params[:sort].blank?
       sort_column, sort_dir = params[:sort].split
@@ -73,14 +75,17 @@ class GroupsController < ApplicationController
     end
 
     unless params[:q].blank?
-      @groups = @groups.with_name_or_description_containing(params[:q])
+      # Here we just grab the group ids from elasticsearch and manually
+      # fetch the models below.
+      groups_found = Group.search(params[:q], :per_page => 20, :page => @page)
+      @groups = Group.where(:id => groups_found.map(&:id))
     end
 
     unless params[:subject].blank?
       @groups = @groups.where(:subject_id => params[:subject])
     end
 
-    @groups = @groups.select("groups.*, coalesce(gm.group_members_count, 0) as group_members_count").joins(%q{LEFT OUTER JOIN (select group_id, count(group_members.*) as group_members_count from group_members where status != 'BOOTED' group by group_id) gm ON (groups.id=gm.group_id)}).includes(:subject).paginate(:per_page => 20, :page => params[:page])
+    @groups = @groups.select("groups.*, coalesce(gm.group_members_count, 0) as group_members_count").joins(%q{LEFT OUTER JOIN (select group_id, count(group_members.*) as group_members_count from group_members where status != 'BOOTED' group by group_id) gm ON (groups.id=gm.group_id)}).includes(:subject).paginate(:per_page => 20, :page => @page)
 
     respond_with @groups
   end

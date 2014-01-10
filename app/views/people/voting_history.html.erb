@@ -1,6 +1,7 @@
 <!--<p><a href="/people/show/<%= @person.to_param %>" class="arrow-left"><b>Back to <%= @person.popular_name.possessive %> Profile</b></a></p>-->
 
-<%= render :partial => 'shared/generic_search_field', :locals => { :field_text => "<span>Search Voting History</span>" }%>
+<%= render :partial => 'shared/generic_search_field', :locals => { :search_action => url_for(:controller => :people, :action => :voting_history, :id => @person.id, :page => 1),
+                                                                   :field_text => "<span>Search Voting History</span>" } %>
 
 <%= will_paginate @votes %>
 <%= render(:partial => 'voting_history', :locals => { :votes => @votes }) %>

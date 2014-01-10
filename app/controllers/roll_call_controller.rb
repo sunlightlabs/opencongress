@@ -1,6 +1,7 @@
 class RollCallController < ApplicationController
   helper :index
   include RollCallHelper
+  include ActionView::Helpers::TextHelper
   before_filter :page_view, :only => [:show, :by_number]
   before_filter :can_blog, :only => [:update_hot]
   before_filter :no_users, :only => [:can_blog]
@@ -190,18 +191,16 @@ class RollCallController < ApplicationController
   end
 
   def search
-    @roll_query = params[:q]
+    query_string = @roll_query = truncate(params[:q], :length => 255)
 
-    query_stripped = prepare_tsearch_query(@roll_query)
-
-    @rolls = RollCall.find_by_sql(
-                ["SELECT roll_calls.* FROM roll_calls, bills, bill_fulltext
-                               WHERE bills.session=? AND
-                                     bill_fulltext.fti_names @@ to_tsquery('english', ?) AND
-                                     bills.id = bill_fulltext.bill_id AND
-                                     roll_calls.bill_id=bills.id
-                               ORDER BY bills.hot_bill_category_id, roll_calls.date DESC", Settings.default_congress, query_stripped]
-                              )
+    incl_models = { :include => { :bill => :bill_fulltext } }
+    @rolls = RollCall.search(:page => 1, :per_page => 1000, :load => incl_models) do
+      query do
+        string query_string
+      end
+      filter :term, :congress => Settings.default_congress
+      sort { by :datetime, 'desc' }
+    end
 
      render :partial => 'roll_calls_list', :locals => { :rolls => @rolls }, :layout => false
   end

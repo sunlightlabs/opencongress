@@ -1,4 +1,4 @@
-<% @content_for_sortby = render :partial => 'sort_bills' %>
+<% @content_for_sortby = render :partial => 'sort_bills', :locals => { :sort => 'readthebill' } %>
 <div style="padding:10px 35px;">
 	<p><i>To help you track which bills were rushed through the legislative process, we've created this page. This is a continually-updating list of bills in Congress for which the time from the full text being publicly available on the website of the <a href="http://www.gpoaccess.gov/">Government Printing Office</a> to the point of consideration by the full chamber of the U.S. House or Senate is less than 72 hours.</i></p>
 <br />

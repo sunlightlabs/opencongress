@@ -1,4 +1,4 @@
-<% @content_for_sortby = render :partial => 'sort_bills' %>
+<% @content_for_sortby = render :partial => 'sort_bills', :locals => { :sort => 'pending' } %>
 <div id="the-bills">
 
 <%= render :partial => "bill/related_bills_list", :locals => { :related_bills_list => @bills } %>

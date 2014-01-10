@@ -39,12 +39,10 @@ class IssueController < ApplicationController
 
   def quick_search
     @q = params[:q]
+    @page = params[:page] || 1
 
     unless @q.nil?
-      query_stripped = prepare_tsearch_query(@q)
-
-      @subjects = Subject.full_text_search(query_stripped, { :page => params[:page],
-                                                             :per_page => PER_PAGE})
+      @subjects = Subject.search(@q, :load => true, :page => @page, :per_page => PER_PAGE)
     end
 
     render :layout => false

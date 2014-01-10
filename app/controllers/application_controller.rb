@@ -203,21 +203,6 @@ class ApplicationController < ActionController::Base
     return (logged_in? && current_user.user_role.can_administer_users)
   end
 
-  def prepare_tsearch_query(text)
-    text = text.strip
-
-    # remove non alphanumeric
-    text = text.gsub(/[^\w\.\s\-_]+/, "")
-
-    # replace multiple spaces with one space
-    text = text.gsub(/\s+/, " ")
-
-    # replace spaces with '&'
-    text = text.gsub(/ /, "&")
-
-    text
-  end
-
   def site_text_params_string(prms)
     ['action', 'controller', 'id', 'person_type', 'commentary_type'].collect{|k|"#{k}=#{prms[k]}" }.join("&")
   end

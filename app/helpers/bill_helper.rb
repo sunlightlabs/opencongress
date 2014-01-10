@@ -289,4 +289,14 @@ module BillHelper
       sentence
     end
   end 
+
+  def bill_rank_diff_class_name (rank_diff)
+    if rank_diff.nil?
+      "bill_rank_same"
+    elsif rank_diff > 0
+      "bill_rank_lower"
+    elsif rank_diff < 0
+      "bill_rank_higher"
+    end
+  end
 end

@@ -2,6 +2,9 @@ require_dependency 'united_states'
 require_dependency 'viewable_object'
 class RollCall < ActiveRecord::Base
   include ViewableObject
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   belongs_to :bill
   belongs_to :amendment
   has_one :action
@@ -263,4 +266,20 @@ class RollCall < ActiveRecord::Base
     return [together,total]
   end
 
+  mapping do
+    indexes :id,         :index => :not_analyzed
+    indexes :number,     :index => :not_analyzed
+    indexes :datetime,   :type => 'date'
+    indexes :congress,   :type => :integer, :as    => proc { date && UnitedStates::Congress.congress_for_year(date.year) }
+    indexes :chamber,    :as    => proc { where }
+    indexes :roll_type
+    indexes :title
+    indexes :question
+    indexes :result
+    indexes :bill_ident,    :as    => proc { bill && bill.ident }
+    indexes :bill_id,       :as    => proc { bill_id }
+    indexes :bill_titles,   :as    => proc { bill && bill.bill_titles.map(&:title) }
+    indexes :amendment_id,  :as    => proc { amendment_id }
+    indexes :voter_ids,     :as    => proc { roll_call_votes.map(&:person_id) }
+  end
 end

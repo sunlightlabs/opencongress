@@ -1,5 +1,6 @@
 class BillController < ApplicationController
   include ActionView::Helpers::NumberHelper
+  include ActionView::Helpers::TextHelper
 
   helper :roll_call
   before_filter :page_view, :only => [:show, :text]
@@ -142,44 +143,41 @@ class BillController < ApplicationController
 
   def hot
     @page_title = "Hot Bills on OpenCongress"
-    @sort = 'hot'
-    @bill = Bill.find_by_ident(params[:bill]) if params[:bill]
     @p_title_class = "bills"
     @p_title = "Bills"
-    order = params[:order] ||= "desc"
-    if order == "asc"
-      @p_subtitle = "Least "
-    else
-      @p_subtitle = "Most "
-    end
-    sort = params[:sort] ||= "vote_count_1"
-    case sort
-      when "vote_count_1"
-        @p_subtitle << "Votes"
-      when "current_support_pb"
-        @p_subtitle << "Support"
-      when "support_count_1"
-        @p_subtitle << "Opposition"
-      when "bookmark_count_1"
-        @p_subtitle << "Users Tracking"
-      when "total_comments"
-        @p_subtitle << "Comments"
-    end
-    page = params[:page] ||= 1
 
-    @cache_key = "br-bill-#{page}-#{sort}-#{order}-#{logged_in? ? current_user.login : nil}-#{@range}-#{params[:q].blank? ? nil : Digest::SHA1.hexdigest(params[:q])}"
-    unless read_fragment(@cache_key)
-      search = params[:q].blank? ? nil : prepare_tsearch_query(params[:q])
-      @results = Bill.find_all_by_most_user_votes_for_range(@range,
-                                                            :search => search,
-                                                            :limit => 20,
-                                                            :order => sort + " " + order)
+    midpoint = Time.now - @range
+    prev_period = [midpoint - @range, midpoint]
+    curr_period = [midpoint, Time.now]
+
+    options = {
+      :limit => 20
+    }
+
+    valid_sorts = ["votes", "support", "oppose"]
+    sort = "votes"
+    sort = params[:sort] if valid_sorts.include?(params[:sort])
+    sort = sort.to_sym
+
+    valid_positions = [:support, :oppose]
+    options[:position] = sort if valid_positions.include?(sort)
+
+    search = params[:q].blank? ? nil : truncate(params[:q], :length => 255)
+    if search
+      options[:query] = search
     end
 
-    respond_to do |format|
-      format.html
-      format.xml { head :gone }
-    end
+    @results = Bill.most_user_votes_since(midpoint, options)
+    result_bill_ids = Set.new(@results.map(&:id))
+
+    prev_ranking = BillVote.bill_ranking_for_period(*prev_period, options)
+    curr_ranking = BillVote.bill_ranking_for_period(*curr_period, options)
+    prev_ranking = prev_ranking.select{ |record| result_bill_ids.include?(record[:bill_id]) }
+    curr_ranking = curr_ranking.select{ |record| result_bill_ids.include?(record[:bill_id]) }
+    @ranking_lookup = Hash[curr_ranking.select{ |record| result_bill_ids.include?(record[:bill_id]) }
+                                       .map{ |record| [record[:bill_id], record] }]
+    @ranking_diff = BillVote.bill_ranking_diff(prev_ranking, curr_ranking)
+    @results = @results.sort_by{ |bill| @ranking_lookup[bill.id][:counts][sort] || 0 }.reverse
   end
 
   def hot_bill_vote
@@ -660,22 +658,9 @@ class BillController < ApplicationController
   end
 
   def commentary_search
-    @page = params[:page]
-    @page = "1" unless @page
-
-    @commentary_query = params[:q]
-    query_stripped = prepare_tsearch_query(@commentary_query)
     @bill = Bill.find_by_ident(params[:id])
-
-    if params[:commentary_type] == 'news'
-      @commentary_type = 'news'
-      @articles = @bill.news.paginate(:conditions => ["fti_names @@ to_tsquery('english', ?)", query_stripped], :page => @page)
-    else
-      @commentary_type = 'blogs'
-      @articles = @bill.blogs.paginate(:conditions => ["fti_names @@ to_tsquery('english', ?)", query_stripped], :page => @page)
-    end
-
-    @page_title = "Search #{@commentary_type.capitalize} for bill #{@bill.typenumber}"
+    flash[:notice] = "News and blog archives have been temporarily disabled."
+    return redirect_to :controller => :bill, :action => :show, :id => @bill.ident
   end
 
   def videos
@@ -805,6 +790,8 @@ private
         @range = 1.year.to_i
       when "AllTime"
         @range = 20.years.to_i
+      else
+        @range = 5.days.to_i
     end
 
     @perc_diff_in_days = Bill.percentage_difference_in_periods(@range).to_f

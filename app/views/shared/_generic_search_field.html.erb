@@ -1,4 +1,6 @@
-<form method="get" class="search_form">
+<% search_action = nil unless local_assigns.has_key? :search_action %>
+
+<form method="get" class="search_form" <% if search_action %>action="<%= search_action %>"<% end %>>
 <div>
 		<%= field_text.html_safe %> <input name="q" id="search-field" type="text" size="30" value="<%= @q %>" />
   		<input type="image" src="<%= image_path 'search_submit.gif' %>" name="submit" id="search_submit" value="Search">

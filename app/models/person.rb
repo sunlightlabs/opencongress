@@ -1636,11 +1636,11 @@ class Person < ActiveRecord::Base
     indexes :middlename
     indexes :lastname
     indexes :nickname
-    indexes :full_name,             :as    => proc { full_name }
-    indexes :official_name,         :as    => proc { name }
+    indexes :full_name,             :as => proc { full_name }
+    indexes :official_name,         :as => proc { name }
     indexes :party
-    indexes :state_abbreviation,    :as    => proc { state }
-    indexes :state_name,            :as    => proc { State::STATE_FOR_ABBREV[state] }
-    indexes :congresses_active,     :as    => proc { congresses_active }
+    indexes :state_abbreviation,    :as => proc { state }
+    indexes :state_name,            :as => proc { State::STATE_FOR_ABBREV[state] }
+    indexes :congresses_active,     :type => :integer, :as => proc { congresses_active }
   end
 end

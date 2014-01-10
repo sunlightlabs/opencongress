@@ -155,25 +155,6 @@ class Bill < ActiveRecord::Base
     "#{bill_type}#{number}-#{session}"
   end
 
-  before_save :update_bill_fulltext_search_table
-
-  def update_bill_fulltext_search_table
-    if self.id
-      # when the bill is new, the bill titles will have just been added to the DB.
-      # using raw sql is the only way i've found to get them (the 'force_reload'
-      # option on the association does not seem to work.)  if there is a better way
-      # if should be implemented
-      bts = BillTitle.find_by_sql(["SELECT bill_titles.* FROM bill_titles WHERE bill_id=?", id])
-
-      self.build_bill_fulltext if self.bill_fulltext.nil?
-      self.bill_fulltext.fulltext = "#{bill_type}#{number} #{bill_type} #{number} #{type_name}#{number} #{type_name} #{bts.collect(&:title).join(" ")} #{plain_language_summary}"
-      self.bill_fulltext.save
-
-      # also, set the lastaction field unless it's a brand new record
-      self.lastaction = last_action.date if last_action
-    end
-  end
-
   def display_object_name
     @@DISPLAY_OBJECT_NAME
   end
@@ -453,147 +434,35 @@ class Bill < ActiveRecord::Base
                                  AND comments.commentable_id = #{bill.id}) as comment_count")
     end
 
-    def find_all_by_most_user_votes_for_range(range, options)
-      range = 30.days.to_i if range.nil?
-      possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
-                         "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
-                         "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
-      order = options[:order] ||= "vote_count_1 desc"
-      search = options[:search]
-      if possible_orders.include?(order)
+    def most_user_votes_since(since, options = {})
+      limit = options[:limit] ||= 0
+      query_string = options[:query]
 
-        limit = options[:limit] ||= 20
-        offset = options[:offset] ||= 0
-        not_null_check = order.split(' ').first
-
-        query = "
-            SELECT
-              bills.*,
-              #{search ? "rank(bill_fulltext.fti_names, ?, 1) as tsearch_rank, " : "" }
-              current_period.vote_count_1 as vote_count_1,
-              current_period.support_count_1 as support_count_1,
-              (total_counted.total_count - total_supported.total_support) as total_support,
-              current_period.current_support_pb as current_support_pb,
-              comments_total.total_comments as total_comments,
-              current_period_book.bookmark_count_1 as bookmark_count_1,
-              previous_period.vote_count_2 as vote_count_2,
-              previous_period.support_count_2 as support_count_2,
-              total_supported.total_support as total_opposed,
-              total_counted.total_count as total_count
-            FROM
-              #{search ? "bill_fulltext," : ""}
-              bills
-            INNER JOIN (
-              select bill_votes.bill_id  as bill_id_1,
-              count(bill_votes.bill_id) as vote_count_1,
-              sum(bill_votes.support) as support_count_1,
-              (count(bill_votes.bill_id) - sum(bill_votes.support)) as current_support_pb
-              FROM bill_votes
-              WHERE created_at > ? group by bill_id_1)
-            current_period ON bills.id = current_period.bill_id_1
-            LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_3,
-              sum(bill_votes.support) as total_support
-              FROM bill_votes
-              GROUP BY bill_votes.bill_id)
-            total_supported ON bills.id = total_supported.bill_id_3
-            LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_4,
-              count(bill_votes.support) as total_count
-              FROM bill_votes
-              GROUP BY bill_votes.bill_id)
-            total_counted ON bills.id = total_counted.bill_id_4
-            LEFT OUTER JOIN (
-              select comments.commentable_id as bill_id_5,
-              count(comments.id) as total_comments
-              FROM comments
-              WHERE created_at > ? AND
-              comments.commentable_type = 'Bill'
-              GROUP BY comments.commentable_id)
-            comments_total ON bills.id = comments_total.bill_id_5
-            LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_2,
-              count(bill_votes.bill_id) as vote_count_2,
-              sum(bill_votes.support) as support_count_2
-              FROM bill_votes
-              WHERE created_at > ? AND
-              created_at <= ?
-              GROUP BY bill_id_2)
-            previous_period ON bills.id = previous_period.bill_id_2
-            LEFT OUTER JOIN (
-              select bookmarks.bookmarkable_id as bill_id_1,
-               count(bookmarks.bookmarkable_id) as bookmark_count_1
-               FROM bookmarks
-                   WHERE created_at > ?
-               GROUP BY bill_id_1)
-            current_period_book ON bills.id = current_period_book.bill_id_1
-            WHERE #{not_null_check} IS NOT NULL
-            #{search ? "AND bill_fulltext.fti_names @@ to_tsquery('english', ?)
-            AND bills.id = bill_fulltext.bill_id" : ""}
-            ORDER BY #{order}
-            LIMIT #{limit}"
-
-        query_params = [range.seconds.ago,range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, range.seconds.ago]
-
-        if search
-          # Plug the search parameters into the query parmaeters
-          query_params.unshift(search)
-          query_params.push(search)
+      eligible_bill_ids = Bill.search do
+        if query_string
+          query { string query_string }
         end
+        size 10000
+        filter :range, :last_user_vote => { :gte => since }
+        filter :term, :congress => Settings.default_congress
+        fields :id
+      end .map(&:id)
 
-        Bill.find_by_sql([query, *query_params])
-      else
-        return []
+      facet_filters = [
+        {:range => { :updated_at => { :gte => since } } },
+        {:term => { :bill_congress => Settings.default_congress.to_s } },
+        {:terms => { :bill_id => eligible_bill_ids } }
+      ]
+      votes_query = Tire.search 'bill_votes' do
+        facet 'bill_support' do
+          terms_stats :bill_id, :support, :size => limit
+          facet_filter :and, facet_filters
+        end
       end
-    end
+      votes_found = votes_query.results
 
-    def count_all_by_most_user_votes_for_range(range, options)
-      possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
-                         "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
-                         "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
-      order = options[:order] ||= "vote_count_1 desc"
-      search = options[:search]
-      if possible_orders.include?(order)
-        join_query = ""
-        join_query_bind = []
-        case order.split.first
-          when "bookmark_count_1"
-            join_query = "INNER JOIN (select bookmarks.bookmarkable_id as bill_id
-                   FROM bookmarks
-                  WHERE created_at > ? GROUP BY bookmarkable_id)
-               current_period_book ON bills.id=current_period_book.bill_id"
-            join_query_bind = [range.seconds.ago]
-          when "total_comments"
-            join_query = "INNER JOIN (select comments.commentable_id as bill_id
-                FROM comments
-                   WHERE created_at > ? AND
-                         comments.commentable_type = 'Bill'
-                GROUP BY comments.commentable_id)
-            comments_total ON bills.id=comments_total.bill_id"
-            join_query_bind = [range.seconds.ago]
-        end
-
-        query = "SELECT count(bills.*)
-            FROM
-              #{search ? "bill_fulltext," : ""}
-              bills
-             INNER JOIN (select bill_votes.bill_id
-                 FROM bill_votes WHERE created_at > ?
-                 GROUP BY bill_votes.bill_id) current_period
-             ON bills.id = current_period.bill_id
-             #{join_query}
-            #{search ? "WHERE bill_fulltext.fti_names @@ to_tsquery('english', ?) AND bills.id = bill_fulltext.bill_id" : ""}"
-        query_params = [range.seconds.ago, *join_query_bind]
-
-        if search
-          query_params.push(search)
-        end
-
-        k = Bill.count_by_sql([query, *query_params])
-        return k
-      else
-        return []
-      end
+      votes_by_bill_id = Hash[votes_found.facets['bill_support']['terms'].map{ |f| [f['term'].to_i, f['count']] }]
+      bills = Bill.where(:id => votes_by_bill_id.keys)
     end
 
     # Why are these next two methods in Bill if they just return BillVote stuff?
@@ -1360,12 +1229,26 @@ class Bill < ActiveRecord::Base
 
   mapping do
     indexes :id,         :index => :not_analyzed
-    indexes :ident,      :as   => proc { ident }
+    indexes :number,     :index => :not_analyzed
+    indexes :ident,      :as    => proc { ident }
+    indexes :congress,   :type => :integer, :as    => proc { session }
+    indexes :introduced, :type => 'date', :as => proc { introduced && Time.at(introduced).to_datetime }
+    indexes :lastaction, :type => 'date', :as => proc { lastaction && Time.at(lastaction).to_datetime }
+    indexes :titles,     :as    => proc { bill_titles.map(&:title) }
     indexes :official_title
     indexes :short_title
     indexes :popular_title
-    indexes :sponsor,    :as   => proc { sponsor and sponsor.full_name }
-    indexes :subject,    :as   => proc { top_subject and top_subject.term }
+    indexes :summary
+    indexes :plain_language_summary
+    indexes :sponsor_id,      :as   => proc { sponsor_id }, :index => :not_analyzed
+    indexes :sponsor_name,    :as   => proc { sponsor && sponsor.full_name }
+    indexes :cosponsor_ids,   :as   => proc { co_sponsors && co_sponsors.map(&:id) }, :index => :not_analyzed
+    indexes :cosponsor_names, :as   => proc { co_sponsors && co_sponsors.map(&:full_name) }
+    indexes :top_subject_term,    :as   => proc { top_subject && top_subject.term }
+    indexes :top_subject_id,      :as   => proc { top_subject && top_subject.id }
+    indexes :subject_terms,       :as   => proc { subjects && subjects.map(&:term) }
+    indexes :subject_ids,         :as   => proc { subjects && subjects.map(&:id) }
+    indexes :last_user_vote,      :type => 'date'
     indexes :created_on, :type => 'date'
   end
 

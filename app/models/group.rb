@@ -28,7 +28,6 @@ class Group < ActiveRecord::Base
   has_one :political_notebook, :dependent => :destroy
 
   scope :visible, where(:publicly_visible=>true)
-  scope :with_name_or_description_containing, lambda { |q| where(["groups.name ILIKE ? OR groups.description ILIKE ?", "%#{q}%", "%#{q}%"]) }
   scope :in_category, lambda { |category_id| where(:pvs_category_id => category_id) }
   scope :in_state, lambda { |state_id| includes(:state, :district => :state).where(["groups.state_id=? OR districts.state_id=?", state_id, state_id])}
 

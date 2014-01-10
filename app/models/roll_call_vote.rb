@@ -1,5 +1,8 @@
 require 'united_states'
 class RollCallVote < ActiveRecord::Base
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   @@VOTE_FOR_SYMBOL = {
     "+" => "Aye",
     "-" => "Nay",
@@ -126,5 +129,12 @@ class RollCallVote < ActiveRecord::Base
 
   def is_non_vote?
     return ABSTAIN_VALUES.include?(vote)
+  end
+
+  mapping do
+    indexes :id,            :index => :not_analyzed
+    indexes :roll_call_id,  :index => :not_analyzed
+    indexes :person_id,     :index => :not_analyzed
+    indexes :vote,          :index => :not_analyzed
   end
 end

@@ -637,8 +637,8 @@ class User < ActiveRecord::Base
     indexes :activated_at
     indexes :last_login
     indexes :zipcode
-    indexes :state_name,           :as => proc { state.name }
-    indexes :state_abbreviation,   :as => proc { state.abbreviation }
+    indexes :state_name,           :as => proc { State::STATE_FOR_ABBREV[state] }
+    indexes :state_abbreviation,   :as => proc { state }
     indexes :district
   end
 end

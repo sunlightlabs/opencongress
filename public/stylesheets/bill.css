@@ -2444,3 +2444,19 @@ body#bill.bill_positions .col1, body#bill.bill_positions .col2 {
     width: 452px;
     float: left;
 }
+
+body#bill.hot td.bill_rank {
+    width: 45px;
+    vertical-align: top;
+    text-align: center;
+}
+
+body#bill.hot span.bill_rank_higher {
+    color: green;
+    font-weight: bold;
+}
+
+body#bill.hot span.bill_rank_lower {
+    color: red;
+    font-weight: bold;
+}

@@ -447,14 +447,11 @@ class Subject < ActiveRecord::Base
     "#{id}_#{url_name}"
   end
 
-  # TODO
   def self.full_text_search(q, options = {})
-    subjects = Subject.paginate_by_sql(["SELECT subjects.*, rank(fti_names, ?, 1) as tsearch_rank FROM subjects
-                                 WHERE subjects.fti_names @@ to_tsquery('english', ?)
-                                 ORDER BY tsearch_rank DESC, term ASC", q, q],
-                                :per_page => options[:per_page].nil? ? Settings.default_search_page_size : options[:per_page],
-                                :page => options[:page])
-    subjects
+    found = self.search(q, :per_page => options.fetch(:per_page, Settings.default_search_page_size),
+                           :page => options.fetch(:page, 1))
+
+    found.results
   end
 
   def recent_blogs

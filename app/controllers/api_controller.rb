@@ -1,4 +1,5 @@
 class ApiController < ApplicationController
+  include ActionView::Helpers::TextHelper
 
   @@COMMON_BILL_FIELDS = ["bill_type", "number", "sponsor_id",
                           "topresident_date", "last_vote_roll",
@@ -276,10 +277,9 @@ class ApiController < ApplicationController
   end
 
   def issues_by_keyword
-    @query = params[:keyword]
-    query_stripped = prepare_tsearch_query(@query)
-    @issues = Subject.full_text_search(query_stripped, :page => 1)
-    render :xml => @issues.to_xml
+    @query = truncate(params[:keyword], :length => 255)
+    @issues = Subject.search(@query, :load => true, :page => 1, :per_page => 20)
+    render :xml => @issues.results.to_xml
   end
 
   def bills_by_issue_id

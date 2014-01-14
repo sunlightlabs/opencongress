@@ -42,7 +42,7 @@ class IssueController < ApplicationController
     @page = params[:page] || 1
 
     unless @q.nil?
-      @subjects = Subject.search(@q, :load => true, :page => @page, :per_page => PER_PAGE)
+      @subjects = Subject.full_text_search(@q, :page => @page, :per_page => PER_PAGE)
     end
 
     render :layout => false

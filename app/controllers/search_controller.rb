@@ -14,7 +14,7 @@ class SearchController < ApplicationController
     @page_title = "Search Results: #{@query}"
     @page = (params[:page] || 1).to_i
     @found_items = 0
-    congresses = @congresses = params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"]
+    congresses = @congresses = params[:search_congress] ? params[:search_congress].keys : Settings.available_congresses
     @per_page = params[:per_page] || 10
     @item_count = 0
 

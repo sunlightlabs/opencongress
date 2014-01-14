@@ -191,7 +191,7 @@ class ResourcesController < ApplicationController
 
   def issue_search
     if params[:issue_bills][:issue_text] and !params[:issue_bills][:issue_text].empty?
-      query_stripped = prepare_tsearch_query(params[:issue_bills][:issue_text])
+      query_stripped = params[:issue_bills][:issue_text]
 
       if (query_stripped.size > 0)
         @issues = Subject.full_text_search(query_stripped, :page => 1)

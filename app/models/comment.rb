@@ -49,32 +49,6 @@ class Comment < ActiveRecord::Base
   validates_presence_of :comment, :message => " : You must enter a comment."
   validates_length_of :comment, :in => 1..1000, :too_short => " : Your comment is not verbose enough, write more.", :too_long => " : Your comment is too verbose, keep it under 1000 characters."
 
-  def self.full_text_search(q, options = {})
-    congresses = options[:congresses].nil? ? [Settings.default_congress] : options[:congresses]
-
-    s_count = Comment.count(:all,
-                            :joins => "LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')",
-                            :conditions => ["(comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
-                                             (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill') AND
-                                             comments.commentable_type != 'Person'", q, congresses, q])
-
-
-    # Note: This takes (current_page, per_page, total_entries)
-    # We need to do this so we can put LIMIT and OFFSET inside the subquery.
-    WillPaginate::Collection.create(options[:page], 12, s_count) do |pager|
-      # perfom the find.
-      # The subquery is here so we don't run ts_headline on all rows, which takes a long long time...
-      # See http://www.postgresql.org/docs/8.4/static/textsearch-controls.html
-      pager.replace Comment.find_by_sql(["SELECT
-          comments.*, ts_headline(comment, ?) as headline
-        FROM (SELECT * from comments LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')
-          WHERE ((comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
-                 (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill'))
-          AND comments.commentable_type != 'Person'
-          ORDER BY comments.created_at DESC LIMIT ? OFFSET ?) AS comments", q, q, congresses, q, pager.per_page, pager.offset])
-    end
-  end
-
   # these methods are for spam detection
   def author_name
     user.nil? ? nil : user.login

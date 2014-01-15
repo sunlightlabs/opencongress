@@ -406,7 +406,7 @@ class BillController < ApplicationController
         @roll_call = @bill.roll_calls.empty? ? nil : @bill.roll_calls.first
      }
       format.xml {
-        render :xml => @bill.to_xml(:exclude => [:fti_titles], :include => [:bill_titles,:last_action,:sponsor,:co_sponsors,:actions,:roll_calls])
+        render :xml => @bill.to_xml(:include => [:bill_titles,:last_action,:sponsor,:co_sponsors,:actions,:roll_calls])
       }
     end
   end
@@ -489,7 +489,7 @@ class BillController < ApplicationController
         end
       }
       format.xml {
-        render :xml => @bill.to_xml(:exclude => [:fti_titles], :include => [:bill_titles,:last_action,:sponsor,:co_sponsors,:actions,:roll_calls])
+        render :xml => @bill.to_xml(:include => [:bill_titles,:last_action,:sponsor,:co_sponsors,:actions,:roll_calls])
       }
     end
   end

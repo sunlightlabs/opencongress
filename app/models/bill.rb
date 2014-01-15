@@ -351,8 +351,8 @@ class Bill < ActiveRecord::Base
   end
 
   def to_light_xml(options = {})
-    default_options = {:except => [:rolls, :hot_bill_category_id, :summary, :fti_titles,:bookmark_count_2,
-                                   :fti_names,:current_support_pb, :support_count_1, :rolls, :hot_bill_category_id,
+    default_options = {:except => [:rolls, :hot_bill_category_id, :summary,:bookmark_count_2,
+                                   :current_support_pb, :support_count_1, :rolls, :hot_bill_category_id,
                                    :support_count_2, :vote_count_2],
                                 :methods => [:title_full_common, :status, :ident]
                                 }
@@ -360,7 +360,7 @@ class Bill < ActiveRecord::Base
   end
 
   def to_medium_xml(options = {})
-    default_options = {:except => [:rolls, :hot_bill_category_id, :summary, :fti_titles],
+    default_options = {:except => [:rolls, :hot_bill_category_id, :summary],
                                 :methods => [:title_full_common, :status, :ident],
                                 :include => {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]},
                                              :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]},
@@ -1078,22 +1078,6 @@ class Bill < ActiveRecord::Base
     return "Not Voted Yet" if roll.nil? or roll.roll_call.nil?
 
     roll.roll_call.vote_for_person(person)
-  end
-
-  def self.full_text_search(q, options = {})
-    congresses = options[:congresses] || Settings.default_congress
-
-    s_count = Bill.count_by_sql(["SELECT COUNT(*) FROM bills, bill_fulltext
-          WHERE bills.session IN (?) AND
-            bill_fulltext.fti_names @@ to_tsquery('english', ?) AND
-            bills.id = bill_fulltext.bill_id", options[:congresses] || Settings.default_congress, q])
-
-    Bill.paginate_by_sql(["SELECT bills.*, rank(bill_fulltext.fti_names, ?, 1) as tsearch_rank FROM bills, bill_fulltext
-                               WHERE bills.session IN (?) AND
-                                     bill_fulltext.fti_names @@ to_tsquery('english', ?) AND
-                                     bills.id = bill_fulltext.bill_id
-                               ORDER BY hot_bill_category_id, lastaction DESC", q, options[:congresses], q],
-                :per_page => Settings.default_search_page_size, :page => options[:page], :total_entries => s_count)
   end
 
   def billtext_txt

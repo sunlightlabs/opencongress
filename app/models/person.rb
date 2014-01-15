@@ -187,12 +187,12 @@ class Person < ActiveRecord::Base
   end
 
   def to_light_xml(options = {})
-    default_options = {:methods => [:oc_user_comments, :oc_users_tracking], :except => [:fti_names]}
+    default_options = {:methods => [:oc_user_comments, :oc_users_tracking]}
     self.to_xml(default_options.merge(options))
   end
 
   def to_medium_xml(options = {})
-    default_options = {:methods => [:oc_user_comments, :oc_users_tracking], :except => [:fti_names]}
+    default_options = {:methods => [:oc_user_comments, :oc_users_tracking]}
     self.to_xml(default_options.merge(options))
   end
 
@@ -448,202 +448,6 @@ class Person < ActiveRecord::Base
     end
 
     summary
-  end
-
-  # Battle Royale
-  def Person.find_all_by_most_tracked_for_range(range, options)
-    range = 630720000 if range.nil?
-
-    # this prevents sql injection
-    possible_orders = ["bookmark_count_1 desc", "bookmark_count_1 asc",
-                       "p_approval_avg desc", "p_approval_avg asc", "p_approval_count desc",
-                       "p_approval_count asc", "total_comments asc", "total_comments desc"]
-    order = options[:order] ||= "bookmark_count_1 desc"
-    search = options[:search]
-
-    if possible_orders.include?(order)
-      limit = options[:limit] ||= 20
-      offset = options[:offset] ||= 0
-      person_type = options[:person_type] ||= "Sen."
-      not_null_check = order.split(' ').first
-
-      if search
-           find_by_sql(["select people.*, rank(fti_names, ?, 1) as tsearch_rank, current_period.bookmark_count_1 as bookmark_count_1,
-                       comments_total.total_comments as total_comments, papps.p_approval_count as p_approval_count,
-                       papps.p_approval_avg as p_approval_avg,
-                       previous_period.bookmark_count_2 as bookmark_count_2
-                       FROM people
-                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
-                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
-                                   FROM bookmarks
-                                       WHERE created_at > ? AND
-                                             created_at <= ?
-                                   GROUP BY people_id_1) current_period
-                       ON people.id=current_period.people_id_1
-                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
-                                        count(comments.*) as total_comments
-                                    FROM comments
-                                        WHERE created_at > ? AND
-                                        comments.commentable_type = 'Person'
-                                    GROUP BY comments.commentable_id) comments_total
-                       ON people.id=comments_total.people_id_5
-                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
-                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
-                                        FROM bookmarks
-                                             WHERE created_at > ? AND
-                                                   created_at <= ?
-                                        GROUP BY people_id_2) previous_period
-                       ON people.id=previous_period.people_id_2
-                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
-                                        count(person_approvals.id) as p_approval_count,
-                                        avg(person_approvals.rating) as p_approval_avg
-                                       FROM person_approvals
-                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
-                                       GROUP BY p_approval_id) papps
-                       ON p_approval_id = people.id
-                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
-                       AND  people.fti_names @@ to_tsquery('english', ?)
-                       ORDER BY #{order} LIMIT #{limit} OFFSET #{offset}",
-                       search, range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, search])
-
-
-
-       else
-           find_by_sql(["select people.*, current_period.bookmark_count_1 as bookmark_count_1,
-                       comments_total.total_comments as total_comments, papps.p_approval_count as p_approval_count,
-                       papps.p_approval_avg as p_approval_avg,
-                       previous_period.bookmark_count_2 as bookmark_count_2
-                       FROM people
-                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
-                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
-                                   FROM bookmarks
-                                       WHERE created_at > ? AND
-                                             created_at <= ?
-                                   GROUP BY people_id_1) current_period
-                       ON people.id=current_period.people_id_1
-                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
-                                        count(comments.*) as total_comments
-                                    FROM comments
-                                        WHERE created_at > ? AND
-                                        comments.commentable_type = 'Person'
-                                    GROUP BY comments.commentable_id) comments_total
-                       ON people.id=comments_total.people_id_5
-                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
-                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
-                                        FROM bookmarks
-                                             WHERE created_at > ? AND
-                                                   created_at <= ?
-                                        GROUP BY people_id_2) previous_period
-                       ON people.id=previous_period.people_id_2
-                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
-                                        count(person_approvals.id) as p_approval_count,
-                                        avg(person_approvals.rating) as p_approval_avg
-                                       FROM person_approvals
-                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
-                                       GROUP BY p_approval_id) papps
-                       ON p_approval_id = people.id
-                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
-                       ORDER BY #{order} LIMIT #{limit} OFFSET #{offset}",
-                       range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago])
-        end
-    else
-      return []
-    end
-  end
-
-  def Person.count_all_by_most_tracked_for_range(range, options)
-    range = 630720000 if range.nil?
-
-    # this prevents sql injection
-    possible_orders = ["bookmark_count_1 desc", "bookmark_count_1 asc",
-                       "p_approval_avg desc", "p_approval_avg asc", "p_approval_count desc",
-                       "p_approval_count asc", "total_comments asc", "total_comments desc"]
-    logger.info options.to_yaml
-    order = options[:order] ||= "bookmark_count_1 desc"
-    search = options[:search]
-
-    if possible_orders.include?(order)
-      limit = options[:limit] ||= 20
-      offset = options[:offset] ||= 0
-      person_type = options[:person_type] ||= "Sen."
-      not_null_check = order.split(' ').first
-
-      if search
-           count_by_sql(["select count(people.*)
-                       FROM people
-                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
-                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
-                                   FROM bookmarks
-                                       WHERE created_at > ? AND
-                                             created_at <= ?
-                                   GROUP BY people_id_1) current_period
-                       ON people.id=current_period.people_id_1
-                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
-                                        count(comments.*) as total_comments
-                                    FROM comments
-                                        WHERE created_at > ? AND
-                                        comments.commentable_type = 'Person'
-                                    GROUP BY comments.commentable_id) comments_total
-                       ON people.id=comments_total.people_id_5
-                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
-                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
-                                        FROM bookmarks
-                                             WHERE created_at > ? AND
-                                                   created_at <= ?
-                                        GROUP BY people_id_2) previous_period
-                       ON people.id=previous_period.people_id_2
-                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
-                                        count(person_approvals.id) as p_approval_count,
-                                        avg(person_approvals.rating) as p_approval_avg
-                                       FROM person_approvals
-                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
-                                       GROUP BY p_approval_id) papps
-                       ON p_approval_id = people.id
-                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
-                       AND  people.fti_names @@ to_tsquery('english', ?)
-                       LIMIT #{limit} OFFSET #{offset}",
-                       range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, search])
-
-
-
-       else
-           count_by_sql(["select count(people.*)
-                       FROM people
-                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
-                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
-                                   FROM bookmarks
-                                       WHERE created_at > ? AND
-                                             created_at <= ?
-                                   GROUP BY people_id_1) current_period
-                       ON people.id=current_period.people_id_1
-                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
-                                        count(comments.*) as total_comments
-                                    FROM comments
-                                        WHERE created_at > ? AND
-                                        comments.commentable_type = 'Person'
-                                    GROUP BY comments.commentable_id) comments_total
-                       ON people.id=comments_total.people_id_5
-                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
-                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
-                                        FROM bookmarks
-                                             WHERE created_at > ? AND
-                                                   created_at <= ?
-                                        GROUP BY people_id_2) previous_period
-                       ON people.id=previous_period.people_id_2
-                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
-                                        count(person_approvals.id) as p_approval_count,
-                                        avg(person_approvals.rating) as p_approval_avg
-                                       FROM person_approvals
-                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
-                                       GROUP BY p_approval_id) papps
-                       ON p_approval_id = people.id
-                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
-                       LIMIT #{limit} OFFSET #{offset}",
-                       range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago])
-        end
-    else
-      return []
-    end
   end
 
   def Person.calculate_and_save_party_votes
@@ -1399,13 +1203,6 @@ class Person < ActiveRecord::Base
   # array of those without
   def self.email_lists(people)
     people.partition {|p| p.email }
-  end
-
-  def self.full_text_search(q, options = {})
-    current = options[:only_current] ? " AND (people.title='Rep.' OR people.title='Sen.' OR people.title='Del.')" : ""
-
-    people = Person.paginate_by_sql(["SELECT people.*, rank(fti_names, ?, 1) as tsearch_rank FROM people WHERE people.fti_names @@ to_tsquery('english', ?) #{current} ORDER BY people.lastname", q, q], :per_page => Settings.default_search_page_size, :page => options[:page])
-    people
   end
 
   def users_tracking_from_state_count(state)

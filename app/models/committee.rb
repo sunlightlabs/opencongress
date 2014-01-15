@@ -100,19 +100,6 @@ class Committee < ActiveRecord::Base
     Committee.find_by_sql ["SELECT * FROM (SELECT random(), committees.* FROM committees ORDER BY 1) as bs LIMIT ?;", limit]
   end
 
-  def Committee.find_by_query(committee, subcommittee)
-    terms = committee.split.concat(subcommittee.split).uniq.map { |c| c.match(/\W*(\w+)\W*/).captures[0].downcase }
-    sub_terms = subcommittee.split.uniq.map { |c| c.match(/\W*(\w+)\W*/).captures[0].downcase }
-    query = terms.reject { |t| @@STOP_WORDS.include? t }.join " & "
-    if sub_terms.empty?
-      cs = Committee.find_by_sql("SELECT * FROM committees WHERE fti_names @@ to_tsquery('english', '#{query}') AND subcommittee_name is null;")
-    else
-      cs = Committee.find_by_sql("SELECT * FROM committees WHERE fti_names @@ to_tsquery('english', '#{query}');")
-    end
-    cs
-  end
-
-
   def Committee.by_chamber(chamber)
     if chamber == 'both'
       Committee.find(:all, :conditions => ['active = ?', true])
@@ -279,11 +266,6 @@ class Committee < ActiveRecord::Base
     self.committee_stats
   end
   
-  def self.full_text_search(q, options = {})
-    Committee.find_by_sql(["SELECT *, rank(fti_names, ?, 1) as tsearch_rank FROM committees 
-                           WHERE fti_names @@ to_tsquery('english', ?) order by tsearch_rank DESC;", q, q])
-  end
-
   def new_bills_since(current_user, congress = Settings.default_congress)
     time_since = current_user.previous_login_date
     time_since = 200.days.ago if Rails.env.development?

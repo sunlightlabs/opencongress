@@ -18,11 +18,6 @@ class Sector < ActiveRecord::Base
     @@DISPLAY_OBJECT_NAME
   end
 
-  def self.full_text_search(q, options = {})
-    Sector.find_by_sql(["SELECT *, rank(fti_names, ?, 1) as tsearch_rank FROM sectors 
-                        WHERE fti_names @@ to_tsquery('english', ?) order by tsearch_rank DESC;", q, q])
-  end
-  
   def ident
     "Industry #{id}"
   end

@@ -12,3 +12,10 @@ staging:
 
 production:
   <<: *defaults
+
+test:
+  app_id: xxx
+  secret: xxx
+  api_key: xxx
+  callback_url: xxx
+

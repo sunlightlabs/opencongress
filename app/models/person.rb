@@ -81,6 +81,13 @@ class Person < ActiveRecord::Base
 
   @@NONVOTING_TERRITORIES = [ 'AS', 'DC', 'GU', 'PR', 'VI']
 
+  def congresses_active
+    current_congress = UnitedStates::Congress.congress_for_year(Date.today.year)
+    years = roles.flat_map { |r| (r.startdate.year..r.enddate.year).to_a[0..5] }
+    congresses = years.map{ |y| UnitedStates::Congress.congress_for_year(y) }.uniq
+    congresses.select{ |c| c <= current_congress }
+  end
+
   def photo_path(style = :full, missing = :check_missing)
     if style == :thumb
       photo_path = "photos/thumbs_42/#{id}.png"

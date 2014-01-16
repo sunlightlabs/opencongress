@@ -128,14 +128,18 @@ group :test, :development do
   gem 'pry-nav'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
+  gem 'pry-debugger'
   gem 'rails_best_practices'
   gem 'simplecov',            :require => false
-  gem 'rspec-rails',          '~> 2.4'
   gem 'guard'
   gem 'guard-livereload'
   gem 'awesome_print'
   gem 'rack-mini-profiler'
   gem 'redis'
+  gem 'minitest'
+  gem 'minitest-rails', :git => 'git://github.com/blowmage/minitest-rails.git'
+  gem 'rspec-expectations'
+  gem 'random_data'
 end
 
 group :test do

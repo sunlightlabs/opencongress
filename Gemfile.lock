@@ -1,22 +1,4 @@
 GIT
-  remote: git://github.com/blowmage/minitest-rails.git
-  revision: 71af97214cfc0ac7123e7905a714456be254bf4c
-  specs:
-    minitest-rails (1.0.0.beta1.20131220153633)
-      minitest (~> 4.7)
-      minitest-test (~> 1.0)
-      railties (>= 3.0)
-
-GIT
-  remote: git://github.com/getsentry/raven-ruby.git
-  revision: eb1a0072af1132594c574cc6a64618cf900e4810
-  specs:
-    sentry-raven (0.5.0)
-      faraday (>= 0.7.6)
-      hashie (>= 1.1.0)
-      uuidtools
-
-GIT
   remote: git://github.com/martinciu/fuubar-cucumber.git
   revision: 0a9ad5abbfac22db802a8fc691adc04dbd3201f4
   specs:
@@ -255,8 +237,9 @@ GEM
     method_source (0.8.1)
     mime-types (1.25.1)
     minitest (4.7.5)
-    minitest-test (1.1.0)
-      minitest (~> 4.0)
+    minitest-spec-rails (4.7.6)
+      minitest (~> 4.7)
+      rails (>= 3.0, < 4.1)
     mogli (0.0.44)
       hashie (>= 1.1.0)
       httmultiparty (>= 0.3.6)
@@ -386,6 +369,10 @@ GEM
     safe_yaml (0.9.4)
     sass (3.2.9)
     selenium-client (1.2.18)
+    sentry-raven (0.7.1)
+      faraday (>= 0.7.6)
+      hashie (>= 1.1.0)
+      uuidtools
     settingslogic (2.0.9)
     sexp_processor (4.2.1)
     silent-postgres (0.1.1)
@@ -480,7 +467,7 @@ DEPENDENCIES
   mediacloth
   memcache-client
   minitest
-  minitest-rails!
+  minitest-spec-rails
   mysql
   newrelic_rpm
   nokogiri
@@ -513,7 +500,7 @@ DEPENDENCIES
   ruby-openid
   sass
   selenium-client
-  sentry-raven!
+  sentry-raven
   settingslogic
   silent-postgres
   simple-rss

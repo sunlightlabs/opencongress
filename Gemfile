@@ -119,7 +119,7 @@ end
 
 group :production, :staging do
   gem 'unicorn'
-  gem 'sentry-raven', :git => "git://github.com/getsentry/raven-ruby.git"
+  gem 'sentry-raven' #, :git => "git://github.com/getsentry/raven-ruby.git"
   gem 'postmark-rails'
 end
 
@@ -137,7 +137,7 @@ group :test, :development do
   gem 'rack-mini-profiler'
   gem 'redis'
   gem 'minitest'
-  gem 'minitest-rails', :git => 'git://github.com/blowmage/minitest-rails.git'
+  gem 'minitest-spec-rails'
   gem 'rspec-expectations'
   gem 'random_data'
 end

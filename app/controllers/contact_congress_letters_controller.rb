@@ -4,7 +4,7 @@ class ContactCongressLettersController < ApplicationController
 
   SUCCESS_PATTERN = /SENT/
   FAILURE_PATTERN = /SENT_AS_FAX|ERROR/
-  UNKNOWN_PATTERN = /WARNING: Confirmation message not found.|START|CAPTCHA_REQUIRED/
+  UNKNOWN_PATTERN = /WARNING|START|CAPTCHA_REQUIRED/
 
   def new
     @page_title = "Contact Congress"

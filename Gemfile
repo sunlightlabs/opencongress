@@ -9,8 +9,6 @@ gem 'thin'
 gem 'pg'
 gem 'mysql'
 
-gem 'tire'
-
 gem "settingslogic"
 
 gem 'titlecase'

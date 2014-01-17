@@ -366,41 +366,8 @@ right: 0;
 
 
 #search .floatleft{
-    /*
 margin-right: 30px;
 width: 293px;
-*/
-}
-
-#search a.more {
-    text-align: right;
-    font-size: 14px;
-    font-weight: bold;
-    color: #444;
-    line-height: 17px;
-    margin: 0 0 4px 0;
-    text-decoration: underline;
-    background: none transparent;
-}
-
-#search ul.legislators li {
-    display: block;
-    width: 184px;
-    height: 65px;
-}
-
-#search a.legislator-search-result-name,
-#search a.bill-search-result-title {
-    font-size: 14px;
-    font-weight: bold;
-    color: #444;
-    line-height: 17px;
-    margin: 0 0 4px 0;
-    text-decoration: underline;
-}
-
-#search .legislator-photo {
-    margin: 0 5px 0 0;
 }
 
 #search-field-advanced {

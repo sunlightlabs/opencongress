@@ -1,11 +1,10 @@
-<% if false %>
-TODO:
- - Should include filter options on right side: by congress
-<% end %>
+<% @page_title = 'Search Results' %>
 
-<% if @item_count > 0 %>
 
-  <div id="heading">
+
+<% if @found_items > 0 %>
+
+<div id="heading">
     <h2>Search Results for "<%= @query %>"</h2>
    <p class="floatright">For suggestions on how to optimize your search, please visit the <a href="/search/tips">Search Tips</a> page.</p>
 </div>
@@ -94,85 +93,85 @@ TODO:
         <a href="<%= url_for(comment.commentable_link.merge({:goto_comment => comment.id})) %>" class="comment">
 
             <span class="text"><%= truncate(comment.headline.html_safe, :length => 120) %></span>
-    <p class="floatright">For suggestions on how to optimize your search, please visit the <a href="/search/tips">Search Tips</a> page.</p>
-  </div>
 
-  <div class="padding">
+            <span class="user"><%= (comment.user.nil?) ? 'Anonymous' : h(comment.user.login) %></span>
 
-    <p class="floatright didnt">
-    <strong class="blue">Didn't find what you're looking for?</strong><br /> Try searching <strong>all available sessions</strong> with an <a href="/search">Advanced Search</a>.
-    </p>
 
-    <p style="width: 400px; padding: 15px 0; font-size: 13px; line-height: 1.8em;" class="floatleft"><b><%= number_with_delimiter(@found_items) %></b> items found<% if @congresses == ["#{Settings.default_congress}"]%> <strong>in the
-        current session of Congress</strong><% end %> for <strong style="color:#222;">"<%= @query %></strong>".
-    <br />
-    <em>Search results are listed in order of relevance.</em></p>
-    <br/>
-    <!-- <p>For suggestions on how to optimize your search, please visit the <a href="/search/tips">Search Tips</a> page.</p> -->
+        </a>
+                    <span class="regarding">regarding <%= link_to comment.commentable_title, comment.commentable_link %> on <%= comment.created_at.strftime("%B %d, %Y") %></span>
 
-    <div id="all-search-results">
-
-      <% if @people_found.total_count > 0 %>
-
-        <div class="member_search">
-          <h3 class="line2">Found <b><%= number_with_delimiter(@people_found.total_count) %></b> legislators</h3>
-
-          <div>
-            <ul class="legislators">
-              <% @people_found.results.each do |person| %>
-                <li class="floatleft">
-                  <div class="floatleft">
-                    <%= link_to(image_tag(person.photo_path(:thumb, :ignore_missing), :class => 'legislator-photo'), {:controller => 'people', :action => 'show', :id => person.to_param}) %>
-                  </div>
-                  <div class="floatleft">
-                    <%= link_to(person.full_name, person_path(person), :class => 'legislator-search-result-name') %>
-                    <br>
-                    <span><%= person.party %></span>, 
-                    <span><%= person.state %><% if person.district %>-<%= person.district %><% end %></span>
-                  </div>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-
-          <div class="clearfix"></div>
-          <div><a class="more floatright" href="<%= url_for(:action => :people, :q => @query) %>">More</a></div>
-        </div>
-
+        </li>
       <% end %>
-
-      <% if @bills_found.total_count > 0 %>
-        <div class="bill_search">
-          <h3 class="line2">Found <b><%= number_with_delimiter(@bills_found.total_count) %></b> bills.</h3>
-
-          <div>
-
-            <% @bills_found.results.each do |bill| %>
-              <div>
-                <a href="<%= url_for(bill) %>" class="bill-search-result-title"><%= bill.title_short %></a>
-                <span>introduced by</span>
-                <span><%= bill.sponsor.name %></span>
-              </div>
-            <% end %>
-
-          </div>
-        </div>
-      <% end %>
-    </div>
-
-  <% else %>
-
-    <br />
-    <div class="padding">
-      <p class="behave" style="color:red">Your search did not return any results.</p>
-      <p class="behave">
-      Didn't find what you were looking for? Visit our <a href="/search/tips">Search Tips</a> page for suggestions on how to optimize your search. We will be continually improving our search function to make it easier to find the Congressional information you're looking for. If you have feedback about your search experience on OpenCongress, send us an e-mail: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.
-      </p>
-      <p>
-      <%= render :partial => 'big_search_form' %>
-      </p>
+    </ul>
     </div>
 
   <% end %>
 
-</div>
+  <% if (@search_commentary || @search_news) && @news.size > 0 %>
+
+            <div class="news_search">
+   <h3 class="line2">News <em>Found <b><%= number_with_delimiter(@news.total_entries) %></b> news articles.</em></h3>
+
+  <div class="pagination_links">
+      <%= will_paginate(@news, :params => { :q => @query, :search_news => '1'}) %>
+    </div>
+    <%= render :partial => 'shared/commentary', :collection => @news, :locals => { :default_title => '' } %>
+
+    Found <b><%= number_with_delimiter(@news,total_entries) %></b> news articles.
+
+
+    </div>
+
+  <% end %>
+
+  <% if (@search_commentary || @search_blogs) && @blogs.size > 0 %>
+              <div class="blogs_search">
+
+    <h3 class="line2">Blogs <em>Found <b><%= number_with_delimiter(@blogs.total_entries) %></b> blog articles.</em></h3>
+     <div class="pagination_links">
+      <%= will_paginate(@blogs, :params => { :q => @query, :search_blogs => '1'}) %>
+    </div>
+
+    <%= render :partial => 'shared/commentary', :collection => @blogs, :locals => { :default_title => '' } %>
+
+    Found <b><%= number_with_delimiter(@blogs.total_entries) %></b> blog articles.
+
+    </div>
+  <% end %>
+
+  <% if @search_gossip_blog && @articles.size > 0 %>
+
+   <div class="blog_search">
+    <h3 class="line2">Congress Gossip Blog <em>Found <b><%= @articles.total_entries %></b> articles.</em></h3>
+      <div class="pagination_links">
+      <%= will_paginate(@articles, :params => { :q => @query, :search_gossip_blog => '1'}) %>
+      </div>
+    <ul class="star">
+      <% @articles.each do |article| %>
+        <li>
+          <%= link_to article.title, article_url(article) %>
+          <span class="date"><%= article.created_at.to_time.strftime("%B %d, %Y") %></span>
+          <p><%= article.headline %></p>
+        </li>
+      <% end %>
+    </ul>
+
+
+    </div>
+  <% end %>
+
+  </div>
+<% else %>
+    <br />
+    <div class="padding">
+    <p class="behave" style="color:red">Your search did not return any results.</p>
+    <p class="behave">
+      Didn't find what you were looking for? Visit our <a href="/search/tips">Search Tips</a> page for suggestions on how to optimize your search. We will be continually improving our search function to make it easier to find the Congressional information you're looking for. If you have feedback about your search experience on OpenCongress, send us an e-mail: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.
+    </p>
+    <p>
+      <%= render :partial => 'big_search_form' %>
+    </p>
+    </div>
+<% end %>
+
+ </div>

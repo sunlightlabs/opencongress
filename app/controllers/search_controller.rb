@@ -11,15 +11,12 @@ class SearchController < ApplicationController
 
   def result
     @query = truncate(params[:q], :length => 255)
-    @page_title = "Search Results: #{@query}"
     @page = (params[:page] || 1).to_i
     @found_items = 0
     @congresses = params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"]
-    @per_page = params[:per_page] || 10
 
-    if @query
-      @people_found = Person.search(@query, :load => true, :per_page => @per_page)
-      @bills_found = Bill.search(@query, :load => true, :per_page => @per_page)
+    unless @query
+      flash.now[:notice] = "You didn't enter anything in the search field!"
     else
       query_stripped = prepare_tsearch_query(@query)
 
@@ -122,15 +119,20 @@ class SearchController < ApplicationController
 
         if (@search_gossip_blog)
           @articles = Article.full_text_search(query_stripped, :page => @page)
-      flash.now[:notice] = "You didn't enter anything in the search field!"
+
+          @found_items += @articles.total_entries
+        end
+
+        if (@found_items == 0)
+          if (@congresses == ["#{Settings.default_congress}"])
+            flash.now[:notice] = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
+          else
+            flash.now[:notice] = "Sorry, your search returned no results."
+          end
+        end
+      end
     end
 
-    @item_count = (@people_found.total_count
-                   + @bills_found.total_count)
-
-    if @item_count == 0
-      flash.now[:notice] = "Sorry, your search returned no results."
-    end
   end
 
   def result_ajax

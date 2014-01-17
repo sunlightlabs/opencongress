@@ -1,8 +1,6 @@
 class BillTextVersion < ActiveRecord::Base
   belongs_to :bill
   has_many :bill_text_nodes, :dependent => :destroy, :order => 'nid'
-  include Tire::Model::Search
-  include Tire::Model::Callbacks
   
   @@VERSION_NAMES = {
     'ih' => 'Introduced in House',
@@ -89,21 +87,5 @@ class BillTextVersion < ActiveRecord::Base
                   WHERE bill_text_nodes.bill_text_version_id=? AND comments.commentable_type='BillTextNode' 
                   GROUP BY bill_text_nodes.id, bill_text_nodes.nid, bill_text_nodes.bill_text_version_id ORDER BY count(comments.id) DESC LIMIT ?;", self.id, limit])
   end
-
-  def html
-    path = "#{Settings.oc_billtext_path}/#{bill.session}/#{bill.reverse_abbrev_lookup}/#{bill.reverse_abbrev_lookup}#{bill.number}#{version}.gen.html-oc"
-    return File.read(path)
-  end 
-
-  def text
-    path = "#{Settings.oc_billtext_path}/#{bill.session}/#{bill.reverse_abbrev_lookup}/#{bill.reverse_abbrev_lookup}#{bill.number}#{version}.txt"
-    return File.read(path)
-  end 
-
-  mapping do
-    indexes :id,         :index => :not_analyzed
-    indexes :bill,       :index => :not_analyzed, :as => proc { bill_id }
-    indexes :version,    :index => :not_analyzed
-    indexes :text,       :as    => proc { text }
-  end
+  
 end

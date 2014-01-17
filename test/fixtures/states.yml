@@ -1,210 +1,205 @@
 --- 
-states_001: 
+:AL:
   id: "1"
   name: Alabama
   abbreviation: AL
-states_002: 
+:AK:
   id: "2"
   name: Alaska
   abbreviation: AK
-states_003: 
+:AZ:
   id: "3"
   name: Arizona
   abbreviation: AZ
-states_004: 
+:AR:
   id: "4"
   name: Arkansas
   abbreviation: AR
-states_005: 
+:CA:
   id: "5"
   name: California
   abbreviation: CA
-states_006: 
+:CO:
   id: "6"
   name: Colorado
   abbreviation: CO
-states_007: 
+:CT:
   id: "7"
   name: Connecticut
   abbreviation: CT
-states_008: 
+:DE:
   id: "8"
   name: Delaware
   abbreviation: DE
-states_009: 
+:DC:
   id: "9"
   name: District of Columbia
   abbreviation: DC
-states_010: 
+:FL:
   id: "10"
   name: Florida
   abbreviation: FL
-states_011: 
+:GA:
   id: "11"
   name: Georgia
   abbreviation: GA
-states_012: 
+:HI:
   id: "12"
   name: Hawaii
   abbreviation: HI
-states_013: 
+:ID:
   id: "13"
   name: Idaho
   abbreviation: ID
-states_014: 
+:IL:
   id: "14"
   name: Illinois
   abbreviation: IL
-states_015: 
+:IN:
   id: "15"
   name: Indiana
   abbreviation: IN
-states_016: 
+:IA:
   id: "16"
   name: Iowa
   abbreviation: IA
-states_017: 
+:KS:
   id: "17"
   name: Kansas
   abbreviation: KS
-states_018: 
+:KY:
   id: "18"
   name: Kentucky
   abbreviation: KY
-states_019: 
+:LA:
   id: "19"
   name: Louisiana
   abbreviation: LA
-states_020: 
+:ME:
   id: "20"
   name: Maine
   abbreviation: ME
-states_021: 
+:MD:
   id: "21"
   name: Maryland
   abbreviation: MD
-states_022: 
+:MA:
   id: "22"
   name: Massachusetts
   abbreviation: MA
-states_023: 
+:MI:
   id: "23"
   name: Michigan
   abbreviation: MI
-states_024: 
+:MN:
   id: "24"
   name: Minnesota
   abbreviation: MN
-states_025: 
+:MS:
   id: "25"
   name: Mississippi
   abbreviation: MS
-states_026: 
+:MO:
   id: "26"
   name: Missouri
   abbreviation: MO
-states_027: 
+:MT:
   id: "27"
   name: Montana
   abbreviation: MT
-states_028: 
+:NE:
   id: "28"
   name: Nebraska
   abbreviation: NE
-states_029: 
+:NV:
   id: "29"
   name: Nevada
   abbreviation: NV
-states_030: 
+:NH:
   id: "30"
   name: New Hampshire
   abbreviation: NH
-states_031: 
+:NJ:
   id: "31"
   name: New Jersey
   abbreviation: NJ
-states_032: 
+:NM:
   id: "32"
   name: New Mexico
   abbreviation: NM
-states_033: 
+:NY:
   id: "33"
   name: New York
   abbreviation: NY
-states_034: 
+:NC:
   id: "34"
   name: North Carolina
   abbreviation: NC
-states_035: 
+:ND:
   id: "35"
   name: North Dakota
   abbreviation: ND
-states_036: 
+:OH:
   id: "36"
   name: Ohio
   abbreviation: OH
-states_037: 
+:OK:
   id: "37"
   name: Oklahoma
   abbreviation: OK
-states_038: 
+:OR:
   id: "38"
   name: Oregon
   abbreviation: OR
-states_039: 
+:PA:
   id: "39"
   name: Pennsylvania
   abbreviation: PA
-states_040: 
+:RI:
   id: "40"
   name: Rhode Island
   abbreviation: RI
-states_041: 
+:SC:
   id: "41"
   name: South Carolina
   abbreviation: SC
-states_042: 
+:SD:
   id: "42"
   name: South Dakota
   abbreviation: SD
-states_043: 
+:TN:
   id: "43"
   name: Tennessee
   abbreviation: TN
-states_044: 
+:TX:
   id: "44"
   name: Texas
   abbreviation: TX
-states_045: 
+:UT:
   id: "45"
   name: Utah
   abbreviation: UT
-states_046: 
+:VT:
   id: "46"
   name: Vermont
   abbreviation: VT
-states_047: 
+:VA:
   id: "47"
   name: Virginia
   abbreviation: VA
-states_048: 
+:WA:
   id: "48"
   name: Washington
   abbreviation: WA
-states_049: 
+:WV:
   id: "49"
   name: West Virginia
   abbreviation: WV
-states_050: 
+:WI:
   id: "50"
   name: Wisconsin
   abbreviation: WI
-states_051: 
+:WY:
   id: "51"
   name: Wyoming
   abbreviation: WY
-states_052: 
-  id: "58"
-  name: HEAVEN
-  abbreviation: HV
-

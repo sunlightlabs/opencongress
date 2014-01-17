@@ -93,6 +93,10 @@ class District < ActiveRecord::Base
 
   end
 
+  def tag
+    "#{state.abbreviation}-#{district_number}"
+  end
+
   def self.find_by_district_tag(tag)  # ie, CA-33
     abbr, number = tag.split(/-/)
     state = State.find_by_abbreviation(abbr)

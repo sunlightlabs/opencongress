@@ -1,7 +1,7 @@
 ENV["RAILS_ENV"] = "test"
 require File.expand_path("../../config/environment", __FILE__)
 require "rails/test_help"
-require "minitest/rails"
+require "minitest/spec"
 
 # To add Capybara feature tests add `gem "minitest-rails-capybara"`
 # to the test group in the Gemfile and uncomment the following:
@@ -14,11 +14,11 @@ DatabaseCleaner.strategy = :truncation
 
 class MiniTest::Spec
   before :each do
-    DatabaseCleaner.clean
     DatabaseCleaner.start
   end
 
   after :each do
+    DatabaseCleaner.clean
   end
 end
 

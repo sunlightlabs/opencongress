@@ -125,9 +125,9 @@ class SearchController < ApplicationController
 
         if (@found_items == 0)
           if (@congresses == ["#{Settings.default_congress}"])
-            flash.now[:notice] = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
+            flash.now[:error] = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
           else
-            flash.now[:notice] = "Sorry, your search returned no results."
+            flash.now[:error] = "Sorry, your search returned no results."
           end
         end
       end

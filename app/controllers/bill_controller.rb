@@ -214,7 +214,7 @@ class BillController < ApplicationController
     @page = "1" unless @page
     @bill_type = params[:bill_type]
 
-    @bills = Bill.where(["bills.bill_type=? AND bills.session=?", @bill_type, congress]).includes(:bill_titles).order('number').paginate(:page => @page)
+    @bills = Bill.where(["bills.bill_type=? AND bills.session=?", @bill_type, congress]).includes(:bill_titles).order('number DESC').paginate(:page => @page)
 
     respond_to do |format|
       format.html {}

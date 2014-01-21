@@ -169,7 +169,7 @@
       Didn't find what you were looking for? Visit our <a href="/search/tips">Search Tips</a> page for suggestions on how to optimize your search. We will be continually improving our search function to make it easier to find the Congressional information you're looking for. If you have feedback about your search experience on OpenCongress, send us an e-mail: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.
     </p>
     <p>
-      <%= render :partial => 'big_search_form' %>
+      <%= render :partial => 'big_search_form', :locals => { :show_form => true } %>
     </p>
     </div>
 <% end %>

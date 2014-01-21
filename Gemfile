@@ -102,8 +102,8 @@ gem 'phaxio'
 # You'll have to build QT yourself on Ubuntu: https://code.google.com/p/wkhtmltopdf/wiki/compilation
 gem 'pdfkit'
 
-# Production code coverage (dead code finder)
-gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
+## Production code coverage (dead code finder)
+# gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
 
 group :deployment do
   gem 'capistrano'

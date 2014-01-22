@@ -35,8 +35,8 @@ gem 'fog'
 
 gem "awesome_nested_set", ">= 2.0"
 
-# Open Gov APIs
-gem "congress"
+# Sunlight Foundation Congress API v3
+gem "congress", ">= 0.2.0"
 
 # jammit support
 gem "jammit"

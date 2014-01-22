@@ -22,15 +22,6 @@ GIT
   specs:
     geocoder (1.1.8)
 
-GIT
-  remote: https://github.com/danmayer/coverband.git
-  revision: f54fffdc291ece56ea84e935c136b683f606f2c2
-  specs:
-    coverband (0.0.14)
-      json
-      redis
-      simplecov
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -69,6 +60,7 @@ GEM
       activesupport
       builder
       json
+    ansi (1.4.3)
     arel (2.0.10)
     awesome_nested_set (2.1.6)
       activerecord (>= 3.0.0)
@@ -235,6 +227,11 @@ GEM
     method_source (0.8.1)
     mime-types (1.25.1)
     minitest (4.7.5)
+    minitest-reporters (0.14.24)
+      ansi
+      builder
+      minitest (>= 2.12, < 5.0)
+      powerbar
     minitest-spec-rails (4.7.6)
       minitest (~> 4.7)
       rails (>= 3.0, < 4.1)
@@ -284,6 +281,9 @@ GEM
     postmark-rails (0.5.1)
       actionmailer (>= 3.0.0)
       postmark (~> 1.0)
+    powerbar (1.0.11)
+      ansi (~> 1.4.0)
+      hashie (>= 1.1.0)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -430,7 +430,6 @@ DEPENDENCIES
   carrierwave
   closure-compiler
   congress
-  coverband!
   cucumber
   cucumber-rails
   database_cleaner
@@ -455,6 +454,7 @@ DEPENDENCIES
   mediacloth
   memcache-client
   minitest
+  minitest-reporters
   minitest-spec-rails
   mysql
   newrelic_rpm

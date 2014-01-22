@@ -136,6 +136,7 @@ group :test, :development do
   gem 'redis'
   gem 'minitest'
   gem 'minitest-spec-rails'
+  gem 'minitest-reporters'
   gem 'rspec-expectations'
   gem 'random_data'
 end

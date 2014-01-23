@@ -259,15 +259,6 @@ namespace :update do
     end
   end
 
-  task :realtime => :environment do
-    begin
-      require File.expand_path 'bin/daily/drumbone_realtime_api', Rails.root
-    rescue Exception => e
-      Emailer.rake_error(e, "Error parsing Drumbone realtime API!").deliver
-      throw e
-    end
-  end
-
   task :project_vote_smart => :environment do
     begin
       require File.expand_path 'bin/daily/project_vote_smart', Rails.root

@@ -317,7 +317,7 @@ EOT
 
   def bill_basic_atom_entry(xml, b, updated_method=false)
     xml.entry do
-      xml.title   b.title_full_common
+      xml.title   b.any_title(:full)
       xml.link    "rel" => "alternate", "href" => bill_url(b)
       xml.id      b.atom_id_as_entry
 
@@ -355,7 +355,7 @@ EOT
 
   def bill_action_atom_entry(xml, a)
     xml.entry do
-      xml.title   _get_title_preface(a) + a.bill.title_full_common
+      xml.title   _get_title_preface(a) + a.bill.any_title(:full)
       xml.link    "rel" => "alternate", "href" => bill_url(a.bill)
       xml.id      a.atom_id
       xml.updated a.datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -368,7 +368,7 @@ EOT
 
   def bill_with_last_action_atom_entry(xml, b, updated_method=false)
     xml.entry do
-      xml.title   _get_title_preface(b.last_action) + b.title_full_common
+      xml.title   _get_title_preface(b.last_action) + b.any_title(:full)
       xml.link    "rel" => "alternate", "href" => bill_url(b)
       xml.id      b.atom_id_as_entry_with_action
 

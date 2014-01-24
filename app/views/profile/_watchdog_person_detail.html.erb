@@ -61,7 +61,7 @@
   <tr><th>Bill</th><th width="18">My Vote</th><th><%= s.title %> <%= s.full_name %></th></tr>
   <% @bookmarked_bills.each do |b| %>
       <tr>
-        <td><%= link_to truncate(b.title_full_common, :length => 100), bill_path(b) %></td>
+        <td><%= link_to truncate(b.any_title(:full), :length => 100), bill_path(b) %></td>
         <td><%= show_vote(@user,b) %></td>
         <td><%= show_person_vote(s,b) %></td>
       </tr>
@@ -75,7 +75,7 @@
   <tr><th>Bill</th><th>My Vote</th><th><%= s.title %> <%= s.full_name %></th></tr>
   <% @user.bill_votes.each do |b| %>
       <tr>
-        <td><%= link_to truncate(b.bill.title_full_common, :length => 100), bill_path(b.bill) %></td>
+        <td><%= link_to truncate(b.bill.any_title(:full), :length => 100), bill_path(b.bill) %></td>
         <td><%= show_vote(@user,b.bill) %></td>
         <td><%= show_person_vote(s,b.bill) %></td>
       </tr>

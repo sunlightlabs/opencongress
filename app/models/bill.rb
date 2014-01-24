@@ -906,19 +906,21 @@ class Bill < ActiveRecord::Base
   end
 
   def title_popular_only # popular or short, returns empty string if one doesn't exist
-    title = default_title || popular_title || short_title
+    title = manual_title || popular_title || short_title
 
     title ? "#{title.title}" : ""
   end
 
   def title_common # popular or short or official, returns empty string if one doesn't exist
-    title = default_title || popular_title || short_title || official_title
+    # This method is deprecated but will continue to exist until the bills api methods
+    # are either removed or refactored.
+    title = manual_title || popular_title || short_title || official_title
 
     title ? "#{title.title}" : ""
   end
 
   def title_full_common # bill type, number and popular, short or official title
-    title = default_title || popular_title || short_title || official_title
+    title = manual_title || popular_title || short_title || official_title
 
     if title.nil?
       ""
@@ -927,8 +929,24 @@ class Bill < ActiveRecord::Base
     end
   end
 
+  def any_title (style = :bare)
+    # style => :bare or :full
+    title = (manual_title || short_title || popular_title || official_title)
+    if title.nil?
+      "#{title_prefix} #{number}"
+    elsif style == :full
+      title = "#{title_prefix} #{number}: #{title}" if style == :full
+    else
+      title
+    end
+  end
+
+  def default_title
+    manual_title || bill_titles.select { |t| t.is_default == true }.first
+  end
+
   def title_prefix
-    prefix = UnitedStates::Bills.abbreviation_for bill_type
+    UnitedStates::Bills.abbreviation_for bill_type
   end
 
   def title_for_share
@@ -1195,22 +1213,6 @@ class Bill < ActiveRecord::Base
    SERIALIZATION_STYLES[style].merge(ops)
   end
 
-  def official_title
-    bill_titles.select { |t| t.title_type == 'official' }.first
-  end
-
-  def short_title
-    bill_titles.select { |t| t.title_type == 'short' }.first
-  end
-
-  def popular_title
-    bill_titles.select { |t| t.title_type == 'popular' }.first
-  end
-
-  def default_title
-    bill_titles.select { |t| t.is_default == true }.first
-  end
-
   mapping do
     indexes :id,         :index => :not_analyzed
     indexes :number,     :index => :not_analyzed
@@ -1222,6 +1224,7 @@ class Bill < ActiveRecord::Base
     indexes :official_title
     indexes :short_title
     indexes :popular_title
+    indexes :manual_title
     indexes :summary
     indexes :plain_language_summary
     indexes :sponsor_id,      :as   => proc { sponsor_id }, :index => :not_analyzed

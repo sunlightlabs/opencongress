@@ -269,7 +269,7 @@ class ResourcesController < ApplicationController
     friend_email.save
 
     if object_type == 'Bill'
-      subject = "OpenCongress: #{item.title_full_common}"
+      subject = "OpenCongress: #{item.any_title(:full)}"
       url = "#{Settings.base_url}bill/#{item.ident}/show"
       item_desc = "bill"
     elsif object_type == 'Person'
@@ -396,7 +396,7 @@ class ResourcesController < ApplicationController
     @write_rep_email.zip4 = @user.zip_four
 
     if @bill
-      @write_rep_email.subject = "RE: #{@bill.title_full_common[0..250]}"
+      @write_rep_email.subject = "RE: #{@bill.any_title(:full)[0..250]}"
     end
     @write_rep_email.fname = @user.full_name
     @write_rep_email.email = @user.email

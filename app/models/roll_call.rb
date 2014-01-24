@@ -232,9 +232,9 @@ class RollCall < ActiveRecord::Base
 
   def bill_or_amendment_title
     if bill and amendment
-      "#{amendment.display_number} to #{bill.title_full_common}"
+      "#{amendment.display_number} to #{bill.any_title(:full)}"
     elsif bill
-      "#{bill.title_full_common}"
+      bill.any_title(:full)
     else
       nil
     end

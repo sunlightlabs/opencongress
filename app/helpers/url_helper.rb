@@ -31,7 +31,7 @@ module UrlHelper
   end
 
   def link_to_bill(bill)
-    link_to bill.title_full_common, bill_url(bill)
+    link_to bill.any_title(:full), bill_url(bill)
   end
 
   def url_for_object(object)

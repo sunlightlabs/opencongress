@@ -114,6 +114,10 @@ module UnitedStates
           bill.topresident_datetime = topresident['+acted_at']
         end
 
+        bill.official_title = bill_hash['official_title']
+        bill.short_title = bill_hash['short_title']
+        bill.popular_title = bill_hash['popular_title']
+
         # Summary
         bill.summary = bill_hash['summary'] && bill_hash['summary']['text']
         bill.updated = bill_hash['+updated_at']
@@ -128,7 +132,8 @@ module UnitedStates
         bill.save!
 
         # Import bill titles.
-        # We want all bill titles, not just current ones.
+        # We want all bill titles, not just current ones (which we stored
+        # on the bill model above)
         bill_hash['titles'].each do |title|
           title_ident = { :title => title['title'],
                           :as => title['as'],

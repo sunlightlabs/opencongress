@@ -1,6 +1,6 @@
 <% case item.sidebar.class_type
    when 'Bill' %>
-    <%= link_to rb.title_full_common, :controller => 'bill', :action => 'show', :id => rb.ident %>
+    <%= link_to rb.any_title(:full), :controller => 'bill', :action => 'show', :id => rb.ident %>
     (<%= rb.views(Settings.default_count_time) %> views)<br />
     <span class="date">
       Introduced on <%= Time.at(rb.introduced).strftime("%B %d, %Y") %><br /> 

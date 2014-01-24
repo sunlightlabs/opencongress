@@ -7,40 +7,29 @@
 <ul class="bills_list">
 
   <% if related_bills_list.any? %>
-
-
     <% related_bills_list.each_with_index do |bill, i| -%>
-      <% unless bill.title_common.blank? -%>
-
-        <li class="<%= bill_category(bill) %>">
+      <li class="<%= bill_category(bill) %>">
         <a class="icon_link" href="<%= bill_path(bill) %>">
           <% if commentary_type %>
             <span class="list_count"><%= (i + 1) %></span>
           <% else %>
-
           <% end %>
 
           <div class="title">
-            <% unless bill.title_popular_only.blank? %>
-              <span class="a"><%= "#{bill.typenumber} - #{truncate(bill.title_popular_only, :length => 103)}" %></span>        
-            <% else %>                                 
-              <span class="a"><%= "#{bill.typenumber}" %></span>        
-            <% end %>
+            <span class="a"><%= truncate(bill.any_title(:full), :length => 103) %></span>
 
-
-            <% unless bill.title_official.blank? %>
-              <p>
+            <%# Here we are using the offical title as a summary since official summaries are often too long to be useful. %>
+            <% unless bill.official_title == bill.any_title %>
+              <%# FIXME: This should really be an optional parameter to this template. %>
               <% if controller.action_name == 'list_bill_type' %>
-                <%= bill.title_official %>      
+                <%= truncate(bill.official_title, :length => 145) %>
               <% else %>
-                <%= truncate(bill.title_official, :length => 145) %>
+                <%= bill.official_title %>
               <% end %>
-              </p>
             <% end %>
-
           </div>
 
-          <span class="status">            
+          <span class="status">
 
             <% if bill.last_action.text %>
               <span><%= until_preposition(bill.last_action.text) %></span>
@@ -69,13 +58,11 @@
             </span>
           <% end %>
         </a>
-        <% if show_track_link %><span><%= render :partial => "shared/track_link", :locals => {:object => bill} %></span><% end %>
-
-      <% end %>
-
+        <% if show_track_link %>
+          <span><%= render :partial => "shared/track_link", :locals => {:object => bill} %></span>
+        <% end %>
       </li>
-
-    <% end -%>
+    <% end %>
   <% else %>
     <h3>No Bills Found</h3>
   <% end %>

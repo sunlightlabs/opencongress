@@ -1,8 +1,8 @@
 <% if @roll_call %>
 OpenCongress url:<%= url_for(:only_path => false, :controller => 'roll_call', :action => 'show', :id => @roll_call) %>
 <% if @roll_call.bill %>Bill number:<%= @roll_call.bill.typenumber %>
-<% unless @roll_call.bill.title_popular_only.blank? %>Short title:<%= @roll_call.bill.title_popular_only %><% end %>
-Long title:<%= @roll_call.bill.title_official %><% end %>
+<% unless @roll_call.bill.short_title.blank? %>Short title:<%= @roll_call.bill.short_title %><% end %>
+Long title:<%= @roll_call.bill.official_title %><% end %>
 Date:<%= @roll_call.date.strftime("%B %d, %Y") %>
 Chamber:<%= @roll_call.chamber %>
 <% if @roll_call.amendment %>Amendment number:<%= @roll_call.amendment.display_number %><% end %>

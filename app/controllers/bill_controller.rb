@@ -721,7 +721,7 @@ private
       if @bill.has_wiki_link?
         @wiki_url = @bill.wiki_url
       elsif logged_in?
-        @wiki_create_url = "#{Settings.wiki_base_url}/Special:AddData/Bill?Bill[common_title]=#{CGI::escape(@bill.title_common[0..70])}&Bill[bill_type]=#{@bill.bill_type}&Bill[type_name]=#{@bill.type_name}&Bill[bill_number]=#{@bill.number}&Bill[congress]=#{Settings.default_congress}" #prolly should be rewritten as a post handled by a custom sfEditFormPreloadText call?
+        @wiki_create_url = "#{Settings.wiki_base_url}/Special:AddData/Bill?Bill[common_title]=#{CGI::escape(@bill.any_title[0..70])}&Bill[bill_type]=#{@bill.bill_type}&Bill[type_name]=#{@bill.type_name}&Bill[bill_number]=#{@bill.number}&Bill[congress]=#{Settings.default_congress}" #prolly should be rewritten as a post handled by a custom sfEditFormPreloadText call?
       end
 
       @tabs = [

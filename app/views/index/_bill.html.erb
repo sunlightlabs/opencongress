@@ -1,7 +1,7 @@
 <li class="blue no_sides no_top">
-  <a class="bill" href="<%= url_for :controller => 'bill', :action => 'show', :id => bill.ident %>" title="<%= bill.title_common %>">
+  <a class="bill" href="<%= url_for :controller => 'bill', :action => 'show', :id => bill.ident %>" title="<%= bill.any_title(:bare) %>">
   	<span class="title">
-  	  <%= bill.typenumber %> - <span><%= truncate(bill.title_common, :length => 50) rescue nil %></span>
+  	  <%= bill.typenumber %> - <span><%= truncate(bill.any_title(:bare), :length => 50) rescue nil %></span>
   	</span>
   	<span class="date">
       <span><%= bill.status %></span> 

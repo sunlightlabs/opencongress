@@ -37,18 +37,14 @@
       <li class="<%= bill_category(b) %> <%= b.subjects.select{|c| (c.parent_id == @root_category.id)}.map{|c| "category_#{c.id}"}.join(' ') %>">
         <a class="icon_link" href="<%= bill_path(b) %>">
           <div class="title">
-            <% unless b.title_popular_only.blank? %>
-              <span class="a"><%= "#{b.typenumber} - #{truncate(b.title_popular_only, :length => 103)}" %></span>
-            <% else %>
-              <span class="a"><%= b.typenumber %></span>
-            <% end %>
+            <span class="a"><%= truncate(b.any_title(:full), :length => 103) %></span>
 
-            <% if b.plain_language_summary %>
+            <% if b.plain_language_summary.to_s != '' %>
               <%= b.plain_language_summary.gsub(/<\/?[^>]*>/, "") %>
             <% else %>
 
-              <% unless b.title_official.blank? %>
-                <p><%= truncate(b.title_official, :length => 145) %></p>
+              <% unless b.official_title == b.any_title(:bare) %>
+                <p><%= truncate(b.official_title, :length => 145) %></p>
               <% end %>
             <% end %>
           </div>

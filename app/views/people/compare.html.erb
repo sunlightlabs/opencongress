@@ -194,7 +194,7 @@
         <% rc = pair.first %>
         <% votes = pair.second %>
         <tr class="<%= roll_call_css_class(rc) %> billlist">
-          <td class="rc-question"><%= rc.question %> (<%= rc.bill.title_common %>)
+          <td class="rc-question"><%= rc.question %> (<%= rc.bill.any_title(:bare) %>)
             <% if rc.bill and rc.bill.is_major %>
               <span class="yellow-star"></span>
             <% end %>

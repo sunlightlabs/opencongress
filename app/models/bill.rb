@@ -8,9 +8,6 @@ class Bill < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
-  # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
-  #              :facets => [:bill_type, :session], :auto_commit => false
-
   belongs_to :sponsor, :class_name => "Person", :foreign_key => :sponsor_id
   has_many :bill_titles
   has_many :bill_cosponsors
@@ -892,41 +889,18 @@ class Bill < ActiveRecord::Base
     UnitedStates::Bills.abbreviation_for bill_type
   end
 
-  def title_short
-    title = short_title
-    title ? "#{title.title}" : "#{type_name}#{number}"
-  end
-
   def typenumber # just the type and number, ie H.R.1591
     "#{type_name}#{number}"
   end
 
-  def title_official # just the official title
-    official_title ? "#{official_title.title}" : ""
+  def title_common
+    # This method is deprecated but will continue to exist to allow existing
+    # serialization paths to use .any_title
+    any_title(:bare)
   end
 
-  def title_popular_only # popular or short, returns empty string if one doesn't exist
-    title = manual_title || popular_title || short_title
-
-    title ? "#{title.title}" : ""
-  end
-
-  def title_common # popular or short or official, returns empty string if one doesn't exist
-    # This method is deprecated but will continue to exist until the bills api methods
-    # are either removed or refactored.
-    title = manual_title || popular_title || short_title || official_title
-
-    title ? "#{title.title}" : ""
-  end
-
-  def title_full_common # bill type, number and popular, short or official title
-    title = manual_title || popular_title || short_title || official_title
-
-    if title.nil?
-      ""
-    else
-      "#{title_prefix} #{number}: #{title.title}"
-    end
+  def title_full_common
+    any_title(:full)
   end
 
   def any_title (style = :bare)

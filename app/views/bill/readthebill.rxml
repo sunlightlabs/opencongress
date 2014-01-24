@@ -31,11 +31,11 @@ xml.feed "xmlns" => "http://www.w3.org/2005/Atom" do
       
       xml.content "type" => "html" do
         if @sort == 'gpo'
-          text = "#{b.title_official}<br /><br />"
+          text = "#{b.official_title}<br /><br />"
           text += b.gpo_date.blank? ? "" : "Bill considered within #{(Time.parse(b.consideration_date) - Time.parse(b.gpo_date)).to_i / 3600} hours of text being available."
           xml.text! text
         else
-          xml.text! "#{b.title_official}<br /><br />Attempted passage within #{b.hours_to_first_attempt_to_pass} hours of introduction."
+          xml.text! "#{b.official_title}<br /><br />Attempted passage within #{b.hours_to_first_attempt_to_pass} hours of introduction."
         end
       end
     end

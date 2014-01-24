@@ -12,7 +12,7 @@ class FacebookPublisher #< Facebooker::Rails::Publisher
     from user
     story_size ONE_LINE
     data :action_type => action, :bill_url => "http://www.opencongress.org/bill/#{bill.ident}/show", 
-         :bill_title => bill.title_full_common
+         :bill_title => bill.any_title(:full)
   end
   
   def bill_to_feed_template

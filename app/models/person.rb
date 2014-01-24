@@ -550,7 +550,7 @@ class Person < ActiveRecord::Base
     self.recent_activity(since).each do |i|
       case i.class.name
       when 'Bill'
-        items << {:sort_date => i.sort_date.to_date, :content => "Introduced Bill: #{i.typenumber} - #{i.title_official}", :link => {:host => host, :only_path => false, :controller => 'bill', :action => 'show', :id => i.ident}}
+        items << {:sort_date => i.sort_date.to_date, :content => "Introduced Bill: #{i.typenumber} - #{i.official_title}", :link => {:host => host, :only_path => false, :controller => 'bill', :action => 'show', :id => i.ident}}
       when 'RollCallVote'
         if i.roll_call.bill
           items << {:sort_date => i.sort_date.to_date, :content => "Vote: '" + i.to_s + "' regarding " + i.roll_call.bill.typenumber, :link => {:host => host, :only_path => false, :controller => 'roll_call', :action => 'show', :id => i.roll_call}}

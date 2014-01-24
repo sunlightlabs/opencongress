@@ -16,7 +16,7 @@
       = @contact_congress_letter.formageddon_threads.first.created_at.strftime('%B %d, %Y')
       = position_clause(@contact_congress_letter.disposition)
       %strong
-        = "#{link_to(truncate(@contact_congress_letter.contactable.typenumber + ' ' + @contact_congress_letter.contactable.title_common, :length => 170), bill_path(@contact_congress_letter.contactable))}.".html_safe
+        = "#{link_to(truncate(@contact_congress_letter.contactable.typenumber + ' ' + @contact_congress_letter.contactable.any_title(:bare), :length => 170), bill_path(@contact_congress_letter.contactable))}.".html_safe
       Privacy setting:
       = @contact_congress_letter.formageddon_threads.first.privacy
       - if logged_in? and current_user == @contact_congress_letter.user

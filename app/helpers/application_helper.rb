@@ -330,7 +330,7 @@ EOT
       xml.published DateTime.strptime(b.introduced.to_s, '%s').strftime("%Y-%m-%dT%H:%M:%SZ")
 
       xml.content "type" => "html" do
-        xml.text! b.title_official
+        xml.text! b.official_title
       end
     end
   end
@@ -360,7 +360,7 @@ EOT
       xml.id      a.atom_id
       xml.updated a.datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
       xml.content "type" => "html" do
-        xml.text! a.bill.title_official + "<br /><br />"
+        xml.text! a.bill.official_title + "<br /><br />"
         xml.text!(a.datetime.strftime("%B %d, %Y: ") + a.text) if a.text
       end
     end
@@ -381,7 +381,7 @@ EOT
       xml.published DateTime.strptime(b.introduced.to_s, '%s').strftime("%Y-%m-%dT%H:%M:%SZ")
 
       xml.content "type" => "html" do
-        xml.text! b.title_official
+        xml.text! b.official_title
         xml.text! "<br /><br />" + b.last_action.text rescue ""
       end
     end

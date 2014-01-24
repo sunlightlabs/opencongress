@@ -32,11 +32,13 @@ module BillHelper
   end
 
   def title
-    "#{@bill.typenumber}: #{@bill.title_official}"
+    warn "The 'title' bill helper is deprecated (called from #{Kernel.caller.first})"
+    "#{@bill.typenumber}: #{@bill.official_title}"
   end
 
   def em_title
-    "#{@bill.typenumber}: <em>#{@bill.title_official}</em>"
+    warn "The 'em_title' bill helper is deprecated (called from #{Kernel.caller.first})"
+    "#{@bill.typenumber}: <em>#{@bill.official_title}</em>"
   end
 
   def bill_titles_html

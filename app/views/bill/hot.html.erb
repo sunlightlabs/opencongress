@@ -26,17 +26,11 @@
           <span class="count bill"><%= count %></span>
 
           <div class="title">
-            <% unless bill.title_popular_only.blank? %>
-              <%= link_to "#{bill.typenumber} - #{truncate(bill.title_popular_only, :length => 103)}", :controller => 'bill', :action => 'show', :id => bill.ident %>        
-            <% else %>                                 
-              <%= link_to "#{bill.typenumber}", :controller => 'bill', :action => 'show', :id => bill.ident %>        
+            <%= link_to truncate(bill.any_title(:full), :length => 103), :controller => 'bill', :action => 'show', :id => bill.ident %>
+
+            <% unless bill.official_title == bill.any_title(:bare) %>
+              <p><%= truncate(bill.official_title, :length => 145) %></p>
             <% end %>
-
-
-            <% unless bill.title_official.blank? %>
-              <p><%= truncate(bill.title_official, :length => 145) %></p>
-            <% end %>
-
           </div>        
 
           <span class="status">            
@@ -62,7 +56,7 @@
         <td class="br_td"><span id="<%= "oppose_#{bill.id}"%>" class="nay"><%= @ranking_lookup[bill.id][:counts][:oppose] || 0 %></span></td>
 
         <td id="<%= "vote_results_#{bill.id.to_s}"%>" class="br_td vote_line">
-          <%= draw_inline_user_bill_vote(bill) %>      
+          <%= draw_inline_user_bill_vote(bill) %>
         </td>
       </tr>
       <tr style="display:none;">

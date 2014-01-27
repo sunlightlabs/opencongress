@@ -15,7 +15,7 @@
         <div>
           <strong>Bill:</strong>
           <a href="<%= bill_path(@roll_call.bill.ident) %>">
-            <%= @roll_call.bill.any_title(:full) %>
+            <%= @roll_call.bill.best_title(:prefixed) %>
           </a>
 
           <% if @roll_call.amendment %>

@@ -1,8 +1,8 @@
 <div class="margin-left push-left margin-top push-top">
 
-<h1><span><%= @bill.any_title(:full) %></h1>
+<h1><span><%= @bill.best_title(:prefixed) %></h1>
 
-<% unless @bill.official_title == @bill.any_title %>
+<% unless @bill.official_title == @bill.best_title %>
 	<p><%= @bill.official_title %>
 <% end %> 
 

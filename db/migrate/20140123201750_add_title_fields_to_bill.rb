@@ -1,9 +1,9 @@
 class AddTitleFieldsToBill < ActiveRecord::Migration
   def self.up
-    add_column :bills, :short_title, :string
-    add_column :bills, :popular_title, :string
-    add_column :bills, :official_title, :string
-    add_column :bills, :manual_title, :string
+    add_column :bills, :short_title, :text
+    add_column :bills, :popular_title, :text
+    add_column :bills, :official_title, :text
+    add_column :bills, :manual_title, :text
   end
 
   def self.down

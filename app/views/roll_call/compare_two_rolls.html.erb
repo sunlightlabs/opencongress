@@ -1,13 +1,13 @@
 <div style="margin-bottom:10px">
   <h3>First Vote</h3>
-  <%= @roll_call1.bill.any_title(:full) %><br />
+  <%= @roll_call1.bill.best_title(:prefixed) %><br />
   <%= @roll_call1.question %><br />
   <%= @roll_call1.date.strftime("%B %d, %Y") %>
 </div>
 
 <div style="margin-bottom:10px">
   <h3>Second Vote</h3>
-  <%= @roll_call2.bill.any_title(:full) %><br />
+  <%= @roll_call2.bill.best_title(:prefixed) %><br />
   <%= @roll_call2.question %><br />
   <%= @roll_call2.date.strftime("%B %d, %Y") %>
 </div>

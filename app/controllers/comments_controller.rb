@@ -224,7 +224,7 @@ class CommentsController < ApplicationController
     @object_type = params[:object]
     if params[:object] == 'bill'
       @object = Bill.find_by_id(params[:id])
-      @title = "Comments on #{@object.any_title(:full)}"
+      @title = "Comments on #{@object.best_title(:prefixed)}"
     elsif params[:object] == 'person'
       @object = Person.find_by_id(params[:id])
       @title = "Comments on #{@object.name}"

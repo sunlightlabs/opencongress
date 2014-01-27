@@ -125,8 +125,8 @@
       <ul class="latest_votes">
         <% RollCall.latest_votes_for_unique_bills(5).each do |r| %>
         <li>
-          <a href="<%= r.vote_url %>" title="<%= r.bill.any_title(:full) %>">
-            <span><%= truncate(r.bill.any_title(:full), :length => 58) %></span><br />
+          <a href="<%= r.vote_url %>" title="<%= r.bill.best_title(:prefixed) %>">
+            <span><%= truncate(r.bill.best_title(:prefixed), :length => 58) %></span><br />
 
             <span class="votes"><span class="aye">Ayes</span> <%= r.ayes %>&nbsp;&nbsp;&nbsp;<span class="nay">Nays</span> <%= r.nays %></span>
             <span class="date"><%= r.date.strftime("%b %d, %Y") %></span>

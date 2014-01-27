@@ -1,7 +1,7 @@
 <% if @bills and !@bills.empty? %>
   Click on the bill to add it to your panel:<br />
   <% @bills.each do |b| %>
-    <%= truncate(b.any_title(:full), :length => 100) %> |
+    <%= truncate(b.best_title(:prefixed), :length => 100) %> |
     <a href="javascript:addWatchingBillId('<%= b.ident %>', true)">Pass</a> |  
     <a href="javascript:addWatchingBillId('<%= b.ident %>', false)">Don't Pass</a> 
     [<a href="/bill/<%= b.ident %>/show" target="_blank">view bill</a>]<br />

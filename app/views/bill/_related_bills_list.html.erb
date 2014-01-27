@@ -16,10 +16,10 @@
           <% end %>
 
           <div class="title">
-            <span class="a"><%= truncate(bill.any_title(:full), :length => 103) %></span>
+            <span class="a"><%= truncate(bill.best_title(:prefixed), :length => 103) %></span>
 
             <%# Here we are using the offical title as a summary since official summaries are often too long to be useful. %>
-            <% unless bill.official_title == bill.any_title %>
+            <% unless bill.official_title == bill.best_title %>
               <%# FIXME: This should really be an optional parameter to this template. %>
               <% if controller.action_name == 'list_bill_type' %>
                 <%= truncate(bill.official_title, :length => 145) %>

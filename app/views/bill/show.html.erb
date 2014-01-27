@@ -1,5 +1,5 @@
 <% content_for :open_graph do %>
-  <%= open_graph_meta(:title => "#{@bill.any_title(:full)}, a bill on OpenCongress") %>
+  <%= open_graph_meta(:title => "#{@bill.best_title(:prefixed)}, a bill on OpenCongress") %>
 <% end %>
 
 <div class="main">

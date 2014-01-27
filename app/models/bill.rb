@@ -895,24 +895,29 @@ class Bill < ActiveRecord::Base
 
   def title_common
     # This method is deprecated but will continue to exist to allow existing
-    # serialization paths to use .any_title
-    any_title(:bare)
+    # serialization paths to use .best_title
+    best_title(:bare)
   end
 
   def title_full_common
-    any_title(:full)
+    # This method is deprecated but will continue to exist to allow existing
+    # serialization paths to use .best_title
+    best_title(:full)
   end
 
-  def any_title (style = :bare)
-    # style => :bare or :full
+  def best_title (style = :plain)
+    # style => :plain or :prefixed
+    # :plain returns the title as it exists in the model field
+    # :prefixed returns the title prefixed with the bill type and number
     title = (manual_title || short_title || popular_title || official_title)
     if title.nil?
       "#{title_prefix} #{number}"
-    elsif style == :full
-      title = "#{title_prefix} #{number}: #{title}" if style == :full
+    elsif style == :prefixed
+      title = "#{title_prefix} #{number}: #{title}"
     else
-      title
+      # Default to :plain, do nothing
     end
+    title
   end
 
   def default_title

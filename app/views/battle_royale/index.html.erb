@@ -25,7 +25,7 @@
 		<% end %>
 		
 	  <div class="title">
-      <%= link_to truncate(bill.any_title(:full), :length => 103), :controller => 'bill', :action => 'show', :id => bill.ident %>
+      <%= link_to truncate(bill.best_title(:prefixed), :length => 103), :controller => 'bill', :action => 'show', :id => bill.ident %>
       <% unless bill.official_title.blank? %>
         <p><%= truncate(bill.official_title, :length => 145) %></p>
       <% end %>

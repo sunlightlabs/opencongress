@@ -2,7 +2,7 @@
 <ul id="searchResults">
   <% _.each(bill_search_results, function(billContainer) {
       var bill = billContainer.bill; %>
-    <li><a class="billSearchResult" href="#" data-bill="<%= bill.ident %>"><strong><%= bill.typenumber %></strong> &mdash; <%= bill.any_title(:bare).substring(0, 120) + (bill.any_title(:bare).length > 120 ? "..." : '') %></a></li>
+    <li><a class="billSearchResult" href="#" data-bill="<%= bill.ident %>"><strong><%= bill.typenumber %></strong> &mdash; <%= bill.best_title(:plain).substring(0, 120) + (bill.best_title(:plain).length > 120 ? "..." : '') %></a></li>
   <% }); %>
 </div>
 <% } else { %>

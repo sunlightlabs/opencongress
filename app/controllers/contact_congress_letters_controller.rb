@@ -50,15 +50,15 @@ class ContactCongressLettersController < ApplicationController
 
         case @position
         when 'support'
-          message_start = "I support #{@bill.any_title(:full)}, and am tracking it using OpenCongress.org, the free public resource website for government transparency and accountability."
+          message_start = "I support #{@bill.best_title(:prefixed)}, and am tracking it using OpenCongress.org, the free public resource website for government transparency and accountability."
         when 'oppose'
-          message_start = "I oppose #{@bill.any_title(:full)}, and am tracking it using OpenCongress.org, the free public resource website for government transparency and accountability."
+          message_start = "I oppose #{@bill.best_title(:prefixed)}, and am tracking it using OpenCongress.org, the free public resource website for government transparency and accountability."
         else
-          message_start = "I'm tracking #{@bill.any_title(:full)} using OpenCongress.org, the free public resource website for government transparency and accountability."
+          message_start = "I'm tracking #{@bill.best_title(:prefixed)} using OpenCongress.org, the free public resource website for government transparency and accountability."
         end
       end
 
-      @subject = @bill.any_title(:full)
+      @subject = @bill.best_title(:prefixed)
       @contactable_query = "contactable_type=Bill&contactable_id=#{@bill.id}"
     elsif @issue
       if @issue.talking_points.where("talking_points.include_in_message_body='t'").any?
@@ -125,7 +125,7 @@ class ContactCongressLettersController < ApplicationController
     @page_title = "My Letter to Congress: #{@contact_congress_letter.formageddon_threads.first.formageddon_letters.first.subject}"
 
     if @contact_congress_letter.contactable_type == 'Bill'
-      regarding = @contact_congress_letter.contactable.any_title(:full)
+      regarding = @contact_congress_letter.contactable.best_title(:prefixed)
     elsif @contact_congress_letter.contactable_type == 'Subject'
       regarding = @contact_congress_letter.contactable.term
     end

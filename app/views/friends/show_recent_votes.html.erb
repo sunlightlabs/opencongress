@@ -5,7 +5,7 @@
 <% bill = v.bill %>
           <%= v.support == 0 ? "Supporting: " : "Opposing: " %>
           <%= link_to bill.typenumber, bill_path(bill) %>
-          <%= bill.any_title(:bare) %></span>
+          <%= bill.best_title(:plain) %></span>
         <br/>
 <% end %>
 

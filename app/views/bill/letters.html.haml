@@ -2,9 +2,9 @@
   .title
     %h1
       %a{:href => "/bill/#{@bill.ident}/show" }
-        %span= @bill.any_title(:full)
+        %span= @bill.best_title(:prefixed)
 
-    - unless @bill.official_title == @bill.any_title(:bare)
+    - unless @bill.official_title == @bill.best_title(:plain)
       %p= @bill.official_title
 
 #padding.clear

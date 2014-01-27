@@ -2,7 +2,7 @@
   <% if syndicator_item.kind_of? Bill %>
     <a href="<%= bill_url(syndicator_item.ident) %>"
       target="_top">
-    <%= truncate(syndicator_item.any_title(:full), :length => 60) %></a> 
+    <%= truncate(syndicator_item.best_title(:prefixed), :length => 60) %></a> 
   <% elsif syndicator_item.kind_of? Person %>
     <a href="<%= person_url(syndicator_item) %>"
       target="_top">

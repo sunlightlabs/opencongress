@@ -5,7 +5,7 @@
 </h1>
 <ul>
   <li>
-    <h2><a href="<%= domain + bill.permalink %>"><strong><%= bill.typenumber %></strong>: <%= bill.any_title(:bare).truncate(140) %></a></h2>
+    <h2><a href="<%= domain + bill.permalink %>"><strong><%= bill.typenumber %></strong>: <%= bill.best_title(:plain).truncate(140) %></a></h2>
     <div class="oc-widget-intro">Introduced <time class="oc-widget-first-bill-action" datetime="<%= bill.introduced_at %>"><%= OC.dateFromISO8601(bill.introduced_at).format("mediumDate") %></time></div>
     <div class="oc-widget-bill-action">Last action on <time class="oc-widget-last-bill-action" datetime="<%= bill.last_action_at %>"><%= OC.dateFromISO8601(bill.last_action_at).format("mediumDate") %></time></div>
     <div class="oc-widget-cosponsor-count"><%= "Co-Sponsor".pluralize(bill.co_sponsors.length) %></div>

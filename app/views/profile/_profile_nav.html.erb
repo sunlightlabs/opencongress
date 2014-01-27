@@ -58,7 +58,7 @@
 	Bill Alerts
 	  <% @user.user_mailing_list.mailing_list_items.bills.each do |b| %>
 	    <p style="font-size:10px;"><span style="float:right;"><%= link_to "stop", b, :method => :delete %></span>
-	        <%= link_to truncate(b.mailable.any_title(:full), :length => 40),
+	        <%= link_to truncate(b.mailable.best_title(:prefixed), :length => 40),
 	             bill_path(b.mailable.ident) %></p>
 	  <% end %>
     <% end %>

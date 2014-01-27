@@ -102,7 +102,7 @@ class SearchController < ApplicationController
       bill_titles = []
       bills = Bill.major
       bills.each do |bill|
-        bill_titles << [ bill.any_title(:full), bill ]
+        bill_titles << [ bill.best_title(:prefixed), bill ]
       end
 
       @people_hits = names.select{|h| h[0] =~ /#{Regexp.escape(params[:value])}/i }

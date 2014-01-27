@@ -4,7 +4,7 @@
       <li>
         <a href="<%= url_for :controller => 'roll_call', :action => 'show', :id => vote.roll_call %>">
           <% if vote.roll_call.bill %>
-            <span class="title"><%= vote.roll_call.bill.any_title(:full) %></span>
+            <span class="title"><%= vote.roll_call.bill.best_title(:prefixed) %></span>
           <% end %>
 
 

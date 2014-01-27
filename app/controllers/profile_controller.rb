@@ -127,7 +127,7 @@ class ProfileController < ApplicationController
     if params[:object] == "Bill"
       bill = Object.const_get(params[:object]).find_by_id(params[:id])
       render :partial => 'shared/news', :object => bill.news.find(:all, :limit => @limit),
-          :locals => { :limit => @limit, :all_size => bill.news_article_count, :default_title => bill.any_title,
+          :locals => { :limit => @limit, :all_size => bill.news_article_count, :default_title => bill.best_title,
                        :more_url => { :controller => 'bill', :action => 'news', :id => bill.ident } }
     elsif params[:object] ==  "Person"
       person = Object.const_get(params[:object]).find_by_id(params[:id])
@@ -147,7 +147,7 @@ class ProfileController < ApplicationController
     if params[:object] == "Bill"
       bill = Object.const_get(params[:object]).find_by_id(params[:id])
       render :partial => 'shared/blogs', :object => bill.blogs.find(:all, :limit => @limit),
-          :locals => { :limit => @limit, :all_size => bill.blog_article_count, :default_title => bill.any_title,
+          :locals => { :limit => @limit, :all_size => bill.blog_article_count, :default_title => bill.best_title,
                        :more_url => { :controller => 'bill', :action => 'blogs', :id => bill.ident } }
     elsif params[:object] ==  "Person"
       person = Object.const_get(params[:object]).find_by_id(params[:id])

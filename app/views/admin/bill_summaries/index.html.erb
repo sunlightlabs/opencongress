@@ -8,7 +8,7 @@
 <p>Or choose from the bills listed on the homepage:
    <ul>
    <% ObjectAggregate.popular('Bill', Settings.default_count_time, 6, Settings.default_congress, true).each do |bill| %>
-      <li><%= link_to bill.typenumber, {:controller => 'admin/bill_summaries', :action => 'edit'} %> - <%= truncate(bill.any_title(:bare), :length => 45) rescue nil %></li>
+      <li><%= link_to bill.typenumber, {:controller => 'admin/bill_summaries', :action => 'edit'} %> - <%= truncate(bill.best_title(:plain), :length => 45) rescue nil %></li>
    <% end %>
    </ul>
 </p>

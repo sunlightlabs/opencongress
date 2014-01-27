@@ -1,7 +1,7 @@
 <% if @bills and !@bills.empty? %>
   Click on the bill title to select bill:<br />
   <% @bills.each do |b| %>
-    <a href="javascript:setBillStatusBillId('<%= b.ident %>')"><%= truncate(b.any_title(:full), :length => 130) %></a> 
+    <a href="javascript:setBillStatusBillId('<%= b.ident %>')"><%= truncate(b.best_title(:prefixed), :length => 130) %></a> 
     [<a href="/bill/<%= b.ident %>/show" target="_blank">view bill</a>]<br />
   <% end %>
 <% else %>

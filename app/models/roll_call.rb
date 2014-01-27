@@ -221,7 +221,7 @@ class RollCall < ActiveRecord::Base
   end
 
   def display_title
-    bill_title = bill && bill.any_title(:full)
+    bill_title = bill && bill.best_title(:prefixed)
     if bill_title
       bill_title
     elsif not question.nil?
@@ -233,9 +233,9 @@ class RollCall < ActiveRecord::Base
 
   def bill_or_amendment_title
     if bill and amendment
-      "#{amendment.display_number} to #{bill.any_title(:full)}"
+      "#{amendment.display_number} to #{bill.best_title(:prefixed)}"
     elsif bill
-      bill.any_title(:full)
+      bill.best_title(:prefixed)
     else
       nil
     end

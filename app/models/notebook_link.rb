@@ -17,7 +17,7 @@ class NotebookLink < NotebookItem
   def init_from_notebookable(notebookable)
     case notebookable.class.to_s
     when 'Bill'
-      self.title = "OpenCongress: #{notebookable.any_title}" if self.title.blank?
+      self.title = "OpenCongress: #{notebookable.best_title}" if self.title.blank?
       self.url = "internal"
     when 'Subject'
       self.title = "OpenCongress: #{notebookable.term}" if self.title.blank?

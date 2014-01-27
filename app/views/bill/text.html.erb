@@ -26,9 +26,9 @@
 
 
 <div class="title">
-<h1><%= link_to(@bill.any_title(:full), bill_path(@bill)) %></h1>
+<h1><%= link_to(@bill.best_title(:prefixed), bill_path(@bill)) %></h1>
 
-<% unless @bill.official_title == @bill.any_title %>
+<% unless @bill.official_title == @bill.best_title %>
 	<p><%= @bill.official_title %></p>
 <% end %> 
 

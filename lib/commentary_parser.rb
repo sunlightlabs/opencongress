@@ -590,7 +590,7 @@ module CommentaryParser
     i = 0
     referred_bills.each do |rb|
       i += 1
-      OCLogger.log "Looking for referrers for #{rb.any_title(:full)}"
+      OCLogger.log "Looking for referrers for #{rb.best_title(:prefixed)}"
       
       if find_referring_posts_for_bill?(rb)
         OCLogger.log "Looking for referring posts for bill: #{i}/#{referred_bills.size} (recent_referrers)"

@@ -16,7 +16,7 @@
 
     <% if @bill %>
       <dt><label>Bill:</label></dt>
-      <dd style="font-size:1em;padding-top:3px;width:535px;display:block;"><%= @bill.any_title(:full) %></dd>
+      <dd style="font-size:1em;padding-top:3px;width:535px;display:block;"><%= @bill.best_title(:prefixed) %></dd>
       <%= hidden_field 'panel', 'bill_id', { :value => @bill.ident } %>
     <% else %>
       <% form_remote_tag(:url => { :controller => 'resources', :action => 'bill_number_search' }, 
@@ -39,7 +39,7 @@
       <dt><label for="post_info_url">OR, select a popular bill:</label></dt>
 
       <dd>
-        <%= select("panel", "bill_id_select", @most_viewed_bills.collect {|b| [ b.any_title(:full), b.ident ] }, { :include_blank => true }, { :onChange => "setBillStatusBillId(document.getElementById('panel_bill_id_select').value);" } ) %>
+        <%= select("panel", "bill_id_select", @most_viewed_bills.collect {|b| [ b.best_title(:prefixed), b.ident ] }, { :include_blank => true }, { :onChange => "setBillStatusBillId(document.getElementById('panel_bill_id_select').value);" } ) %>
       </dd>
       <%= hidden_field 'panel', 'bill_id' %>
     <% end %>

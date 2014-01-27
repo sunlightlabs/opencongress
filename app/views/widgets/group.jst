@@ -15,7 +15,7 @@
     <h2><%= g.description.truncate(140) %></h2>
     <% if (g.bill_positions.length) { %>
       <% var bill_position = g.bill_positions[0].bill_position; var bill = bill_position.bill; %>
-      <div class="oc-widget-group-bill-position">We <%= bill_position.position %> <a href="<%= domain + bill.permalink %>"><strong><%= bill.typenumber %></strong>: <%= bill.any_title(:bare).truncate(140) %></a></div>
+      <div class="oc-widget-group-bill-position">We <%= bill_position.position %> <a href="<%= domain + bill.permalink %>"><strong><%= bill.typenumber %></strong>: <%= bill.best_title(:plain).truncate(140) %></a></div>
     <% } %>
     <div class="oc-widget-clear">&nbsp;</div>
   </li>

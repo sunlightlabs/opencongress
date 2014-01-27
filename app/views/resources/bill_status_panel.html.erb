@@ -60,7 +60,7 @@
 			<div id="title">
             	<h1><%= @bill.typenumber %> <a href="/bill/<%= @bill.ident %>/atom" target="_top"><%= image_tag 'feed-icon-10x10.png', :border => '0' %></a></h1>
 
-				<p><%= @bill.any_title(:bare) %></p>
+				<p><%= @bill.best_title(:plain) %></p>
 			</div>
 	        	<ul>
 	            <li><strong>Introduced:</strong> <%= Time.at(@bill.introduced).strftime("%B %d, %Y") %></li>

@@ -71,10 +71,7 @@ module BillHelper
 
 	def bill_related_list
 		bill_limit = 6
-    # This used to use :title_full_common while it currently uses :any_title. These
-    # are different, as the former prepends the type and number of the bill.
-    # FIXME: find a way to replicate the past behavior
-		text = partial_list(@bill.related_bills, :any_title, bill_limit,
+		text = partial_list(@bill.related_bills, :title_full_common, bill_limit,
 		"#{@bill.related_bills.size - bill_limit} more", "bill_related_extra",
 		"bill_related_more", "show", "bill", true, 75)
 	end
@@ -246,7 +243,7 @@ module BillHelper
 		@tracking_suggestions[0..4].each do |t|
 			out += '<table cellspacing="0" cellpadding="0">
               <tr><td style="padding-right:5px;">' +
-          + link_to(truncate(t[:bill].any_title(:full), :length => 30), bill_url(t[:bill]))
+          + link_to(truncate(t[:bill].best_title(:prefixed), :length => 30), bill_url(t[:bill]))
           + "</td><td>["
           + link_to(t[:trackers], {:controller => 'friends', :action => 'tracking_bill', :id => t[:bill].ident})
           + "]</td></tr>"
@@ -257,7 +254,7 @@ module BillHelper
 			out += '<table id="more_tracking_suggestions" cellspacing="0" cellpadding="0" style="display:none;">'
 			@tracking_suggestions[5..num].each do |t|
 					out += '<tr><td style="padding-right:5px;">'
-					    + link_to(truncate(t[:bill].any_title(:full), :length => 30), bill_url(t[:bill]))
+					    + link_to(truncate(t[:bill].best_title(:prefixed), :length => 30), bill_url(t[:bill]))
 					    + "</td>\n"
 					    + "<td>["
 					    + link_to(t[:trackers], {:controller => 'friends', :action => 'tracking_bill', :id => t[:bill].ident})

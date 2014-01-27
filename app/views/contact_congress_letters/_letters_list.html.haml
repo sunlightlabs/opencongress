@@ -21,7 +21,7 @@
         .grid_6
           - if l.contactable_type == 'Bill'
             = l.contactable.typenumber
-            = l.contactable.any_title
+            = l.contactable.best_title
           - elsif l.contactable_type == 'Subject'
             = l.contactable.term
   

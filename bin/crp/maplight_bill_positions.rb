@@ -19,7 +19,7 @@ begin
     bill = Bill.find_by_session_and_bill_type_and_number(bill_e.elements["session"].text, bill_e.elements["prefix"].text.downcase, bill_e.elements["number"].text)
 
     if bill
-      puts "BILL #{bill.any_title(:full)}"
+      puts "BILL #{bill.best_title(:prefixed)}"
       orgs = []
       bigs = []
       bill_e.each_element("organizations/organization") do |org_e|

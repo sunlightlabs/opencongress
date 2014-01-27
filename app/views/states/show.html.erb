@@ -101,7 +101,7 @@
      <ul class="tiny_list">
        <% @tracking_suggestions.last[:my_bills_supported_facet].each do |bt| %>
          <% unless bt[:trackers] == 0 %>
-           <li class="bill"><%= link_to bt[:object].typenumber, bill_path(bt[:object]) %> - <%= truncate(bt[:object].any_title(:bare), :length => 40) %>
+           <li class="bill"><%= link_to bt[:object].typenumber, bill_path(bt[:object]) %> - <%= truncate(bt[:object].best_title(:plain), :length => 40) %>
          <br />
          <div class="meta"><%= bt[:trackers] %> users support</div></li>
        <% end %>
@@ -120,7 +120,7 @@
      <ul class="tiny_list">
        <% @tracking_suggestions.last[:my_bills_opposed_facet].each do |bt| %>
          <% unless bt[:trackers] == 0 %>
-           <li class="bill"><%= link_to bt[:object].typenumber, bill_path(bt[:object]) %> - <%= truncate(bt[:object].any_title(:bare), :length => 40) %>
+           <li class="bill"><%= link_to bt[:object].typenumber, bill_path(bt[:object]) %> - <%= truncate(bt[:object].best_title(:plain), :length => 40) %>
          <br />
          <div class="meta"><%= bt[:trackers] %> users oppose</div></li>
        <% end %>

@@ -1,7 +1,7 @@
 %span.regarding You are writing regarding
 %h1.regarding
   - if @bill
-    = truncate(@bill.any_title(:full), :length => 170) + ", #{@bill.session.ordinalize} Congress"
+    = truncate(@bill.best_title(:prefixed), :length => 170) + ", #{@bill.session.ordinalize} Congress"
   - elsif @issue
     = truncate(@issue.term, :length => 170)
 

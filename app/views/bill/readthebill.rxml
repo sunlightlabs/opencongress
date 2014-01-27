@@ -12,7 +12,7 @@ xml.feed "xmlns" => "http://www.w3.org/2005/Atom" do
   @bills.each do |b|
     xml.entry do
       
-      title = b.any_title(:full)
+      title = b.best_title(:prefixed)
       if @sort == 'gpo'
         title += b.gpo_date.blank? ? "" : " - #{(Time.parse(b.consideration_date) - Time.parse(b.gpo_date)).to_i / 3600} hours"
       else

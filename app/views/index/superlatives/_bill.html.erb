@@ -1,7 +1,7 @@
-<a href="<%= url_for :controller => 'bill', :action => 'show', :id => bill.ident %>" title="<%=h bill.any_title(:full) %>">
+<a href="<%= url_for :controller => 'bill', :action => 'show', :id => bill.ident %>" title="<%=h bill.best_title(:prefixed) %>">
 <div class="media superlative bill two-up">
     <div class="media-body">
-        <h4><%= bill.typenumber %>&mdash;<span><%= truncate(bill.any_title(:bare), :length => 40) rescue nil %></h4>
+        <h4><%= bill.typenumber %>&mdash;<span><%= truncate(bill.best_title(:plain), :length => 40) rescue nil %></h4>
         <p class="stats">
             <% if superlative == :popular %>
                 <strong><%= pluralize(bill.view_count, 'view') %> this week</strong>

@@ -35,7 +35,7 @@ Tracked by <%= link_to b.person.bookmarks.count, :controller => 'friends', :acti
                     <% if i.roll_call.bill %>
                       <%# If this is a nomination or house speaker election then we won't have a bill. %>
                       regarding <%= link_to(i.roll_call.bill.typenumber, bill_path(i.roll_call.bill))%>:
-                      <%= i.roll_call.bill.any_title(:bare) if i.roll_call.bill %>
+                      <%= i.roll_call.bill.best_title(:plain) if i.roll_call.bill %>
                     <% end %>
                 </p>
             </li>

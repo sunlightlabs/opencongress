@@ -418,7 +418,7 @@ class BillController < ApplicationController
 
   def letters
     @topic = nil
-    @meta_description = "Letters to Congress regarding #{@bill.any_title(:full)} on OpenCongress.org"
+    @meta_description = "Letters to Congress regarding #{@bill.best_title(:prefixed)} on OpenCongress.org"
 
     @page_title = "Letters to Congress: #{@bill.typenumber}"
 
@@ -427,7 +427,7 @@ class BillController < ApplicationController
 
   def text
     @topic = nil
-    @meta_description = "Full bill text of #{@bill.any_title(:full)} on OpenCongress.org"
+    @meta_description = "Full bill text of #{@bill.best_title(:prefixed)} on OpenCongress.org"
 
     # bill text code
     # build the list of versions
@@ -708,9 +708,9 @@ private
     if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
       @page_title_prefix = "U.S. Congress"
       @page_title = @bill.typenumber
-      @head_title = @bill.any_title
+      @head_title = @bill.best_title
       if @bill.plain_language_summary.blank?
-        @meta_description = "Official government data, breaking news and blog coverage, public comments and user community for #{@bill.any_title(:full)}"
+        @meta_description = "Official government data, breaking news and blog coverage, public comments and user community for #{@bill.best_title(:prefixed)}"
       else
         @meta_description = @bill.plain_language_summary
       end
@@ -721,7 +721,7 @@ private
       if @bill.has_wiki_link?
         @wiki_url = @bill.wiki_url
       elsif logged_in?
-        @wiki_create_url = "#{Settings.wiki_base_url}/Special:AddData/Bill?Bill[common_title]=#{CGI::escape(@bill.any_title[0..70])}&Bill[bill_type]=#{@bill.bill_type}&Bill[type_name]=#{@bill.type_name}&Bill[bill_number]=#{@bill.number}&Bill[congress]=#{Settings.default_congress}" #prolly should be rewritten as a post handled by a custom sfEditFormPreloadText call?
+        @wiki_create_url = "#{Settings.wiki_base_url}/Special:AddData/Bill?Bill[common_title]=#{CGI::escape(@bill.best_title[0..70])}&Bill[bill_type]=#{@bill.bill_type}&Bill[type_name]=#{@bill.type_name}&Bill[bill_number]=#{@bill.number}&Bill[congress]=#{Settings.default_congress}" #prolly should be rewritten as a post handled by a custom sfEditFormPreloadText call?
       end
 
       @tabs = [

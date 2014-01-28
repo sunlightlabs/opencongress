@@ -18,9 +18,9 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/geocoder.git
-  revision: b23cec8515f7075d06231be5670fd1a3d91871ed
+  revision: e688236012b54257c2b63fa5b5be63286a058d39
   specs:
-    geocoder (1.1.8)
+    geocoder (1.1.9)
 
 GEM
   remote: http://rubygems.org/
@@ -95,9 +95,10 @@ GEM
     coderay (1.0.9)
     colored (1.2)
     columnize (0.3.6)
-    congress (0.1.1)
+    congress (0.2.0)
       faraday (~> 0.8.7)
       faraday_middleware (~> 0.9.0)
+      geocoder (~> 1.1.9)
       hashie (~> 2.0)
       json (~> 1.8)
       rash (~> 0.4)
@@ -429,7 +430,7 @@ DEPENDENCIES
   capybara
   carrierwave
   closure-compiler
-  congress
+  congress (>= 0.2.0)
   cucumber
   cucumber-rails
   database_cleaner

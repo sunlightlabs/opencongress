@@ -84,7 +84,7 @@ class SearchController < ApplicationController
         end
 
         if (@search_committees)
-          @committees = Committee.full_text_search(query_stripped)
+          @committees = Committee.full_text_search(query_stripped).select{ |c| c.active? }
           @found_items += @committees_total = @committees.size
 
 

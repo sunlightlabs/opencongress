@@ -35,6 +35,8 @@ gem 'fog'
 
 gem "awesome_nested_set", ">= 2.0"
 
+gem 'curb'
+
 # Sunlight Foundation Congress API v3
 gem "congress", ">= 0.2.0"
 

@@ -3,20 +3,19 @@
 require 'hpricot'
 require 'open-uri'
 
-begin
-  response = nil;
-  http = Net::HTTP.new('maplight.org')
-  http.start do |http|
-    request = Net::HTTP::Get.new("/services_open_api/map.bill_list_v1.xml?apikey=#{ApiKeys.maplight}&jurisdiction=us&session=#{Settings.default_congress}&include_organizations=1&has_organizations=1")
-    response = http.request(request)
-  end
+  url = "http://maplight.org/services_open_api/map.bill_list_v1.xml?apikey=#{ApiKeys.maplight}&jurisdiction=us&session=#{Settings.default_congress}&include_organizations=1&has_organizations=1"
+  response = Curl.get(url)
     
-  rex_doc = REXML::Document.new response.body
+  rex_doc = REXML::Document.new response.body_str
   elements = rex_doc.elements
   
   elements.each("bills/bill") do |bill_e|
-    #puts "S: #{bill_e.elements["session"].text}, #{bill_e.elements["prefix"].text}#{bill_e.elements["number"].text}"
-    bill = Bill.find_by_session_and_bill_type_and_number(bill_e.elements["session"].text, bill_e.elements["prefix"].text.downcase, bill_e.elements["number"].text)
+    btype = Bill.govtrack_reverse_lookup(bill_e.elements['prefix'].text.downcase)
+    bnumber = bill_e.elements['number'].text.to_i
+    bsession = bill_e.elements['session'].text.to_i
+    bident = "#{btype}#{bnumber}-#{bsession}"
+
+    bill = Bill.where(:session => bsession, :number => bnumber, :bill_type => btype).first
 
     if bill
       puts "BILL #{bill.title_full_common}"
@@ -91,13 +90,9 @@ begin
       bill.bill_position_organizations = orgs
       bill.save
     else
-      puts "WARNING: unknown bill: #{bill_e.elements["session"].text}-#{bill_e.elements["prefix"].text}#{bill_e.elements["number"].text}"
+      puts "WARNING: unknown bill: #{bident}"
     end
     
     # adding sleep to try to decrease load on CPU
     sleep(3)
   end
-rescue 
-  puts "Error scraping! #{$!.backtrace.join("\n")}"
-  throw $!
-end

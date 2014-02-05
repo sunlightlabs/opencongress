@@ -112,7 +112,7 @@
                             <p>Sessions</p>
                             <ul class="search-options">
                                 <% Settings.available_congresses.each do |c| %>
-                                    <li><label><%= check_box_tag "search_congress[#{c}]", "#{c}", c == Settings.default_congress ? true : false %> <%= c.ordinalize %> Congress</label></li>
+                                  <li><label><%= check_box_tag "search_congress[#{c}]", "#{c}", (params[:search_congress].nil? || params[:search_congress].include?(c.to_s)) %> <%= c.ordinalize %> Congress</label></li>
                                 <% end %>
                             </ul>
                         </div>

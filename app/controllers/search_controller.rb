@@ -51,12 +51,7 @@ class SearchController < ApplicationController
 
       if @search_bills
         # TODO: Finish full text search
-        @bills_found = Bill.search(:load => true, :page => @page, :per_page => @per_page) do
-          query do
-            string query_string
-          end
-          filter :terms, :congress => congresses
-        end
+        @bills_found = Bill.full_text_search(query_string, congresses, :load => true, :per_page => @per_page, :page => @page)
         @bills = @bills_found.results
         @item_count += @bills_found.total_count
       else

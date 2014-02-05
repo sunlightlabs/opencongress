@@ -1192,6 +1192,62 @@ class Bill < ActiveRecord::Base
    SERIALIZATION_STYLES[style].merge(ops)
   end
 
+  def self.full_text_search (query_string, congresses, options = {})
+    fields = ["manual_title",
+              "summary",
+              "short_title",
+              "official_title",
+              "popular_title",
+              "titles",
+              "plain_language_summary",
+              "top_subject_term",
+              "ident",
+              "sponsor_name",
+              "cosponsor_names"]
+
+    query_object = {
+      :query => {
+        :function_score => {
+          :query => {
+            :query_string => {
+              :query => query_string,
+              :fields => fields
+            }
+          },
+          :functions => [
+            {
+              "exp" => {
+                "steps_remaining" => {
+                  "origin" => 0,
+                  "scale" => 5
+                }
+              }
+            }
+          ]
+        }
+      },
+      :filter => {
+        :terms => {
+          :congress => congresses
+        }
+      }
+    }
+
+    if (congresses.length > 1)
+      query_object[:query][:function_score][:functions] << {
+        "gauss" => {
+          "congress" => {
+            "origin" => congresses.max,
+            "scale" => congresses.length + 1
+          }
+        }
+      }
+    end
+
+    options[:payload] = query_object
+    Tire.search('bills', options).results
+  end
+
   mapping do
     indexes :id,         :index => :not_analyzed
     indexes :number,     :index => :not_analyzed

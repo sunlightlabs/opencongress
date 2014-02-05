@@ -300,10 +300,20 @@ class Committee < ActiveRecord::Base
     proper_name.downcase.gsub(/[\s\-]+/, "_").gsub(/[,\'\(\)]/,"")
   end
 
+  def self.full_text_search (query_string, options = {})
+    Committee.search(options) do
+      query do
+        string query_string
+      end
+      filter :term, :active => true
+    end
+  end
+
   mapping do
     indexes :name,             :as => proc { subcommittee_name || name }
     indexes :is_subcommittee,  :as => proc { not parent.nil? }
     indexes :members,          :as => proc { members.map(&:full_name) }
     indexes :thomas_id
+    indexes :active,           :index => :not_analyzed
   end
 end

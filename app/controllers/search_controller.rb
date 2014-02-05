@@ -64,11 +64,7 @@ class SearchController < ApplicationController
       end
 
       if @search_committees
-        @committees_found = Committee.search(:load => true, :page => @page, :per_page => @per_page) do
-          query do 
-            string query_string
-          end
-        end
+        @committees_found = Committee.full_text_search(query_string, :load => true, :per_page => @per_page, :page => @page)
         @committees = @committees_found.results.sort_by { |c| [(c.name || ''), (c.subcommittee_name || '')] }
                                                .group_by(&:name)
         @item_count += @committees_found.total_count

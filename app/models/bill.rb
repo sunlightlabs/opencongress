@@ -1199,6 +1199,7 @@ class Bill < ActiveRecord::Base
     indexes :congress,   :type => :integer, :as    => proc { session }
     indexes :introduced, :type => 'date', :as => proc { introduced && Time.at(introduced).to_datetime }
     indexes :lastaction, :type => 'date', :as => proc { lastaction && Time.at(lastaction).to_datetime }
+    indexes :steps_remaining, :type => :integer, :as => proc { 4 - bill_status_hash['current_step'] }
     indexes :titles,     :as    => proc { bill_titles.map(&:title) }
     indexes :official_title
     indexes :short_title

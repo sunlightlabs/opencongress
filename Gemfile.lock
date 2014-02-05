@@ -18,18 +18,9 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/geocoder.git
-  revision: b23cec8515f7075d06231be5670fd1a3d91871ed
+  revision: b58380ca7600f7c6c229ab7478f89957c19e847b
   specs:
-    geocoder (1.1.8)
-
-GIT
-  remote: https://github.com/danmayer/coverband.git
-  revision: f54fffdc291ece56ea84e935c136b683f606f2c2
-  specs:
-    coverband (0.0.14)
-      json
-      redis
-      simplecov
+    geocoder (1.1.9)
 
 GEM
   remote: http://rubygems.org/
@@ -104,9 +95,10 @@ GEM
     coderay (1.0.9)
     colored (1.2)
     columnize (0.3.6)
-    congress (0.1.1)
+    congress (0.2.0)
       faraday (~> 0.8.7)
       faraday_middleware (~> 0.9.0)
+      geocoder (~> 1.1.9)
       hashie (~> 2.0)
       json (~> 1.8)
       rash (~> 0.4)
@@ -123,6 +115,7 @@ GEM
       cucumber (>= 1.2.0)
       nokogiri (>= 1.5.0)
       rails (~> 3.0)
+    curb (0.8.5)
     daemons (1.1.9)
     database_cleaner (1.0.1)
     debug_inspector (0.0.2)
@@ -237,6 +230,11 @@ GEM
     method_source (0.8.1)
     mime-types (1.25.1)
     minitest (4.7.5)
+    minitest-reporters (0.14.24)
+      ansi
+      builder
+      minitest (>= 2.12, < 5.0)
+      powerbar
     minitest-spec-rails (4.7.6)
       minitest (~> 4.7)
       rails (>= 3.0, < 4.1)
@@ -286,6 +284,9 @@ GEM
     postmark-rails (0.5.1)
       actionmailer (>= 3.0.0)
       postmark (~> 1.0)
+    powerbar (1.0.11)
+      ansi (~> 1.4.0)
+      hashie (>= 1.1.0)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -439,10 +440,10 @@ DEPENDENCIES
   capybara
   carrierwave
   closure-compiler
-  congress
-  coverband!
+  congress (>= 0.2.0)
   cucumber
   cucumber-rails
+  curb
   database_cleaner
   delayed_job (~> 2.1)
   facebooker2
@@ -465,6 +466,7 @@ DEPENDENCIES
   mediacloth
   memcache-client
   minitest
+  minitest-reporters
   minitest-spec-rails
   mysql
   newrelic_rpm

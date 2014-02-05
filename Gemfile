@@ -37,8 +37,10 @@ gem 'fog'
 
 gem "awesome_nested_set", ">= 2.0"
 
-# Open Gov APIs
-gem "congress"
+gem 'curb'
+
+# Sunlight Foundation Congress API v3
+gem "congress", ">= 0.2.0"
 
 # jammit support
 gem "jammit"
@@ -104,8 +106,8 @@ gem 'phaxio'
 # You'll have to build QT yourself on Ubuntu: https://code.google.com/p/wkhtmltopdf/wiki/compilation
 gem 'pdfkit'
 
-# Production code coverage (dead code finder)
-gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
+## Production code coverage (dead code finder)
+# gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
 
 group :deployment do
   gem 'capistrano'
@@ -120,7 +122,6 @@ end
 group :production, :staging do
   gem 'unicorn'
   gem 'sentry-raven' #, :git => "git://github.com/getsentry/raven-ruby.git"
-  gem 'postmark-rails'
 end
 
 group :test, :development do
@@ -138,6 +139,7 @@ group :test, :development do
   gem 'redis'
   gem 'minitest'
   gem 'minitest-spec-rails'
+  gem 'minitest-reporters'
   gem 'rspec-expectations'
   gem 'random_data'
 end

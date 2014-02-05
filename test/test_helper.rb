@@ -1,16 +1,18 @@
-ENV["RAILS_ENV"] = "test"
+ENV["RAILS_ENV"] ||= "test"
 require File.expand_path("../../config/environment", __FILE__)
 require "rails/test_help"
+require "minitest/autorun"
 require "minitest/spec"
-
+require "minitest/reporters"
+require "minitest/pride"
 # To add Capybara feature tests add `gem "minitest-rails-capybara"`
 # to the test group in the Gemfile and uncomment the following:
 # require "minitest/rails/capybara"
 
-# Uncomment for awesome colorful output
-require "minitest/pride"
 
 DatabaseCleaner.strategy = :truncation
+MiniTest::Reporters.use!
+
 
 class MiniTest::Spec
   before :each do
@@ -21,6 +23,7 @@ class MiniTest::Spec
     DatabaseCleaner.clean
   end
 end
+
 
 class ActiveSupport::TestCase
     # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.

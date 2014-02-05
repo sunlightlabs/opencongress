@@ -74,7 +74,11 @@ class SearchController < ApplicationController
       # TODO: Add search over Commentary, which includes news and blogs
 
       if @item_count == 0
-        flash.now[:notice] = "Sorry, your search returned no results."
+        if (@congresses == ["#{Settings.default_congress}"])
+          flash.now[:error] = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
+        else
+          flash.now[:error] = "Sorry, your search returned no results."
+        end
       end
     end
   end

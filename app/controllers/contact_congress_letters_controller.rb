@@ -97,7 +97,7 @@ class ContactCongressLettersController < ApplicationController
 
     if @reps and @reps.size == 1
       @letter_start = "I am writing as your constituent in the #{@reps.first.district.to_i.ordinalize} Congressional district of #{State.for_abbrev(@reps.first.state)}. "
-      @letter_pat = "I am writing as your constituent in the [0-9thsnd]+ Congressional district of [a-zA-Z ]+. ?"
+      @letter_pat = "I am writing as your constituent in the [0-9sthnrd]+ Congressional district of [a-zA-Z ]+. ?"
     else
       @reps = []
     end

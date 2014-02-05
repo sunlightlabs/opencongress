@@ -234,8 +234,11 @@ class ProfileController < ApplicationController
 
   # Takes bookmark, either int id or Bookmark object,
   # confirms it belongs to current_user and deletes it.
-  def remove_bookmark(bookmark, name = 'Bookmark')
-    bookmark = current_user.bookmarks.find_by_id(bookmark) if bookmark.is_a? Integer
+  def remove_bookmark(bookmark = nil, name = 'Bookmark')
+    bookmark = params[:id].to_i if bookmark.nil?
+    if bookmark.is_a? Integer
+      bookmark = current_user.bookmarks.find_by_id(bookmark) if bookmark.is_a? Integer
+    end
     if bookmark && bookmark.user == current_user
       destroyed = bookmark.destroy rescue false
     end

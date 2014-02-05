@@ -1205,7 +1205,11 @@ class Bill < ActiveRecord::Base
               "sponsor_name",
               "cosponsor_names"]
 
+    per_page = options.fetch(:per_page, 10)
+    from = per_page * (options.fetch(:page, 1) - 1)
     query_object = {
+      :size => per_page,
+      :from => from,
       :query => {
         :function_score => {
           :query => {

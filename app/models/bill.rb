@@ -1249,7 +1249,7 @@ class Bill < ActiveRecord::Base
     end
 
     options[:payload] = query_object
-    Tire.search('bills', options).results
+    Tire.search(Bill.tire.index_name, options).results
   end
 
   mapping do

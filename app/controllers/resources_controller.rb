@@ -311,18 +311,11 @@ class ResourcesController < ApplicationController
     @house_bill_ident = "111-h3962"
     @senate_bill_ident = "111-h3590"
 
-    if params[:state] && @state_name = State.for_abbrev(params[:state])
-      # Count number of users in this state tracking this bill
-      query = "my_state:(\"#{params[:state]}\")"
-      @house_user_count = User.count_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_bills_tracked:#{@house_bill_ident}"]})
-      @senate_user_count = User.count_by_solr(query, :facets => {:browse => ["public_tracking:true", "my_bills_tracked:#{@senate_bill_ident}"]})
-    else
-      @house_bill = Bill.find_by_ident(@house_bill_ident)
-      @senate_bill = Bill.find_by_ident(@senate_bill_ident)
+    @house_bill = Bill.find_by_ident(@house_bill_ident)
+    @senate_bill = Bill.find_by_ident(@senate_bill_ident)
 
-      @house_user_count = @house_bill.blank? ? 0 : @house_bill.tracking_suggestions[0]
-      @senate_user_count = @senate_bill.blank? ? 0 : @senate_bill.tracking_suggestions[0]
-    end
+    @house_user_count = @house_bill.blank? ? 0 : @house_bill.tracking_suggestions[0]
+    @senate_user_count = @senate_bill.blank? ? 0 : @senate_bill.tracking_suggestions[0]
 
     @page_title = "Healthcare Widget"
 

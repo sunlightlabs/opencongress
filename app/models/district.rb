@@ -32,35 +32,19 @@ class District < ActiveRecord::Base
 
   def user_count
     User.for_district(state.abbreviation, district_number).count
-    # User.count_by_sql(['select count(distinct users.id) from users where district like ?;', "%#{state.abbreviation}-#{district_number}%"])
-    # User.count_by_solr("my_state:\"#{abbreviation}\"")
   end
 
 
   def users
     User.for_district(state.abbreviation, district_number)
-    # User.find_by_sql(['select distinct users.id, users.login from users where district like ?;', "%#{state.abbreviation}-#{district_number}%"])
-    # User.find_by_solr("my_district:#{self.state.abbreviation}-#{district_number}", :facets => {:fields => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed,
-    #                        :my_committees_tracked, :my_bills_tracked, :my_people_tracked, :my_issues_tracked,
-    #                        :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens], :limit => 10, :sort => true, :browse => ["public_tracking:true", "public_actions:true"]}, :order => "last_login desc")
   end
 
   def all_users
     users
-    # User.find_by_sql(['select distinct users.id, users.login from users where district like ?;', "%#{state.abbreviation}-#{district_number}%"])
-    # User.find_by_solr("my_district:#{self.state.abbreviation}-#{district_number}", :facets => {:fields => [:public_actions, :public_tracking, :my_bills_supported, :my_bills_opposed,
-    #                        :my_committees_tracked, :my_bills_tracked, :my_people_tracked, :my_issues_tracked,
-    #                        :my_approved_reps, :my_approved_sens, :my_disapproved_reps, :my_disapproved_sens], :limit => 500, :sort => true}, :order => "last_login desc")
-
   end
 
   def all_active_users
     User.active.for_district(state.abbreviation, district_number)
-    # User.find_by_sql(['select distinct users.id, users.login from users where district like ? AND previous_login_date >= ;',
-    #                   "%#{state.abbreviation}-#{district_number}%", 2.months.ago])
-    # query = "my_district:#{self.state.abbreviation}-#{district_number} AND last_login:[#{(Time.now - 2.months).iso8601[0,19] + 'Z'} TO *] AND total_number_of_actions:[5 TO *]"
-    # User.find_by_solr(query, :limit => 500, :order => "last_login desc")
-
   end
 
   # TODO: This finder returned incongrous results with its companion method, all_active_users.

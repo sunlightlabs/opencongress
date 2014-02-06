@@ -177,15 +177,6 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def self.custom_index_rebuild
-    Person.rebuild_solr_index(30) do |person, options|
-       person.find(:all, options.merge({:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='sen' AND roles.enddate > ?", Date.today]}))
-    end
-    Person.rebuild_solr_index(30) do |person, options|
-       person.find(:all, options.merge({:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='rep' AND roles.enddate > ?", Date.today]}))
-    end
-  end
-
   def to_light_xml(options = {})
     default_options = {:methods => [:oc_user_comments, :oc_users_tracking]}
     self.to_xml(default_options.merge(options))

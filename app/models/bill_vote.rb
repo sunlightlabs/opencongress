@@ -126,11 +126,6 @@ class BillVote < ActiveRecord::Base
   end
 
   private
-  def save_associated_user
-    # removed solr stuff for now -- June 2012
-    #self.user.solr_save
-  end
-
   def update_last_user_vote_on_bill
     bill.last_user_vote = updated_at
     bill.save!

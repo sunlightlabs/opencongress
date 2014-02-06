@@ -30,9 +30,4 @@ class PrivacyOption < ActiveRecord::Base
     ACCESSIBLE_ATTRS.map{|att| self.send("#{att}=".to_sym, 0)}
     save
   end
-
-  private
-  def save_associated_user
-    #self.user.solr_save
-  end
 end

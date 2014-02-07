@@ -497,3 +497,80 @@ ul.status-lights li.off:before { background: #d05b5b; }
 #content_footer .callout-text {
     padding-left: 20px;
 }
+
+/* Banner ad */
+.top-banner {
+    position: relative;
+    height: 65px;
+    background: #f0f9fb;
+}
+
+.top-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 4px;
+    border: 1px dashed #ddd;
+}
+
+.top-banner--ppf {
+    width: 65%;
+    margin: auto;
+    padding-top: 17px;
+}
+.top-banner--ppf a,
+.top-banner--ppf p,
+.top-banner--ppf img{
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+}
+.top-banner--ppf p {
+    width: 325px;
+    margin-left: 25px;
+}
+
+.top-banner--ppf .btn {
+    margin-left: 25px;
+    padding: 5px 15px;
+    border-bottom: 2px solid #c55948;
+    border-radius: 2px;
+    box-shadow: none;
+    background: #ef6c57;
+    font-size: 12px;
+    text-shadow: none;
+    color: #fff;
+}
+
+.top-banner--ppf .btn:hover,
+.top-banner--ppf .btn:active {
+    background: #e56753;
+    color: #fff;
+}
+
+.top-banner--ppf .btn:active {
+    top: 1px;
+    border-bottom: 1px solid #c55948;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

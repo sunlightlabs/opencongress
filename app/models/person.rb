@@ -1415,6 +1415,43 @@ class Person < ActiveRecord::Base
     super(SERIALIZATION_OPS.merge(ops))
   end
 
+  def self.full_text_search(query_string, congresses, options = {})
+    congresses = congresses.map(&:to_i)
+    per_page = options.fetch(:per_page, 10)
+    from = per_page * (options.fetch(:page, 1) - 1)
+    query_object = {
+      :size => per_page,
+      :from => from,
+      :filter => {
+        :terms => {
+          :congresses_active => congresses
+        }
+      },
+      :query => {
+        :function_score => {
+          :query => {
+            :query_string => {
+              :query => query_string,
+              :fields => ['firstname', 'lastname', 'middlename', 'nickname',
+                          'state_abbreviation', 'state_name']
+            }
+          },
+          :functions => [
+            {
+              :gauss => {
+                :latest_role_startdate => {
+                  :origin => Date.today.to_s,
+                  :scale => "730d"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+    options[:payload] = query_object
+    Tire.search(Person.tire.index_name, options).results
+  end
 
   mapping do
     indexes :govtrack_id,           :index => :not_analyzed
@@ -1430,5 +1467,6 @@ class Person < ActiveRecord::Base
     indexes :state_abbreviation,    :as => proc { state }
     indexes :state_name,            :as => proc { State::STATE_FOR_ABBREV[state] }
     indexes :congresses_active,     :type => :integer, :as => proc { congresses_active }
+    indexes :latest_role_startdate, :type => :date, :as => proc { latest_role && latest_role.startdate }
   end
 end

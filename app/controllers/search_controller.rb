@@ -37,12 +37,7 @@ class SearchController < ApplicationController
       @search_issues = params[:search_issues] ? true : false
 
       if @search_people
-        @people_found = Person.search(:load => true, :per_page => @per_page, :page => @page) do
-          query do
-            string query_string
-          end
-          filter :terms, :congresses_active => congresses
-        end
+        @people_found = Person.full_text_search(query_string, congresses, :load => true, :per_page => @per_page, :page => @page)
         @people = @people_found.results
         @item_count += @people_found.total_count
       else

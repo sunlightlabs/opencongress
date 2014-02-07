@@ -133,13 +133,15 @@ class AccountController < ApplicationController
         result = Geocoder.search("#{params[:address]}, #{params[:zipcode]}").first
         lat = result.data['latLng']['lat']
         lng = result.data['latLng']['lng']
-        current_user.zipcode, current_user.zip_four = result.data['postalCode'].split('-')
+        zipcode, zip_four = result.data['postalCode'].split('-')
+        # This happens so the update_state_and_district method won't be invoked via callback
+        # on account of zipcode or zip_four being dirty.
+        User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode, :zip_four => zip_four)
         new_district = current_user.update_state_and_district(:lat => lat, :lng => lng)
       else
         new_district = current_user.update_state_and_district
       end
       current_user.save
-
       if current_user.state.present? and current_user.district.present?
         flash[:notice] = "Your Congressional District (#{new_district}) has been saved."
         activate_redirect(user_profile_path(:login => current_user.login))

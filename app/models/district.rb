@@ -268,7 +268,14 @@ class District < ActiveRecord::Base
       mapquest_granularity_ranking = [
         'P1', 'L1', 'I1', 'B1', 'B2', 'B3', 'Z4', 'Z3', 'Z2', 'A5', 'Z1', 'A4', 'A3', 'A1'
       ]
-      geos = m.captures.map{ |c| Geocoder.search(c)[0] }.compact.sort_by do |g|
+      geos = m.captures.map do |c|
+        # Geocodes each capture result: Full address, Without Zip, Zip only
+        Geocoder.search(c)[0]
+      end.filter do |g|
+        # Filters results to only those where the state matches the original query
+        address.include?(g.data['adminArea3'])
+      end.compact.sort_by do |g|
+        # Sorts by Mapquest Specificity Code
         granularity_code = g.data['geocodeQualityCode'].slice(0, 2)
         mapquest_granularity_ranking.index(granularity_code) or mapquest_granularity_ranking.length
       end

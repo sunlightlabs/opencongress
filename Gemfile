@@ -51,7 +51,7 @@ gem 'paperclip'
 gem 'unicode_utils'
 
 # Geocoding users on create
-gem 'geocoder', :git => 'git://github.com/sunlightlabs/geocoder.git'
+gem 'geocoder', :git => 'git://github.com/sunlightlabs/geocoder.git', :branch => 'oc'
 
 # notifier for production errors
 gem "airbrake"

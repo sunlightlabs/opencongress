@@ -606,6 +606,7 @@ class PeopleController < ApplicationController
       if params[:zip5].present?
         address = "#{address}, #{params[:zip5]}"
         if params[:zip4].present?
+          # Address ends in zip5 here, so this makes sense, actually.
           address = "#{address}-#{params[:zip4]}"
         end
       end

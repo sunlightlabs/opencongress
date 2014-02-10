@@ -272,8 +272,10 @@ class District < ActiveRecord::Base
         # Geocodes each capture result: Full address, Without Zip, Zip only
         Geocoder.search(c)[0]
       end.compact.select do |g|
-        # Filters results to only those where the state matches the original query
-        address.include?(g.data['adminArea3'])
+        # Filters results to only those where the state matches the original query,
+        # but only if a state was in the original query.
+        return address.include?(g.data['adminArea3']) if (address =~ /[A-Z]{2}/).present?
+        true
       end.sort_by do |g|
         # Sorts by Mapquest Specificity Code
         granularity_code = g.data['geocodeQualityCode'].slice(0, 2)

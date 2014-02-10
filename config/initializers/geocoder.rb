@@ -1,5 +1,9 @@
 Geocoder.configure(
   :use_https => true,
   :lookup => :mapquest,
-  :api_key => ApiKeys.mapquest
+
+  :mapquest => {
+    :licensed => true,
+    :api_key => ApiKeys.mapquest
+  }
 )

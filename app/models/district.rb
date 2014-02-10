@@ -274,8 +274,11 @@ class District < ActiveRecord::Base
       end.compact.select do |g|
         # Filters results to only those where the state matches the original query,
         # but only if a state was in the original query.
-        return address.include?(g.data['adminArea3']) if (address =~ /[A-Z]{2}/).present?
-        true
+        if (address =~ /[A-Z]{2}/).present?
+          address.include?(g.data['adminArea3'])
+        else
+          true
+        end
       end.sort_by do |g|
         # Sorts by Mapquest Specificity Code
         granularity_code = g.data['geocodeQualityCode'].slice(0, 2)

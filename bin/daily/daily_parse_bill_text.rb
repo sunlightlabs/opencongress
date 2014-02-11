@@ -173,7 +173,13 @@ def get_text_word_count(bill_type, bill_number, text_version)
 end
 
 def parse_from_file(bill, text_version, filename)
-  file = File.open(filename)
+  begin
+    file = File.open(filename)
+  rescue Errno::ENOENT => e
+    OCLogger.log "Could not parse #{text_version} text for #{bill.ident} (#{filename}) because: #{e}"
+    return
+  end
+
   file_timestamp = File.mtime(filename)
   doc = REXML::Document.new file
 

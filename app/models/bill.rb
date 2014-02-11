@@ -21,7 +21,7 @@ class Bill < ActiveRecord::Base
   has_many :bill_subjects
   has_many :subjects, :through => :bill_subjects
   belongs_to :top_subject, :class_name => 'Subject', :foreign_key => :top_subject_id
-  has_many :amendments, :order => 'offered_datetime', :include => :roll_calls
+  has_many :amendments, :order => ["offered_datetime DESC", "number DESC"], :include => :roll_calls
   has_many :roll_calls, :order => 'date DESC'
   has_many :comments, :as => :commentable
   has_many :object_aggregates, :as => :aggregatable

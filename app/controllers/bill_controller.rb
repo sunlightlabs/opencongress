@@ -500,7 +500,6 @@ class BillController < ApplicationController
     pagination_opts = {
       :page => @page,
       :per_page => 10,
-      :order => ["retreived_date DESC"], # TODO: Fix spelling of retrieved in db. Requires updating fixtures, etc.
       :conditions => ["offered_datetime IS NOT NULL"]
     }
     @amendments = @bill.amendments.paginate(pagination_opts)

@@ -23,6 +23,7 @@ Vagrantfile
 .bundle
 .vagrant
 .*.swp
+.sass-cache/
 TAGS
 *.sqlite3
 helium.json

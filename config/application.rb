@@ -7,9 +7,6 @@ require File.expand_path('../../lib/extensions.rb', __FILE__)
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
-# This must be called after bundler requires gems
-require File.expand_path('../../lib/plugins_loader', __FILE__)
-
 # Faxable includes a railtie and must be required before the env boots
 require File.expand_path('../../lib/faxable', __FILE__)
 

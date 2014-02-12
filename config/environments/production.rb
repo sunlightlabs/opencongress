@@ -45,4 +45,14 @@ OpenCongress::Application.configure do
   Paperclip.options[:command_path] = "/usr/local/bin"
 
   GC.enable_stats if defined?(GC) && GC.respond_to?(:enable_stats)
+
+  # Compress JS / CSS
+  config.assets.compress = true
+
+  # Don't fall back to pipeline if an asset isn't precompiled
+  config.assets.compile = false
+
+  # Generate digests for asset URLs
+  config.assets.digest = true
+
 end

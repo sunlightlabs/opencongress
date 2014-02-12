@@ -3,9 +3,12 @@ require File.expand_path('../boot', __FILE__)
 require 'rails/all'
 require File.expand_path('../../lib/extensions.rb', __FILE__)
 
-# If you have a Gemfile, require the gems listed there, including any gems
-# you've limited to :test, :development, or :production.
-Bundler.require(:default, Rails.env) if defined?(Bundler)
+if defined?(Bundler)
+  # If you precompile assets before deploying to production, use this line
+  Bundler.require *Rails.groups(:assets => %w(development test))
+  # If you want your assets lazily compiled in production, use this line
+  # Bundler.require(:default, :assets, Rails.env)
+end
 
 # Faxable includes a railtie and must be required before the env boots
 require File.expand_path('../../lib/faxable', __FILE__)
@@ -15,6 +18,9 @@ require File.expand_path('../../lib/active_record/humanized_attributes', __FILE_
 
 module OpenCongress
   class Application < Rails::Application
+    # Enable the asset pipeline
+    config.assets.enabled = true
+    config.assets.version = '1.0'
 
     # Detect and handle jsonp requests
     require 'rack/contrib'

@@ -34,4 +34,10 @@ OpenCongress::Application.configure do
   config.action_dispatch.best_standards_support = :builtin
 
   config.faxable.deliver_faxes = false
+
+  # Don't compress assets in dev
+  config.assets.compress = false
+
+  # Don't concatenate assets in dev
+  config.assets.debug = true
 end

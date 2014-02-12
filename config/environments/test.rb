@@ -36,4 +36,9 @@ OpenCongress::Application.configure do
 
   config.faxable.deliver_faxes = false
 
+  config.serve_static_assets = true
+  config.static_cache_control = "public, max-age=3600"
+
+  # Allow passing of debug_assets=true as a query param to unpack assets
+  config.assets.allow_debugging = true
 end

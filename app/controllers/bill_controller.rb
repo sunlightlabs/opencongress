@@ -763,8 +763,14 @@ private
 
   def page_view
     bill_type, number, session = Bill.ident params[:id]
+    @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => :actions })
 
-    if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => :actions })
+    # Enforce canonical urls
+    if @bill.ident != params[:id]
+      redirect_to bill_path(@bill.ident), :status => 301 and return
+    end
+
+    if @bill.present?
       key = "page_view_ip:Bill:#{@bill.id}:#{request.remote_ip}"
       unless read_fragment(key)
         @bill.increment!(:page_views_count)

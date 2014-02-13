@@ -15,6 +15,10 @@ else
   data=$1
 fi
 
+if [ -z "$congress" ]; then
+  congress=113
+fi
+
 if [ ! -d "$data/govtrack" ]
 then
   mkdir -p $data/govtrack
@@ -34,6 +38,6 @@ cd $data
 
 echo "\n\nrsyncing govtrack at `date`"
 rsync -avz govtrack.us::govtrackdata/us/people.xml ./govtrack/
-rsync -avz --exclude '*.pdf' --exclude '*.png' govtrack.us::govtrackdata/us/113 ./govtrack/
-rsync -avz --exclude '*.pdf' govtrack.us::govtrackdata/us/bills.text/113 ./govtrack/bills.text/ 
-rsync -avz govtrack.us::govtrackdata/us/bills.text.cmp/113 ./govtrack/bills.text.cmp/
+rsync -avz --exclude '*.pdf' --exclude '*.png' govtrack.us::govtrackdata/us/$congress ./govtrack/
+rsync -avz --exclude '*.pdf' govtrack.us::govtrackdata/us/bills.text/$congress ./govtrack/bills.text/ 
+rsync -avz govtrack.us::govtrackdata/us/bills.text.cmp/$congress ./govtrack/bills.text.cmp/

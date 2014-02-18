@@ -32,7 +32,7 @@ currently running postgres 9.1 in production.
 
 For Ubuntu:
 
-    sudo apt-get install postgresql postgresql-client postgresql-contrib libpq-dev ruby1.8 ruby1.8 dev rubygems libopenssl-ruby imagemagick libmagick9-dev gcj-4.4-jre wkhtmltopdf
+    sudo apt-get install postgresql postgresql-client postgresql-contrib libpq-dev ruby-dev rubygems libopenssl-ruby imagemagick libmagick++-dev gcj-4.4-jre wkhtmltopdf
 
 For Mac OS X, start by installing [Homebrew](http://mxcl.github.io/homebrew/),
 then run:
@@ -55,16 +55,14 @@ for your gems. Try: `ARCHFLAGS="-arch x86_64" bundle install`
 
 ---
 
-Generate your settings files. First change into the opencongress directory and then:
+Generate your settings files. First change into the `opencongress` directory and then:
 
-    cp config/api_keys.yml.example config/api_keys.yml &&
-    cp config/application_settings.yml.example config/api_keys.yml &&
-    cp config/assets.yml.example config/assets.yml &&
-    cp config/cucumber.yml.example config/cucumber.yml &&
-    cp config/database.yml.example config/database.yml &&
-    cp config/facebooker.yml.example config/facebooker.yml
+    cp config/api_keys.yml.example config/api_keys.yml
+    cp config/application_settings.yml.example config/application_settings.yml
+    cp config/database.yml.example config/database.yml
 
 Be sure to fill out these new files with the relevant details before proceeding.
+
 
 ### Database setup
 

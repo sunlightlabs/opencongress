@@ -1,15 +1,12 @@
 /*
 *= require 960
-*= require classes
-*= require modal
 *= require reset
-*= require typo
-*= require master
-*= require home
+*= require_tree ./base
 *= require jqModal
 *= require jquery.jcarousel
-*= require search
+*= require app/home
+*= require app/search
 *= require bootstrap-custom.min
-*= require interim_index
+*= require app/interim_index
 *= require_self
 */

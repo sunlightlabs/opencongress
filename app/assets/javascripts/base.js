@@ -1,0 +1,25 @@
+//= require prototype
+//= require prototype_ujs
+//= require effects
+//= require dragdrop
+//= require controls
+//= require jquery
+//= require jquery-migrate-min
+//= require_self
+//= require jquery_ujs
+//= require bootstrap
+//= require jquery.buildr
+//= require jquery.formatCurrency-1.4.0.min
+//= require jquery.form.min
+//= require jquery.qtip-1.0.0-rc3.min
+//= require jquery.simplyCountable
+//= require jqmodal
+//= require star-rating/jquery.MetaData
+//= require star-rating/jquery.rating
+//= require slider
+//= require sorttable
+//= require builder
+//= require m
+//= require styles
+
+window.$j = jQuery.noConflict();

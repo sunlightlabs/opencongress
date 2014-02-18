@@ -1,0 +1,12 @@
+/*
+*= require 960
+*= require reset
+*= require app/home
+*= require jqModal
+*= require jquery.jcarousel
+*= require app/search
+*= require bootstrap-custom.min
+*= require_tree ./base
+*= require app/interim_index
+*= require_self
+*/

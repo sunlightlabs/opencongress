@@ -1,5 +1,5 @@
 // Place your application-specific JavaScript functions and classes here
-// This file is automatically included by javascript_include_tag :defaults
+// This file is automatically included by javascript_include_tag :application
 function openRollCallOverlay(div_id)
 {
   $j('#'+div_id).jqmShow();
@@ -329,15 +329,15 @@ BillText = {
   $(function(){
     $('img.legislator-photo').error(function(e){
         e.preventDefault();
-        $(this).attr('src', '/images/missing-medium.png');
+        $(this).attr('src', 'missing-medium.png');
     });
     $('img.legislator-photo-thumb').error(function(e){
         e.preventDefault();
-        $(this).attr('src', '/images/missing-thumb.png');
+        $(this).attr('src', 'missing-thumb.png');
     });
     $('img.legislator-photo-full').error(function(e){
         e.preventDefault();
-        $(this).attr('src', '/images/missing-full.png');
+        $(this).attr('src', 'missing-full.png');
     });
 
     // init tabs

@@ -1,3 +1,10 @@
+//= require underscore-1.1.6
+//= require widget
+//= require jscolor
+//= require json2
+//= require_self
+//= require_tree ./widgets/templates
+
 var isNumeric = function(input) {
    return (input - 0) == input && input.length > 0;
 };

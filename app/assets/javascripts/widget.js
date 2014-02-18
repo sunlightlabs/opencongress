@@ -1,9 +1,14 @@
-/* 
+//= require underscore-1.1.6
+//= require_self
+//= require_tree ./widgets/templates
+//= require_tree ./widgets
+
+/*
  * By Carl Tashian (carl@tashian.com)
  * (c) 2011 Participatory Politics Foundation
- * 
+ *
  * The structure of this was inspired by twitter's widget.js by Dustin Diaz (dustin@twitter.com)
- * 
+ *
  */
 
 /* Call this widget like so:
@@ -23,7 +28,7 @@
 */
 
 String.prototype.pluralize = function(count, plural)
-{ 
+{
   var r = count + ' ';
 
   if (count != 1) {
@@ -55,7 +60,7 @@ OC = window.OC || {};
   OC.dateFromISO8601 = function (time) {
   	return new Date((time || "").replace(/^(\d+)-(\d+)-(\d+)/,"$1/$2/$3").replace(/[TZ]/g," "));
   };
-  
+
   OC.ordinalize = function(number) {
       if (11 <= parseInt(number) % 100 && parseInt(number) % 100 <= 13) {
           return number + "th";
@@ -68,15 +73,15 @@ OC = window.OC || {};
           }
       }
   };
-  
+
   OC.number_with_delimiter = function (number, delimiter) {
     number = number + '', delimiter = delimiter || ',';
     var split = number.split('.');
     split[0] = split[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + delimiter);
     return split.join('.');
   };
-  
-  
+
+
   /*
    * Date Format 1.2.3
    * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
@@ -246,7 +251,7 @@ OC = window.OC || {};
       }
       document.getElementsByTagName("head")[0].appendChild(styleElement);
     };
-  	
+
     /* Append a new stylesheet link tag */
   	var injectStyleSheet = function(url, widgetEl) {
       var linkElement = document.createElement('link');
@@ -257,7 +262,7 @@ OC = window.OC || {};
     };
 
   	var isHttps = location.protocol.match(/https/);
-  	
+
     OC.Widget.WIDGET_NUMBER = 0;
 
     // The actual widget code starts here.
@@ -317,12 +322,12 @@ OC = window.OC || {};
           // widget-specific parameters
           this.bill = ops.bill;
           this.group = ops.group;
-          
+
           this.url = this._getUrl();
           this._reset();
 
           this._ready = isFunction(ops.ready) ? ops.ready : function() { };
-          
+
           return this;
         },
 
@@ -335,7 +340,7 @@ OC = window.OC || {};
             this.widgetEl = document.getElementById(this.id);
           }
         },
-      
+
         _getDefaultTheme: function() {
           return {
             background: "#f9f9f9",
@@ -437,7 +442,7 @@ OC = window.OC || {};
           this.widgetEl.getElementsByTagName('h3')[0].innerHTML = this.title;
           return this;
         },
-        
+
         setCaption: function(subject) {
           this.subject = subject;
           this.widgetEl.getElementsByTagName('h4')[0].innerHTML = this.subject;
@@ -451,7 +456,7 @@ OC = window.OC || {};
           return this;
         },
 
-        
+
         setGroup: function(group) {
           this.group = this.ops.group = group;
           this.url = this._getUrl();
@@ -477,7 +482,7 @@ OC = window.OC || {};
         }
       }
     }();
-    
+
   })(); // internal namespace
 
 })(); // application closure

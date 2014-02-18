@@ -11,7 +11,7 @@
     </title>
 
     <% unless content_for?(:stylesheets) %>
-      <%= include_stylesheets :application, :media => 'all' %>
+      <%= stylesheet_link_tag :application, :media => 'all' %>
 
       <%= stylesheet_link_tag('admin') if @admin_styles %>
 
@@ -31,7 +31,7 @@
     <% end %>
 
     <% unless content_for?(:javascripts) %>
-      <%= include_javascripts :defaults, :common  %>
+      <%= javascript_include_tag :application  %>
       <script>
         var $j = jQuery.noConflict();
       </script>

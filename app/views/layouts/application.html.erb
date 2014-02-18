@@ -18,7 +18,7 @@
   <%= bookmarking_image.html_safe %>
 
   <% unless content_for?(:javascripts) %>
-    <%= include_javascripts :defaults, :common  %>
+    <%= javascript_include_tag :application  %>
     <script>
       var $j = jQuery.noConflict();
     </script>
@@ -37,17 +37,17 @@
   <% end %>
 
   <% unless content_for?(:stylesheets) %>
-    <%= include_stylesheets :application, :media => 'all' %>
+    <%= stylesheet_link_tag :application, :media => 'all' %>
 
-    <%= stylesheet_link_tag('admin') if @admin_styles %>
+    <%= stylesheet_link_tag('app/admin') if @admin_styles %>
 
     <% unless @admin_styles %>
-        <%= stylesheet_link_tag(controller.controller_name) if FileTest.exist?(Rails.root.join("public", "stylesheets", controller.controller_name + ".css")) %>
+        <%= stylesheet_link_tag("app/#{controller.controller_name}") if FileTest.exist?(Rails.root.join("app", "assets", "stylesheets", "app", controller.controller_name + ".css")) %>
     <% end %>
 
-    <%= stylesheet_link_tag 'vids' if @include_vids_styles %>
+    <%= stylesheet_link_tag 'app/vids' if @include_vids_styles %>
     <%= stylesheet_link_tag 'jquery.jcarousel' if @carousel %>
-    <%= stylesheet_link_tag 'oc-wiki' if @include_wiki_styles %>
+    <%= stylesheet_link_tag 'app/oc-wiki' if @include_wiki_styles %>
 
     <!--[if lt IE 7]><style type="text/css">@import url("/stylesheets/ie6.css");</style><![endif]-->
     <!--[if IE 7]><style type="text/css">@import url("/stylesheets/ie7.css");</style><![endif]-->

@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'rails', '~> 3.2.0'
+
 gem 'rake'
 
 # database gems -- need both pg and mysql for app and wiki
@@ -75,13 +76,13 @@ gem 'pdfkit'
 
 
 group :assets do
-  gem "sass-rails"
+  gem "sass-rails", ">= 3.2"
+  gem "bootstrap-sass", "~>2.1.1"
   gem "uglifier"
   gem "closure-compiler"
   gem "jquery-rails"
   gem "jquery-migrate-rails"
   gem "prototype-rails"
-  gem "bootstrap-sass", "~>2.1.1"
   gem "ejs"
 end
 

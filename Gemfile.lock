@@ -516,7 +516,7 @@ DEPENDENCIES
   rmagick (~> 2.13.1)
   rspec-rails
   ruby-openid
-  sass-rails
+  sass-rails (>= 3.2)
   selenium-client
   sentry-raven
   settingslogic

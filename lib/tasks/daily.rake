@@ -123,17 +123,6 @@ namespace :update do
     end
   end
 
-  desc "Loads bills from United States repo"
-  task :bills => :environment do
-    begin
-      require File.expand_path 'bin/import_bills', Rails.root
-    rescue Exception => e
-      Emailer.rake_error(e, "Error importing bills!").deliver
-      throw e
-    end
-  end
-
-
   desc "Loads bill text from govtrack"
   task :bill_text => :environment do
     begin
@@ -357,7 +346,7 @@ namespace :update do
     :unitedstates_rsync, :rsync,
     :congress_legislators, :sunlightlabs,
     :photos,
-    :import_legislators, :bills,
+    :import_legislators, "import:bills:current",
     :amendments,
     :roll_calls,
     :committees, :committee_memberships,
@@ -366,7 +355,7 @@ namespace :update do
     :in_session,
     :expire_cached_bill_fragments, :expire_cached_person_fragments
   ]
-  task :parse_all => [ :people, :bills, :amendments, :roll_calls, :committee_reports, :committee_schedule]
+  task :parse_all => [ :people, "import:bills:current", :amendments, :roll_calls, :committee_reports, :committee_schedule]
   task :govtrack => [ :rsync, :bill_text ]
   task :committee_info => [:committee_reports, :committee_schedule]
   task :people_meta_data => [:person_voting_similarities, :sponsored_bill_stats, :expire_cached_person_fragments]

@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem 'rails', '~> 3.1'
-gem 'rake', '~> 0.9'
+gem 'rake'
 
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
@@ -69,13 +69,15 @@ gem 'pdfkit'
 # gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
 
 group :assets do
-  gem "sass-rails"
+  gem "sass-rails", ">= 3.2"
+  gem "jquery-rails"
+  gem "jquery-migrate-rails"
+  gem "prototype-rails"
+  gem "bootstrap-sass", "~>2.1.1"
+  gem "ejs" # for backbone templates
   gem "uglifier"
   gem "closure-compiler"
 end
-
-gem "jquery-rails"
-gem "prototype-rails"
 
 group :deployment do
   gem 'capistrano'

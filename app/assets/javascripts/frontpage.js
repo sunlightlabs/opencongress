@@ -1,3 +1,5 @@
+//= require base
+//= require_self
 
 var onMenu = 0;
 function switchBillTab(to, title) {

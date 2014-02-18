@@ -1,8 +1,11 @@
-function addLoadEvent(func) {    
+//= require gmap-wms
+//= require_self
+
+function addLoadEvent(func) {
     var oldonload = window.onload;
     if (typeof window.onload != 'function') {
         window.onload = func;
-    } 
+    }
     else {
         window.onload = function() {
             oldonload();
@@ -43,7 +46,7 @@ function distcenter(element_id, districtid, center, mapinfo) {
   addLoadEvent(function() {
     var map = new GMap2(document.getElementById(element_id));
     map.addControl(new GSmallZoomControl());
-    
+
     var WMS_URL = 'http://www.govtrack.us/perl/wms-cd.cgi?';
     var dist_or_state = districtid.length == 2 ? "state" : "district";
     var G_MAP_LAYER_FILLED = createWMSTileLayer(WMS_URL, "cd-filled," + dist_or_state + "=" + districtid, null, "image/gif", null, null, null, .25);
@@ -53,7 +56,7 @@ function distcenter(element_id, districtid, center, mapinfo) {
     map.addMapType(G_MAP_OVERLAY);
     map.setCenter(new GLatLng(center[0], center[1]), center[2]);
     map.setMapType(G_MAP_OVERLAY);
-    
+
     if (mapinfo !== undefined) {
         document.getElementById(mapinfo).style.display = 'none';
         var marker = new GMarker(new GLatLng(center[0], center[1]));

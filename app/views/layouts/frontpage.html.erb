@@ -16,17 +16,13 @@
     <%= bookmarking_image.html_safe %>
     <%= open_graph_meta %>
 
-    <%= include_javascripts :defaults, :common  %>
-    <script>
-      var $j = jQuery.noConflict();
-    </script>
+    <%= javascript_include_tag :frontpage  %>
     <script type="text/javascript" src="//use.typekit.net/xev8qlf.js"></script>
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-    <%= include_javascripts :frontpage  %>
     <%= csrf_meta_tag %>
     <%= remote_forgery_protection %>
 
-    <%= include_stylesheets :frontpage, :media => 'all' %>
+    <%= stylesheet_link_tag :frontpage, :media => 'all' %>
 
     <!--[if lt IE 7]><style type="text/css">@import url("/stylesheets/ie6.css");</style><![endif]-->
 

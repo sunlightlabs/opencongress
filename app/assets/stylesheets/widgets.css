@@ -1,3 +1,10 @@
+/*
+*= require 960
+*= require reset
+*= require_tree ./base
+*= require self
+*/
+
 .col1, .col2 {
   float: left;
   display: block;
@@ -19,7 +26,7 @@
   padding-right: 20px;
   }
 
-p{ 
+p{
   margin-bottom: 5px;
   }
 

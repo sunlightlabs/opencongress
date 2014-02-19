@@ -1,0 +1,499 @@
+.bootstrap-enabled strong { font-weight: 500; }
+.bootstrap-enabled a { color: #448ccb;}
+.bootstrap-enabled a:hover { color: #005580;}
+
+#content {
+    font-family: "franklin-gothic-urw", Helvetica, Arial, sans-serif;
+    font-weight: 400;
+}
+
+.two-up { width: 450px; height: 90px; -moz-box-sizing:border-box; box-sizing: border-box; float: left; }
+
+a.more,
+a.more:hover,
+a.more:active{
+    background: none;
+    padding: 0;
+}
+
+/* Hero and Homepage Search */
+
+#hero {
+    height: 435px;
+    background: #c4d9df url('<%= asset_path('oc-banner-bg.jpg') %>');
+    color: #fff;
+}
+
+#hero h1 {
+    float: none;
+    width: 800px;
+    margin: 60px auto 40px;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 30px;
+    line-height: 120%;
+}
+
+.bootstrap-enabled .form-search .input-append .search-query {
+    width: 450px;
+    height: 25px;
+    padding: 10px 20px;
+    margin-left: -16px;
+    border: 1px solid #ddd;
+    border-radius: 25PX;
+    font-family: "franklin-gothic-urw";
+    font-style: italic;
+    font-size: 18px;
+    margin-left: -16px;
+}
+
+.bootstrap-enabled .form-search .input-append .search-query::-webkit-input-placeholder { color: #bbb;}
+.bootstrap-enabled .form-search .input-append .search-query:-moz-placeholder { color: #bbb; opacity: 1;}
+.bootstrap-enabled .form-search .input-append .search-query::-moz-placeholder { color: #bbb; opacity: 1;}
+.bootstrap-enabled .form-search .input-append .search-query:-ms-input-placeholder { color: #bbb;}
+
+#hero button.search {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    margin-left: -40px;
+    border: 0;
+    border-top: 0;
+    border-bottom: 0;
+    background: none;
+    background-image: url('<%= asset_path('icon-search.png') %>');
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    outline: 0;
+    z-index: 10;
+    opacity: 0.7;
+    transition: opacity 100ms ease;
+}
+
+#hero button.search:hover, #hero button.search:active { opacity: 1;}
+
+.form-search .featured {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.form-search .featured a { text-decoration: underline; }
+.form-search .featured a:after { content: ','; }
+.form-search .featured a:last-child:after { content: ''; }
+
+/* Today in Congress Status */
+
+#in_session {
+    width: 475px;
+    height: 50px;
+    margin: 50px auto;
+    border: 1px solid #e3f2f4;
+    border: 1px solid rgba(255,255,255, .4);
+    font-weight: 300;
+    font-size: 15px;
+}
+
+h4.inset {
+    width: 220px;
+    margin: -10px auto 10px;
+    background: #c4d9df url('<%= asset_path('oc-banner-bg.jpg') %>') center 100px;
+    font-weight: 300;
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+ul.status-lights { margin: 0; }
+
+ul.status-lights li {
+    display: inline;
+    color: #666;
+}
+
+ul.status-lights li:first-child{ margin-right: 20px; }
+ul.status-lights li:before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    top: 2px;
+    width: 10px;
+    height: 10px;
+    margin-right: 8px;
+    border: 2px solid #fff;
+    border-radius: 10px;
+   -moz-box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
+   -webkit-box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
+   box-shadow: inset 0px 2px 0px rgba(0,0,0,.25);
+}
+
+ul.status-lights li.on:before { background: #afe075; }
+ul.status-lights li.off:before { background: #d05b5b; }
+
+/* Sunlight Announcement and Call-to-action */
+
+#belt {
+    position: relative;
+    background: #72919d;
+    background: url('<%= asset_path('pattern-teal.png') %>');
+}
+
+#belt h2 {
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+}
+
+.bootstrap-enabled .span4.announcement {
+    position: absolute;
+    top: -17px;
+    left: -10px;
+    width: 330px;
+    height: 280px;
+    padding: 20px 30px;
+    background: #efc20d;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 150%;
+    color: #555;
+    box-shadow: 2px 2px 8px rgba(0,0,0,.15);
+}
+
+.bootstrap-enabled .span4.announcement:before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 9px solid transparent;
+    border-right: 0px solid transparent;
+    border-bottom: 8px solid #ccac2a;
+}
+
+.bootstrap-enabled .span4.announcement > div {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    -moz-box-sizing:border-box;
+    box-sizing: border-box;
+    width: 312px;
+    height: 262px;
+    padding: 10px 20px;
+    border: 1px dotted #fae17d;
+}
+
+.announcement h2 {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 4px double #fae17d;
+    line-height: 120%;
+    color: #fff;
+}
+
+.announcement a.more {
+    font-size: 16px;
+    font-weight: 300;
+    color: #fff;
+}
+
+.announcement a.more:hover {
+    text-decoration: none;
+    border-bottom: 1px dotted #fff;
+}
+
+.bootstrap-enabled .span8.call-to-action {
+    position: relative;
+    height: 237px;
+    padding: 30px 0 0 40px;
+}
+.bootstrap-enabled .span8.call-to-action:before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -27px;
+    width: 681px;
+    height: 230px;
+    border: 2px solid #82a0af;
+    border-left: 0;
+    border-right: 0;
+}
+
+.bootstrap-enabled .span8.call-to-action h2 { color: #cee7ff;}
+
+.bootstrap-enabled .span8.call-to-action p {
+    display: inline-block;
+    width: 325px;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 120%;
+    color: #fff;
+}
+
+#signup-btn {
+    position: relative;
+    top: -30px;
+    left: 15px;
+    width: 200px;
+    height: 52px;
+    padding: 0;
+    border: 0;
+    border-bottom: 3px solid #447cac;
+    background: #50a4ed;
+    font-size: 20px;
+    line-height: 52px;
+    color: #fff;
+    text-shadow: 0 -1px rgba(0,0,0,.25);
+    transition: background 100ms ease;
+}
+#signup-btn:before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 190px;
+    height: 43px;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 2px;
+}
+
+#signup-btn:hover { background: #4b9ade;}
+
+#signup-btn:active {
+    margin-top: 1px;
+    border-bottom: 2px solid #447cac;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+
+/* Superlative Section */
+
+#superlatives {
+    padding: 20px 0 50px;
+    background: #f8f8f8;
+    background: url('<%= asset_path('pattern-white-texture.png') %>');
+    opacity: 1;
+}
+
+#superlatives .loading {
+    transition: opacity 200ms ease;
+    opacity: .4;
+}
+
+#superlatives a.more {
+    display: block;
+    margin: -6px 22px 0 0;
+    font-size: 12px;
+    font-weight: 400;
+    text-transform: capitalize;
+    text-decoration: none;
+}
+
+#superlatives a.more:hover { text-decoration: underline;}
+
+
+/* Superlative Headers */
+
+#superlatives h3 {
+    margin-top: 50px;
+    font-weight: 400;
+    font-size: 20px;
+    text-align: center;
+    text-shadow: 0px 1px #fff;
+    color: #666;
+    display: block;
+    margin: 50px auto 30px;
+    text-transform: uppercase;
+}
+
+#superlatives h3 span.rule {
+    position: relative;
+}
+
+#superlatives h3 span.rule:before,
+#superlatives h3 span.rule:after {
+    content: "";
+    position: absolute;
+    height: 0px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #fff;
+    top: 12px;
+    width: 252px;
+}
+
+#superlatives h3.most-viewed span.rule:before,
+#superlatives h3.most-viewed span.rule:after { width: 276px;}
+
+#superlatives h3 span.rule:before {
+    right: 100%;
+    margin-right: 10px;
+}
+
+#superlatives h3 span.rule:after {
+    left: 100%;
+    margin-left: 10px;
+}
+
+/* Dropdown Select */
+
+.icbiaselect-display {
+    width: 210px;
+    border: 1px solid #ccc;
+    padding-left: 8px;
+    border-radius: 3px;
+    margin-left: 4px;
+    line-height: 32px;
+    display: inline-block;
+    text-align: left;
+    background: #fff;
+    position: relative;
+    color: #666;
+}
+
+.icbiaselect-display:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 32px;
+    background: #d6effe url('<%= asset_path('icon-dropdown.png') %>') 8px 13px no-repeat;
+    border-radius: 3px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.icbiaselect:hover .icbiaselect-display:after { background-color: #caeafc;}
+.icbiaselect:hover .icbiaselect-display { background-color: #fbfbfb;}
+
+#superlatives option { text-transform: none;}
+
+.superlative h4 {
+    font-weight: 400;
+    font-size: 16px;
+    color: #448ccb;
+    margin-top: 18px;
+}
+
+/* General Superlatives */
+
+.superlative {
+    padding: 5px 20px;
+    background: #fff;
+    margin: 21px 0 21px 21px;
+}
+
+.superlative:hover {
+    transition: background-color 150ms ease;
+    background-color: #f7fbff;
+}
+
+/* Votes Superlatives */
+
+.superlative.vote { padding-left: 90px;}
+
+#superlatives .superlative.vote h4 {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+#superlatives .superlative.vote.passed {
+    background-image: url('<%= asset_path('icon-checkmark.png') %>');
+    background-repeat: no-repeat;
+    background-position: 22px center;
+}
+
+#superlatives .superlative.vote.failed {
+    background-image: url('<%= asset_path('icon-x.png') %>');
+    background-repeat: no-repeat;
+    background-position: 22px center;
+}
+
+#superlatives .superlative.vote span.pull-left { display: none;}
+
+.superlative.vote .detail {
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.superlative .stats strong { color: #666;}
+
+.superlative .stats .ayes:after {
+    content: "\00B7";
+    margin: 0 8px 0 8px;
+    color: #999;
+}
+
+/* Votes Senators and Reps */
+
+.superlative.person {
+    position: relative;
+    padding-left: 110px;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.superlative.person .headshot{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 90px;
+    height: 90px;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(100%);
+}
+
+.superlative.person .stats  {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+/* Congress app callout */
+
+#content_footer {
+    position: relative;
+    height: 190px;
+    background: #c9d6d9;
+    background-image: -ms-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
+    background-image: -moz-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
+    background-image: -o-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #C9D6D9), color-stop(.5, #CEDCDF));
+    background-image: -webkit-linear-gradient(top, #C9D6D9 0%, #CEDCDF 50%);
+    background-image: linear-gradient(to bottom, #C9D6D9 0%, #CEDCDF 50%);
+    font-size: 14px;
+    color: #666;
+    line-height: 150%;
+}
+
+#content_footer:before {
+    content: '';
+    position: relative;
+    display: block;
+    top: -8px;
+    left: 0;
+    height: 8px;
+    margin: 0 -20px;
+    background: url('<%= asset_path('zigzag.png') %>');
+}
+
+#content_footer h2 {
+    margin: 12px 0 10px;
+    font-size: 24px;
+    color: #fff;
+    font-weight: 400;
+}
+
+#content_footer .phones {
+    position: relative;
+    top: -28px;
+    left: 50px;
+}
+
+#content_footer .callout-text {
+    padding-left: 20px;
+}

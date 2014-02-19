@@ -934,15 +934,17 @@ class Bill < ActiveRecord::Base
     end
 
     def ident(bill_id)
-      pattern = /(hconres|hjres|hr|hres|s|sconres|sjres|sres)(\d+)-(\d+)/
+      pattern = /(hconres|hjres|hr|hres|s|sconres|sjres|sres)(\d+)-(\d+)/i
       match = pattern.match(bill_id)
       if match
-        match.captures
+        [match.captures[0].downcase,
+         match.captures[1],
+         match.captures[2]]
       else
-        pattern = /(\d+)-(hc|hj|h|hr|s|sc|sj|sr)(\d+)/
+        pattern = /(\d+)-(hc|hj|h|hr|s|sc|sj|sr)(\d+)/i
         match = pattern.match(bill_id)
         if match
-          [Bill.govtrack_reverse_lookup(match.captures[1]),
+          [Bill.govtrack_reverse_lookup(match.captures[1].downcase),
            match.captures[2],
            match.captures[0]]
         else

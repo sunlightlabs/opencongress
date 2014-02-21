@@ -765,6 +765,10 @@ private
     bill_type, number, session = Bill.ident params[:id]
     @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => :actions })
 
+    if @bill.nil?
+      render_404 and return
+    end
+
     # Enforce canonical urls
     if @bill.ident != params[:id]
       redirect_to bill_path(@bill.ident), :status => 301 and return

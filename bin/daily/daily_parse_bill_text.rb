@@ -143,7 +143,7 @@ def tree_walk(element, version, in_inline = false, in_removed = false)
   end
 end
 
-def get_text_word_count(bill_type, bill_number, text_version)
+def get_text_word_count(congress, bill_type, bill_number, text_version)
   # get the word count from the text file
   begin
     # try the version first
@@ -189,7 +189,7 @@ def parse_from_file(bill, text_version, filename)
 
 
     bill_abbrev = bill.reverse_abbrev_lookup
-    version.word_count = get_text_word_count(bill_abbrev, bill.number, text_version)
+    version.word_count = get_text_word_count(bill.session, bill_abbrev, bill.number, text_version)
 
     # now parse the html
     doc_root = doc.root

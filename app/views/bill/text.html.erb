@@ -11,7 +11,7 @@
   Event.observe(window, 'load', function() {
     <% @commented_nodes.each do |n| %>
       <% if n.comments.size > 0 %>
-        BillText.setCommentsForNode(<%= @version.id %>, '<%= n.nid %>', <%= n.comments.size %>)
+        BillText.setCommentsForNode(<%= @selected_version.id %>, '<%= n.nid %>', <%= n.comments.size %>)
       <% end %>
     <% end %>
     
@@ -57,14 +57,14 @@
       <th align="left" scope="col">Percent Change</th>
     </tr>
     <% @versions.each_with_index do |v, i|%>
-      <tr <% if @version == v %>style="background: #D9D9F3;"<% end %>>
+      <tr <% if @selected_version == v %>style="background: #D9D9F3;"<% end %>>
         <td style="padding-left: 2px;"><%= v.pretty_version %></td>
         <td><%= number_with_delimiter(v.word_count) %></td>
         <td>
           <% if v.total_changes %>
             <span style='margin-right: 20px;'><%= number_with_delimiter(v.total_changes) %></span>
             
-            <% if @version == v %>
+            <% if @selected_version == v %>
               <a href="#" id="bill_text_show_changes_link" class="arrow" onClick="BillText.showTextChanges(); return false;">
                 Show Changes
               </a>
@@ -98,7 +98,7 @@
 	<label for="sort-by">Display Version </label>
 	<select name="selectedPage" id="bill_text_sort" onchange="changePage('bill_text_sort'); return false;">
 	  <% @versions.each do |v| %>
-	    <option value="?version=<%= v.version %>" <% if @version == v %>selected<% end %>><%= v.pretty_version %></option>
+	    <option value="?version=<%= v.version %>" <% if @selected_version == v %>selected<% end %>><%= v.pretty_version %></option>
     <% end %>
 	</select>
 </div>

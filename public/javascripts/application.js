@@ -317,7 +317,10 @@ BillText = {
   },
 
   setCommentsForNode: function(version, nid, num) {
-    $('bill_text_section_' + nid).insert({top: "<div class='bill_text_section_num_comments'><span><a href='#' onClick=\"BillText.showComments(" + version + ", '" + nid + "'); return false;\">" + num + "</a></span></div>"});
+    var section = $('bill_text_section_' + nid);
+    if (section != null) {
+        section.insert({top: "<div class='bill_text_section_num_comments'><span><a href='#' onClick=\"BillText.showComments(" + version + ", '" + nid + "'); return false;\">" + num + "</a></span></div>"});
+    }
   }
 }
 

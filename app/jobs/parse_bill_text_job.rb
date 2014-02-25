@@ -4,9 +4,9 @@ require 'date'
 require 'yaml'
 require 'fileutils'
 
-include REXML
 
 module ParseBillTextJob
+  include REXML
 
   def self.perform (options = {})
     congress = options.fetch(:congress, Settings.default_congress).to_i

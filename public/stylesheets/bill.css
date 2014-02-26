@@ -139,6 +139,8 @@ background: url(../images/action.png) 12px 12px no-repeat;
 _background: url(../images/action.gif) 12px 12px no-repeat;
 font-weight: bold;
 padding: 0px 20px 0 40px;
+width: 100px;
+vertical-align: middle;
 }
 table#votes span.date {
 background: url(../images/action.png) left center no-repeat;

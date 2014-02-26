@@ -519,10 +519,9 @@ class BillController < ApplicationController
   def actions
     pagination_opts = {
       :page => @page,
-      :per_page => 10,
-      :order => ["datetime::date DESC, id DESC"]
+      :per_page => 10
     }
-    @actions = @bill.actions.paginate(pagination_opts)
+    @actions = @bill.actions.reorder('datetime DESC, id DESC').paginate(pagination_opts)
   end
 
   def votes

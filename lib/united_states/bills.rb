@@ -69,7 +69,7 @@ module UnitedStates
         OCLogger.log "Updating bill #{bill_hash['bill_id']}"
       end
 
-      if options[:force] || bill.updated.nil? || bill_hash['+updated_at'] > bill.updated
+      if options[:force] || options[:dryrun] || bill.updated.nil? || (bill_hash['+updated_at'] > bill.updated)
         # Assign sponsor
         sponsor_id = bill_hash['sponsor'] && bill_hash['sponsor']['thomas_id']
         unless sponsor_id.nil?
@@ -159,31 +159,79 @@ module UnitedStates
       end
     end
 
+    def warn_about_duplicate_actions (groups)
+      groups.each do |id_hash, grp|
+        if grp.size > 1
+          OCLogger.log "Actions are not unique. There are #{grp.size} actions with identity #{id_hash}"
+        end
+      end
+    end
+
     def import_bill_actions (bill_hash)
+      # There are often multiple CR references associated with a single
+      # bill action. This results in duplicate bill actions with different
+      # 'references' membrs. Since we don't expose CR references we consider
+      # these duplicates and discard all but the earliest one.
       bill = Bill.where(bill_ident(bill_hash)).first
       unless bill.nil?
-        intro = bill.actions.find_by_action_type 'introduced'
-        if intro.nil?
-          intro = bill.actions.new :action_type => 'introduced'
-        end
-        intro.date = bill_hash['+introduced_at'].to_i
-        intro.datetime = bill_hash['+introduced_at']
-        intro.save!
+        src_action_identity = proc { |act|
+          { 'text' => act['text'],
+            'datetime' => act['+acted_at'].in_time_zone,
+            'where' => act['where'],
+            'in_committee' => act['in_committee'],
+            'in_subcommittee' => act['in_subcommittee']
+          }
+        }
+        src_action_groups = bill_hash['actions'].group_by(&src_action_identity)
+        warn_about_duplicate_actions src_action_groups
 
-        bill_hash['actions'].each do |act|
-          action_ident = { :action_type => act['type'],
-                           :date => act['+acted_at'].to_i,
-                           :datetime => act['+acted_at'],
-                           :text => act['text'] }
-          action = bill.actions.where(action_ident) .first
-          if action.nil?
-            action = bill.actions.new action_ident
-          end
-          action.roll_call_number = act.fetch('roll', nil)
-          action.where = act.fetch('where', nil)
-          action.result = act.fetch('result', nil)
-          action.vote_type = act.fetch('vote_type', nil)
-          action.save!
+        existing_action_identity = proc { |act|
+          { 'text' => act.text,
+            'datetime' => act.datetime,
+            'where' => act.where,
+            'in_committee' => act['in_committee'],
+            'in_subcommittee' => act['in_subcommittee']
+          }
+        }
+        existing_action_groups = bill.actions.group_by(&existing_action_identity)
+
+        # We want to remove actions from the database that no longer appear in
+        # the source data. However since we synthetically create some of our
+        # 'introduced' actions, we cannot remove those.
+        to_remove = existing_action_groups.keys - src_action_groups.keys
+        to_remove = to_remove.flat_map{ |act_identity| existing_action_groups[act_identity] }
+        to_remove.reject!{ |act| act['action_type'] == 'introduced' }
+        if to_remove.length > 0
+          bye_actions = bill.actions.where(:id => to_remove.map(&:id))
+          OCLogger.log "Removing #{bye_actions.length} spurious actions for #{bill_hash['bill_id']}"
+          bye_actions.destroy_all
+        end
+
+        src_action_groups.each do |act_identity, acts|
+          act = acts.sort_by{ |a| a['datetime'] }.first
+          action = bill.actions.where(act_identity).first || bill.actions.new(act_identity)
+          updates = act.slice('text', 'where', 'in_committee', 'in_subcommittee', 'where', 'result', 'vote_type')
+          updates['roll_call_number'] = act['roll']
+          action.update_attributes!(updates)
+          action.save! if action.changed?
+        end
+
+        establish_introduced_action bill, bill_hash['+introduced_at']
+      end
+    end
+
+
+    def establish_introduced_action (bill, introduced_at)
+      # Some bills don't have an 'introduced' action in their actions list.
+      # This creates a synthetic 'introduced' action for such bills if the
+      # source data contains an introduced_at datetime field.
+      if !introduced_at.nil?
+        intro = bill.actions.find_by_action_type('introduced')
+        if intro.nil?
+          intro = bill.actions.new(:action_type => 'introduced')
+          intro.date = introduced_at.to_i
+          intro.datetime = introduced_at
+          intro.save!
         end
       end
     end

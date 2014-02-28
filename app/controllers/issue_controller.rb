@@ -146,14 +146,14 @@ class IssueController < ApplicationController
     @actions = @subject.latest_major_actions(20)
     expires_in 60.minutes, :public => true
 
-    render :layout => false
+    render 'atom.xml', :layout => false
   end
 
   def atom_top20
     @issues = Subject.top20_viewed
     expires_in 60.minutes, :public => true
 
-    render :action => 'top20_atom', :layout => false
+    render 'top20_atom.xml', :layout => false
   end
 
   private

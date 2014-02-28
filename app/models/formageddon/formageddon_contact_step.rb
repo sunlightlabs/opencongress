@@ -85,4 +85,12 @@ class Formageddon::FormageddonContactStep
     end
     value
   end
+
+protected
+
+  def detect_gender(name)
+    @@detector ||= Sexmachine::Detector.new
+    first_name = name.split(/ \-/).first
+    @@detector.get_gender(first_name)
+  end
 end

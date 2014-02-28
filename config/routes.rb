@@ -194,6 +194,7 @@ OpenCongress::Application.routes.draw do
   scope 'users/:login' do
     get 'profile' => 'profile#show', :as => :user_profile
     get 'profile/edit' => 'profile#edit', :as => :edit_profile
+    # change put to patch when upgrading to rails 4
     put 'profile' => 'profile#update', :as => :update_profile
     delete 'profile' => 'profile#destroy', :as => :destroy_profile
     delete 'profile/images' => 'profile#delete_images', :as => :delete_profile_images

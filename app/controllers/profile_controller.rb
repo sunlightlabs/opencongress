@@ -63,7 +63,7 @@ class ProfileController < ApplicationController
   def user_actions_rss
     @user = User.find_by_login(params[:login])
     @items = @user.recent_actions
-    render :action => "new_link.rxml", :layout => false
+    render :action => "new_link.xml", :layout => false
   end
 
   def actions
@@ -178,7 +178,7 @@ class ProfileController < ApplicationController
     if params[:format]
 
       expires_in 60.minutes, :public => true
-      render :action => "new_link.rxml", :layout => false
+      render :action => "new_link.xml", :layout => false
     else
       render :action => "bills.html.erb"
     end
@@ -208,7 +208,7 @@ class ProfileController < ApplicationController
       @items.sort! { |x,y| y.date <=> x.date }
       expires_in 60.minutes, :public => true
 
-      render :action => "new_link.rxml", :layout => false
+      render :action => "new_link.xml", :layout => false
     else
       render :action => 'my_votes'
     end
@@ -263,7 +263,7 @@ class ProfileController < ApplicationController
     if params[:format]
       @comments = Comment.find(:all, :conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :limit => 20)
       expires_in 60.minutes, :public => true
-      render :action => "comments.rxml", :layout => false
+      render :action => "comments.xml", :layout => false
     else
       @comments = Comment.find(:all, :conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => {:size => 10, :current => params[:page]})
       render :action => "comments.html.erb"
@@ -297,7 +297,7 @@ class ProfileController < ApplicationController
       @items.flatten!
       @items.sort! { |x,y| y.sort_date <=> x.sort_date }
 
-      render :action => "new_link.rxml", :layout => false
+      render :action => "new_link.xml", :layout => false
     else
       render :action => "person.html.erb"
     end
@@ -335,7 +335,7 @@ class ProfileController < ApplicationController
     @items.sort! { |x,y| y.rss_date <=> x.rss_date }
     expires_in 60.minutes, :public => true
 
-    render :action => "new_link.rxml", :layout => false
+    render :action => "new_link.xml", :layout => false
   end
 
 
@@ -354,7 +354,7 @@ class ProfileController < ApplicationController
       @items.sort! { |x,y| y.date <=> x.date }
       expires_in 60.minutes, :public => true
 
-      render :action => "new_link.rxml", :layout => false
+      render :action => "new_link.xml", :layout => false
     else
       render :action => 'issues'
     end
@@ -377,7 +377,7 @@ class ProfileController < ApplicationController
       @items.sort! { |x,y| y.date <=> x.date }
       expires_in 60.minutes, :public => true
 
-      render :action => "new_link.rxml", :layout => false
+      render :action => "new_link.xml", :layout => false
     else
       render :action => 'committees'
     end

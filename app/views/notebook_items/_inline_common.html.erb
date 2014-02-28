@@ -1,0 +1,9 @@
+<%= f.hidden_field :group_user_id, :value => current_user.id if @group and logged_in? %>
+<%= f.submit "Add", :class => "medium button blue add-button" %>
+<%= link_to "Cancel", "#", :class => "medium button silver close_add_notebook" %>
+<% image_tag "spinner-ovals.gif", :class => "add-spinner", :style => "display: none;" %>
+<script>
+    $j('.add-button').click(function(){
+        $j('.add-spinner').show();
+    })
+</script>

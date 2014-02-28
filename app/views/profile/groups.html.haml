@@ -1,5 +1,6 @@
-#heading
-  %h2= "#{@user.login.possessive} Groups"
-
-.margin-top.margin-bottom
-  = render :partial => 'groups/groups_list', :locals => { :groups => @groups }
+<div id="heading">
+    <h2><%= @user.login.possessive %> Groups</h2>
+</div>
+<div class="margin-top margin-bottom">
+    <%= render :partial => 'groups/groups_list', :locals => { :groups => @groups } %>
+</div>

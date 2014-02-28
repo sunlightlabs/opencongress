@@ -11,7 +11,7 @@
       <tr class=<%= cycle('odd','even') %>>
         <td class="first photo">
         <% if u.small_picture %>
-           <%= image_tag "/images/users/" + h(u.login) + "_s.jpg", :alt => "user photo" %>
+           <%= image_tag asset_path("users/#{h(u.login)}_s.jpg"), :alt => "user photo" %>
          <% else %>
            <%= image_tag "anon-img-ex1.gif", :alt => "no photo" %>
          <% end %>

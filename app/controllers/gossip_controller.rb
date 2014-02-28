@@ -72,7 +72,7 @@ class GossipController < ApplicationController
     @gossip = Gossip.latest
      expires_in 60.minutes, :public => true
 
-    render :layout => false
+    render 'atom.xml', :layout => false
   end
 
   protected

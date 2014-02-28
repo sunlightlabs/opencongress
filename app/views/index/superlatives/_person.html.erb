@@ -1,6 +1,6 @@
 <a href="<%= url_for :controller => :people, :action => :show, :id => person.id %>">
 <div class="media superlative person two-up">
-    <div class="headshot pull-left hide-text" style="background-image:url(/images/<%= person.photo_path %>);"><%= person.full_name %></div>
+    <div class="headshot pull-left hide-text" style="background-image:url(<%= asset_path("#{person.photo_path}") %>);"><%= person.full_name %></div>
     <div class="media-body">
         <h4><%= person.full_name rescue nil %></h4>
         <p class="stats">

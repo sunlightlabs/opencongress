@@ -3,41 +3,41 @@ class NotebookLinksController < NotebookItemsController
 
   def create
     return false unless @can_edit
-    
+
     # if we don't have params to create an internal link, call the super to create an external one
     if params[:type].blank?
       super
     else
       if params[:id].blank? and params[:type] == 'Bill'
-        @notebookable = Bill.where(["bill_type=? and number=? and session=?", 
-                                    params[:notebook_link][:bill_type], params[:notebook_link][:bill_number], 
+        @notebookable = Bill.where(["bill_type=? and number=? and session=?",
+                                    params[:notebook_link][:bill_type], params[:notebook_link][:bill_number],
                                     Settings.default_congress]).first
       else
         @notebookable = Object.const_get(params[:type]).find_by_id(params[:id])
       end
-      
-      @item = NotebookLink.new(params[:notebook_link])   
-      @item.notebookable = @notebookable    
-      @item.political_notebook = @political_notebook      
+
+      @item = NotebookLink.new(params[:notebook_link])
+      @item.notebookable = @notebookable
+      @item.political_notebook = @political_notebook
       @item.init_from_notebookable(@notebookable)
-      
+
       @item.group_user = current_user if @group
-      
+
       @success = @item.save
-      
-      respond_to do |format|      
-        format.js        
+
+      respond_to do |format|
+        format.js
       end
 #      redirect_to political_notebook_path(:login => current_user.login)
     end
   end
 
   def faceform
-    @object = Object.const_get(params[:type]).find_by_id(params[:id])        
+    @object = Object.const_get(params[:type]).find_by_id(params[:id])
     render :layout => false
   end
 
-#private 
+#private
 
   # GET /notebook_links
   # GET /notebook_links.xml
@@ -66,7 +66,7 @@ class NotebookLinksController < NotebookItemsController
   def new
     @notebook_link = NotebookLink.new
 
-    
+
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @notebook_link }

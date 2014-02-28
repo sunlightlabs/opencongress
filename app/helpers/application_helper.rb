@@ -126,6 +126,14 @@ module ApplicationHelper
     controller.class.controller_name
   end
 
+  def link_controller_stylesheet
+    path = Rails.root.join("app", "assets", "stylesheets", "app", controller.controller_name)
+    stylesheet_link_tag("app/#{controller.controller_name}") if (
+      FileTest.exist?("#{path}.css") ||
+      FileTest.exist?("#{path}.css.erb")
+    )
+  end
+
   def learn_more
     #this is quite possibly a very bad idea
     text = controller.send :render_to_string, :partial => 'learn'
@@ -664,7 +672,7 @@ EOT
      <div class="jqmnContent">
      <p>#{text}</p>
      </div>
-     <img src="/images/resize.gif" id="#{text_name}_resize" alt="resize" class="dbox_resize" />
+     <img src="#{asset_path('resize.gif')}" id="#{text_name}_resize" alt="resize" class="dbox_resize" />
      </div>}.html_safe
   end
 

@@ -25,15 +25,15 @@ class GroupMembersController < ApplicationController
     end
 
     if @group.can_moderate?(current_user)
-      @group_members = @group.group_members.includes(:user).order("UPPER(users.login)").paginate(:per_page => 100, :page => params[:page])
+      @group_members = @group.group_members.eager_load(:user).order("UPPER(users.login)").paginate(:per_page => 100, :page => params[:page])
     elsif @group.state.present?
       # if this is a state or district group, all members are visible
-      @group_members = @group.group_members.includes(:user)
+      @group_members = @group.group_members.eager_load(:user)
           .where("group_members.status != 'BOOTED'")
           .order("UPPER(users.login)").paginate(:per_page => 100, :page => params[:page])
     else
       visible_users = VisibleByPrivacyOptionQuery.new(
-        @group.users.includes(:group_members)
+        @group.users.eager_load(:group_members)
           .where("group_members.status != 'BOOTED'")
           .order("UPPER(users.login)"),
         :property => :groups,

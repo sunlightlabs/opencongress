@@ -12,10 +12,10 @@
 class Bookmark < ActiveRecord::Base
   belongs_to :bookmarkable, :polymorphic => true
 
-  scope :bills, includes(:bill).where(:bookmarkable_type => "Bill")
-  scope :committees, includes(:committee).where(:bookmarkable_type => "Committee")
-  scope :people, includes(:person).where(:bookmarkable_type => "Person")
-  scope :subjects, includes(:subject).where(:bookmarkable_type => "Subject")
+  scope :bills, eager_load(:bill).where(:bookmarkable_type => "Bill")
+  scope :committees, eager_load(:committee).where(:bookmarkable_type => "Committee")
+  scope :people, eager_load(:person).where(:bookmarkable_type => "Person")
+  scope :subjects, eager_load(:subject).where(:bookmarkable_type => "Subject")
 
   with_options :foreign_key => "bookmarkable_id" do |b|
     b.belongs_to :person, :include => :roles

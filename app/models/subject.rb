@@ -11,6 +11,7 @@
 #
 
 require_dependency 'viewable_object'
+
 class Subject < ActiveRecord::Base
   include ViewableObject
 
@@ -22,6 +23,7 @@ class Subject < ActiveRecord::Base
   has_many :bill_subjects
   has_many :bills, :through => :bill_subjects, :order => "bills.introduced DESC"
 
+  has_many :bookmarks, :as => :bookmarkable
   has_many :users, :through => :bookmarks, :order => "bookmarks.created_at DESC"
 
   has_many :recently_introduced_bills, :class_name => "Bill", :through => :bill_subjects, :source => "bill", :order => "bills.introduced DESC", :limit => 20
@@ -38,8 +40,6 @@ class Subject < ActiveRecord::Base
 
   before_save :count_bills
   after_save :create_default_group, :if => :is_category?
-
-  acts_as_bookmarkable
 
   scope :active, includes(:bills).where("bills.session" => Bill.available_sessions.last)
   scope :with_major_bills, includes(:bills).where(:bills => { :is_major => true })
@@ -386,7 +386,7 @@ class Subject < ActiveRecord::Base
   end
 
   def key_votes(congress = Settings.default_congress)
-    major_bills.includes(:roll_calls)
+    major_bills.eager_load(:roll_calls)
                .order('roll_calls.date desc')
                .where('roll_calls.roll_type' => RollCall.passage_types)
                .first(10)

@@ -52,7 +52,8 @@ class NotebookItemsController < ApplicationController
     end
 
     @items = @political_notebook.notebook_items.find(:all, :limit => 20)
-    render :layout => false
+
+    render 'feed.xml', :layout => false
   end
 
   def update

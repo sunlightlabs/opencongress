@@ -79,20 +79,20 @@ class ArticlesController < ApplicationController
       @articles = Article.find(:all, :conditions => ['published_flag = true'], :limit => 10)
       expires_in 60.minutes, :public => true
 
-      render :layout => false
+      render 'atom.xml', :layout => false
     end
 
     def article_atom
       @article = Article.find(params[:id])
       expires_in 60.minutes, :public => true
 
-      render :layout => false
+      render 'article_atom.xml', :layout => false
     end
 
     def all_comments_atom
       @comments = Comment.find(:all, :conditions => "commentable_type = 'Article'", :limit => 20)
       expires_in 60.minutes, :public => true
-      render :layout => false
+      render 'all_comments_atom.xml', :layout => false
     end
 
     def add_comment

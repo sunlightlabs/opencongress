@@ -1,5 +1,5 @@
 <% if user.user_profile.send(size).present? %>
-  <%= image_tag "/images/users/" + user.send(size), :alt => user.login, :class => "img-polaroid" %>
+  <%= image_tag "#{asset_path("users/")}#{user.user_profile.send(size)}", :alt => user.login, :class => "img-polaroid" %>
   <% if editable %>
     <%= button_to "Delete Picture", delete_profile_images_path(user.login),
                                     :method => :delete, :remote => true,

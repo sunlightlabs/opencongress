@@ -116,7 +116,7 @@ class User < ActiveRecord::Base
   has_many :watched_districts, :class_name => "WatchDog"
   has_many :bill_votes
   # TODO: The original implementation included the number of people who have bookmarked the bill, which should be done differently
-  has_many :bookmarked_bills, :class_name => "Bill", :through => :bookmarks, :source => :bill, :order => "bookmarks.created_at DESC"
+  has_many :bookmarked_bills, :through => :bill_bookmarks, :source => :bookmarkable, :source_type => 'Bill', :order => "bookmarks.created_at DESC"
   has_many :bills_voted_on, :class_name => "Bill", :through => :bill_votes, :source => :bill, :order => "bill_votes.created_at DESC"
   # Support = 0 for support, 1 for oppose. Not even kidding.
   has_many :bills_supported, :class_name => "Bill", :through => :bill_votes, :source => :bill, :conditions => ["bill_votes.support = 0"], :order => "bill_votes.created_at DESC"

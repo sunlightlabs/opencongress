@@ -1,10 +1,10 @@
 class Admin::PvsCategoryMappingsController < Admin::IndexController
   before_filter :can_blog
-  
+
   # GET /pvs_category_mappings
   # GET /pvs_category_mappings.xml
   def index
-    @pvs_category_mappings = PvsCategoryMapping.includes(:pvs_category).order('pvs_categories.name ASC').all
+    @pvs_category_mappings = PvsCategoryMapping.eager_load(:pvs_category).order('pvs_categories.name ASC').all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -48,11 +48,11 @@ class Admin::PvsCategoryMappingsController < Admin::IndexController
     elsif params[:pvs_category_mapping][:pvs_category_mappable_id].kind_of? Array
       new_ids = params[:pvs_category_mapping][:pvs_category_mappable_id]
     end
-    
+
     new_ids.each do |id|
       @pvs_category_mapping = PvsCategoryMapping.find_or_create_by_pvs_category_mappable_id_and_pvs_category_mappable_type_and_pvs_category_id(id, params[:pvs_category_mapping][:pvs_category_mappable_type], params[:pvs_category_mapping][:pvs_category_id])
     end
-    
+
     respond_to do |format|
       if @pvs_category_mapping.save
         format.html { redirect_to(admin_pvs_category_mappings_url, :notice => 'Pvs category mapping was successfully created.') }

@@ -292,7 +292,7 @@
       geocode_request_timeout = null;
       var address = escape(assemble_address()),
       zip5 = $j("#formageddon_formageddon_thread_sender_zip5").val().toString();
-      $j('#sen_0, #sen_1, #rep').html("<img src='/images/spinner-ovals.gif' />");
+      $j('#sen_0, #sen_1, #rep').html("<img src='#{asset_path("spinner-ovals.gif")}' />");
       $j.ajax({
         url: '/contact_congress_letters/get_recipients.js?bill=#{@bill.nil? ? '' : @bill.ident}&issue=#{@issue.nil? ? '' : @issue.id}&address=' + address
       });

@@ -1,0 +1,11 @@
+<li>
+    <%= link_to("<span class='small#{' withdrawn' unless cosponsor.date_withdrawn.blank?}'>#{cosponsor.person.name}</span>".html_safe, :controller => 'people', :action => 'show', :id => cosponsor.person) %>
+    <% unless cosponsor.date_added.blank? %>
+        <br>
+        <span class="small">Added <%= cosponsor.date_added.strftime('%B %d, %Y') %></span>
+    <% end %>
+    <% unless cosponsor.date_withdrawn.blank? %>
+        <br>
+        <span class="small">Withdrawn <%= cosponsor.date_withdrawn.strftime('%B %d, %Y') %></span>
+    <% end %>
+</li>

@@ -26,7 +26,7 @@ describe District do
     end
     
     it "identifies KY-1 in 42223" do
-      ky1 = District.includes(:state).where(:district_number => 1,:states => { :abbreviation => 'KY' }).first
+      ky1 = District.eager_load(:state).where(:district_number => 1,:states => { :abbreviation => 'KY' }).first
       VCR.use_cassette("Fort Campbell, KY 42223 district") do
         @dst = District.from_address('Fort Campbell, KY 42223').first
       end
@@ -34,12 +34,11 @@ describe District do
     end
 
     it "identifies TN-7 in 42223" do
-      tn7 = District.includes(:state).where(:district_number => 7, :states => { :abbreviation => 'TN' }).first
+      tn7 = District.eager_load(:state).where(:district_number => 7, :states => { :abbreviation => 'TN' }).first
       VCR.use_cassette("Clarksville, TN 42223") do
         dst = District.from_address('Clarksville, TN 42223').first
         expect(dst).to eq(tn7)
       end
     end
-
   end
 end

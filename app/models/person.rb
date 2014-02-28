@@ -107,8 +107,6 @@ class Person < ActiveRecord::Base
 
   has_many :videos, :order => "videos.video_date DESC, videos.id"
 
-#  acts_as_bookmarkable
-
   acts_as_formageddon_recipient
 
   has_one :person_stats, :dependent => :destroy

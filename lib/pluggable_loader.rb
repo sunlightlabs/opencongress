@@ -34,10 +34,10 @@ module AbstractController::ViewPaths
 end
 
 # Let pluggables be required without knowing the gem path
-def require_pluggable(rquirement, params)
+def require_pluggable(requirement, params)
   require ActiveSupport::Dependencies.pluggable_loader.pluggable_path_for(requirement, params[:from])
 end
 
-def require_pluggable_dependency(pluggable, params)
+def require_pluggable_dependency(requirement, params)
   require_dependency ActiveSupport::Dependencies.pluggable_loader.pluggable_path_for(requirement, params[:from])
 end

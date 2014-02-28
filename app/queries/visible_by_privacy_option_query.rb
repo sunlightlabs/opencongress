@@ -35,8 +35,8 @@ class VisibleByPrivacyOptionQuery
       where_clause = ["user_privacy_options.#{@property} = :public_value", {:public_value => @statuses[:public] }]
     end
     @relation = relation
-      .includes(:friends)
-      .includes(:user_privacy_options)
+      .eager_load(:friends)
+      .eager_load(:user_privacy_options)
       .where(*where_clause)
 
     unless options[:excludes].nil?
@@ -47,7 +47,7 @@ class VisibleByPrivacyOptionQuery
   end
 
   def with_relations
-    @relation = @relation.includes(:comments, :friends, :bill_votes, :person_approvals)
+    @relation = @relation.eager_load(:comments, :friends, :bill_votes, :person_approvals)
     self
   end
 

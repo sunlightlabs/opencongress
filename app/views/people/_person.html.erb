@@ -1,0 +1,23 @@
+<% bgcolor = "#fff"
+   bgcolor = "#fee" if person.party == "Republican"
+   bgcolor = "#eef" if person.party == "Democrat" %>
+
+<div class="person_box_big" style="background-color: <%= bgcolor %>; margin-bottom: 3px;">
+  <%= link_to(image_tag(person.photo_path(:thumb, :ignore_missing), :class => "photo legislator-photo", :alt => 'Photo of'), person_url(person.id)) %>
+  <p>
+    <% if person.district_rel %>
+      <%= link_to "#{person.district_rel.ordinalized_number} District", state_district_path(person.state, person.district), :class => 'title' %>
+      <span><%= link_to person.full_name, person_url(person.id) %></span>
+      <span><%= link_to "MyOC Group", group_path(person.district_rel.group.id) %></span>
+    <% else %>
+      <%= link_to person.full_name, person_url(person.id), :class => 'title' %>
+      <span><%= person.party %></span>
+      <% if person.consecutive_years == 0 %>
+        First year in office
+      <% else %>
+        <%= pluralize(person.consecutive_years, 'year') %> in office
+      <% end %>
+    <% end %>
+  </p>
+  <div style="clear:both;"></div>
+</div>

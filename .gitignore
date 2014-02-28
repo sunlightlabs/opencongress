@@ -11,6 +11,8 @@ coverage
 db/cucumber_structure.sql
 db/development_structure.sql
 db/schema.rb
+public/404.html
+public/500.html
 public/assets/*
 public/system/*
 public/images/users/*

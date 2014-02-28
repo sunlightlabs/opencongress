@@ -42,7 +42,7 @@
     <%= stylesheet_link_tag('app/admin') if @admin_styles %>
 
     <% unless @admin_styles %>
-        <%= stylesheet_link_tag("app/#{controller.controller_name}") if FileTest.exist?(Rails.root.join("app", "assets", "stylesheets", "app", controller.controller_name + ".css")) %>
+        <%= link_controller_stylesheet %>
     <% end %>
 
     <%= stylesheet_link_tag 'app/vids' if @include_vids_styles %>

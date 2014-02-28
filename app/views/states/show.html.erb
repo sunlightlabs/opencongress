@@ -12,7 +12,7 @@
 
     <% if @state.group %>
       <a class="button silver floatleft grid_4 alpha pad big-but" href="<%= group_path(@state.group) %>">
-        <img src="/images/groups-small.png" />
+        <img src="<%= asset_path("groups-small.png") %>" />
         <span>MyOC Group for people in <%= @state.name %>. <span>Join <%= @state.abbreviation %> constituents in tracking bills, votes, issues, and their members of Congress.</span></span>
       </a>
     <% end %>

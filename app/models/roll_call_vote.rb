@@ -93,7 +93,7 @@ class RollCallVote < ActiveRecord::Base
   def self.abstain_count
     cache_key = "roll_call_vote_abstain_by_person_table"
     Rails.cache.fetch(cache_key) do
-      RollCallVote.includes(:roll_call => :bill)
+      RollCallVote.eager_load(:roll_call => :bill)
                   .where('bills.session' => 113, 'roll_call_votes.vote' => '0')
                   .group(:person_id)
                   .count

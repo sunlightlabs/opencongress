@@ -3,15 +3,11 @@
 *= require reset
 *= require base/classes
 *= require base/modal
-*= require base/sorts
 *= require base/typo
 *= require base/master
-*= require app/home
 *= require jqModal
 *= require jquery.jcarousel
 *= require jquery.rating
-*= require app/search
 *= require bootstrap-custom
-*= require app/interim_index
 *= require_self
 */

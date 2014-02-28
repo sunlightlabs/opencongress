@@ -56,7 +56,7 @@
       <% end %>
       <% if logged_in? %>
       <td class="flag" onmouseover="Element.show('flag_help_<%= comment.id.to_s %>');" onmouseout="Element.hide('flag_help_<%= comment.id.to_s %>');">
-      <%= link_to image_tag('/images/flag.png', :alt => 'flag'), :controller => 'comments', :action => 'flag', :id => comment.id %>
+      <%= link_to image_tag(asset_path("flag.png"), :alt => 'flag'), :controller => 'comments', :action => 'flag', :id => comment.id %>
       <%= dbox_start("flag_help_#{comment.id.to_s}", -190, 0, 175, "right")%>
       Click this flag to mark this comment as inappropriate
       <%= dbox_end %>
@@ -65,7 +65,7 @@
 </table>
 </div>
 <% if comment.user && comment.user.user_profile.small_picture %>
-<div class="comment_pic"><img src="/images/users/<%= h(comment.user.login) %>_s.jpg" /></div>
+<div class="comment_pic"><img src="<%= asset_path("users/#{h(comment.user.login)}_s.jpg") %>" /></div>
 <% else %>
 <div style="clear:left;"></div>
 <% end %>

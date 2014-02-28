@@ -234,7 +234,7 @@ class CommentsController < ApplicationController
       @comments = @object.comments.find(:all, :limit => 20)
     end
 
-    render :layout => false
+    render 'atom_comments.xml', :layout => false
   end
 
   def bill_text_comments

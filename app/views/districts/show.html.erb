@@ -15,13 +15,13 @@
 
   <% if @district.group %>
     <a class="button silver floatleft grid_4 alpha pad big-but" href="<%= group_path(@district.group) %>">
-    <img src="/images/groups-small.png" />
+    <img src="<%= asset_path("groups-small.png") %>" />
     <span>MyOC Group for people in <%= @state.name %>. <span>Join <%= @state.abbreviation %> constituents in tracking bills, votes, issues, and their members of Congress.</span></span>
     </a>
   <% end %>
 
   <a class="button silver floatleft grid_4 alpha pad big-but rt" href="<%= @district.wiki_link %>">
-  <img src="/images/rt.png" />
+  <img src="<%= asset_path("rt.png") %>" />
   <span>RaceTracker for <%= @state.name.possessive %> <%= @district.ordinalized_number %> District seat. <span>See all candidates for the 2012 election.</span></span>
   </a>
 
@@ -66,7 +66,7 @@
        <% @tracking_suggestions.last[:my_people_tracked_facet].each do |bt| %>
          <% unless bt[:trackers] == 0 %>
          <li class="person">
-            <a href="<%= person_url(bt[:object].ident) %>"><img src="/images/photos/thumbs_42/<%= bt[:object].id %>.png" alt="photo" style="float:left;margin-right:5px;" /></a>
+            <a href="<%= person_url(bt[:object].ident) %>"><img src="<%= asset_path("photos/thumbs_42/#{bt[:object].id}.png") %>" alt="photo" style="float:left;margin-right:5px;" /></a>
             <%= link_to bt[:object].title_full_name_party_state, person_url(bt[:object].ident) %><br />
              <div class="meta"><span><%= bt[:trackers] %> followers</span>
                 <span><%= pluralize(bt[:object].consecutive_years, 'year') %> in office</span></div>

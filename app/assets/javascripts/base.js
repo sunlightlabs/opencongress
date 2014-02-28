@@ -13,6 +13,7 @@
 //= require jquery.form.min
 //= require jquery.qtip-1.0.0-rc3.min
 //= require jquery.simplyCountable
+//= require jquery.jcarousel
 //= require jqmodal
 //= require star-rating/jquery.MetaData
 //= require star-rating/jquery.rating

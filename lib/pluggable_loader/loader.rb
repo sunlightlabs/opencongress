@@ -7,8 +7,8 @@ module PluggableLoader
 
     # Returns a list of paths to loaded plugins.
     def pluggable_paths
-      @plugin_paths ||= engine_paths.find_all do |path|
-        path =~ /(Regexp.quote(config.whitelist.join('|')))/
+      @pluggable_paths ||= engine_paths.find_all do |path|
+        path =~ /(#{Regexp.quote(PluggableLoader.config.whitelist.join('|'))})/
       end
     end
 
@@ -21,7 +21,7 @@ module PluggableLoader
     end
 
     def pluggable_path_for(requirement, pluggable)
-      pattern = /#{Regexp.quote(pluggable)}(-[0-9a-f]+)?$/
+      pattern = /#{Regexp.quote(pluggable)}(-[0-9a-f\.]+)?$/
       File.expand_path(
         requirement,
         pluggable_paths.select{|p| (p =~ pattern).present?}.first)

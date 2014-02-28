@@ -4,10 +4,8 @@ require 'rails/all'
 require File.expand_path('../../lib/extensions.rb', __FILE__)
 
 if defined?(Bundler)
-  # If you precompile assets before deploying to production, use this line
-  Bundler.require *Rails.groups(:assets => %w(development test))
-  # If you want your assets lazily compiled in production, use this line
-  # Bundler.require(:default, :assets, Rails.env)
+  # Remove assets group when upgrading to rails 4
+  Bundler.require(:default, :assets, Rails.env)
 end
 
 # Faxable includes a railtie and must be required before the env boots
@@ -21,6 +19,7 @@ module OpenCongress
     # Enable the asset pipeline
     config.assets.enabled = true
     config.assets.version = '1.0'
+    config.assets.paths << "#{Rails.root}/app/assets/html"
 
     # Detect and handle jsonp requests
     require 'rack/contrib'
@@ -59,15 +58,6 @@ module OpenCongress
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
-
-    # JavaScript files you want as :defaults (application.js is always included).
-    ####
-    # Nothing to see here, you want assets.yml
-    ####
-    # config.action_view.javascript_expansions[:defaults] = %w(prototype effects dragdrop controls rails jquery-1.5.2)
-    # config.action_view.javascript_expansions[:common] = %w(jquery.qtip-1.0.0-rc3.min jquery.simplyCountable jqmodal
-    #                                                       star_rating/jquery.MetaData star_rating/jquery.rating slider
-    #                                                       sorttable builder m styles)
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"

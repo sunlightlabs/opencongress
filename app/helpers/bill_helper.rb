@@ -120,7 +120,7 @@ module BillHelper
   def co_sponsor_list
    	text = "<ul class='lined_list'>"
 		#@bill.co_sponsors[0..@bill.co_sponsors.size].each do |c|
-		@bill.bill_cosponsors.includes(:person).order("people.lastname").each do |c|
+		@bill.bill_cosponsors.eager_load(:person).order("people.lastname").each do |c|
 		  text += "<li>"
 		  text += link_to "<span class='small#{' withdrawn' unless c.date_withdrawn.blank?}'>#{c.person.name}</span>".html_safe, :controller => 'people', :action => 'show', :id => c.person
 		  text += "<br /><span class='small'>Added #{c.date_added.strftime('%B %d, %Y')}</span>" unless c.date_added.blank?
@@ -288,5 +288,5 @@ module BillHelper
     else
       sentence
     end
-  end 
+  end
 end

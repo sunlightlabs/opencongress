@@ -1,8 +1,8 @@
 source 'http://rubygems.org'
 
 gem 'rails', '~> 3.2.0'
-
 gem 'rake'
+# gem 'protected_attributes' # Rails 4 removed attr_accessible
 
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
@@ -63,7 +63,9 @@ gem 'possessive'
 
 # Mail
 gem 'mechanize'
+
 gem 'formageddon', '~> 0.0.2', :git => 'git://github.com/sunlightlabs/formageddon.git'
+
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'
@@ -74,7 +76,7 @@ gem 'pdfkit'
 ## Production code coverage (dead code finder)
 # gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
 
-
+## Assets group was removed in Rails 4
 group :assets do
   gem "sass-rails", ">= 3.2"
   gem "bootstrap-sass", "~>2.1.1"

@@ -39,8 +39,9 @@ module UnitedStates
     # Decodes string representations of datetime and numeric
     # fields. Typed field names are prefixed with +.
     def decode_bill_hash (bill_hash)
-      bill_hash['actions'].each do |action|
+      bill_hash['actions'].each_with_index do |action, idx|
         action['+acted_at'] = Time.parse(action['acted_at'])
+        action['+ordinal_position'] = idx
       end
       bill_hash['actions'].sort_by! { |action| action['+acted_at'] }
       bill_hash['+introduced_at'] = Time.parse(bill_hash['introduced_at'])
@@ -167,6 +168,14 @@ module UnitedStates
       end
     end
 
+    def bulk_destroy_actions (to_remove)
+      if !to_remove.nil? && to_remove.length > 0
+        bye_actions = Action.where(:id => to_remove.map(&:id))
+        OCLogger.log "Removing #{bye_actions.length} spurious actions for #{to_remove.first.bill.ident}"
+        bye_actions.destroy_all
+      end
+    end
+
     def import_bill_actions (bill_hash)
       # There are often multiple CR references associated with a single
       # bill action. This results in duplicate bill actions with different
@@ -201,19 +210,35 @@ module UnitedStates
         to_remove = existing_action_groups.keys - src_action_groups.keys
         to_remove = to_remove.flat_map{ |act_identity| existing_action_groups[act_identity] }
         to_remove.reject!{ |act| act['action_type'] == 'introduced' }
-        if to_remove.length > 0
-          bye_actions = bill.actions.where(:id => to_remove.map(&:id))
-          OCLogger.log "Removing #{bye_actions.length} spurious actions for #{bill_hash['bill_id']}"
-          bye_actions.destroy_all
+        bulk_destroy_actions(to_remove)
+
+        # Sometimes there are too many actions that map to the same identity hash. Let's
+        # delete those too.
+        src_action_groups.each do |act_identity, src_acts|
+          existing_actions = existing_action_groups.fetch(act_identity, [])
+          existing_actions.sort_by!{ |a| a['ordinal_position'] }
+          surplus_count = existing_actions.length - src_acts.length
+          if surplus_count > 0
+            bulk_destroy_actions(existing_actions.pop(surplus_count))
+          end
         end
 
-        src_action_groups.each do |act_identity, acts|
-          act = acts.sort_by{ |a| a['datetime'] }.first
-          action = bill.actions.where(act_identity).first || bill.actions.new(act_identity)
-          updates = act.slice('text', 'where', 'in_committee', 'in_subcommittee', 'where', 'result', 'vote_type')
-          updates['roll_call_number'] = act['roll']
-          action.update_attributes!(updates)
-          action.save! if action.changed?
+        src_action_groups.each do |act_identity, src_acts|
+
+          existing_actions = existing_action_groups.fetch(act_identity, [])
+          existing_actions.sort_by!{ |a| a['ordinal_position'] }
+
+          src_acts.sort_by{ |a| a['ordinal_position'] }.each_with_index do |act, src_idx|
+            if src_idx < existing_actions.length
+              action = existing_actions[src_idx]
+            else
+              action = bill.actions.new
+            end
+            updates = act.slice('text', 'where', 'in_committee', 'in_subcommittee', 'where', 'result', 'vote_type')
+            updates['ordinal_position'] = act['+ordinal_position']
+            updates['roll_call_number'] = act['roll']
+            action.update_attributes!(updates)
+          end
         end
 
         establish_introduced_action bill, bill_hash['+introduced_at']
@@ -227,12 +252,11 @@ module UnitedStates
       # source data contains an introduced_at datetime field.
       if !introduced_at.nil?
         intro = bill.actions.find_by_action_type('introduced')
-        if intro.nil?
-          intro = bill.actions.new(:action_type => 'introduced')
-          intro.date = introduced_at.to_i
-          intro.datetime = introduced_at
-          intro.save!
-        end
+        intro ||= bill.actions.new(:action_type => 'introduced')
+        intro.date = introduced_at.to_i
+        intro.datetime = introduced_at
+        intro.ordinal_position = -1
+        intro.save! if intro.changed?
       end
     end
 

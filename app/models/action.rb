@@ -103,11 +103,23 @@ class Action < ActiveRecord::Base
   end
 
   def formatted_date
-    Time.at(date).strftime("%b %d, %Y")
+    if datetime.nil? and date.nil?
+      ""
+    elsif datetime.nil?
+      Time.at(date).strftime("%b %d, %Y")
+    else
+      datetime.strftime("%b %d, %Y")
+    end
   end
 
   def formatted_date_short
-    Time.at(date).strftime("%b ") + Time.at(date).day.ordinalize    
+    if datetime.nil? and date.nil?
+      ""
+    elsif datetime.nil?
+      Time.at(date).strftime("%b ") + Time.at(date).day.ordinalize    
+    else
+      datetime.strftime("%b ") + datetime.day.ordinalize
+    end
   end
 
   def date_std

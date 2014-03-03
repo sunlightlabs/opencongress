@@ -1307,7 +1307,7 @@ class Person < ActiveRecord::Base
 	end
 
   def popular_name
-    "#{sunlight_nickname || nickname || firstname} #{lastname}"
+    "#{nickname || firstname} #{lastname}"
   end
 
   def to_s

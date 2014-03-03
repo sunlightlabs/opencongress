@@ -137,10 +137,6 @@ namespace :update do
     require File.expand_path 'bin/get_watchdog_ids', Rails.root
   end
 
-  task :sunlightlabs => :environment do
-    require File.expand_path 'bin/get_sunlightlabs_data', Rails.root
-  end
-
   task :gpo_billtext_timestamps => :environment do
     begin
       require File.expand_path 'bin/daily/daily_gpo_billtext_timestamps', Rails.root
@@ -344,7 +340,7 @@ namespace :update do
 
   task :all => [
     :unitedstates_rsync, :rsync,
-    :congress_legislators, :sunlightlabs,
+    :congress_legislators,
     :photos,
     :import_legislators, "import:bills:current",
     :amendments,

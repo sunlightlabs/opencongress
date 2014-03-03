@@ -57,7 +57,7 @@ class ListSenator < ActiveRecord::Base
 	  title_full_name + " " + party_and_state
 	end
   def popular_name
-    "#{sunlight_nickname || nickname || firstname} #{lastname}"
+    "#{nickname || firstname} #{lastname}"
   end
 
   def set_party

@@ -232,7 +232,7 @@ module UnitedStates
             if src_idx < existing_actions.length
               action = existing_actions[src_idx]
             else
-              action = bill.actions.new
+              action = bill.actions.new(act_identity)
             end
             updates = act.slice('text', 'where', 'in_committee', 'in_subcommittee', 'where', 'result', 'vote_type')
             updates['ordinal_position'] = act['+ordinal_position']

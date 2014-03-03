@@ -82,7 +82,7 @@ module UnitedStates
     end
 
     def decode_meeting_hash (mtg_hash)
-      mtg_hash['+occurs_at'] = Time.parse(mtg_hash['occurs_at'])
+      mtg_hash['+occurs_at'] = Time.zone.parse(mtg_hash['occurs_at'])
       if mtg_hash['subcommittee']
         mtg_hash['+committee_id'] = "#{mtg_hash['committee']}#{mtg_hash['subcommittee']}"
       else

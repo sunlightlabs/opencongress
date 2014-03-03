@@ -40,12 +40,12 @@ module UnitedStates
     # fields. Typed field names are prefixed with +.
     def decode_bill_hash (bill_hash)
       bill_hash['actions'].each_with_index do |action, idx|
-        action['+acted_at'] = Time.parse(action['acted_at'])
+        action['+acted_at'] = Time.zone.parse(action['acted_at'])
         action['+ordinal_position'] = idx
       end
       bill_hash['actions'].sort_by! { |action| action['+acted_at'] }
-      bill_hash['+introduced_at'] = Time.parse(bill_hash['introduced_at'])
-      bill_hash['+updated_at'] = Time.parse(bill_hash['updated_at'])
+      bill_hash['+introduced_at'] = Time.zone.parse(bill_hash['introduced_at'])
+      bill_hash['+updated_at'] = Time.zone.parse(bill_hash['updated_at'])
       bill_hash
     end
 
@@ -333,11 +333,11 @@ module UnitedStates
     end
 
     def decode_amendment_hash (amdt_hash)
-      amdt_hash['+status_at'] = Time.parse(amdt_hash['status_at'])
-      amdt_hash['+updated_at'] = Time.parse(amdt_hash['updated_at'])
-      amdt_hash['+introduced_at'] = Time.parse(amdt_hash['introduced_at'])
+      amdt_hash['+status_at'] = Time.zone.parse(amdt_hash['status_at'])
+      amdt_hash['+updated_at'] = Time.zone.parse(amdt_hash['updated_at'])
+      amdt_hash['+introduced_at'] = Time.zone.parse(amdt_hash['introduced_at'])
       amdt_hash['actions'].each do |action|
-        action['+acted_at'] = Time.parse(action['acted_at'])
+        action['+acted_at'] = Time.zone.parse(action['acted_at'])
         action['+where'] = case action['where']
                            when 'h' then 'house'
                            when 's' then 'senate'

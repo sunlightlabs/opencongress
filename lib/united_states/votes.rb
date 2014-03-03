@@ -31,8 +31,8 @@ module UnitedStates
     # Decodes string representations of datetime and numeric
     # fields. Typed field names are prefixed with +.
     def decode_roll_call_hash (rc_hash)
-      rc_hash['+date'] = Time.parse(rc_hash['date'])
-      rc_hash['+updated_at'] = Time.parse(rc_hash['updated_at'])
+      rc_hash['+date'] = Time.zone.parse(rc_hash['date'])
+      rc_hash['+updated_at'] = Time.zone.parse(rc_hash['updated_at'])
       if rc_hash['amendment'] && rc_hash['amendment']['type'] == 'h-bill' then
         rc_hash['amendment']['type'] = 'h'
       end

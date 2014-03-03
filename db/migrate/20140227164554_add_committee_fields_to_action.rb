@@ -1,7 +1,7 @@
 class AddCommitteeFieldsToAction < ActiveRecord::Migration
   def self.up
-    add_column :actions, :in_committee, :string
-    add_column :actions, :in_subcommittee, :string
+    add_column :actions, :in_committee, :text
+    add_column :actions, :in_subcommittee, :text
   end
 
   def self.down

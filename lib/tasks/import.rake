@@ -55,5 +55,52 @@ namespace :import do
       end
     end
   end
+
+  namespace :legislators do
+    desc "Imports the legislator with the given govtrack_id"
+    task :individual => :environment do
+      if ENV['govtrack_id']
+        ImportLegislatorsJob.import_given(:govtrack => [ENV['govtrack_id']])
+      end
+      if ENV['thomas_id']
+        ImportLegislatorsJob.import_given(:thomas => [ENV['thomas_id']])
+      end
+    end
+
+    desc "Imports all legislators in the current congress"
+    task :congress => :environment do
+      cong_num = ENV['congress'].to_i
+      cong_num and ImportLegislatorsJob.import_congress(cong_num)
+    end
+
+    desc "Imports all legislators in the current congress"
+    task :current => :environment do
+      # Date ranges refer to the start or end of a term in congress. The default
+      # ('current') behavior is to include members with a term overlapping the
+      # current congress, subsuming the current congress, or being subsumed by the
+      # current congress.
+      ImportLegislatorsJob.import_congress(Settings.available_congresses.sort.last)
+      num_sens = Person.sen.count
+      num_reps = Person.rep.count
+      if num_sens != 100
+        OCLogger.log "After importing legislators there should be 100 senators but there are #{num_sens}"
+      end
+      if num_reps != 441
+        OCLogger.log "After importing legislators there should be 441 reprentatives but there are #{num_reps}"
+      end
+    end
+
+    desc "Imports all legislators, from all time."
+    task :all => :environment do
+      ImportLegislatorsJob.import_all
+    end
+
+    desc "Imports all legislators who served between the given dates."
+    task :between => :environment do
+      d1 = (ENV['from'] or ENV['begin'])
+      d2 = (ENV['to'] or ENV['end'])
+      ImportLegislatorsJob.import_period(d1, d2)
+    end
+  end
 end
 

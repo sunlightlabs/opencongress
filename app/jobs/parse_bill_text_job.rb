@@ -7,7 +7,7 @@ require 'rexml/document'
 
 
 module ParseBillTextJob
-  def self.perform (options = {})
+  def self.perform (options = Hash.new)
     bill_id = options[:bill]
 
     if bill_id.nil?
@@ -28,33 +28,33 @@ module ParseBillTextJob
         # Keep a file listing around to avoid globing the directory for each file.
 
         puts "Processing #{bill_list.length} bills of type #{bill_type}"
-        parse_bills bill_list,
+        parse_bills(bill_list,
                     build_text_file_lookup(congress, bill_type),
-                    build_version_file_lookup(congress, bill_type),
-                    options
+                    build_version_file_lookup(congress, bill_type))
       end
     end
   end
 
-  def self.for_bill (bill_id, options = Hash.new)
+  def self.for_bill (bill_id)
     puts "Parsing text for #{bill_id}"
     bill_type, bill_number, congress = Bill.ident(bill_id)
     bill_list = Bill.where(:number => bill_number, :bill_type => bill_type, :session => congress).to_a
     parse_bills(bill_list,
                 build_text_file_lookup(congress, bill_type),
-                build_version_file_lookup(congress, bill_type),
-                options)
+                build_version_file_lookup(congress, bill_type))
   end
 
 
   protected
-  def self.parse_bills (bill_list, text_file_lookup, version_file_lookup, options = Hash.new)
-    bill_list.each do |bill|
+  def self.parse_bills (bill_list, text_file_lookup, version_file_lookup)
+    bill_list.each_with_index do |bill, idx|
+      if bill_list.length > 1
+        puts "Processing text files for #{bill.ident} (bill #{idx+1} of #{bill_list.length})"
+      end
       govtrack_bill_ident = "#{bill.reverse_abbrev_lookup}#{bill.number}-#{bill.session}"
       parse_files(bill,
                   text_file_lookup.fetch(govtrack_bill_ident, []),
-                  version_file_lookup.fetch(govtrack_bill_ident, []),
-                  options)
+                  version_file_lookup.fetch(govtrack_bill_ident, []))
     end
   end
 
@@ -73,7 +73,7 @@ module ParseBillTextJob
               "#{bill.reverse_abbrev_lookup}#{bill.number}#{version}.gen.html-oc")
   end
 
-  def self.parse_files (bill, text_files, version_files, options = {})
+  def self.parse_files (bill, text_files, version_files)
     # For bills with version files, we use the "from-to" file as the text of
     # the "to" version of the bill. There will be no such version for the
     # initial version, so we use the text file for that version.
@@ -86,7 +86,7 @@ module ParseBillTextJob
       if initial_versions.include?(txt[:version])
         input_path = txt[:path]
         output_path = processed_text_file_path(bill, txt[:version])
-        parse_file(bill, txt[:version], input_path, output_path, options)
+        parse_file(bill, txt[:version], input_path, output_path)
       end
     end
 
@@ -104,7 +104,7 @@ module ParseBillTextJob
           OCLogger.log "Choosing #{from_initial[:from_version]} -> #{to_version} for #{bill.ident}"
           input_path = from_initial[:path]
           output_path = processed_text_file_path(bill, from_initial[:to_version])
-          parse_file(bill, to_version, input_path, output_path, options)
+          parse_file(bill, to_version, input_path, output_path)
         end
       end
     end
@@ -151,7 +151,7 @@ module ParseBillTextJob
     end
   end
 
-  def self.parse_file (bill, text_version, input_path, output_path, options = {})
+  def self.parse_file (bill, text_version, input_path, output_path)
     file = File.open(input_path, 'r')
     file_timestamp = File.mtime(input_path)
     doc = REXML::Document.new file

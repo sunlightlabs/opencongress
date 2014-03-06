@@ -332,4 +332,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def warn_geocode
+    flash.now[:error] = "We are currently experiencing geocoding errors; Contacting your reps is unavailable."
+  end
+
 end

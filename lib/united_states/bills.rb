@@ -198,25 +198,21 @@ module UnitedStates
           { 'text' => act.text,
             'datetime' => act.datetime,
             'where' => act.where,
-            'in_committee' => act['in_committee'],
-            'in_subcommittee' => act['in_subcommittee']
+            'in_committee' => act.in_committee,
+            'in_subcommittee' => act.in_subcommittee
           }
         }
         existing_action_groups = bill.actions.group_by(&existing_action_identity)
 
-        # We want to remove actions from the database that no longer appear in
-        # the source data. However since we synthetically create some of our
-        # 'introduced' actions, we cannot remove those.
         to_remove = existing_action_groups.keys - src_action_groups.keys
         to_remove = to_remove.flat_map{ |act_identity| existing_action_groups[act_identity] }
-        to_remove.reject!{ |act| act['action_type'] == 'introduced' }
         bulk_destroy_actions(to_remove)
 
         # Sometimes there are too many actions that map to the same identity hash. Let's
         # delete those too.
         src_action_groups.each do |act_identity, src_acts|
           existing_actions = existing_action_groups.fetch(act_identity, [])
-          existing_actions.sort_by!{ |a| a['ordinal_position'] }
+          existing_actions.sort_by!{ |a| a.ordinal_position }
           surplus_count = existing_actions.length - src_acts.length
           if surplus_count > 0
             bulk_destroy_actions(existing_actions.pop(surplus_count))
@@ -240,23 +236,6 @@ module UnitedStates
             action.update_attributes!(updates)
           end
         end
-
-        establish_introduced_action bill, bill_hash['+introduced_at']
-      end
-    end
-
-
-    def establish_introduced_action (bill, introduced_at)
-      # Some bills don't have an 'introduced' action in their actions list.
-      # This creates a synthetic 'introduced' action for such bills if the
-      # source data contains an introduced_at datetime field.
-      if !introduced_at.nil?
-        intro = bill.actions.find_by_action_type('introduced')
-        intro ||= bill.actions.new(:action_type => 'introduced')
-        intro.date = introduced_at.to_i
-        intro.datetime = introduced_at
-        intro.ordinal_position = -1
-        intro.save! if intro.changed?
       end
     end
 

@@ -12,7 +12,7 @@ class Bill < ActiveRecord::Base
   has_many :bill_titles
   has_many :bill_cosponsors
   has_many :co_sponsors, :through => :bill_cosponsors, :source => :person, :order => 'lastname'
-  has_many :actions, :order => 'actions.datetime ASC'
+  has_many :actions, :order => 'ordinal_position DESC'
   has_many :bill_committees
   has_many :committees, :through => :bill_committees
   has_many :bill_relations

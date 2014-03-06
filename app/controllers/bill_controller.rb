@@ -485,6 +485,7 @@ class BillController < ApplicationController
           @nay_chart = ofc2(210,120, "roll_call/partyvote_piechart_data/#{@roll_call.id}?breakdown_type=-&disclaimer_off=true&radius=40")
           @abstain_chart = ofc2(210,120, "roll_call/partyvote_piechart_data/#{@roll_call.id}?breakdown_type=0&disclaimer_off=true&radius=40")
         end
+        @most_recent_actions = @bill.actions.first(3)
       }
       format.xml {
         render :xml => @bill.to_xml(:exclude => [:fti_titles], :include => [:bill_titles,:last_action,:sponsor,:co_sponsors,:actions,:roll_calls])
@@ -506,7 +507,7 @@ class BillController < ApplicationController
       :page => @page,
       :per_page => 10
     }
-    @actions = @bill.actions.reorder('datetime DESC, ordinal_position DESC, id DESC').paginate(pagination_opts)
+    @actions = @bill.actions.reorder('ordinal_position DESC, datetime DESC, id DESC').paginate(pagination_opts)
   end
 
   def votes

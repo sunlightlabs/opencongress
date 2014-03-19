@@ -27,4 +27,41 @@ namespace :db do
       end
     end
   end
+
+  desc "Update a fixture by adding the named bills. e.g. rake db:extract_bills_fixtures listed_in=bills.txt output_to=bills.yml"
+  task :extract_bills_fixtures => :environment do
+    if ENV['listed_in'] && File.exists?(ENV['listed_in'])
+      ident_list = File.read(ENV['listed_in']).split(/[\r\n]+/)
+    elsif ENV['bills']
+      ident_list = ENV['bills'].split(/,/)
+    else
+      puts "You must specify a file with listed_in= or a comma-separated list of bill idents with bills="
+      next
+    end
+
+    if ENV['output_to'].nil?
+      puts "You must specify a file with output_to="
+      next
+    end
+
+    bills = Hash.new
+    ident_list.each do |ident|
+      b = Bill.find_by_ident(ident)
+      if b.nil?
+        puts "Could not find #{ident}"
+      else
+        bills[b.ident] = b
+      end
+    end
+
+    if File.exists?(ENV['output_to'])
+      open(ENV['output_to'], 'r') do |instream|
+        bills.update(YAML::load(instream))
+      end
+    end
+
+    open(ENV['output_to'], 'w') do |outstream|
+      YAML::dump(bills, outstream)
+    end
+  end
 end

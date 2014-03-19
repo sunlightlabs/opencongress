@@ -1361,5 +1361,17 @@ class Bill < ActiveRecord::Base
     bill_titles.select { |t| t.is_default == true }.first
   end
 
-
+  def self.chain_text_versions (versions)
+    chain = []
+    current_versions = [nil]
+    while versions.present? do
+      (these_versions, versions) = versions.partition{ |v| current_versions.include?(v.previous_version) }
+      if these_versions.empty? and versions.present?
+        raise Exception.new("Incomplete bill text version chain.")
+      end
+      chain.push(*these_versions)
+      current_versions = these_versions.map{ |v| v.version }
+    end
+    return chain
+  end
 end

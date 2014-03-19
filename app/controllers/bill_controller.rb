@@ -427,46 +427,31 @@ class BillController < ApplicationController
     @letters = @bill.contact_congress_letters.includes(:formageddon_threads).where("formageddon_threads.privacy='PUBLIC'").order("contact_congress_letters.created_at DESC").paginate(:page => params[:page], :per_page => 10)
   end
 
-  def chain_text_versions (versions)
-    chain = []
-    current_versions = [nil]
-    while versions.present? do
-      (these_versions, versions) = versions.partition{ |v| current_versions.include?(v.previous_version) }
-      if these_versions.empty? and versions.present?
-        raise Exception("Incomplete bill text version chain.")
-      end
-      chain.push(*these_versions)
-      current_versions = these_versions.map{ |v| v.version }
-    end
-    return chain
-  end
-
   def text
     @topic = nil
     @meta_description = "Full bill text of #{@bill.title_full_common} on OpenCongress.org"
 
     @versions = @bill.bill_text_versions.all
     if @versions.empty?
-      @bill_text = "We're sorry but OpenCongress does not have the full bill text at this time.  Try at <a href='http://thomas.loc.gov/cgi-bin/query/z?c#{@bill.session}:#{@bill.typenumber}:'>THOMAS</a>."
-      @page_title = "Missing Text of #{@bill.typenumber}"
-      @commented_nodes = []
-      @top_nodes = []
-      @commented_nodes = []
-      @version = nil
-
-    else
-      @versions = chain_text_versions(@versions)
-
-      if params[:version]
-        @selected_version = @versions.select{ |v| v.version == params[:version] }.first
-      else
-        @selected_version = @versions.last
-      end
-
-      @page_title = "Text of #{@bill.typenumber} as #{@selected_version.pretty_version}"
-      @commented_nodes = @selected_version.bill_text_nodes.includes(:comments)
-      @top_nodes = @selected_version.top_comment_nodes
+      return missing_text
     end
+
+    begin
+      @versions = Bill.chain_text_versions(@versions)
+    rescue Exception => e
+      logger.warn("Failed to provide bill text for #{@bill.ident}. Reason: #{e}")
+      return missing_text
+    end
+
+    if params[:version]
+      @selected_version = @versions.select{ |v| v.version == params[:version] }.first
+    else
+      @selected_version = @versions.last
+    end
+
+    @page_title = "Text of #{@bill.typenumber} as #{@selected_version.pretty_version}"
+    @commented_nodes = @selected_version.bill_text_nodes.includes(:comments)
+    @top_nodes = @selected_version.top_comment_nodes
 
     begin
       # open html from file
@@ -475,7 +460,7 @@ class BillController < ApplicationController
         @bill_text = File.open(path).read
       end
     rescue
-      @bill_text = "We're sorry but OpenCongress does not have the full bill text at this time.  Try at <a href='http://thomas.loc.gov/cgi-bin/query/z?c#{@bill.session}:#{@bill.typenumber}:'>THOMAS</a>."
+      return missing_text
     end
   end
 
@@ -833,5 +818,14 @@ private
                         ["30 Days","30days"],
                         ["1 Year","1year"],
                         ["All Time","AllTime"]]
+  end
+
+  def missing_text
+    @bill_text = "We're sorry but OpenCongress does not have the full bill text at this time.  Try at <a href='http://thomas.loc.gov/cgi-bin/query/z?c#{@bill.session}:#{@bill.typenumber}:'>THOMAS</a>."
+    @page_title = "Missing Text of #{@bill.typenumber}"
+    @commented_nodes = []
+    @top_nodes = []
+    @commented_nodes = []
+    @version = nil
   end
 end

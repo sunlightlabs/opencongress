@@ -63,19 +63,17 @@ OpenCongress::Application.routes.draw do
     match 'bill_vote/:bill/:id', :action => 'bill_vote'
 
     scope ':id' do
-      constraints(:id => Bill.ident_pattern) do
-        match 'blogs(/:page)', :action => 'blogs', :as => :blogs_bill
-        match 'blogs/search(/:page)', :action => 'commentary_search', :commentary_type => 'blog'
-        match 'news(/:page)', :action => 'news', :as => :news_bill
-        match 'news/search(/:page)', :action => 'commentary_search', :commentary_type => 'news'
-        match 'text', :action => 'text', :as => :bill_text
-        match 'comments', :action => 'comments', :as => :bill_comments
-        match 'show', :action => 'show', :as => :bill
-        match ':action'
-      end
+      match 'blogs(/:page)', :action => 'blogs', :as => :blogs_bill
+      match 'blogs/search(/:page)', :action => 'commentary_search', :commentary_type => 'blog'
+      match 'news(/:page)', :action => 'news', :as => :news_bill
+      match 'news/search(/:page)', :action => 'commentary_search', :commentary_type => 'news'
+      match 'text', :action => 'text', :as => :bill_text
+      match 'comments', :action => 'comments', :as => :bill_comments
+      match 'show', :action => 'show', :as => :bill
+      match ':action'
     end
 
-    match ':id' => 'bill#show', :constraints => { :id => Bill.ident_pattern }
+    match ':id' => 'bill#show'
 
   end
   match 'bill' => redirect('/bill/all')

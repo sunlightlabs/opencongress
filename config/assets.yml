@@ -65,6 +65,7 @@ stylesheets:
         - public/stylesheets/jqModal.css
         - public/stylesheets/jquery.rating.css
         - public/stylesheets/bootstrap-custom.min.css
+        - public/stylesheets/kludge.css
     frontpage:
         - public/stylesheets/960.css
         - public/stylesheets/classes.css
@@ -78,6 +79,7 @@ stylesheets:
         - public/stylesheets/search.css
         - public/stylesheets/bootstrap-custom.min.css
         - public/stylesheets/interim_index.css
+        - public/stylesheets/kludge.css
     districts:
         - public/stylesheets/states.css
         - public/stylesheets/districts.css

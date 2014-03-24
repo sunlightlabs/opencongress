@@ -811,7 +811,7 @@ class Person < ActiveRecord::Base
   # the zip5 was not specific enough.
   def Person.find_current_congresspeople_by_zipcode(zip5, zip4=nil)
     if not zip5.nil? and not zip4.nil?
-      lat, lng = Geocoder.coordinates("#{zip5}-#{zip4}")
+      lat, lng = Geocoder.coordinates("#{zip5}-#{zip4}", :lookup => :mapquest)
       legs = Congress.legislators_locate(lat, lng).results rescue []
     elsif not zip5.nil?
       legs = Congress.legislators_locate(zip5).results rescue []

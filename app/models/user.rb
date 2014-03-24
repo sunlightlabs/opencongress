@@ -258,7 +258,7 @@ class User < ActiveRecord::Base
     if params[:lat].present? and params[:lng].present?
       dsts = Congress.districts_locate(params[:lat], params[:lng]).results rescue []
     elsif zipcode.present? && zip_four.present?
-      lat, lng = Geocoder.coordinates("#{zipcode}-#{zip_four}")
+      lat, lng = Geocoder.coordinates("#{zipcode}-#{zip_four}", :lookup => :mapquest)
       dsts = Congress.districts_locate(lat, lng).results rescue []
     else
       dsts = Congress.districts_locate(zipcode).results rescue []

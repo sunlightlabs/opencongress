@@ -131,9 +131,9 @@ class AccountController < ApplicationController
     if request.post?
       if !params[:address].blank?
         result = Geocoder.search("#{params[:address]}, #{params[:zipcode]}").first
-        lat = result.data['latLng']['lat']
-        lng = result.data['latLng']['lng']
-        zipcode, zip_four = result.data['postalCode'].split('-')
+        lat, lng = result.coordinates
+        zipcode = result.zipcode
+        zip_four = result.zip4
         # This happens so the update_state_and_district method won't be invoked via callback
         # on account of zipcode or zip_four being dirty.
         User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode, :zip_four => zip_four)

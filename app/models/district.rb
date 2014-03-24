@@ -257,43 +257,50 @@ class District < ActiveRecord::Base
 
   def self.from_address (address)
 
-    # Mapquest will return a less specific result for 'Clarksville, TN 42223'
-    # than it will for 'Clarksville, TN'. If zipcode regex matches, we try
-    # to geocode all three forms (full combination, without zipcode, and just
-    # zip code) and use the most specific result.
-    m = /((.+)\s+(\d{5}(?:-\d{2}(?:\d{2})?)?)?)\Z/.match(address)
-    if m.nil?
-      geo = Geocoder.search(address)[0]
+    # # Mapquest will return a less specific result for 'Clarksville, TN 42223'
+    # # than it will for 'Clarksville, TN'. If zipcode regex matches, we try
+    # # to geocode all three forms (full combination, without zipcode, and just
+    # # zip code) and use the most specific result.
+    # m = /((.+)\s+(\d{5}(?:-\d{2}(?:\d{2})?)?)?)\Z/.match(address)
+    # if m.nil?
+    #   geo = Geocoder.search(address)[0]
+    # else
+    #   mapquest_granularity_ranking = [
+    #     'P1', 'L1', 'I1', 'B1', 'B2', 'B3', 'Z4', 'Z3', 'Z2', 'A5', 'Z1', 'A4', 'A3', 'A1'
+    #   ]
+    #   geos = m.captures.map do |c|
+    #     # Geocodes each capture result: Full address, Without Zip, Zip only
+    #     Geocoder.search(c)[0]
+    #   end.compact.select do |g|
+    #     # Filters results to only those where the state matches the original query,
+    #     # but only if a state was in the original query.
+    #     if (address =~ /[A-Z]{2}/).present?
+    #       address.include?(g.data['adminArea3'])
+    #     else
+    #       true
+    #     end
+    #   end.sort_by do |g|
+    #     # Sorts by Mapquest Specificity Code
+    #     granularity_code = g.data['geocodeQualityCode'].slice(0, 2)
+    #     mapquest_granularity_ranking.index(granularity_code) or mapquest_granularity_ranking.length
+    #   end
+    #   geo = geos.first
+    # end
+    if (address =~ /^[\d]{5}(-[\d]{4})?$/).present?
+      lookup = :mapquest
     else
-      mapquest_granularity_ranking = [
-        'P1', 'L1', 'I1', 'B1', 'B2', 'B3', 'Z4', 'Z3', 'Z2', 'A5', 'Z1', 'A4', 'A3', 'A1'
-      ]
-      geos = m.captures.map do |c|
-        # Geocodes each capture result: Full address, Without Zip, Zip only
-        Geocoder.search(c)[0]
-      end.compact.select do |g|
-        # Filters results to only those where the state matches the original query,
-        # but only if a state was in the original query.
-        if (address =~ /[A-Z]{2}/).present?
-          address.include?(g.data['adminArea3'])
-        else
-          true
-        end
-      end.sort_by do |g|
-        # Sorts by Mapquest Specificity Code
-        granularity_code = g.data['geocodeQualityCode'].slice(0, 2)
-        mapquest_granularity_ranking.index(granularity_code) or mapquest_granularity_ranking.length
-      end
-      geo = geos.first
+      lookup = :smarty_streets
     end
+    geo = Geocoder.search(address, :lookup => lookup)[0]
 
     return [] if geo.nil?
-    return [] if ['COUNTRY', 'STATE'].include?(geo.data['geocodeQuality'])
-    if geo.data['geocodeQuality'] == 'ZIP' # This means just Zip5
+    zipcode_result = geo.zipcode_result? rescue geo.data['geocodeQuality'] == 'ZIP'
+    # return [] if ['COUNTRY', 'STATE'].include?(geo.data['geocodeQuality'])
+    # if geo.data['geocodeQuality'] == 'ZIP' # This means just Zip5
+    if zipcode_result
       dsts = Congress.districts_locate(geo.data['postalCode']).results
     else
-      lat = geo.data['latLng']['lat']
-      lng = geo.data['latLng']['lng']
+      lat, lng = geo.coordinates
       dsts = Congress.districts_locate(lat, lng).results
     end
 

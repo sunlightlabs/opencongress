@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="bb_wrapper">
 
 <head>
   <%= render :partial => 'shared/analytics_head' %>
@@ -51,6 +51,8 @@
 
     <!--[if lt IE 7]><style type="text/css">@import url("/stylesheets/ie6.css");</style><![endif]-->
     <!--[if IE 7]><style type="text/css">@import url("/stylesheets/ie7.css");</style><![endif]-->
+
+    <%= stylesheet_link_tag '//s3.amazonaws.com/sf-icons/css/sf-icons.css' %>
 
   <% else %>
     <%= yield :stylesheets %>
@@ -135,6 +137,7 @@
   <%= render :partial => 'shared/analytics_foot' %>
   <%= fb_connect_async_js %>
   <%= javascript_include_tag "simple-socialite-pack.js" %>
+  <%= javascript_include_tag "//s3.amazonaws.com/sunlight-cdn/brandingbar/0.2/js/brandingbar.min.js.gz" %>
   <%= javascript_include_tag "socialite/socialite.opencongress.js" %>
   <script>
   Socialite.setup({

@@ -74,3 +74,28 @@
     top: 1px;
     border-bottom: 1px solid #c55948;
 }
+
+
+/* Branding Bar */
+.brandingbar a {
+    color: #395C64;
+}
+
+.brandingbar a:hover {
+    color: #688794;
+}
+
+.brandingbar a.social, .brandingbar a.branding-bar_trigger {
+    line-height: 1;
+    margin-top:1em;
+    display: inline-block;
+}
+.brandingbar .icon:before {
+    background:none;
+}
+
+#bb_close-panel, .bb_submit, .bb_submit:hover {
+    box-shadow: none;
+    text-shadow: none;
+}
+

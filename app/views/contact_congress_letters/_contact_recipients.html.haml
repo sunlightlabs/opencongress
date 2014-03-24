@@ -12,7 +12,7 @@
         - if @bill
           = sponsor_tag(@bill, s)
           %span
-            = "Vote on Passage of #{@bill.typenumber}: " 
+            = "Vote on Passage of #{@bill.typenumber}: "
             %strong= "#{@bill.vote_on_passage(s)}"
     %hr#separator
     - if @reps.size == 1
@@ -24,11 +24,11 @@
         - if @bill
           = sponsor_tag(@bill, p)
           %span
-            = "Vote on Passage of #{@bill.typenumber}: " 
+            = "Vote on Passage of #{@bill.typenumber}: "
             %strong= "#{@bill.vote_on_passage(@reps.first)}"
     - else
-      %li#rep.hide.none
-        Please enter your full address on the right 
+      %li#rep.none
+        Please enter your full address on the right
         %br
         so we can find your Representative.
 - unless @sens.empty? and @reps.empty?

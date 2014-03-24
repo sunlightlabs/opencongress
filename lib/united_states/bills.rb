@@ -231,6 +231,7 @@ module UnitedStates
               action = bill.actions.new(act_identity)
             end
             updates = act.slice('text', 'where', 'in_committee', 'in_subcommittee', 'where', 'result', 'vote_type')
+            updates['action_type'] = act['type']
             updates['ordinal_position'] = act['+ordinal_position']
             updates['roll_call_number'] = act['roll']
             action.update_attributes!(updates)

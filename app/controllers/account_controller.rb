@@ -78,8 +78,8 @@ class AccountController < ApplicationController
     end
 
     # if the return_to is nil at this point, try setting it with the referrer
-    if session[:return_to].nil?
-      session[:return_to] = (request.referer =~ /\/login\/?$/) ? '/' : request.referer
+    if session[:return_to].nil? || (session[:return_to] =~ /\/(login|confirm)\/?/).present?
+      session[:return_to] = (request.referer =~ /\/(login|confirm)\/?/).present? ? '/' : request.referer
     end
 
     if using_open_id?

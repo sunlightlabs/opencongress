@@ -153,7 +153,7 @@ module UnitedStates
           end
         end
 
-        import_bill_actions bill_hash
+        import_bill_actions bill, bill_hash
         assign_subjects bill_hash
       else
         OCLogger.log "#{bill_hash['bill_id']} is already up-to-date."
@@ -168,76 +168,77 @@ module UnitedStates
       end
     end
 
-    def bulk_destroy_actions (to_remove)
+    def bulk_destroy_actions (subject, to_remove)
       if !to_remove.nil? && to_remove.length > 0
         bye_actions = Action.where(:id => to_remove.map(&:id))
-        OCLogger.log "Removing #{bye_actions.length} spurious actions for #{to_remove.first.bill.ident}"
+        OCLogger.log "Removing #{bye_actions.length} spurious actions for #{subject.to_s}"
         bye_actions.destroy_all
       end
     end
 
-    def import_bill_actions (bill_hash)
+    def import_actions (subject, action_hashes, action_rel)
+      src_action_identity = proc { |act|
+        { 'text' => act['text'],
+          'datetime' => act['+acted_at'].in_time_zone,
+          'where' => act['where'],
+          'in_committee' => act['in_committee'],
+          'in_subcommittee' => act['in_subcommittee']
+        }
+      }
+      src_action_groups = action_hashes.group_by(&src_action_identity)
+      warn_about_duplicate_actions src_action_groups
+
+      existing_action_identity = proc { |act|
+        { 'text' => act.text,
+          'datetime' => act.datetime,
+          'where' => act.where,
+          'in_committee' => act.in_committee,
+          'in_subcommittee' => act.in_subcommittee
+        }
+      }
+      existing_action_groups = action_rel.group_by(&existing_action_identity)
+
+      to_remove = existing_action_groups.keys - src_action_groups.keys
+      to_remove = to_remove.flat_map{ |act_identity| existing_action_groups[act_identity] }
+      bulk_destroy_actions(subject, to_remove)
+
+      # Sometimes there are too many actions that map to the same identity hash. Let's
+      # delete those too.
+      src_action_groups.each do |act_identity, src_acts|
+        existing_actions = existing_action_groups.fetch(act_identity, [])
+        existing_actions.sort_by!{ |a| a.ordinal_position }
+        surplus_count = existing_actions.length - src_acts.length
+        if surplus_count > 0
+          bulk_destroy_actions(subject, existing_actions.pop(surplus_count))
+        end
+      end
+
+      src_action_groups.each do |act_identity, src_acts|
+        existing_actions = existing_action_groups.fetch(act_identity, [])
+        existing_actions.sort_by!{ |a| a['ordinal_position'] }
+
+        src_acts.sort_by{ |a| a['ordinal_position'] }.each_with_index do |act, src_idx|
+          if src_idx < existing_actions.length
+            action = existing_actions[src_idx]
+          else
+            action = action_rel.new(act_identity)
+          end
+          updates = act.slice('text', 'where', 'in_committee', 'in_subcommittee', 'where', 'result', 'vote_type')
+          updates['date'] = act_identity['datetime'].to_i
+          updates['action_type'] = act['type']
+          updates['ordinal_position'] = act['+ordinal_position']
+          updates['roll_call_number'] = act['roll']
+          action.update_attributes!(updates)
+        end
+      end
+    end
+
+    def import_bill_actions (bill, bill_hash)
       # There are often multiple CR references associated with a single
       # bill action. This results in duplicate bill actions with different
       # 'references' membrs. Since we don't expose CR references we consider
       # these duplicates and discard all but the earliest one.
-      bill = Bill.where(bill_ident(bill_hash)).first
-      unless bill.nil?
-        src_action_identity = proc { |act|
-          { 'text' => act['text'],
-            'datetime' => act['+acted_at'].in_time_zone,
-            'where' => act['where'],
-            'in_committee' => act['in_committee'],
-            'in_subcommittee' => act['in_subcommittee']
-          }
-        }
-        src_action_groups = bill_hash['actions'].group_by(&src_action_identity)
-        warn_about_duplicate_actions src_action_groups
-
-        existing_action_identity = proc { |act|
-          { 'text' => act.text,
-            'datetime' => act.datetime,
-            'where' => act.where,
-            'in_committee' => act.in_committee,
-            'in_subcommittee' => act.in_subcommittee
-          }
-        }
-        existing_action_groups = bill.actions.group_by(&existing_action_identity)
-
-        to_remove = existing_action_groups.keys - src_action_groups.keys
-        to_remove = to_remove.flat_map{ |act_identity| existing_action_groups[act_identity] }
-        bulk_destroy_actions(to_remove)
-
-        # Sometimes there are too many actions that map to the same identity hash. Let's
-        # delete those too.
-        src_action_groups.each do |act_identity, src_acts|
-          existing_actions = existing_action_groups.fetch(act_identity, [])
-          existing_actions.sort_by!{ |a| a.ordinal_position }
-          surplus_count = existing_actions.length - src_acts.length
-          if surplus_count > 0
-            bulk_destroy_actions(existing_actions.pop(surplus_count))
-          end
-        end
-
-        src_action_groups.each do |act_identity, src_acts|
-
-          existing_actions = existing_action_groups.fetch(act_identity, [])
-          existing_actions.sort_by!{ |a| a['ordinal_position'] }
-
-          src_acts.sort_by{ |a| a['ordinal_position'] }.each_with_index do |act, src_idx|
-            if src_idx < existing_actions.length
-              action = existing_actions[src_idx]
-            else
-              action = bill.actions.new(act_identity)
-            end
-            updates = act.slice('text', 'where', 'in_committee', 'in_subcommittee', 'where', 'result', 'vote_type')
-            updates['action_type'] = act['type']
-            updates['ordinal_position'] = act['+ordinal_position']
-            updates['roll_call_number'] = act['roll']
-            action.update_attributes!(updates)
-          end
-        end
-      end
+      import_actions(bill, bill_hash['actions'], bill.actions)
     end
 
     def assign_subjects (bill_hash)
@@ -316,8 +317,9 @@ module UnitedStates
       amdt_hash['+status_at'] = Time.zone.parse(amdt_hash['status_at'])
       amdt_hash['+updated_at'] = Time.zone.parse(amdt_hash['updated_at'])
       amdt_hash['+introduced_at'] = Time.zone.parse(amdt_hash['introduced_at'])
-      amdt_hash['actions'].each do |action|
+      amdt_hash['actions'].each_with_index do |action, idx|
         action['+acted_at'] = Time.zone.parse(action['acted_at'])
+        action['+ordinal_position'] = idx
         action['+where'] = case action['where']
                            when 'h' then 'house'
                            when 's' then 'senate'
@@ -348,10 +350,18 @@ module UnitedStates
         amdt.save! if amdt.changed?
 
         OCLogger.log "Linking amendment to roll calls"
+        import_amendment_actions amdt, amdt_hash
         link_amendment_to_roll_calls amdt, amdt_hash
       else
         OCLogger.log "Amendment #{amdt_hash['amendment_id']} references unrecognized bill #{amdt_hash['amends_bill']['bill_id']}"
       end
+    end
+
+    def import_amendment_actions (amdt, amdt_hash)
+      if amdt_hash['actions'].nil?
+        OCLogger.log "Amendment #{amdt_hash['amendment_id']} contains no actions."
+      end
+      import_actions(amdt, amdt_hash['actions'], amdt.actions)
     end
 
     def link_amendment_to_roll_calls (amdt, amdt_hash)

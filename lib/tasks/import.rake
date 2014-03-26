@@ -102,5 +102,27 @@ namespace :import do
       ImportLegislatorsJob.import_period(d1, d2)
     end
   end
+
+  namespace :amendments do
+    desc "Imports all amendments from the given congress. e.g. congress=113"
+    task :congress => :environment do
+      congress = ENV['congress']
+      cong_num = congress.to_i
+      if congress && Settings.available_congresses.include?(cong_num)
+        ImportAmendmentsJob.import_congress(cong_num)
+      else
+        OCLogger.log "Invalid congress environment variable: #{congress}"
+      end
+    end
+
+    desc "Imports a single amendment. e.g. amendment=samdt3-113"
+    task :amendment => :environment do
+      if ENV['amendment'].present?
+        ImportAmendmentsJob.import_amendment ENV['amendment']
+      else
+        OCLogger.log "Missing 'amendment=' argument."
+      end
+    end
+  end
 end
 

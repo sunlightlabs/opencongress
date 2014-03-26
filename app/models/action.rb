@@ -192,28 +192,3 @@ class Action < ActiveRecord::Base
   end
   
 end
-
-class AmendmentAction < Action
-  validates_uniqueness_of :date, :scope => :amendment_id
-  belongs_to :amendment
-  
-  def display
-    "<h4>Amendment #{amendment.number}, #{amendment.purpose}, " +
-      "#{amendment.status} as of #{amendment.status_datetime}</h4>" +
-      "<p>#{amendment.description}</p>"
-      "<p>#{amendment.bill.display}</p>"
-  end
-end
-
-class BillAction < Action
-  belongs_to :bill
-
-  def display
-    "<h4>#{bill.title_full_common}</h4>"
-  end
-
-  def rss_date
-    Time.at(self.date)
-  end
-  
-end

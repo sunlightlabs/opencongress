@@ -1,6 +1,8 @@
 class Action < ActiveRecord::Base
   include Comparable
-  
+ 
+  validates_presence_of :type
+
   # has_one :roll # votes?
   has_many :refers
   

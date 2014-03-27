@@ -958,7 +958,7 @@ class Bill < ActiveRecord::Base
     end
 
     def ident_pattern
-      /((\d+-[hs][rjc]?\d+)|((hconres|hjres|hres|hr|sconres|sjres|s)\d+-\d+))/
+      /((\d+-[hs][rjc]?\d+)|((hconres|hjres|hres|hr|sconres|sjres|sres|s)\d+-\d+))/
     end
   end # class << self
 

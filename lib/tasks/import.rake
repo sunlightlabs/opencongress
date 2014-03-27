@@ -104,6 +104,15 @@ namespace :import do
   end
 
   namespace :amendments do
+    desc "Imports all amendments from the current congress."
+    task :current => :environment do
+      if !Settings.available_congresses.empty?
+        ImportAmendmentsJob.import_congress(Settings.available_congresses.sort.last)
+      else
+        OCLogger.log "No congresses available. Check your application settings."
+      end
+    end
+
     desc "Imports all amendments from the given congress. e.g. congress=113"
     task :congress => :environment do
       congress = ENV['congress']

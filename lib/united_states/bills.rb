@@ -171,7 +171,7 @@ module UnitedStates
     def bulk_destroy_actions (subject, to_remove)
       if !to_remove.nil? && to_remove.length > 0
         bye_actions = Action.where(:id => to_remove.map(&:id))
-        OCLogger.log "Removing #{bye_actions.length} spurious actions for #{subject.to_s}"
+        OCLogger.log "Removing #{bye_actions.length} spurious actions for #{subject.ident}"
         bye_actions.destroy_all
       end
     end

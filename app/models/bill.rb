@@ -1021,7 +1021,7 @@ class Bill < ActiveRecord::Base
   end
 
   def hours_to_first_attempt_to_pass
-    (originating_chamber_vote.date - introduced_action.date) / 3600
+    (originating_chamber_vote.datetime - introduced_at) / 3600
   end
 
   ## bill title methods
@@ -1114,7 +1114,7 @@ class Bill < ActiveRecord::Base
     if a = self.introduced_action
       status_hash['steps'] << { 'text' => 'Introduced', 'class' => 'passed first', 'date' => a.datetime }
     else
-      status_hash['steps'] << { 'text' => 'Introduced', 'class' => 'pending' }
+      status_hash['steps'] << { 'text' => 'Introduced', 'class' => 'passed first', 'date' => introduced_at }
     end
 
     status_hash['current_step'] = current_step

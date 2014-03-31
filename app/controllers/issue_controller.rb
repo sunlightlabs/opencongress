@@ -114,10 +114,10 @@ class IssueController < ApplicationController
     @meta_description = "#{@subject.term}-related bills and votes in previous sessions of the U.S. Congress."
     @comments = @subject
     if params[:filter] == 'enacted'
-      @bills = @subject.passed_bills(10, params[:page].blank? ? 1 : params[:page],
+      @bills = @subject.passed_bills(10, params[:page].blank? ? 1 : params[:page].to_i,
                                      Settings.available_congresses - [Settings.default_congress])
     else
-      @bills = @subject.latest_bills(10, params[:page].blank? ? 1 : params[:page],
+      @bills = @subject.latest_bills(10, params[:page].blank? ? 1 : params[:page].to_i,
                                     Settings.available_congresses - [Settings.default_congress])
     end
     @atom = {'link' => url_for(:only_path => false, :controller => 'issue', :id => @subject, :action => 'atom'), 'title' => "Major Bill Actions in #{@subject.term}"}

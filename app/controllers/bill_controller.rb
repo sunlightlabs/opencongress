@@ -263,6 +263,9 @@ class BillController < ApplicationController
   end
 
   def readthebill
+    # This feature is dead. The 72-hour rule isn't really in force and the it
+    # was never reliably measurable. The page is removed. The RSS feed remains,
+    # but is empty, as it has been for years.
     @show_resolutions = (params[:show_resolutions].blank? || params[:show_resolutions] == 'false') ? false : true
 
     @title_class = 'sort'
@@ -270,28 +273,27 @@ class BillController < ApplicationController
     case params[:sort]
     when 'rushed'
       @page_title = "Read the Bill - Bills Rushed to Vote"
-      @bills = Bill.find_rushed_bills(Settings.default_congress, 72.hours.to_i, @show_resolutions).paginate :page => params[:page]
+      @bills = []
       @atom = {'link' => "/bill/readthebill.rss?show_resolutions=#{@show_resolutions}", 'title' => @page_title}
       @title_desc = SiteText.find_title_desc('bills_rushed')
       @sort = 'rushed'
     when 'rtb_all'
       @page_title = "Read the Bill - All Bills With Vote on Passage"
-      @bills = Bill.find_rushed_bills(Settings.default_congress, 2.years.to_i, @show_resolutions).paginate :page => params[:page]
+      @bills = []
       @atom = {'link' => "/bill/readthebill.rss?sort=rtb_all&show_resolutions=#{@show_resolutions}", 'title' => @page_title}
       @title_desc = SiteText.find_title_desc('bills_rushed_all')
       @sort = 'rtb_all'
     else
       @page_title = "Read the Bill - GPO Text Available to Consideration"
-      @bills = Bill.find_gpo_consideration_rushed_bills(Settings.default_congress, 2.years.to_i, @show_resolutions).paginate :page => params[:page]
+      @bills = []
       @atom = {'link' => "/bill/readthebill.rss?sort=gpo&show_resolutions=#{@show_resolutions}", 'title' => @page_title}
       @title_desc = SiteText.find_title_desc('bills_rushed_gpo')
       @sort = 'gpo'
     end
 
     respond_to do |format|
-      format.html
+      format.html { return redirect_to 'http://readthebill.org' }
       format.rss { render :action => "readthebill.rxml" }
-      format.js { render :action => 'update'}
     end
   end
 

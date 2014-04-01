@@ -2,9 +2,20 @@ require 'beanstalk-client'
 
 module ImportQueueWorkerJob
   def self.perform ()
-    beanstalk = Beanstalk::Pool.new(Settings.beanstalk_servers)
-    beanstalk.watch(Settings.unitedstates_import_queue)
     begin
+      beanstalk = Beanstalk::Pool.new(Settings.beanstalk_servers)
+      beanstalk.watch(Settings.unitedstates_import_queue)
+    rescue Beanstalk::NotConnected
+      OCLogger.log "Failed to connect to Beanstalk. Check your application settings."
+      return
+    end
+
+    begin
+      trap('SIGTERM') do
+        OCLogger.log "Caught SIGTERM, shutting down import:worker task."
+        raise Interrupt
+      end
+
       OCLogger.log "Monitoring '#{Settings.unitedstates_import_queue}' beanstalk queue for import tasks."
       loop do
         job = beanstalk.reserve

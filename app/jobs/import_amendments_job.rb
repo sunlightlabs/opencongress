@@ -2,6 +2,16 @@ require 'united_states'
 
 module ImportAmendmentsJob
 
+  def self.perform (options)
+    if options[:bill_id]
+      import_bill(options[:bill_id])
+    elsif options[:congress]
+      import_congress(options[:congress])
+    elsif options[:feed]
+      import_feed(options[:feed])
+    end
+  end
+
   def self.import_congress (cong_num)
     amdt_file_paths = Dir.glob(File.join(Settings.unitedstates_data_path,
                                          cong_num.to_s,
@@ -19,6 +29,18 @@ module ImportAmendmentsJob
     else
       import_files file_paths
     end
+  end
+
+  def self.import_feed (ios)
+    amdt_idents = ios.readlines.map(&:strip).reject(&:empty?).compact
+    resolved_idents = resolve_file_paths(amdt_idents)
+
+    resolved_idents.select{ |i| i.second.nil? }.each do |i|
+      OCLogger.log "Unable to resolve file path for '#{i.first}'"
+    end
+
+    file_paths = resolved_idents.map(&:second).compact
+    import_files file_paths
   end
 
   private

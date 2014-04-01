@@ -133,5 +133,41 @@ namespace :import do
       end
     end
   end
+
+  namespace :rollcalls do
+    desc "Imports all roll calls from the current congress."
+    task :current => :environment do
+      if !Settings.available_congresses.empty?
+        ImportRollCallsJob.import_congress(Settings.available_congresses.sort.last)
+      else
+        OCLogger.log "No congresses available. Check your application settings."
+      end
+    end
+
+    desc "Imports all roll calls from the given congress. e.g. congress=113"
+    task :congress => :environment do
+      congress = ENV['congress']
+      cong_num = congress.to_i
+      if congress && Settings.available_congresses.include?(cong_num)
+        ImportRollCallsJob.import_congress(cong_num)
+      else
+        OCLogger.log "Invalid congress environment variable: #{congress}"
+      end
+    end
+
+    desc "Imports a given roll call. e.g. rollcall=s1-113.2013"
+    task :rollcall => :environment do
+      if ENV['rollcall'].present?
+        ImportRollCallsJob.import_roll_call ENV['rollcall']
+      else
+        OCLogger.log "Missing 'rollcall=' argument."
+      end
+    end
+  end
+
+  desc "Monitors a work queue for import jobs."
+  task :worker => :environment do
+    ImportQueueWorkerJob.perform()
+  end
 end
 

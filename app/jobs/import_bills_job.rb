@@ -7,6 +7,16 @@ module ImportBillsJob
     options[:dryrun] ||= false
   end
 
+  def self.perform (options)
+    if options[:bill_id]
+      import_bill(options[:bill_id], options)
+    elsif options[:congress]
+      import_congress(options[:congress], options)
+    elsif options[:feed]
+      import_feed(options[:feed], options)
+    end
+  end
+
   def self.import_congress (cong_num, options = Hash.new)
     set_defaults options
     bill_file_paths = Dir.glob(File.join(Settings.unitedstates_data_path,
@@ -21,12 +31,11 @@ module ImportBillsJob
 
   def self.import_bill (bill_id, options = Hash.new)
     set_defaults options
-    bill = Bill.find_by_ident(bill_id)
-    if bill.nil?
-      OCLogger.log "Unable to find bill #{bill_id}"
+    _, file_path = resolve_file_paths([bill_id]).first
+    if file_path.nil?
+      OCLogger.log "Unable to resolve file path for '#{bill_id}'"
     else
-      bill_file_paths = resolve_file_paths([bill_id]).map(&:second).compact
-      import_files bill_file_paths, options
+      import_files [file_path], options
     end
   end
 

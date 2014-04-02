@@ -64,7 +64,7 @@ class ApiController < ApplicationController
       conditions[:user_approval] = params[:user_approval_from].to_f..params[:user_approval_to].to_f
     end
 
-    @people = Person.where(conditions).paginate(:per_page => @per_page, :page => params[:page])
+    @people = Person.where(conditions).paginate(:per_page => @per_page, :page => @page)
   end
 
   def most_blogged_representatives_this_week
@@ -129,7 +129,7 @@ class ApiController < ApplicationController
       conditions[k] = params[v] if params[v]
     end
 
-    @bills = Bill.paginate(:conditions => conditions, :page => params[:page], :per_page => @per_page)
+    @bills = Bill.paginate(:conditions => conditions, :page => @page, :per_page => @per_page)
   end
 
   def bills_by_ident
@@ -148,7 +148,7 @@ class ApiController < ApplicationController
       @comments = Comment.paginate(:order => "comments.root_id desc, comments.lft ASC",
                                    :conditions => {:commentable_type => params[:object_type],
                                                    :commentable_id => params[:object_id]},
-                                   :page => params[:page], :per_page => @per_page)
+                                   :page => @page, :per_page => @per_page)
       respond_with @comments
     else
       render_404
@@ -156,8 +156,6 @@ class ApiController < ApplicationController
   end
 
   def bills_introduced_since
-    page = 1
-    page = params[:page] unless params[:page].blank?
     date = Time.parse(params[:date]).to_i
     if date
       @bills = Bill.where(["introduced >= ? ", date]).order("introduced desc")
@@ -310,7 +308,7 @@ class ApiController < ApplicationController
   end
 
   def set_pagination
-    @page = params[:page] || 1
+    @page = [params[:page].to_i, 1].max
     @per_page = 30
     @per_page = params[:per_page].to_i if params[:per_page] && params[:per_page].to_i < 30
   end

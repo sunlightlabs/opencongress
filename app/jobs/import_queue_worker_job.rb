@@ -41,6 +41,9 @@ module ImportQueueWorkerJob
         end
       end
 
+    rescue Beanstalk::NotConnected
+      OCLogger.log "Lost connection to Beanstalk. Exiting."
+
     rescue Interrupt
       # Ignore
     end

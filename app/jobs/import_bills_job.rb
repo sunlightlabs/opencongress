@@ -61,7 +61,11 @@ module ImportBillsJob
       # depend on other bills and transacting the import of a substantial number of bills is
       # unacceptably slow.
       ActiveRecord::Base.transaction do
-        OCLogger.log "Importing bill from #{bill_file_path} (#{idx + 1} of #{file_paths.count})"
+        if file_paths.length > 1
+          OCLogger.log "Importing bill from #{bill_file_path} (#{idx + 1} of #{file_paths.count})"
+        else
+          OCLogger.log "Importing bill from #{bill_file_path}"
+        end
         bill_hash = UnitedStates::Bills.parse_bill_file bill_file_path
         UnitedStates::Bills.import_bill bill_hash, options
 

@@ -65,7 +65,11 @@ module ImportAmendmentsJob
 
   def self.import_files (file_paths)
     file_paths.each_with_index do |file_path, idx|
-      OCLogger.log "Importing amendment from #{file_path} (#{idx + 1} of #{file_paths.count})"
+      if file_paths.length > 1
+        OCLogger.log "Importing amendment from #{file_path} (#{idx + 1} of #{file_paths.count})"
+      else
+        OCLogger.log "Importing amendment from #{file_path}"
+      end
       amdt_hash = UnitedStates::Bills.parse_amendment_file(file_path)
       UnitedStates::Bills.import_amendment amdt_hash
     end

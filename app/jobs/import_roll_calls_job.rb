@@ -62,7 +62,11 @@ module ImportRollCallsJob
 
   def self.import_files (file_paths)
     file_paths.each_with_index do |file_path, idx|
-      OCLogger.log "Importing roll call from #{file_path} (#{idx + 1} of #{file_paths.count})"
+      if file_paths.length > 1
+        OCLogger.log "Importing roll call from #{file_path} (#{idx + 1} of #{file_paths.count})"
+      else
+        OCLogger.log "Importing roll call from #{file_path}"
+      end
       vote_hash = UnitedStates::Votes.parse_roll_call_file(file_path)
       UnitedStates::Votes.import_roll_call vote_hash
     end

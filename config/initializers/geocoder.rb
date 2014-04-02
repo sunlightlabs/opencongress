@@ -1,6 +1,5 @@
 Geocoder.configure(
   :use_https => true,
-  # :lookup => :mapquest,
   :lookup => :smarty_streets,
 
   :mapquest => {
@@ -11,4 +10,6 @@ Geocoder.configure(
   :smarty_streets => {
     :api_key => [ApiKeys.smarty_streets_id, ApiKeys.smarty_streets_token]
   }
+
+  # No API Keys for :geocoder_ca or :esri
 )

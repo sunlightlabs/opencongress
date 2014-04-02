@@ -1,4 +1,17 @@
 GIT
+  remote: git://github.com/drinks/congress.git
+  revision: c720f15dd03200b878f9e67f8ec0f497b09254e0
+  branch: allow-string-zipcodes
+  specs:
+    congress (0.2.2)
+      faraday (~> 0.8.7)
+      faraday_middleware (~> 0.9.0)
+      geocoder (~> 1.1.9)
+      hashie (~> 2.0)
+      json (~> 1.8)
+      rash (~> 0.4)
+
+GIT
   remote: git://github.com/martinciu/fuubar-cucumber.git
   revision: 0a9ad5abbfac22db802a8fc691adc04dbd3201f4
   specs:
@@ -57,10 +70,6 @@ GEM
     acts-as-taggable-on (2.3.3)
       rails (~> 3.0)
     addressable (2.3.5)
-    airbrake (3.1.12)
-      activesupport
-      builder
-      json
     ansi (1.4.3)
     arel (2.0.10)
     awesome_nested_set (2.1.6)
@@ -96,13 +105,6 @@ GEM
     coderay (1.0.9)
     colored (1.2)
     columnize (0.3.6)
-    congress (0.2.0)
-      faraday (~> 0.8.7)
-      faraday_middleware (~> 0.9.0)
-      geocoder (~> 1.1.9)
-      hashie (~> 2.0)
-      json (~> 1.8)
-      rash (~> 0.4)
     crack (0.4.0)
       safe_yaml (~> 0.9.0)
     cssmin (1.0.3)
@@ -415,7 +417,6 @@ GEM
     will_paginate (3.0.4)
     xpath (2.0.0)
       nokogiri (~> 1.3)
-    xray (1.1)
 
 PLATFORMS
   ruby
@@ -423,7 +424,6 @@ PLATFORMS
 DEPENDENCIES
   RedCloth
   acts-as-taggable-on (~> 2.3.3)
-  airbrake
   awesome_nested_set (>= 2.0)
   awesome_print
   bluecloth
@@ -432,7 +432,7 @@ DEPENDENCIES
   capybara
   carrierwave
   closure-compiler
-  congress (>= 0.2.0)
+  congress!
   cucumber
   cucumber-rails
   curb
@@ -507,4 +507,3 @@ DEPENDENCIES
   vcr
   webmock (~> 1.9.0)
   will_paginate (~> 3.0.pre2)
-  xray

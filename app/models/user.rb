@@ -1,6 +1,7 @@
 require 'digest/sha1'
 require_dependency 'blue_state_digital'
 require_dependency 'authable'
+require_dependency 'multi_geocoder'
 require_dependency 'visible_by_privacy_option_query'
 
 # this model expects a certain database layout and its based on the name/login pattern.
@@ -258,7 +259,7 @@ class User < ActiveRecord::Base
     if params[:lat].present? and params[:lng].present?
       dsts = Congress.districts_locate(params[:lat], params[:lng]).results rescue []
     elsif zipcode.present? && zip_four.present?
-      lat, lng = Geocoder.coordinates("#{zipcode}-#{zip_four}", :lookup => :mapquest)
+      lat, lng = MultiGeocoder.coordinates("#{zipcode}-#{zip_four}")
       dsts = Congress.districts_locate(lat, lng).results rescue []
     else
       dsts = Congress.districts_locate(zipcode).results rescue []

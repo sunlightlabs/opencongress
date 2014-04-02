@@ -1,3 +1,5 @@
+require_dependency 'multi_geocoder'
+
 class AccountController < ApplicationController
   before_filter :login_from_cookie, :except => [:reset_password]
   before_filter :login_required, :only => [:index, :welcome, :accept_tos, :determine_district, :change_pw,
@@ -129,16 +131,21 @@ class AccountController < ApplicationController
   def determine_district
     @page_title = "Determine Your Congressional District"
     if request.post?
-      if !params[:address].blank?
-        result = Geocoder.search("#{params[:address]}, #{params[:zipcode]}").first
-        lat, lng = result.coordinates
-        zipcode = result.zipcode
-        zip_four = result.zip4
-        # This happens so the update_state_and_district method won't be invoked via callback
-        # on account of zipcode or zip_four being dirty.
-        User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode, :zip_four => zip_four)
-        new_district = current_user.update_state_and_district(:lat => lat, :lng => lng)
+      if params[:address].present?
+        begin
+          result = MultiGeocoder.search("#{params[:address]}, #{params[:zipcode]}").first
+          lat, lng = result.coordinates
+          zipcode = result.postal_code
+          zip_four = result.zip4 rescue nil
+          # This happens so the update_state_and_district method won't be invoked via callback
+          # on account of zipcode or zip_four being dirty.
+          User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode, :zip_four => zip_four)
+          new_district = current_user.update_state_and_district(:lat => lat, :lng => lng)
+        rescue NoMethodError
+          no_reps and return
+        end
       else
+        User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode) if params[:zipcode].present?
         new_district = current_user.update_state_and_district
       end
       current_user.save
@@ -147,8 +154,7 @@ class AccountController < ApplicationController
         activate_redirect(user_profile_path(:login => current_user.login))
         return
       else
-        @error_msg = "Sorry, we weren't able to find your representatives. Please email #{ Settings.contact_us_email } with your address and zipcode and we'll get back to you. We apologize for the inconvenience."
-        return
+        no_reps and return
       end
     end
   end
@@ -612,6 +618,10 @@ class AccountController < ApplicationController
 
   def root_url
     home_url
+  end
+
+  def no_reps
+    @error_msg = "Sorry, we weren't able to find your representatives. Please be sure to include your city and state, or email #{ Settings.contact_us_email } with your address and zipcode if this problem persists."
   end
 
   def process_login_actions

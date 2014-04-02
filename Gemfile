@@ -38,7 +38,7 @@ gem "awesome_nested_set", ">= 2.0"
 gem 'curb'
 
 # Sunlight Foundation Congress API v3
-gem "congress", ">= 0.2.0"
+gem "congress", :git => "git://github.com/drinks/congress.git" , :branch => "allow-string-zipcodes"  #">= 0.2.0"
 
 # jammit support
 gem "jammit"
@@ -53,9 +53,6 @@ gem 'unicode_utils'
 # Geocoding users on create
 gem 'geocoder', :git => 'git://github.com/sunlightlabs/geocoder.git', :branch => 'oc'
 
-# notifier for production errors
-gem "airbrake"
-gem "xray", :require => "xray/thread_dump_signal_handler"
 
 # OpenID
 gem 'ruby-openid'

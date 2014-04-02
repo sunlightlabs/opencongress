@@ -8,6 +8,8 @@ require APP_PATH
 Rails.application.require_environment!
 ###########################
 
+require 'multi_geocoder'
+
 send = false
 #people = Person.all_sitting
 people = Person.where("id IN (300002)")
@@ -46,7 +48,7 @@ people.each do |p|
         thread.sender_zip5 = zd.zip5
         thread.sender_zip4 = zd.zip4
 
-        geo = Geocoder.search("#{zd.zip5}-#{zd.zip4}", :lookup => :mapquest)[0].data
+        geo = MultiGeocoder.search("#{zd.zip5}-#{zd.zip4}")[0].data
         1.upto(5).each do |i|
           if geo["adminArea#{i}Type"] == "City"
             thread.sender_city = geo["adminArea#{i}"]

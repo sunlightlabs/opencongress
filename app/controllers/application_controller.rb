@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   include UrlHelper
 
   # around_filter :maintenance
+  before_filter :require_utf8_params
   before_filter :facebook_check
   before_filter :clear_return_to
   before_filter :current_tab
@@ -19,6 +20,47 @@ class ApplicationController < ActionController::Base
   before_filter :set_simple_comments
   before_filter :last_updated
   after_filter :cache_control
+
+  class InvalidByteSequenceErrorFromParams < Encoding::InvalidByteSequenceError
+    # Empty
+  end
+
+  def force_utf8_params
+    traverse = lambda do |object, block|
+      if object.kind_of?(Hash)
+        object.each_value { |o| traverse.call(o, block) }
+      elsif object.kind_of?(Array)
+        object.each { |o| traverse.call(o, block) }
+      else
+        block.call(object)
+      end
+      object
+    end
+    force_encoding = lambda do |o|
+      if o.respond_to?(:force_encoding)
+        o.force_encoding(Encoding::UTF_8)
+        raise InvalidByteSequenceErrorFromParams unless o.valid_encoding?
+      end
+      if o.respond_to?(:original_filename)
+        o.original_filename.force_encoding(Encoding::UTF_8)
+        raise InvalidByteSequenceErrorFromParams unless o.original_filename.valid_encoding?
+      end
+    end
+    traverse.call(params, force_encoding)
+    path_str = request.path.to_s
+    if path_str.respond_to?(:force_encoding)
+      path_str.force_encoding(Encoding::UTF_8)
+      raise InvalidByteSequenceErrorFromParams unless path_str.valid_encoding?
+    end
+  end
+
+  def require_utf8_params
+    begin
+      force_utf8_params
+    rescue InvalidByteSequenceErrorFromParams
+      return render_404
+    end
+  end
 
   def facebook_check
     return unless session[:nofacebook].nil?

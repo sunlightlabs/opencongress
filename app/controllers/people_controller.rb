@@ -100,17 +100,14 @@ class PeopleController < ApplicationController
       @tab_state = "sens_tab"
     end
 
-    if params[:person1]
+    @suggestions = (0..2).map{ @peeps.sample(2) }
+
+    if params[:person1] && params[:person2]
+      @congress = Settings.default_congress
       @person1 = Person.find(params[:person1])
       @person2 = Person.find(params[:person2])
       @chamber = @person1.latest_role.chamber
       @head_title = " - #{@person1.title} #{@person1.lastname} and #{@person2.title} #{@person2.lastname}"
-      @shared_committees = @person1.committees.find(:all, :include => :people, :conditions => ["people.id = ?", @person2.id])
-
-      @shared_votes = RollCallVote.for_duo_in_congress(@person1, @person2, Settings.default_congress)
-      @identical_votes = @shared_votes.select do |vote1, vote2|
-        vote1.vote == vote2.vote and not vote1.is_non_vote?
-      end
 
       @p1_voted_with_party = @person1.with_party
       @p1_voted_total = @person1.unabstained_roll_calls.count
@@ -119,19 +116,35 @@ class PeopleController < ApplicationController
       @p2_voted_total = @person2.unabstained_roll_calls.count
       @p2_voted_with_party_pct = (@p2_voted_with_party.to_f / @p2_voted_total.to_f * 100).round rescue nil
 
-      @voted_together = @identical_votes.count
-      @voted_total = @shared_votes.count
-      if @voted_total > 0
-        @voted_together_pct = (@voted_together.to_f / @voted_total.to_f * 100).round
-      else
-        @voted_together_pct = 0
-      end
+      if @person1.congresses_active.include?(@congress) && @person2.congresses_active.include?(@congress)
+        @both_active = true
+        @shared_committees = @person1.committees.find(:all, :include => :people, :conditions => ["people.id = ?", @person2.id])
 
-      p1_rc_ids = Set.new(RollCallVote.on_passage.where(:person_id => @person1.id).map(&:roll_call_id))
-      p2_rc_ids = Set.new(RollCallVote.on_passage.where(:person_id => @person2.id).map(&:roll_call_id))
-      shared_rc_ids = (p1_rc_ids & p2_rc_ids).to_a
-      @votes = RollCall.includes(:roll_call_votes, :bill).where(:id => shared_rc_ids, 'roll_calls.where' => @chamber).order('date DESC')
-      @votes = @votes.map{|v| [v, v.roll_call_votes.where(:person_id => [@person1.id, @person2.id]).group_by(&:person_id)]}
+        @shared_votes = RollCallVote.for_duo_in_congress(@person1, @person2, @congress)
+        @identical_votes = @shared_votes.select do |vote1, vote2|
+          vote1.vote == vote2.vote and not vote1.is_non_vote?
+        end
+
+        @voted_together = @identical_votes.count
+        @voted_total = @shared_votes.count
+        if @voted_total > 0
+          @voted_together_pct = (@voted_together.to_f / @voted_total.to_f * 100).round
+        else
+          @voted_together_pct = 0
+        end
+
+        shared_rc_ids = @shared_votes.map{ |grp| grp.first[:roll_call_id] }
+        @votes = RollCall.on_passage.includes(:roll_call_votes, :bill).where(:id => shared_rc_ids, 'roll_calls.where' => @chamber).order('date DESC')
+        @votes = @votes.map{|v| [v, v.roll_call_votes.where(:person_id => [@person1.id, @person2.id]).group_by(&:person_id)]}
+      else
+        @both_active = false
+        @shared_committees = []
+        @shared_votes = []
+        @voted_total = 0
+        @voted_together = 0
+        @voted_together_pct = 0
+        @votes = []
+      end
     end
 
     respond_to do |format|

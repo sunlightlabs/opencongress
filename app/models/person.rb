@@ -70,6 +70,7 @@ class Person < ActiveRecord::Base
   has_many :fundraisers, :order => 'fundraisers.start_time DESC'
 
   before_update :set_party
+  before_save :set_unaccented_name
 
   set_primary_key :id #From Benjamin: Why would we need this?
 
@@ -1586,6 +1587,10 @@ class Person < ActiveRecord::Base
 
   def set_party
      self.party = self.roles.first.party unless self.roles.empty?
+  end
+
+  def set_unaccented_name
+    self.unaccented_name = I18n.transliterate(popular_name)
   end
 
   def obj_title

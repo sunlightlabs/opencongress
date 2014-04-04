@@ -100,7 +100,7 @@ class Bill < ActiveRecord::Base
 
   scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
   scope :major, where(:is_major => true)
-  scope :recently_acted, includes(:bill_titles, :actions).order("actions.date DESC")
+  scope :recently_acted, joins(:bill_titles, :actions).order("actions.date DESC")
   scope :for_session, lambda {|sess| where("bills.session = ?", sess)}
   scope :senate_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 's'}))
   scope :house_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'}))

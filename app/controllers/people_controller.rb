@@ -618,11 +618,7 @@ class PeopleController < ApplicationController
       @senators, @reps = Person.find_current_congresspeople_by_zipcode(params[:zip5], params[:zip4])
     elsif address.present?
       if params[:zip5].present?
-        address = "#{address}, #{params[:zip5]}"
-        if params[:zip4].present?
-          # Address ends in zip5 here, so this makes sense, actually.
-          address = "#{address}-#{params[:zip4]}"
-        end
+        address = "#{address}, #{@display_zip}"
       end
       @senators, @reps = Person.find_current_congresspeople_by_address(address)
     end

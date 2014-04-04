@@ -5,11 +5,11 @@
 <div class="padding-left">
   <div class="zip_search <%= 'no_results' if @senators.blank? && @reps.blank? %>">
 
-  <% if @senators.blank? && @reps.blank? %>
+  <% if @display_zip.present? && @senators.blank? && @reps.blank? %>
     <p class="margin-bottom">No results for ZIP code <b><%= @display_zip %></b>.</p>
   <% end %>
 
-  <% if @display_zip %>
+  <% if @display_zip.present? %>
   <h3>New Search</h3>
     <p>You can search again by entering your address and ZIP code in the form below:</p>
   <% else %>
@@ -36,7 +36,7 @@
         <% if @reps.size > 1 %>
           <p>We found multiple Representatives serving your ZIP code. You can narrow your search by entering your street address into the form below.  Your street address will not be stored in our database.</p>
         <% end %>
-      
+
         <%= render :partial => 'people_list', :locals => { :people => @reps, :hide_help => true, :show_phone => true }%>
         </div>
       <% end %>

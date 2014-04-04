@@ -4,18 +4,14 @@ class ArticlesController < ApplicationController
          :redirect_to => { :action => :list }
 
   before_filter :get_blogroll
-  before_filter :fix_params, :only => :view
+  before_filter :fix_params, :only => [:view, :list]
 
 
   public
-    def fix_params
-      if params[:comment_page] && !params[:comment_page].is_a?(Integer)
-        params[:comment_page] = [params[:comment_page].to_i, 1].max
-      end
-    end
-
     def index
-      return list
+      respond_to do |format|
+        format.html { list }
+      end
     end
 
     def show
@@ -23,32 +19,36 @@ class ArticlesController < ApplicationController
     end
 
     def list
-      if params[:tag] && @tag = CGI.unescape(params[:tag])
-        @articles = Article.tagged_with(@tag, :any => true).paginate(:page => params[:page], :per_page => 15)
-        @page_title = "Blog - Articles Tagged '#{@tag}'"
-      elsif @month = params[:month]
-        month, year = @month.split(/-/)
+      respond_to do |format|
+        format.html do
+          if params[:tag] && @tag = CGI.unescape(params[:tag])
+            @articles = Article.tagged_with(@tag, :any => true).paginate(:page => params[:page], :per_page => 15)
+            @page_title = "Blog - Articles Tagged '#{@tag}'"
+          elsif @month = params[:month]
+            month, year = @month.split(/-/)
 
-        unless month and year and (1..12).include?(month.to_i) and (2006..3000).include?(year.to_i)
-          redirect_to :controller => 'blog'
-          return
+            unless month and year and (1..12).include?(month.to_i) and (2006..3000).include?(year.to_i)
+              redirect_to :controller => 'blog'
+              return
+            end
+            display_month = "#{Time.mktime(year, month).strftime("%B %Y")}"
+
+            @page_title = "Blog - #{display_month}"
+
+            @articles = Article.find_by_month_and_year(month, year).paginate(:page => params[:page], :per_page => 15)
+          else
+            @articles = Article.paginate(:conditions => 'published_flag = true',
+                                     :include => :user, :page => params[:page], :per_page => 15)
+
+            @page_title = "Blog"
+          end
+
+          @atom = {'link' => 'http://feeds.feedburner.com/OpenCongressCongressGossipBlog', 'title' => "OpenCongress Blog"}
+          @related_gossip = Gossip.latest(3)
+
+          render :action => 'list'
         end
-        display_month = "#{Time.mktime(year, month).strftime("%B %Y")}"
-
-        @page_title = "Blog - #{display_month}"
-
-        @articles = Article.find_by_month_and_year(month, year).paginate(:page => params[:page], :per_page => 15)
-      else
-        @articles = Article.paginate(:conditions => 'published_flag = true',
-                                 :include => :user, :page => params[:page], :per_page => 15)
-
-        @page_title = "Blog"
       end
-
-      @atom = {'link' => 'http://feeds.feedburner.com/OpenCongressCongressGossipBlog', 'title' => "OpenCongress Blog"}
-      @related_gossip = Gossip.latest(3)
-
-      render :action => 'list'
     end
 
     def view
@@ -120,6 +120,18 @@ class ArticlesController < ApplicationController
     end
 
     private
+    def fix_params
+      begin
+        if params[:page] && !params[:page].is_a?(Integer)
+          params[:page] = [params[:page].to_i, 1].max
+        end
+        if params[:comment_page] && !params[:comment_page].is_a?(Integer)
+          params[:comment_page] = [params[:comment_page].to_i, 1].max
+        end
+      rescue ArgumentError => e
+        raise ActionController::RoutingError.new(e.to_s)
+      end
+    end
 
     def get_blogroll
       @blogroll = Article.find_by_title("***BLOGROLL***")

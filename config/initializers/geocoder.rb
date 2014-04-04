@@ -1,6 +1,7 @@
 Geocoder.configure(
   # :use_https => true,
   :lookup => :smarty_streets,
+  :timeout => 30.seconds,
 
   :mapquest => {
     :licensed => true,

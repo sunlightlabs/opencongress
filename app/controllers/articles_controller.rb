@@ -3,9 +3,17 @@ class ArticlesController < ApplicationController
   verify :method => :post, :only => [ :destroy, :create, :update ],
          :redirect_to => { :action => :list }
 
-    before_filter :get_blogroll
+  before_filter :get_blogroll
+  before_filter :fix_params, :only => :view
+
 
   public
+    def fix_params
+      if params[:comment_page] && !params[:comment_page].is_a?(Integer)
+        params[:comment_page] = [params[:comment_page].to_i, 1].max
+      end
+    end
+
     def index
       return list
     end

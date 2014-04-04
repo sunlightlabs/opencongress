@@ -610,12 +610,13 @@ class PeopleController < ApplicationController
     @page_title = "Find Your Senators and Representatives"
     @display_zip = params[:zip5]
     @display_zip += "-#{params[:zip4]}" unless params[:zip4].blank?
+    @senators = @reps = []
 
     address = params[:address].to_s
 
     if address.blank? && params[:zip5].present?
       @senators, @reps = Person.find_current_congresspeople_by_zipcode(params[:zip5], params[:zip4])
-    else
+    elsif address.present?
       if params[:zip5].present?
         address = "#{address}, #{params[:zip5]}"
         if params[:zip4].present?

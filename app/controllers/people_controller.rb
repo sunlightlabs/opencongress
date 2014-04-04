@@ -290,12 +290,18 @@ class PeopleController < ApplicationController
  def money
    @igs = @person.top_interest_groups(25)
    @fundraisers = @person.fundraisers.find(:all)
+   respond_to do |format|
+     format.html { render }
+   end
  end
 
  def fundraisers
    @person = Person.find(params[:id])
    @page_title = "Fundraisers for #{@person.name}"
    @fundraisers = @person.fundraisers.paginate :page => params[:page]
+   respond_to do |format|
+     format.html { render }
+   end
  end
 
  def wiki

@@ -20,46 +20,56 @@ class IndexController < ApplicationController
     @recent_votes = RollCall.order("date DESC").first(4)
     @popular_legislators = ObjectAggregate.popular('Person', Settings.default_count_time, 3)
 
-    render 'interim_index'
+    respond_to do |format|
+      format.html { render 'interim_index' }
+    end
   end
 
   def hp_recent
-    @type = params[:type]
-    case @type.to_sym
-    when :bills
-      @objects = Bill.recently_acted.limit(params.fetch(:limit, 4))
-      @more_url = url_for(:controller => :bill, :action => :all)
-      render_recent 'bill'
-    when :votes
-      @objects = RollCall.order("date DESC").first(params.fetch(:limit, 4))
-      @more_url = url_for(:controller => :roll_call, :action => :all)
-      render_recent 'vote'
+    respond_to do |format|
+      format.html do
+        @type = params[:type]
+        case @type.to_sym
+        when :bills
+          @objects = Bill.recently_acted.limit(params.fetch(:limit, 4))
+          @more_url = url_for(:controller => :bill, :action => :all)
+          render_recent 'bill'
+        when :votes
+          @objects = RollCall.order("date DESC").first(params.fetch(:limit, 4))
+          @more_url = url_for(:controller => :roll_call, :action => :all)
+          render_recent 'vote'
+        end
+      end
     end
   end
 
   def hp_popular
-    @type = params[:type]
-    case @type.to_sym
-    when :bills
-      @objects = ObjectAggregate.popular('Bill', Settings.default_count_time, 4)
-      @more_url = url_for(:controller => :bill, :action => :popular)
-      render_popular 'bill'
-    when :votes
-      @objects = ObjectAggregate.popular('RollCall', Settings.default_count_time, 4)
-      @more_url = url_for(:controller => :roll_call, :action => :all)
-      render_popular 'vote'
-    when :senators
-      @objects = ObjectAggregate.popular('Senator', Settings.default_count_time, 4)
-      @more_url = url_for(:controller => :people, :action => :senators)
-      render_popular 'person'
-    when :representatives
-      @objects = ObjectAggregate.popular('Representative', Settings.default_count_time, 4)
-      @more_url = url_for(:controller => :people, :action => :representatives)
-      render_popular 'person'
-    when :issues
-      @objects = ObjectAggregate.popular('Subject', Settings.default_count_time, 4)
-      @more_url = url_for(:controller => :issues, :action => :index)
-      render_popular 'issue'
+    respond_to do |format|
+      format.html do
+        @type = params[:type]
+        case @type.to_sym
+        when :bills
+          @objects = ObjectAggregate.popular('Bill', Settings.default_count_time, 4)
+          @more_url = url_for(:controller => :bill, :action => :popular)
+          render_popular 'bill'
+        when :votes
+          @objects = ObjectAggregate.popular('RollCall', Settings.default_count_time, 4)
+          @more_url = url_for(:controller => :roll_call, :action => :all)
+          render_popular 'vote'
+        when :senators
+          @objects = ObjectAggregate.popular('Senator', Settings.default_count_time, 4)
+          @more_url = url_for(:controller => :people, :action => :senators)
+          render_popular 'person'
+        when :representatives
+          @objects = ObjectAggregate.popular('Representative', Settings.default_count_time, 4)
+          @more_url = url_for(:controller => :people, :action => :representatives)
+          render_popular 'person'
+        when :issues
+          @objects = ObjectAggregate.popular('Subject', Settings.default_count_time, 4)
+          @more_url = url_for(:controller => :issues, :action => :index)
+          render_popular 'issue'
+        end
+      end
     end
   end
 

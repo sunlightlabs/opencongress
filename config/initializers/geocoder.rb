@@ -1,5 +1,5 @@
 Geocoder.configure(
-  :use_https => true,
+  # :use_https => true,
   :lookup => :smarty_streets,
 
   :mapquest => {

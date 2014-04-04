@@ -1,11 +1,3 @@
-#!/usr/bin/env ruby
-
-if __FILE__ == $0
-  require File.dirname(__FILE__) + '/../../config/environment'
-else
-  puts "Running from #{$0}"
-end
-
 require 'json'
 require 'open-uri'
 

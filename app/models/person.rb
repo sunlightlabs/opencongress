@@ -810,10 +810,10 @@ class Person < ActiveRecord::Base
   # Callers must check the length of the rep array in case
   # the zip5 was not specific enough.
   def Person.find_current_congresspeople_by_zipcode(zip5, zip4=nil)
-    if not zip5.nil? and not zip4.nil?
+    if zip5.present? && zip4.present?
       lat, lng = MultiGeocoder.coordinates("#{zip5}-#{zip4}")
       legs = Congress.legislators_locate(lat, lng).results rescue []
-    elsif not zip5.nil?
+    elsif zip5.present?
       legs = Congress.legislators_locate(zip5).results rescue []
     else
       legs = []

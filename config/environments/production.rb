@@ -12,6 +12,7 @@ OpenCongress::Application.configure do
   config.serve_static_assets = false
 
   # Send mail with postmark
+  config.action_mailer.perform_deliveries = false
   config.action_mailer.delivery_method = :postmark
 
   # Send faxes

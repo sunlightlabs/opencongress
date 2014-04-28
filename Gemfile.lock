@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/geocoder.git
-  revision: be64ac97fe83280768c60524f4b7bf12769cc190
+  revision: 796facd10dd43df77bfffd3f04d85e2f50420f72
   branch: oc
   specs:
     geocoder (1.1.9)

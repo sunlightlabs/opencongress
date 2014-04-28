@@ -2,6 +2,10 @@ require 'formageddon'
 
 module GetFormageddonRepliesJob
   def self.perform
+    puts "---------------------"
+    puts Time.now
+    puts "---------------------"
+
     emails_received = 0
     notifications_sent = 0
 

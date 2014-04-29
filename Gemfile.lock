@@ -75,6 +75,7 @@ GEM
     awesome_nested_set (2.1.6)
       activerecord (>= 3.0.0)
     awesome_print (1.1.0)
+    beanstalk-client (1.1.1)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     bluecloth (2.2.0)
@@ -426,6 +427,7 @@ DEPENDENCIES
   acts-as-taggable-on (~> 2.3.3)
   awesome_nested_set (>= 2.0)
   awesome_print
+  beanstalk-client
   bluecloth
   capistrano
   capistrano-ext

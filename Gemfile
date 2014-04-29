@@ -63,6 +63,7 @@ gem 'rack-contrib'
 
 # memcache
 gem 'memcache-client'
+gem 'beanstalk-client'
 
 # markup tools and parsers
 gem 'simple-rss'

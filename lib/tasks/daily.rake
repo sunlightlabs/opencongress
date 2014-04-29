@@ -56,14 +56,6 @@ namespace :update do
     end
   end
 
-  desc "Import legislators"
-  task :import_legislators => :environment do
-    old_ARGV = ARGV.clone
-    ARGV = ARGV.slice(1, ARGV.length)
-    require File.expand_path 'bin/import_legislators.rb', Rails.root
-    ARGV = old_ARGV
-  end
-
   desc "Creates Formageddon mappings from the unitedstates/contact-congress repo"
   task :contact_congress => [:environment, :contact_congress_data] do
     require File.expand_path 'bin/import_congress_contact_steps.rb', Rails.root
@@ -342,7 +334,7 @@ namespace :update do
     :unitedstates_rsync, :rsync,
     :congress_legislators,
     :photos,
-    :import_legislators, "import:bills:current",
+    "import:legislators:current", "import:bills:current",
     :amendments,
     :roll_calls,
     :committees, :committee_memberships,

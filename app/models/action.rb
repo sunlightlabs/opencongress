@@ -1,6 +1,8 @@
 class Action < ActiveRecord::Base
   include Comparable
-  
+ 
+  validates_presence_of :type
+
   # has_one :roll # votes?
   has_many :refers
   
@@ -103,11 +105,23 @@ class Action < ActiveRecord::Base
   end
 
   def formatted_date
-    Time.at(date).strftime("%b %d, %Y")
+    if datetime.nil? and date.nil?
+      ""
+    elsif datetime.nil?
+      Time.at(date).strftime("%b %d, %Y")
+    else
+      datetime.strftime("%b %d, %Y")
+    end
   end
 
   def formatted_date_short
-    Time.at(date).strftime("%b ") + Time.at(date).day.ordinalize    
+    if datetime.nil? and date.nil?
+      ""
+    elsif datetime.nil?
+      Time.at(date).strftime("%b ") + Time.at(date).day.ordinalize    
+    else
+      datetime.strftime("%b ") + datetime.day.ordinalize
+    end
   end
 
   def date_std
@@ -177,31 +191,6 @@ class Action < ActiveRecord::Base
         another_action.id <=> id
       end
     end
-  end
-  
-end
-
-class AmendmentAction < Action
-  validates_uniqueness_of :date, :scope => :amendment_id
-  belongs_to :amendment
-  
-  def display
-    "<h4>Amendment #{amendment.number}, #{amendment.purpose}, " +
-      "#{amendment.status} as of #{amendment.status_datetime}</h4>" +
-      "<p>#{amendment.description}</p>"
-      "<p>#{amendment.bill.display}</p>"
-  end
-end
-
-class BillAction < Action
-  belongs_to :bill
-
-  def display
-    "<h4>#{bill.title_full_common}</h4>"
-  end
-
-  def rss_date
-    Time.at(self.date)
   end
   
 end

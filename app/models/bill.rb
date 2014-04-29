@@ -12,7 +12,7 @@ class Bill < ActiveRecord::Base
   has_many :bill_titles
   has_many :bill_cosponsors
   has_many :co_sponsors, :through => :bill_cosponsors, :source => :person, :order => 'lastname'
-  has_many :actions, :order => 'actions.datetime ASC'
+  has_many :actions, :order => 'ordinal_position DESC', :class_name => 'BillAction'
   has_many :bill_committees
   has_many :committees, :through => :bill_committees
   has_many :bill_relations
@@ -825,20 +825,6 @@ class Bill < ActiveRecord::Base
                         since.ago, is_news, congress, bill_types, num])
     end
 
-    def find_rushed_bills(congress = Settings.default_congress, rushed_time = 259200, show_resolutions = false)
-      resolution_condition = show_resolutions ? "" : " AND (bills.bill_type = 'hr' OR bills.bill_type = 's')"
-
-      Bill.find_by_sql(["SELECT * FROM bills INNER JOIN
-                         (SELECT actions.date AS intro_date, actions.bill_id AS intro_id
-                          FROM actions WHERE actions.action_type='introduced') intro_action
-                         ON intro_action.intro_id=bills.id INNER JOIN
-                         (SELECT actions.date AS vote_date, actions.bill_id AS vote_id
-                          FROM actions WHERE actions.action_type='vote' AND vote_type='vote' GROUP BY vote_id, vote_date) vote_action
-                         ON vote_action.vote_id=bills.id
-                         WHERE bills.session=? AND vote_action.vote_date - intro_action.intro_date < ? #{resolution_condition}
-                         ORDER BY vote_date DESC", congress, rushed_time])
-    end
-
     def find_stalled_in_second_chamber(original_chamber = 's', session = Settings.default_congress, num = :all)
       Bill.find_by_sql(["SELECT bills.* FROM bills
                           INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass')
@@ -848,26 +834,6 @@ class Bill < ActiveRecord::Base
                             INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass')
                             INNER JOIN actions a_v2 ON (bills.id=a_v2.bill_id AND (a_v2.vote_type='vote2' OR a_v2.vote_type='conference'))
                             WHERE bills.bill_type=? AND bills.session=?);", original_chamber, session, original_chamber, session])
-    end
-
-
-    def find_gpo_consideration_rushed_bills(congress = Settings.default_congress, rushed_time = 259200, show_resolutions = false)
-      # rushed time not working correctly for some reason (adapter is changing...)
-
-      resolution_condition = show_resolutions ? "" : " AND (bills.bill_type = 'hr' OR bills.bill_type = 's')"
-
-      Bill.find_by_sql(["SELECT * FROM bills INNER JOIN
-                         (SELECT gpo_billtext_timestamps.created_at AS gpo_date, gpo_billtext_timestamps.session AS gpo_session,
-                                 gpo_billtext_timestamps.bill_type AS gpo_bill_type, gpo_billtext_timestamps.number AS gpo_number
-                          FROM gpo_billtext_timestamps WHERE version='ih' OR version='is') gpo_action
-                         ON (gpo_action.gpo_session=bills.session AND gpo_action.gpo_bill_type=bills.bill_type AND gpo_action.gpo_number=bills.number)
-                         INNER JOIN
-                         (SELECT MIN(actions.datetime) AS consideration_date, actions.bill_id AS consideration_id
-                          FROM actions, action_references WHERE actions.action_type='action' AND actions.id=action_references.action_id AND action_references.label='consideration' AND actions.text NOT LIKE '%Committee%' GROUP BY actions.bill_id) consideration_action
-                         ON consideration_action.consideration_id=bills.id
-                         WHERE bills.session=? AND ((consideration_action.consideration_date - gpo_action.gpo_date < '259200 seconds'::interval) OR gpo_action.gpo_date IS NULL OR bills.id = 54463)
-                               #{resolution_condition}
-                         ORDER BY consideration_date DESC", congress])
     end
   end
 
@@ -956,6 +922,10 @@ class Bill < ActiveRecord::Base
         end
       end
     end
+
+    def ident_pattern
+      /((\d+-[hs][rjc]?\d+)|((hconres|hjres|hres|hr|sconres|sjres|sres|s)\d+-\d+))/
+    end
   end # class << self
 
   def ident
@@ -1017,7 +987,7 @@ class Bill < ActiveRecord::Base
   end
 
   def hours_to_first_attempt_to_pass
-    (originating_chamber_vote.date - introduced_action.date) / 3600
+    (originating_chamber_vote.datetime - introduced_at) / 3600
   end
 
   ## bill title methods
@@ -1110,7 +1080,7 @@ class Bill < ActiveRecord::Base
     if a = self.introduced_action
       status_hash['steps'] << { 'text' => 'Introduced', 'class' => 'passed first', 'date' => a.datetime }
     else
-      status_hash['steps'] << { 'text' => 'Introduced', 'class' => 'pending' }
+      status_hash['steps'] << { 'text' => 'Introduced', 'class' => 'passed first', 'date' => introduced_at }
     end
 
     status_hash['current_step'] = current_step

@@ -1,3 +1,13 @@
+#!/bin/bash
+#
+# This script (re)starts the long-running processes:
+#   a) unicorn
+#   b) delayed_job
+#   c) the import queue worker
+#
+# You must set your RAILS_ENV environment value. Your bash profile would be a
+# good place to do that.
+
 if [[ -z "$RAILS_ENV" ]]; then
     echo "ERROR: You must set RAILS_ENV."
     exit

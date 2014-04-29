@@ -269,6 +269,7 @@ class ContactCongressLettersController < ApplicationController
     redirect_to @contact_congress_letter, :notice => "Letter setting has been updated."
   end
 
+  # Deprecated
   def get_replies
     if params[:formageddon_get_replies_key] and params[:formageddon_get_replies_key] == ApiKeys.formageddon_get_replies_key
       emails_received = 0

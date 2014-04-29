@@ -330,6 +330,11 @@ module UnitedStates
     end
 
     def import_amendment (amdt_hash)
+      if amdt_hash['amends_bill'].nil?
+        OCLogger.log "Skipping amendment #{amdt_hash['amendment_id']} because it does not amend a bill."
+        return
+      end
+
       bill = Bill.where(bill_ident(amdt_hash['amends_bill'])).first
       if bill
         abbr_amdt_id = "#{amdt_hash['chamber']}#{amdt_hash['number']}"

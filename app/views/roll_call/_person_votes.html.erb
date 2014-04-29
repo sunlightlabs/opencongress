@@ -2,7 +2,7 @@
   <table class="simple-table">
     <tr><th>Name</th><th>Voted</th></tr>
     
-    <% votes.sort_by{ |v| v.person.lastname }.each do |vote| %>
+    <% votes.sort_by{ |v| [v.person.lastname, v.person.firstname] }.each do |vote| %>
       <tr>
         <td>
           <% if vote.person %>

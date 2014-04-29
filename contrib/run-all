@@ -43,34 +43,6 @@ function show_pstree () {
     pstree --arguments --compact $$
 }
 
-function run_with_tmp_out () {
-    dstfile="$1"; shift
-    tmpfile=$(mktemp --tmpdir=$HOME/tmp/)
-    $@ 2>&1 > "$tmpfile"
-    chmod ugo+r "$tmpfile"
-    mv "$tmpfile" "$dstfile"
-}
-
-function collect_updated_amendments () {
-    ssed -R \
-         -e '/^\[([sh]amdt)\d+-\d+\] Updated/!d' \
-         -e 's/\[([sh]amdt)(\d+)-(\d+)\] Updated/\1\2-\3/' \
-         $HOME/tmp/amendments.last | sort -u
-}
-
-function collect_updated_bills () {
-    ssed -R \
-         -e '/^\[(hres|hcres|hjres|hr|scres|sjres|sres|s)\d+-\d+\] Updated/!d' \
-         -e 's/\[(hres|hcres|hjres|hr|scres|sjres|sres|s)(\d+)-(\d+)\] Updated/\1\2-\3/' \
-         $HOME/tmp/bills.last | sort -u
-}
-
-function collect_updated_votes () {
-    ssed -R \
-         -e '/^\[([sh])(\d+)-(\d+)[.](\d+)\] Updated$/!d' \
-         -e 's/^\[([sh])(\d+)-(\d+)[.](\d+)\] Updated$/\1\2-\3.\4/' \
-         $HOME/tmp/votes.last | sort -u
-}
 
 which_guard "ssed"
 which_guard "pstree"
@@ -85,31 +57,23 @@ fi
 
 pid_file_guard
 
-# Clean up after previous runs
-rm -f $HOME/tmp/*.last $HOME/tmp/bills.updated
-
-bills_args="--timeout=60 --congress=$congress --force --log=info"
-amendments_args="--timeout=60 --congress=$congress --force --log=info"
+bills_args="--patch=opencongress --timeout=60 --congress=$congress --force --log=info"
+amendments_args="--patch=opencongress --timeout=60 --congress=$congress --force --log=info"
+votes_args="--patch=opencongress --timeout=60 --congress=$congress --session=$session --force --log=info"
 if [ "$mode" == "hourly" ]; then
     bills_args="$bills_args --fast"
     amendments_args="$amendments_args --fast"
+    votes_args="$votes_args --fast"
 fi
 # Scrape bills and amendments sequentially to avoid having amendment files
 # that reference bills which we have not yet scraped.
 ( ./run bills $bills_args \
-      2>&1 | tee -a $HOME/log/bills.log > $HOME/tmp/bills.last &&
-  run_with_tmp_out "$HOME/tmp/bills.updated" collect_updated_bills &&
+      2>&1 >> $HOME/log/bills.log &&
   ./run amendments $amendments_args \
-      2>&1 | tee -a $HOME/log/amendments.log > $HOME/tmp/amendments.last &&
-  run_with_tmp_out "$HOME/tmp/amendments.updated" collect_updated_amendments ) &
+      2>&1 >> $HOME/log/amendments.log ) &
 
-votes_args="--timeout=60 --congress=$congress --session=$session --force --log=info"
-if [ "$mode" == "hourly" ]; then
-    votes_args="$votes_args --fast"
-fi
 ( ./run votes $votes_args \
-      2>&1 | tee -a $HOME/log/votes.log > $HOME/tmp/votes.last &&
-  run_with_tmp_out "$HOME/tmp/votes.updated" collect_updated_votes ) &
+      2>&1 >> $HOME/log/votes.log ) &
 
 
 if [ "$mode" == "complete" -o "$mode" == "daily" ]; then

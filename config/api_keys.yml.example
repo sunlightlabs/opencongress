@@ -11,6 +11,9 @@ defaults: &defaults
   # lookup congressional districts.
   # Community edition keys get 5000 daily geocodes for free, keep tabs here: http://developer.mapquest.com/web/tools/account/reporting
   mapquest: xxx
+  # For zip-5 and full-address geocoding we use SmartyStreets
+  smarty_streets_id: xxx
+  smarty_streets_token: xxx
   # The Sunlight API key is used to map zip codes and lat/lng pairs to
   # congressional districts.
   sunlightlabs_key: xxx

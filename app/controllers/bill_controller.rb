@@ -298,8 +298,8 @@ class BillController < ApplicationController
   end
 
   def lookup_bill_by_ident
-    bill_type, number, session = Bill.ident params[:id]
-    @bill = Bill.find_by_session_and_bill_type_and_number session, bill_type, number, :include => :actions
+    @bill = Bill.find_by_ident(params[:id])
+    return render_404 if @bill.nil?
   end
 
   def atom

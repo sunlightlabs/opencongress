@@ -33,6 +33,12 @@ defaults: &defaults
     - 111
     - 110
     - 109
+
+  # Beanstalk can be used as an event source for importing from the
+  # unitedstates scraper data. See the import:worker rake task.
+  beanstalk_servers:
+    - 127.0.0.1:11300
+
   # default_congress is used for display purposes as well as to control data imports
   # Some data importers (those which have no session data attached) will use default_congress as an assignment value
   # where foo_congress is undefined, and foo is the underscored name of the entity being imported.
@@ -57,6 +63,8 @@ defaults: &defaults
   # US Project data gets downloaded here
   unitedstates_legislators_clone_path: <%= Rails.root %>/tmp/data/unitedstates/legislators
   unitedstates_data_path: <%= Rails.root %>/tmp/data/unitedstates
+  # This is the name of the beanstalk queue that you've configured the scrapers to push to.
+  unitedstates_import_queue: unitedstates_imports_<%= Rails.env %>
   # From and to where should maxmind's geolite IP database be downloaded?
   geoip_zip_url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity_CSV/GeoLiteCity-latest.zip
   geoip_zip_path: <%= Rails.root %>/tmp/data/maxmind

@@ -70,6 +70,9 @@ GEM
     acts-as-taggable-on (2.3.3)
       rails (~> 3.0)
     addressable (2.3.5)
+    annotate (2.6.3)
+      activerecord (>= 2.3.0)
+      rake (>= 0.8.7)
     ansi (1.4.3)
     arel (2.0.10)
     awesome_nested_set (2.1.6)
@@ -163,6 +166,7 @@ GEM
       nokogiri (~> 1.5.0)
       ruby-hmac
     formatador (0.2.4)
+    full-name-splitter (0.1.2)
     fuubar (1.1.1)
       rspec (~> 2.0)
       rspec-instafail (~> 0.2.0)
@@ -425,6 +429,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth
   acts-as-taggable-on (~> 2.3.3)
+  annotate (>= 2.6.0)
   awesome_nested_set (>= 2.0)
   awesome_print
   beanstalk-client
@@ -443,6 +448,7 @@ DEPENDENCIES
   facebooker2
   fog
   formageddon!
+  full-name-splitter
   fuubar
   fuubar-cucumber!
   galetahub-simple_captcha (= 0.1.3)

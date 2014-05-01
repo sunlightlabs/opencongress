@@ -53,6 +53,8 @@ gem 'unicode_utils'
 # Geocoding users on create
 gem 'geocoder', :git => 'git://github.com/sunlightlabs/geocoder.git', :branch => 'oc'
 
+# Split names for first/last support
+gem 'full-name-splitter'
 
 # OpenID
 gem 'ruby-openid'
@@ -121,6 +123,7 @@ group :production, :staging do
 end
 
 group :test, :development do
+  gem 'annotate',             '>=2.6.0'
   gem 'pry'
   gem 'pry-nav'
   gem 'pry-rescue'

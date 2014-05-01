@@ -1,3 +1,19 @@
+# == Schema Information
+#
+# Table name: formageddon_letters
+#
+#  id                    :integer          not null, primary key
+#  formageddon_thread_id :integer
+#  direction             :string(255)
+#  status                :text
+#  issue_area            :string(255)
+#  subject               :string(255)
+#  message               :text
+#  created_at            :datetime
+#  updated_at            :datetime
+#  fax_id                :integer
+#
+
 # FIXME: This is ugly.
 require_dependency File.expand_path(
   'app/models/formageddon/formageddon_letter',

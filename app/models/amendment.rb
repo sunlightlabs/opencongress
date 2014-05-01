@@ -1,3 +1,22 @@
+# == Schema Information
+#
+# Table name: amendments
+#
+#  id                   :integer          not null, primary key
+#  number               :string(255)
+#  retreived_date       :integer
+#  status               :string(255)
+#  status_date          :integer
+#  status_datetime      :datetime
+#  offered_date         :integer
+#  offered_datetime     :datetime
+#  bill_id              :integer
+#  purpose              :text
+#  description          :text
+#  updated              :datetime
+#  key_vote_category_id :integer
+#
+
 class Amendment < ActiveRecord::Base
   belongs_to :bill
   has_many :actions, :class_name => 'AmendmentAction'

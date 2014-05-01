@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: bill_text_versions
+#
+#  id                    :integer          not null, primary key
+#  bill_id               :integer
+#  version               :string(255)
+#  word_count            :integer          default(0)
+#  previous_version      :string(255)
+#  difference_size_chars :integer          default(0)
+#  percent_change        :integer          default(0)
+#  total_changes         :integer          default(0)
+#  file_timestamp        :datetime
+#
+
 class BillTextVersion < ActiveRecord::Base
   belongs_to :bill
   has_many :bill_text_nodes, :dependent => :destroy, :order => 'nid'

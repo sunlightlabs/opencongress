@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: watch_dogs
+#
+#  id          :integer          not null, primary key
+#  district_id :integer
+#  user_id     :integer
+#  is_active   :boolean
+#  created_at  :datetime
+#  updated_at  :datetime
+#
+
 class WatchDog < ActiveRecord::Base
 
   belongs_to :district

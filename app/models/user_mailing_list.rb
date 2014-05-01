@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: user_mailing_lists
+#
+#  id             :integer          not null, primary key
+#  user_id        :integer
+#  last_processed :datetime
+#  status         :integer
+#  created_at     :datetime
+#  updated_at     :datetime
+#
+
 class UserMailingList < ActiveRecord::Base
 
   has_many :mailing_list_items

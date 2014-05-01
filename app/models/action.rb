@@ -1,3 +1,25 @@
+# == Schema Information
+#
+# Table name: actions
+#
+#  id               :integer          not null, primary key
+#  action_type      :string(255)
+#  date             :integer
+#  datetime         :datetime
+#  how              :string(255)
+#  where            :string(255)
+#  vote_type        :string(255)
+#  result           :string(255)
+#  bill_id          :integer
+#  amendment_id     :integer
+#  type             :string(255)
+#  text             :text
+#  roll_call_id     :integer
+#  roll_call_number :integer
+#  created_at       :datetime
+#  govtrack_order   :integer
+#
+
 class Action < ActiveRecord::Base
   include Comparable
  

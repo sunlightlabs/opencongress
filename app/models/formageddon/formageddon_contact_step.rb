@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: formageddon_contact_steps
+#
+#  id                         :integer          not null, primary key
+#  formageddon_recipient_id   :integer
+#  formageddon_recipient_type :string(255)
+#  step_number                :integer
+#  command                    :string(255)
+#  created_at                 :datetime
+#  updated_at                 :datetime
+#
+
 # FIXME: This is ugly.
 require_dependency File.expand_path(
   'app/models/formageddon/formageddon_contact_step',

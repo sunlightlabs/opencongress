@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: roll_call_votes
+#
+#  id           :integer          not null, primary key
+#  vote         :string(255)
+#  roll_call_id :integer
+#  person_id    :integer
+#
+
 require 'united_states'
 class RollCallVote < ActiveRecord::Base
   @@VOTE_FOR_SYMBOL = {

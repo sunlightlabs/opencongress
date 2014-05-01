@@ -1,3 +1,30 @@
+# == Schema Information
+#
+# Table name: person_stats
+#
+#  person_id                               :integer          not null, primary key
+#  entered_top_viewed                      :datetime
+#  votes_most_often_with_id                :integer
+#  votes_least_often_with_id               :integer
+#  opposing_party_votes_most_often_with_id :integer
+#  same_party_votes_least_often_with_id    :integer
+#  entered_top_news                        :datetime
+#  entered_top_blog                        :datetime
+#  sponsored_bills                         :integer
+#  cosponsored_bills                       :integer
+#  sponsored_bills_passed                  :integer
+#  cosponsored_bills_passed                :integer
+#  sponsored_bills_rank                    :integer
+#  cosponsored_bills_rank                  :integer
+#  sponsored_bills_passed_rank             :integer
+#  cosponsored_bills_passed_rank           :integer
+#  party_votes_percentage                  :float
+#  party_votes_percentage_rank             :integer
+#  abstains_percentage                     :float
+#  abstains                                :integer
+#  abstains_percentage_rank                :integer
+#
+
 class PersonStats < ActiveRecord::Base
   set_primary_key :person_id
   

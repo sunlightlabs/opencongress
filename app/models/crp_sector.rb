@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: crp_sectors
+#
+#  id           :integer          not null, primary key
+#  name         :string(255)      not null
+#  display_name :string(255)
+#
+
 class CrpSector < ActiveRecord::Base
   has_many :crp_industries, :order => 'name'
   

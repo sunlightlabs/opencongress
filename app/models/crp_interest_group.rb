@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: crp_interest_groups
+#
+#  id              :integer          not null, primary key
+#  osid            :string(255)      not null
+#  name            :string(255)
+#  crp_industry_id :integer
+#  order           :string(255)
+#
+
 class CrpInterestGroup < ActiveRecord::Base
   belongs_to :crp_industry
   

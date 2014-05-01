@@ -1,3 +1,19 @@
+# == Schema Information
+#
+# Table name: gossip
+#
+#  id         :integer          not null, primary key
+#  name       :string(255)
+#  title      :string(255)
+#  email      :string(255)
+#  link       :string(255)
+#  tip        :text
+#  frontpage  :boolean          default(FALSE)
+#  approved   :boolean          default(FALSE)
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 class Gossip < ActiveRecord::Base
   validates_presence_of :email, :name, :tip
   set_table_name 'gossip'

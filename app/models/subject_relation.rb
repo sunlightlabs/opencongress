@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: subject_relations
+#
+#  id                 :integer          not null, primary key
+#  subject_id         :integer
+#  related_subject_id :integer
+#  relation_count     :integer
+#
+
 class SubjectRelation < ActiveRecord::Base
   belongs_to :subject
   belongs_to :related_subject, :class_name => 'Subject', :foreign_key => :related_subject_id

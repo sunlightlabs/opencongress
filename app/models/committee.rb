@@ -1,3 +1,19 @@
+# == Schema Information
+#
+# Table name: committees
+#
+#  id                :integer          not null, primary key
+#  name              :string(255)
+#  subcommittee_name :string(255)
+#  fti_names         :public.tsvector
+#  active            :boolean          default(TRUE)
+#  code              :string(255)
+#  page_views_count  :integer
+#  thomas_id         :string(255)
+#  chamber           :string(255)
+#  parent_id         :integer
+#
+
 require_dependency 'viewable_object'
 class Committee < ActiveRecord::Base
   include ViewableObject

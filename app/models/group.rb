@@ -1,3 +1,28 @@
+# == Schema Information
+#
+# Table name: groups
+#
+#  id                       :integer          not null, primary key
+#  user_id                  :integer
+#  name                     :string(255)
+#  description              :text
+#  join_type                :string(255)
+#  invite_type              :string(255)
+#  post_type                :string(255)
+#  publicly_visible         :boolean          default(TRUE)
+#  website                  :string(255)
+#  pvs_category_id          :integer
+#  group_image_file_name    :string(255)
+#  group_image_content_type :string(255)
+#  group_image_file_size    :integer
+#  group_image_updated_at   :datetime
+#  state_id                 :integer
+#  district_id              :integer
+#  created_at               :datetime
+#  updated_at               :datetime
+#  subject_id               :integer
+#
+
 class Group < ActiveRecord::Base
   has_attached_file :group_image, :styles => { :medium => "300x300>", :thumb => "100x100>" },
                                   :path => "#{Settings.group_images_path}/:id/:style/:filename",

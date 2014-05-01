@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: crp_industries
+#
+#  id            :integer          not null, primary key
+#  name          :string(255)      not null
+#  crp_sector_id :integer
+#
+
 class CrpIndustry < ActiveRecord::Base
   has_many :crp_interest_groups, :order => '"order"'
   belongs_to :crp_sector

@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: featured_people
+#
+#  id         :integer          not null, primary key
+#  person_id  :integer
+#  text       :text
+#  updated_at :datetime
+#  created_at :datetime
+#
+
 class FeaturedPerson < ActiveRecord::Base
   set_table_name :featured_people
   

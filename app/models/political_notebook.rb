@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: political_notebooks
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer
+#  created_at :datetime
+#  updated_at :datetime
+#  group_id   :integer
+#
+
 class PoliticalNotebook < ActiveRecord::Base
   belongs_to :user  
   belongs_to :group

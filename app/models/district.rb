@@ -1,4 +1,17 @@
-# encoding=utf-8
+# encoding: UTF-8
+# == Schema Information
+#
+# Table name: districts
+#
+#  id              :integer          not null, primary key
+#  district_number :integer
+#  state_id        :integer
+#  created_at      :datetime
+#  updated_at      :datetime
+#  center_lat      :decimal(15, 10)
+#  center_lng      :decimal(15, 10)
+#
+
 require_dependency 'multi_geocoder'
 
 class District < ActiveRecord::Base

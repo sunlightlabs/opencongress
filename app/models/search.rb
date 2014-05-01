@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: searches
+#
+#  id          :integer          not null, primary key
+#  search_text :string(255)
+#  created_at  :datetime
+#
+
 class Search < ActiveRecord::Base
   
   def Search.top_search_terms(num = 100, since = Settings.default_count_time)

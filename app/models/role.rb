@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: roles
+#
+#  id        :integer          not null, primary key
+#  person_id :integer
+#  role_type :string(255)
+#  startdate :date
+#  enddate   :date
+#  party     :string(255)
+#  state     :string(255)
+#  district  :string(255)
+#  url       :string(255)
+#  address   :string(255)
+#  phone     :string(255)
+#  email     :string(255)
+#
+
 class Role < ActiveRecord::Base
   belongs_to :person
   

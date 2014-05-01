@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: committee_meetings
+#
+#  id           :integer          not null, primary key
+#  subject      :text
+#  meeting_at   :datetime
+#  committee_id :integer
+#  where        :string(255)
+#
+
 class CommitteeMeeting < ActiveRecord::Base
   # TODO Since committee meeting times are all the same (a bug)
   # this was preventing any committee from having more than one meeting.

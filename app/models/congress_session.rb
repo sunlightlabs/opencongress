@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: congress_sessions
+#
+#  id            :integer          not null, primary key
+#  chamber       :string(255)
+#  date          :date
+#  is_in_session :boolean
+#  created_at    :datetime
+#  updated_at    :datetime
+#
+
 class CongressSession < ActiveRecord::Base
   def CongressSession.house_session(date=nil)
     date = Date.today if date.nil?

@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: bills_cosponsors
+#
+#  id             :integer          not null, primary key
+#  person_id      :integer
+#  bill_id        :integer
+#  date_added     :date
+#  date_withdrawn :date
+#
+
 class BillCosponsor < ActiveRecord::Base
   set_table_name :bills_cosponsors
 

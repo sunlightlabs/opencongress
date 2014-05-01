@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: subjects
+#
+#  id               :integer          not null, primary key
+#  term             :string(255)
+#  bill_count       :integer
+#  fti_names        :public.tsvector
+#  page_views_count :integer
+#  parent_id        :integer
+#
+
 require_dependency 'viewable_object'
 class Subject < ActiveRecord::Base
   include ViewableObject

@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: commentary_ratings
+#
+#  id            :integer          not null, primary key
+#  user_id       :integer
+#  commentary_id :integer
+#  rating        :integer
+#  created_at    :datetime
+#  updated_at    :datetime
+#
+
 class CommentaryRating < ActiveRecord::Base
 
   belongs_to :commentary

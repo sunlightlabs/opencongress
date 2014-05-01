@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: user_ip_addresses
+#
+#  id         :integer          not null, primary key
+#  user_id    :integer
+#  addr       :integer
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 class UserIpAddress < ActiveRecord::Base
 
   belongs_to :user

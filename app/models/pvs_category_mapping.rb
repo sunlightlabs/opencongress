@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: pvs_category_mappings
+#
+#  id                         :integer          not null, primary key
+#  pvs_category_id            :integer
+#  pvs_category_mappable_id   :integer
+#  pvs_category_mappable_type :string(255)
+#
+
 class PvsCategoryMapping < ActiveRecord::Base  
   belongs_to :pvs_category
   belongs_to :pvs_category_mappable, :polymorphic => true

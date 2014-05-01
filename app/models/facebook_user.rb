@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: facebook_users
+#
+#  id                   :integer          not null, primary key
+#  facebook_uid         :integer
+#  facebook_session_key :string(255)
+#  updated_at           :datetime
+#  created_at           :datetime
+#
+
 class FacebookUser < ActiveRecord::Base  
   has_many :facebook_user_bills
   

@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: facebook_user_bills
+#
+#  id               :integer          not null, primary key
+#  facebook_user_id :integer
+#  bill_id          :integer
+#  tracking_type    :string(255)
+#  comment          :text
+#  updated_at       :datetime
+#  created_at       :datetime
+#
+
 class FacebookUserBill < ActiveRecord::Base
   belongs_to :facebook_user
   belongs_to :bill

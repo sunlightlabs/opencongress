@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: wiki_links
+#
+#  id            :integer          not null, primary key
+#  wikiable_type :string(255)
+#  wikiable_id   :integer
+#  name          :string(255)
+#  oc_link       :string(255)
+#  created_at    :datetime
+#  updated_at    :datetime
+#
+
 class WikiLink < ActiveRecord::Base
   belongs_to :wikiable, :polymorphic => true
   before_validation :clean_up

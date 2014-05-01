@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: site_texts
+#
+#  id         :integer          not null, primary key
+#  text_type  :string(255)
+#  text       :text
+#  updated_at :datetime
+#
+
 class SiteText < ActiveRecord::Base
   def self.find_by_type(text_type)
     st = self.find(:first, :conditions => [ "text_type = ?", text_type])

@@ -1,3 +1,20 @@
+# == Schema Information
+#
+# Table name: object_aggregates
+#
+#  id                  :integer          not null, primary key
+#  aggregatable_type   :string(255)
+#  aggregatable_id     :integer
+#  date                :date
+#  page_views_count    :integer          default(0)
+#  comments_count      :integer          default(0)
+#  blog_articles_count :integer          default(0)
+#  news_articles_count :integer          default(0)
+#  bookmarks_count     :integer          default(0)
+#  votes_support       :integer          default(0)
+#  votes_oppose        :integer          default(0)
+#
+
 class ObjectAggregate < ActiveRecord::Base
   belongs_to :aggregatable, :polymorphic => true
 

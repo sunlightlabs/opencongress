@@ -1,3 +1,15 @@
+# == Schema Information
+#
+# Table name: bill_votes
+#
+#  id         :integer          not null, primary key
+#  bill_id    :integer
+#  user_id    :integer
+#  support    :integer
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 class BillVote < ActiveRecord::Base
   # 1 = opposed, 0 = supported
   belongs_to :user

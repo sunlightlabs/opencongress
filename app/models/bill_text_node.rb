@@ -1,3 +1,12 @@
+# == Schema Information
+#
+# Table name: bill_text_nodes
+#
+#  id                   :integer          not null, primary key
+#  bill_text_version_id :integer
+#  nid                  :string(255)
+#
+
 class BillTextNode < ActiveRecord::Base
   belongs_to :bill_text_version
 

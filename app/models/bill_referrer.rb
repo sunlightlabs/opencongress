@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: bill_referrers
+#
+#  id         :integer          not null, primary key
+#  bill_id    :integer
+#  url        :string(255)
+#  created_at :datetime
+#
+
 class BillReferrer < ActiveRecord::Base
   belongs_to :bill
   

@@ -1,3 +1,27 @@
+# == Schema Information
+#
+# Table name: commentaries
+#
+#  id                  :integer          not null, primary key
+#  title               :string
+#  url                 :text
+#  excerpt             :text
+#  date                :datetime
+#  source              :string(255)
+#  source_url          :string(255)
+#  weight              :integer
+#  scraped_from        :string(255)
+#  status              :string(255)
+#  contains_term       :string(255)
+#  fti_names           :public.tsvector
+#  created_at          :datetime
+#  is_news             :boolean
+#  is_ok               :boolean          default(FALSE)
+#  average_rating      :float
+#  commentariable_id   :integer
+#  commentariable_type :string(255)
+#
+
 class Commentary < ActiveRecord::Base                              
 require 'htmlentities'
   belongs_to :commentariable, :polymorphic => true

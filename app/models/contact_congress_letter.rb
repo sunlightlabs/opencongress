@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: contact_congress_letters
+#
+#  id               :integer          not null, primary key
+#  user_id          :integer
+#  disposition      :string(255)
+#  created_at       :datetime
+#  updated_at       :datetime
+#  receive_replies  :boolean          default(TRUE)
+#  contactable_id   :integer
+#  contactable_type :string(255)
+#  is_public        :boolean          default(FALSE)
+#
+
 require_dependency 'viewable_object'
 class ContactCongressLetter < ActiveRecord::Base
   include ViewableObject

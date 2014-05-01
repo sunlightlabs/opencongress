@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: bookmarks
+#
+#  id                :integer          not null, primary key
+#  created_at        :datetime         not null
+#  bookmarkable_type :string(15)       default(""), not null
+#  bookmarkable_id   :integer          default(0), not null
+#  user_id           :integer          default(0), not null
+#
+
 class Bookmark < ActiveRecord::Base
   belongs_to :bookmarkable, :polymorphic => true
 

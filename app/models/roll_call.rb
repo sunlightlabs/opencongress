@@ -7,7 +7,7 @@
 #  where               :string(255)
 #  date                :datetime
 #  updated             :datetime
-#  roll_type           :string(255)
+#  roll_type           :text
 #  question            :text
 #  required            :string(255)
 #  result              :string(255)

@@ -18,28 +18,24 @@
       <%= link_to avatar_for(u, :size => :small, :alt => "Photo of"), user_profile_path(u.login) %><br/>
       <%= link_to u.login, user_profile_path(u.login) %>
     </td>
-    <td class="centered"><%= privileged(:district, :subject => u, :permission => :my_congressional_district) %></td>
-    <td class="centered"><%= privileged(:location, :subject => u, :permission => :my_location) %></td>
+    <td class="centered"><%= u.district %></td>
+    <td class="centered"><%= privileged(:location, :subject => u, :permission => :location) %></td>
     <td class="centered">
-      <% if u.can_view(:my_last_login_date, current_user) %>
-        <% if u.last_login.nil? %>
-          never
-        <% else %>
-          <%= "#{time_ago_in_words(u.last_login)} ago" %>
-        <% end %>
+      <% if u.last_login.nil? %>
+        never
       <% else %>
-        <%= private_img %>
+        <%= "#{time_ago_in_words(u.last_login)} ago" %>
       <% end %>
     </td>
     <td class="centered">
-      <% if u.can_view(:my_actions, current_user) %>
+      <% if u.can_view(:actions, current_user) %>
         <%= link_to(u.action_count, :controller => :profile, :action => :actions, :login => u.login) %>
       <% else %>
         <%= private_img %>
       <% end %>
     </td>
     <td class="centered">
-      <% if u.can_view(:my_actions, current_user) %>
+      <% if u.can_view(:actions, current_user) %>
         <%= rating_for(@object, :rater => u) %>
       <% else %>
         <%= private_img %>

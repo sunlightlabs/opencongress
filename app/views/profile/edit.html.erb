@@ -34,11 +34,18 @@
     <%= simple_form_for @user, :url => update_profile_path(@user.login), :action => :put,
                                :defaults => { :input_html => { :class => 'field' } } do |f| %>
       <%= field_set_tag "General Information", {:id => "general_information", :class => "tab-pane active"} do %>
-        <%= f.input :full_name %>
-        <%= f.input :about, :as => :text, :input_html => { :rows => 6 } %>
         <%= f.input :email, :required => true %>
-        <%= f.input :zipcode, :required => true, :maxlength => 5 %>
-        <%= f.input :zip_four, :label => "Zip+4", :maxlength => 4 %>
+        <%= f.simple_fields_for :user_profile, @user.user_profile do |p| %>
+          <%= p.input :full_name %>
+          <%= p.input :website %>
+          <%= p.input :about, :as => :text, :input_html => { :rows => 6 } %>
+          <%= p.input :street_address %>
+          <%= p.input :street_address_2 %>
+          <%= p.input :city %>
+          <%= p.input :state, :as => :select, :collection => State::ABBREVIATIONS.values %>
+          <%= p.input :zipcode, :required => true, :maxlength => 5 %>
+          <%= p.input :zip_four, :label => "Zip+4", :maxlength => 4 %>
+        <% end %>
       <% end %>
       <script type="text/javascript">
           document.getElementById('user_zipcode').addEventListener('change', function(event){
@@ -47,32 +54,33 @@
       </script>
 
       <%= field_set_tag "Site Preferences", {:id => "site_preferences", :class => "tab-pane"} do %>
-        <%= f.input :default_filter, :as => :select, :collection => 1..10,
+        <%= f.simple_fields_for :user_options, @user.user_options do |o| %>
+          <%= o.input :comment_threshold, :as => :select, :collection => 1..10,
                     :label => "Hide comments with ratings below", :input_html => { :class => "select" } %>
-        <%= f.input :mailing, :as => :radio_buttons, :label => "Receive announcements about OpenCongress via email?" %>
-        <%= f.input :partner_mailing, :as => :radio_buttons, :label => "Join the Sunlight Foundation email list?" %>
+          <%#= o.input :sms_notifications, :as => :radio_buttons, :label => "Receive notifications about your tracked items via SMS?" %>
+          <%#= o.input :email_notifications, :as => :radio_buttons, :label => "Receive notifications about your tracked items via Email?" %>
+          <%= o.input :opencongress_mail, :as => :radio_buttons, :label => "Receive announcements about OpenCongress via email?" %>
+          <%= o.input :partner_mail, :as => :radio_buttons, :label => "Join the Sunlight Foundation email list?" %>
+        <% end %>
       <% end %>
 
       <%= field_set_tag "Privacy Settings", {:id => "privacy_settings", :class => "tab-pane"} do %>
-        <%= f.simple_fields_for :privacy_option, @user.privacy_option,
+        <%= f.simple_fields_for :user_privacy_options, @user.user_privacy_options,
                                 :defaults => {:as => :select,
-                                              :collection => PrivacyOption::PRIVACY_OPTIONS,
+                                              :collection => UserPrivacyOptions::PRIVACY_OPTIONS,
                                               :prompt => nil,
                                               :input_html => { :class => 'select' } } do |p| %>
-          <%= p.input :my_full_name, :label => "My name" %>
-          <%= p.input :about_me, :label => "My bio" %>
-          <%= p.input :my_last_login_date %>
-          <%= p.input :my_email %>
-          <%= p.input :my_zip_code %>
-          <%= p.input :my_instant_messenger_names, :label => "My IM names" %>
-          <%= p.input :my_website %>
-          <%= p.input :my_location %>
-          <%= p.input :my_actions %>
-          <%= p.input :my_tracked_items %>
-          <%= p.input :my_friends %>
-          <%= p.input :my_congressional_district %>
-          <%= p.input :my_political_notebook %>
-          <%= p.input :watchdog %>
+          <%= p.input :name, :label => "My name" %>
+          <%= p.input :profile, :label => "My profile" %>
+          <%= p.input :email, :label => "My email" %>
+          <%= p.input :zipcode, :label => "My zipcode" %>
+          <%= p.input :location, :label => "My general location" %>
+          <%= p.input :actions, :label => "My actions on the site" %>
+          <%= p.input :bookmarks, :label => "My bookmarks" %>
+          <%= p.input :friends, :label => "My friends" %>
+          <%= p.input :groups, :label => "My group memberships" %>
+          <%= p.input :political_notebook, :label => "My political notebook" %>
+          <%= p.input :watchdog, :label => "My watchdog page" %>
         <% end %>
       <% end %>
 

@@ -274,10 +274,10 @@ class Admin::StatsController < Admin::IndexController
   def partner_email
     @page_title = "Partner Email Signups"
     if params[:format] == 'csv'
-      @users = User.find(:all, :conditions => ["partner_mailing = ?", true],
+      @users = User.find(:all, :conditions => ["partner_mail= ?", true],
                         :order => 'created_at DESC')
     else
-      @users = User.find(:all, :conditions => ["partner_mailing = ?", true],
+      @users = User.find(:all, :conditions => ["partner_mail = ?", true],
                         :order => 'created_at DESC').paginate(:page => params[:page])
     end
 

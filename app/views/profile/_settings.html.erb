@@ -13,7 +13,7 @@
   <a name="comm_fil"></a>
   <!--Comments will only display if they have an average rating of-->
   <%= form_for :user, @user, :url => {:action => 'ratings'}, :html => {:style => "display:inline;"} do |f| %>
-  <%= f.select :default_filter, 1.upto(10), {}, {:onChange => "this.form.submit();"} %>
+  <%= f.select :comment_threshold, 1.upto(10), {}, {:onChange => "this.form.submit();"} %>
   <!--or higher.-->
   <% end %>
 
@@ -21,13 +21,13 @@
 </p>
 <p><label>Get E-Mail updates about OpenCongress?</label>
   <%= form_for :user, nil, :url => {:controller => 'account', :action => 'mailing_list', :id => current_user.id}, :html => {:style => "display:inline;"} do |f| %>
-  <%= f.check_box :mailing, :onClick => "this.form.submit();" %>
+  <%= f.check_box :opencongress_mail, :onClick => "this.form.submit();" %>
   <% end %>
 </p>
 
 <p><label>Join the PPF and Sunlight Foundation email lists?</label>
   <%= form_for :user, nil, :url => {:controller => 'account', :action => 'partner_mailing_list', :id => current_user.id}, :html => {:style => "display:inline;"} do |f| %>
-  <%= f.check_box :partner_mailing, :onClick => "this.form.submit();" %>
+  <%= f.check_box :partner_mail, :onClick => "this.form.submit();" %>
   <% end %>
 </p>
 <br />

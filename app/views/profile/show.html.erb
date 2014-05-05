@@ -22,48 +22,46 @@
                   :style => "margin:14px 0 0") if current_user == @user %>
 
     <div id="about_me">
-      <% if @user.can_view(:about_me, current_user) %>
+      <% if @user.can_view(:profile, current_user) %>
         <p><label>About <%=h @user == current_user ? "me" : @user.login %></label> <%=h @user.about %></p>
       <% end %>
     </div>
 
     <div id="personal_info">
-      <% if @user.can_view(:my_last_login_date, current_user) %>
-        <p><label>Last Login</label>
-          <% unless @user.last_login.blank? %>
-          <%= time_ago_in_words(@user.last_login) %> ago
-          <% end %>
-        </p>
-      <% end %>
+      <p><label>Last Login</label>
+        <% unless @user.last_login.blank? %>
+        <%= time_ago_in_words(@user.last_login) %> ago
+        <% end %>
+      </p>
 
-      <% if @user.can_view(:my_full_name, current_user) %>
+      <% if @user.can_view(:name, current_user) %>
         <p><label>Name</label>
           <%= @user.full_name %>
         </p>
       <% end %>
 
-      <% if @user.can_view(:my_email, current_user) %>
+      <% if @user.can_view(:email, current_user) %>
         <p><label>Email</label>
         <%= @user.email %>
         </p>
       <% end %>
 
       <% unless @user.location.blank? %>
-        <% if @user.can_view(:my_location, current_user) %>
+        <% if @user.can_view(:location, current_user) %>
           <p><label>Location</label>
           <%= @user.location %>
           </p>
         <% end %>
       <% end %>
 
-      <% if @user.can_view(:my_zip_code, current_user) %>
+      <% if @user.can_view(:zipcode, current_user) %>
         <p><label>Zipcode</label>
           <%= @user.zipcode %>
-          <%= @user.zip_four %>
+          <%= "- #{@user.zip_four}" if @user.zip_four.present? %>
         </p>
       <% end %>
 
-      <% if @user.can_view(:my_congressional_district, current_user) && ( @user.district.present? || @user == current_user ) %>
+      <% if @user.district.present? || @user == current_user %>
         <p>
         <label>Cong. District</label>
         <%= @user.district_tag rescue link_to("Find your district", :url => { :controller => :account, :action => :determine_district }) %>
@@ -109,7 +107,6 @@
         </em>
       </p>
 
-    <% if @user.can_view(:my_congressional_district, current_user) %>
       <% state_groups = @user.groups.where("state_id IS NOT NULL").where(:district_id => nil) %>
       <h3 class="margin-top">State <%= pluralize(state_groups.count, 'Group').sub(/^\d+? /, '') %></h3>
       <ul class='container_16'>
@@ -150,6 +147,5 @@
           </li>
         <% end %>
       </ul>
-    <% end %>
   </div>
 </div>

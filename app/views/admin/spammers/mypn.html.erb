@@ -28,7 +28,7 @@ button { padding: 6px 16px; float: right; margin-left: 20px; }
         <td><%= user.created_at %></td>
         <td><%= user.last_login %></td>
         <td><%= user.action_count %></td>
-        <td><%= PrivacyOption::PRIVACY_OPTIONS.invert[user.privacy_option.my_political_notebook] %></td>
+        <td><%= UserPrivacyOptions::PRIVACY_OPTIONS.invert[user.user_privacy_options.my_political_notebook] %></td>
         <td>
           <% if user.political_notebook && user.political_notebook.notebook_items.where(:spam => false).any? %>
             <%= button_to "All Spam", url_for(:controller => 'admin/spammers', :action => :mark_all_mypn_posts_spam, :id => user.login) %>

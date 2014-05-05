@@ -17,37 +17,37 @@ module Spammable
 
   extend ActiveSupport::Concern
 
-  def self.included(base)
-    base.class_eval do
-      include Rakismet::Model
-      before_save :check_for_spam, :unless => :persisted?
-      alias_method :is_spam?, :spam?
-      scope :spam, where("spam=TRUE")
-      scope :ham, where("(spam is NULL or spam=FALSE) AND (censored is NULL or censored=FALSE)")
-      scope :censored, where("censored=TRUE AND (spam is NULL or spam=FALSE)")
-    end
+  included do
+    include Rakismet::Model
+    before_save :check_for_spam, :unless => :persisted?
+    alias_method :is_spam?, :spam?
+    scope :spam, where("spam=TRUE")
+    scope :ham, where("(spam is NULL or spam=FALSE) AND (censored is NULL or censored=FALSE)")
+    scope :censored, where("censored=TRUE AND (spam is NULL or spam=FALSE)")
   end
 
-  def check_for_spam
-    self.spam = self.censored = spam?
-    nil  # returning false here will interrupt save
-  end
-
-  def censor!(as=nil)
-    if as == :spam
-      self.spam = self.censored = spam!
-    else
-      self.censored = true
+  module InstanceMethods
+    def check_for_spam
+      self.spam = self.censored = spam?
+      nil  # returning false here will interrupt save
     end
-    save
-  end
 
-  def uncensor!(as=nil)
-    if as == :ham
-      self.spam = self.censored = ham!
-    else
-      self.censored = false
+    def censor!(as=nil)
+      if as == :spam
+        self.spam = self.censored = spam!
+      else
+        self.censored = true
+      end
+      save
     end
-    save
+
+    def uncensor!(as=nil)
+      if as == :ham
+        self.spam = self.censored = ham!
+      else
+        self.censored = false
+      end
+      save
+    end
   end
 end

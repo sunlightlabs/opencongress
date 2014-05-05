@@ -1,81 +1,81 @@
 <div class="profile_sidebar">
 
-		<ul class="profile_nav" id="summaries_nav">
-		  <li class="" id="AboutMe">
-			    <%= link_to "<span>About Me</span>".html_safe, user_profile_path(:login => @user.login),
-				        :class => params[:action] == "profile" ? "arrow_button active" : "arrow_button" %></li>
+        <ul class="profile_nav" id="summaries_nav">
+          <li class="" id="AboutMe">
+                <%= link_to "<span>About Me</span>".html_safe, user_profile_path(:login => @user.login),
+                        :class => params[:action] == "profile" ? "arrow_button active" : "arrow_button" %></li>
 
-			<% if @user.can_view(:my_tracked_items, current_user) %>
-			<li class="" style="" id="ItemsTracked">
-				<%= link_to "<span>Tracked Items</span>".html_safe,
-				     {:controller => 'profile',
-					  :action => 'items_tracked',
-					  :login => @user.login},
-					  :class => ["items_tracked", "bills", "person", "committees", "issues"].include?(controller.action_name) ? "arrow_button active" : "arrow_button" %>
+            <% if @user.can_view(:bookmarks, current_user) %>
+            <li class="" style="" id="ItemsTracked">
+                <%= link_to "<span>Tracked Items</span>".html_safe,
+                     {:controller => 'profile',
+                      :action => 'items_tracked',
+                      :login => @user.login},
+                      :class => ["items_tracked", "bills", "person", "committees", "issues"].include?(controller.action_name) ? "arrow_button active" : "arrow_button" %>
 
-			</li>
-			<% end %>
+            </li>
+            <% end %>
 
-			<% if @user.can_view(:my_actions, current_user) %>
-			<li class="" id="Actions">
-			  <%= link_to "<span>Actions</span>".html_safe,
-			          {:controller => 'profile',
-				       :action => 'actions',
-				       :login => @user.login},
-				       :class => params[:action] == "actions" ? "arrow_button active" : "arrow_button" %></li>
-			<% end %>
+            <% if @user.can_view(:actions, current_user) %>
+            <li class="" id="Actions">
+              <%= link_to "<span>Actions</span>".html_safe,
+                      {:controller => 'profile',
+                       :action => 'actions',
+                       :login => @user.login},
+                       :class => params[:action] == "actions" ? "arrow_button active" : "arrow_button" %></li>
+            <% end %>
 
-			<% if @user.can_view(:my_friends, current_user) %>
-			<li class="" id="Friends">
-			   <%= link_to "<span>Friends</span>".html_safe, friends_path(@user.login),
-			          :class => params[:controller] == "friends" ? "arrow_button active" : "arrow_button" %></li>
-			<% end %>
+            <% if @user.can_view(:friends, current_user) %>
+            <li class="" id="Friends">
+               <%= link_to "<span>Friends</span>".html_safe, friends_path(@user.login),
+                      :class => params[:controller] == "friends" ? "arrow_button active" : "arrow_button" %></li>
+            <% end %>
 
-			<% if @user.can_view(:my_political_notebook, current_user) %>
-			<li class="" id="Notebook">
-				<%= link_to "<span>My Political Notebook</span>".html_safe, political_notebook_path(@user.login),
-				        :class => controller.controller_name == 'political_notebooks' ? "arrow_button active" : "arrow_button" %>
-			 </li>
-			<% end %>
+            <% if @user.can_view(:political_notebook, current_user) %>
+            <li class="" id="Notebook">
+                <%= link_to "<span>My Political Notebook</span>".html_safe, political_notebook_path(@user.login),
+                        :class => controller.controller_name == 'political_notebooks' ? "arrow_button active" : "arrow_button" %>
+             </li>
+            <% end %>
 
-			<% if @user.can_view(:watchdog, current_user) %>
-			<li class="" id="Watchdog">
-				<%= link_to "<span>Watchdog</span>".html_safe, user_watchdog_path(@user.login), :class => controller.action_name == "watchdog" ? "arrow_button active" : "arrow_button" %>
-			</li>
-			<% end %>
-		</ul>
+            <% if @user.can_view(:watchdog, current_user) %>
+            <li class="" id="Watchdog">
+                <%= link_to "<span>Watchdog</span>".html_safe, user_watchdog_path(@user.login), :class => controller.action_name == "watchdog" ? "arrow_button active" : "arrow_button" %>
+            </li>
+            <% end %>
+        </ul>
 
 <% if @show_email_alerts %>
   <div id="alerts">
-	<h3>Your Active Email Alerts</h3>
-	<% if @user.user_mailing_list.mailing_list_items.count == 0 %>
-	   <p style="margin-bottom:10px;">You have not yet set up any email alerts. In order to receive email updates,
-		  go to a bill page and select "get email alerts" from the right-hand sidebar.</p>
-	   <p>Questions? <%= mail_to Settings.contact_us_email, "Email us", :encode => :javascript %>.</p>
-	<% end %>
-	<% if @user.user_mailing_list.mailing_list_items.bills.count > 0 %>
-
-	Bill Alerts
-	  <% @user.user_mailing_list.mailing_list_items.bills.each do |b| %>
-	    <p style="font-size:10px;"><span style="float:right;"><%= link_to "stop", b, :method => :delete %></span>
-	        <%= link_to truncate(b.mailable.title_full_common, :length => 40),
-	             bill_path(b.mailable.ident) %></p>
-	  <% end %>
+    <h3>Your Active Email Alerts</h3>
+    <% if @user.user_mailing_list.mailing_list_items.count == 0 %>
+       <p style="margin-bottom:10px;">You have not yet set up any email alerts. In order to receive email updates,
+          go to a bill page and select "get email alerts" from the right-hand sidebar.</p>
+       <p>Questions? <%= mail_to Settings.contact_us_email, "Email us", :encode => :javascript %>.</p>
     <% end %>
-	<% if @user.user_mailing_list.mailing_list_items.people.count > 0 %>
-	Legislator Alerts
-	  <% @user.user_mailing_list.mailing_list_items.people.each do |p| %>
-	    <p style="font-size:10px;"><span style="float:right;"><%= link_to "stop", p, :method => :delete %></span>
-	        <%= link_to truncate(p.mailable.title_full_name, :length => 40),
-	             bill_path(p.mailable.ident) %></p>
-	  <% end %>
-	<% end %>
+    <% if @user.user_mailing_list.mailing_list_items.bills.count > 0 %>
+
+    Bill Alerts
+      <% @user.user_mailing_list.mailing_list_items.bills.each do |b| %>
+        <p style="font-size:10px;"><span style="float:right;"><%= link_to "stop", b, :method => :delete %></span>
+            <%= link_to truncate(b.mailable.title_full_common, :length => 40),
+                 bill_path(b.mailable.ident) %></p>
+      <% end %>
+    <% end %>
+    <% if @user.user_mailing_list.mailing_list_items.people.count > 0 %>
+    Legislator Alerts
+      <% @user.user_mailing_list.mailing_list_items.people.each do |p| %>
+        <p style="font-size:10px;"><span style="float:right;"><%= link_to "stop", p, :method => :delete %></span>
+            <%= link_to truncate(p.mailable.title_full_name, :length => 40),
+                 bill_path(p.mailable.ident) %></p>
+      <% end %>
+    <% end %>
    </div>
 
 <% end %>
 
 <% if controller.action_name == "watchdog" %>
-	<% if @user.can_view(:watchdog, current_user) %>
+    <% if @user.can_view(:watchdog, current_user) %>
   <div id="alerts">
 
         <h3 class="dark">My Friends</h3>
@@ -102,7 +102,7 @@
           </li>
          </ul>
   </div>
-	<% end %>
+    <% end %>
 <% end %>
 
 

@@ -6,7 +6,7 @@ class PeopleController < ApplicationController
   before_filter :page_view, :only => :show
   #before_filter :person_profile_shared, :only => [:show, :comments, :bills, :voting_history, :money, :news_blogs, :videos, :news, :blogs]
   before_filter :person_profile_shared, :only => [:show, :comments, :bills, :voting_history, :money, :videos]
-
+  skip_before_filter :protect_from_forgery, :only => :zipcodelookup
 
   def index
     @page_title = "Senators and Representatives"

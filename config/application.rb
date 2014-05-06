@@ -32,13 +32,14 @@ module OpenCongress
                                 #{config.root}/app/queries
                                 #{config.root}/app/concerns
                                 #{config.root}/app/jobs
+                                #{config.root}/app/services
                                 )
 
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.
     # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
 
-    config.active_record.observers = :user_observer, :friend_observer, :mailing_list_observer
+    config.active_record.observers = :user_observer, :friend_observer
 
     # Disable delivery errors if you bad email addresses should just be ignored
     # config.action_mailer.raise_delivery_errors = false

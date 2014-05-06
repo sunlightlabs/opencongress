@@ -437,8 +437,8 @@ class ProfileController < ApplicationController
 
   def update_privacy
      @user = current_user
-     params[:privacy_option].delete("user_id")
-     @user.privacy_option.update_attributes(params[:privacy_option])
+     params[:user_privacy_options].delete("user_id")
+     @user.user_privacy_options.update_attributes(params[:user_privacy_options])
      flash[:notice] = "Privacy Setting Updated"
      redirect_back_or_default(user_profile_path(@user.login))
   end
@@ -519,11 +519,11 @@ class ProfileController < ApplicationController
   private
   def can_view_tab
     @user = User.find_by_login(params[:login])
-    if params[:action] == "actions" && @user.can_view(:my_actions, current_user)
+    if params[:action] == "actions" && @user.can_view(:actions, current_user)
       return true
     elsif params[:action] == "watchdog" && @user.can_view(:watchdog, current_user)
       return true
-    elsif @user.can_view(:my_tracked_items, current_user)
+    elsif @user.can_view(:bookmarks, current_user)
       return true
     else
       flash[:warning] = "That page isn't publicly viewable."

@@ -15,11 +15,11 @@ class ListRepresentative < ActiveRecord::Base
   def belongs_to_major_party?
     ((party == 'Democrat') || (party == 'Republican'))
   end
-  
+
   def party_and_state
     "#{self.party[0,1]}-#{self.state}"
   end
-  
+
   def opposing_party
     if belongs_to_major_party?
       if party == 'Democrat'
@@ -41,21 +41,21 @@ class ListRepresentative < ActiveRecord::Base
     "#{firstname} #{lastname}"
   end
   def title_full_name
-		"#{title} " + full_name
-	end
-	
-	def title_long
-	  case self.title
-	    when 'Sen.'
-	      'Senator'
-	    when 'Rep.'
-	      'Representative'
-	  end
-	end
-	
-	def title_full_name_party_state
-	  title_full_name + " " + party_and_state
-	end
+    "#{title} " + full_name
+  end
+
+  def title_long
+    case self.title
+      when 'Sen.'
+        'Senator'
+      when 'Rep.'
+        'Representative'
+    end
+  end
+
+  def title_full_name_party_state
+    title_full_name + " " + party_and_state
+  end
   def popular_name
     "#{nickname || firstname} #{lastname}"
   end
@@ -67,6 +67,6 @@ class ListRepresentative < ActiveRecord::Base
   def obj_title
     self.title
   end
-  
-  
+
+
 end

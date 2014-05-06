@@ -13,6 +13,9 @@ require File.expand_path('../../lib/plugins_loader', __FILE__)
 # Faxable includes a railtie and must be required before the env boots
 require File.expand_path('../../lib/faxable', __FILE__)
 
+# Load ActiveRecord extensions
+require File.expand_path('../../lib/active_record/humanized_attributes', __FILE__)
+
 module OpenCongress
   class Application < Rails::Application
 

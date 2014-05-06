@@ -15,6 +15,7 @@
 #  description          :text
 #  updated              :datetime
 #  key_vote_category_id :integer
+#  congress             :integer
 #
 
 class Amendment < ActiveRecord::Base

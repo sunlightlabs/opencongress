@@ -38,7 +38,7 @@ class ProfileController < ApplicationController
     end
     if @user.update_attributes(params[:user])
       flash[:notice] = 'Your profile was updated.'
-      redirect_to edit_profile_path(@user.login)
+      redirect_to user_profile_path(@user.login)
     else
       flash[:warning] = @user.errors.full_messages.to_sentence
       redirect_to :back

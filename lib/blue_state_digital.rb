@@ -73,8 +73,8 @@ module BlueStateDigital
     cons = email_lookup(email, options)['api']['cons_email'] rescue nil
     unless cons.nil?
       build_call_with(options) do |c|
-      c.path = '/page/api/cons_group/remove_cons_ids_from_group'
-      c.opts.query_values = { :api_ver => c.api_ver, :api_id => c.api_id, :api_ts => c.ts, :cons_group_id => grp_id, :cons_ids => cons['cons_id']}
+        c.path = '/page/api/cons_group/remove_cons_ids_from_group'
+        c.opts.query_values = { :api_ver => c.api_ver, :api_id => c.api_id, :api_ts => c.ts, :cons_group_id => grp_id, :cons_ids => cons['cons_id']}
       end
     end
   end

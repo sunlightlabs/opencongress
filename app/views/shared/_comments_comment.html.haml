@@ -12,7 +12,7 @@
 
 
   - def_fil = 5
-  - def_fil = ( current_user.default_filter ? current_user.default_filter : 5 ) if logged_in?
+  - def_fil = current_user.user_options.comment_threshold || 5 if logged_in?
   .commentfl{ :id => "comfl#{comment.id.to_s}", :style => "clear:both;float:none;#{'display:none;' if (def_fil <= comment.average_rating)}"}
     %p
       Filtered Comment [

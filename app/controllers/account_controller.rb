@@ -133,24 +133,28 @@ class AccountController < ApplicationController
     if request.post?
       if params[:address].present?
         begin
-          result = MultiGeocoder.search("#{params[:address]}, #{params[:zipcode]}").first
+          result = MultiGeocoder.search("#{params[:address]}, #{params[:zipcode]}", :lookup => :smarty_streets).first
           lat, lng = result.coordinates
           zipcode = result.postal_code
           zip_four = result.zip4 rescue nil
           # This happens so the update_state_and_district method won't be invoked via callback
           # on account of zipcode or zip_four being dirty.
-          User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode, :zip_four => zip_four)
-          new_district = current_user.update_state_and_district(:lat => lat, :lng => lng)
+          current_user.update_attributes(:state => result.state)
+          current_user.user_profile.update_attributes(
+            :zipcode => zipcode,
+            :zip_four => zip_four,
+            :street_address => result.delivery_line_1,
+            :street_address_2 => result.delivery_line_2,
+            :city => result.city,
+          )
         rescue NoMethodError
           no_reps and return
         end
       else
-        User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode) if params[:zipcode].present?
-        new_district = current_user.update_state_and_district
+        current_user.user_profile.update_attributes(:zipcode => zipcode) if params[:zipcode].present?
       end
-      current_user.save
       if current_user.state.present? and current_user.district.present?
-        flash[:notice] = "Your Congressional District (#{new_district}) has been saved."
+        flash[:notice] = "Your Congressional District (#{current_user.district_tag}) has been saved."
         activate_redirect(user_profile_path(:login => current_user.login))
         return
       else
@@ -410,11 +414,11 @@ class AccountController < ApplicationController
   end
 
   def mailing_list
-   if params[:user][:mailing] && params[:user][:mailing] == "1"
-     current_user.mailing = true
+   if params[:user][:opencongress_mail] && params[:user][:opencongress_mail] == "1"
+     current_user.user_options.opencongress_mail = true
      flash[:notice] = "Subscribed to the Mailing List"
    else
-     current_user.mailing = false
+     current_user.user_options.opencongress_mail = false
      flash[:notice] = "Un-Subscribed from the Mailing List"
    end
    current_user.save!
@@ -422,11 +426,11 @@ class AccountController < ApplicationController
   end
 
   def partner_mailing_list
-   if params[:user][:partner_mailing] && params[:user][:partner_mailing] == "1"
-     current_user.partner_mailing = true
+   if params[:user][:partner_mail] && params[:user][:partner_mail] == "1"
+     current_user.user_options.partner_mail = true
      flash[:notice] = "Subscribed to the Mailing List"
    else
-     current_user.partner_mailing = false
+     current_user.user_oprions.partner_mail = false
      flash[:notice] = "Un-Subscribed from the Mailing List"
    end
    current_user.save!

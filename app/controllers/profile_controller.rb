@@ -482,11 +482,11 @@ class ProfileController < ApplicationController
   end
 
   def ratings
-    this_rating = params[:user]['default_filter'].to_i
+    this_rating = params[:user][:user_options_attributes][:comment_threshold].to_i
     logger.info(this_rating.to_s + " DEFAU")
     if this_rating > -1 && this_rating < 11
       user = current_user
-      user.update_attribute(:default_filter, this_rating)
+      user.update_attribute(:comment_threshold, this_rating)
     end
     redirect_to :controller => 'profile', :action => 'show', :login => current_user.login, :anchor => "comm_fil"
   end

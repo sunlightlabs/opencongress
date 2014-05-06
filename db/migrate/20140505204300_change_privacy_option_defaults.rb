@@ -7,7 +7,7 @@ class ChangePrivacyOptionDefaults < ActiveRecord::Migration
     change_column_default :user_privacy_options, :actions, 1
     change_column_default :user_privacy_options, :bookmarks, 1
     change_column_default :user_privacy_options, :friends, 1
-    change_column_default :user_privacy_options, :groups, 1
+    change_column_default :user_privacy_options, :groups, 2
   end
 
   def self.down

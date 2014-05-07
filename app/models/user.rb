@@ -160,7 +160,7 @@ class User < ActiveRecord::Base
 
   scope :mypn_spammers, includes(:political_notebook => [:notebook_items]).where("notebook_items.spam = ?", true).order("users.login ASC")
 
-  %w(name email zipcode location profile actions tracked_items
+  %w(name email zipcode location profile actions bookmarks
      friends political_notebook watchdog groups).each do |prop|
     delegate prop.to_sym, :to => :user_privacy_options, :prefix => :share
   end

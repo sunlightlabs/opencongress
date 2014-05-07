@@ -1386,7 +1386,7 @@ class Person < ActiveRecord::Base
   def consecutive_roles
     current_role = roles.first
 
-    roles.select {|r| r.role_type = current_role.role_type }
+    roles.select {|r| r.role_type == current_role.role_type }
   end
 
   def votes_together_list

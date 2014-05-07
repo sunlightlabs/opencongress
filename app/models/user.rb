@@ -210,11 +210,11 @@ class User < ActiveRecord::Base
   ##
 
   def user_profile; def changed?
-      false
+    false
   end; end
 
   def user_options; def changed?
-      false
+    false
   end; end
 
 

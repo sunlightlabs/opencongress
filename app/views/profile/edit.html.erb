@@ -54,25 +54,22 @@
       <% end %>
 
       <%= field_set_tag "Privacy Settings", {:id => "privacy_settings", :class => "tab-pane"} do %>
-        <%= f.simple_fields_for :privacy_option, @user.privacy_option,
+        <%= f.simple_fields_for :user_privacy_options, @user.user_privacy_options,
                                 :defaults => {:as => :select,
-                                              :collection => PrivacyOption::PRIVACY_OPTIONS,
+                                              :collection => UserPrivacyOptions::PRIVACY_OPTIONS,
                                               :prompt => nil,
                                               :input_html => { :class => 'select' } } do |p| %>
-          <%= p.input :my_full_name, :label => "My name" %>
-          <%= p.input :about_me, :label => "My bio" %>
-          <%= p.input :my_last_login_date %>
-          <%= p.input :my_email %>
-          <%= p.input :my_zip_code %>
-          <%= p.input :my_instant_messenger_names, :label => "My IM names" %>
-          <%= p.input :my_website %>
-          <%= p.input :my_location %>
-          <%= p.input :my_actions %>
-          <%= p.input :my_tracked_items %>
-          <%= p.input :my_friends %>
-          <%= p.input :my_congressional_district %>
-          <%= p.input :my_political_notebook %>
-          <%= p.input :watchdog %>
+          <%= p.input :name, :label => "My name" %>
+          <%= p.input :profile, :label => "My profile" %>
+          <%= p.input :email, :label => "My email" %>
+          <%= p.input :zipcode, :label => "My zipcode" %>
+          <%= p.input :location, :label => "My general location" %>
+          <%= p.input :actions, :label => "My actions on the site" %>
+          <%= p.input :bookmarks, :label => "My bookmarks" %>
+          <%= p.input :friends, :label => "My friends" %>
+          <%= p.input :groups, :label => "My group memberships" %>
+          <%= p.input :political_notebook, :label => "My political notebook" %>
+          <%= p.input :watchdog, :label => "My watchdog page" %>
         <% end %>
       <% end %>
 

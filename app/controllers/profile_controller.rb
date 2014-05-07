@@ -440,7 +440,7 @@ class ProfileController < ApplicationController
      params[:user_privacy_options].delete("user_id")
      @user.user_privacy_options.update_attributes(params[:user_privacy_options])
      flash[:notice] = "Privacy Setting Updated"
-     redirect_back_or_default(user_profile_path(@user.login))
+     redirect_back_by_referer_or_default(user_profile_path(@user.login))
   end
 
   def upload_pic

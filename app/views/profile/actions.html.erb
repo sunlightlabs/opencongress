@@ -7,60 +7,69 @@
 <div class="grid_12">
 
 
-
-
 <% if logged_in? && @user == current_user %>
-<div style="float:right;width:100px;">
-  <%= image_tag("private.png", :alt => "private", :title => "Private", :id => 'Privacy', :style => "float:left;margin-right:5px;") %>
-<%= form_for :user_privacy_options, @user.user_privacy_options, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
-<%= f.select :actions, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
-</div>
+  <div style="float:right;width:100px;">
+    <%= image_tag("private.png", :alt => "private", :title => "Private", :id => 'Privacy', :style => "float:left;margin-right:5px;") %>
+    <%= form_for :user_privacy_options, @user.user_privacy_options, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
+      <%= f.select :actions, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
+    <% end %>
+  </div>
 <% end %>
 <div class="floatright margin-right">
   <%= link_to image_tag('feed.jpg', {:alt => "Subscribe", :style => "border:0;vertical-align:middle;"}), :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => current_user == :false ? nil : current_user.feed_key %>
 </div>
 
 <div id="linkcontent">
-    <div class="my_left">
+  <div class="my_left">
 
-<h3 class="dark"><%= user_name("My", &:possessive) %> Letters to Congress</h3>
+    <h3 class="dark"><%= user_name("My", &:possessive) %> Letters to Congress</h3>
 
-<%= render :partial => 'contact_congress_letters/letters_list', :object => @user.contact_congress_letters %>
-
+    <%= render :partial => 'contact_congress_letters/letters_list', :object => @user.contact_congress_letters %>
 
     <h3 class="dark"><%= user_name("My", &:possessive) %> Comments</h3>
     <p style="text-align:center;clear:both;"><%= will_paginate(@my_comments) %></p>
       <% if @my_comments.empty? %>
-       <p style="clear:both;">No comments yet. You can add a comment on pages for bills, public groups, bill text, and more. If you're looking to share your comments and votes with other users of the site, they can easily track your actions on OpenCongress by subscribing to your personal RSS feed above.</p>
+        <p style="clear:both;">No comments yet.
+          <% if @user == current_user %>
+            You can add a comment on pages for bills, public groups, bill text, and more. If you're looking to share your comments and votes with other users of the site, they can easily track your actions on OpenCongress by subscribing to your personal RSS feed above.
+          <% end %>
+        </p>
       <% end %>
-          <% logged_in? ? myscores = current_user.comment_scores.find(:all) : myscores = Array.new %>
-
+      <% logged_in? ? myscores = current_user.comment_scores.find(:all) : myscores = Array.new %>
       <% @my_comments.each do |com| %>
-           <%= render :partial => 'shared/comments_comment', :locals => {:object => com.commentable, :comment => com, :myscores => myscores } %>
-    <% end %>
+        <%= render :partial => 'shared/comments_comment', :locals => {:object => com.commentable, :comment => com, :myscores => myscores } %>
+      <% end %>
     <br />
 
-<table style="width:250px;">
-  <tr>
-    <td>Number of Comments: </td>
-    <td><%= @user.comments.length %></td>
-  </tr>
-  <tr>
-    <td>Average Comment Rating (0-10): </td>
-    <td><%= @user.comments.average(:average_rating) %></td>
-  </tr>
-  <tr>
-    <td>Comments Per Day: </td>
-    <td><%= number_with_precision((@user.comments.length.to_f / (((((Time.now.to_i - @user.created_at.to_i) / 60 ) / 60 ) / 24) + 1).to_f), :precision => 2) %></td>
-  </tr>
-</table>
-    </div>
-    <hr />
-      <h3 class="dark"><%= user_name("My", &:possessive) %> Supported Bills</h3>
-      <% if @bills_supported.empty? %>
-        <p>No supported bills yet. You can vote "aye" at the top of any bill's page.</p>
-      <% else %>
-      <p style="text-align:center;"><%= will_paginate(@bills_supported, {:param_name => "s_page"}) %> </p>
+    <table style="width:250px;">
+      <tr>
+        <td>Number of Comments: </td>
+        <td><%= @user.comments.length %></td>
+      </tr>
+      <tr>
+        <td>Average Comment Rating (0-10): </td>
+        <td><%= @user.comments.average(:average_rating) %></td>
+      </tr>
+      <tr>
+        <td>Comments Per Day: </td>
+        <td><%= number_with_precision((@user.comments.length.to_f / (((((Time.now.to_i - @user.created_at.to_i) / 60 ) / 60 ) / 24) + 1).to_f), :precision => 2) %></td>
+      </tr>
+    </table>
+
+  </div>
+
+  <hr />
+
+  <h3 class="dark"><%= user_name("My", &:possessive) %> Supported Bills</h3>
+
+  <% if @bills_supported.empty? %>
+    <p>No supported bills yet.
+      <% if @user == current_user %>
+        You can vote "aye" at the top of any bill's page.
+      <% end %>
+    </p>
+  <% else %>
+    <p style="text-align:center;"><%= will_paginate(@bills_supported, {:param_name => "s_page"}) %> </p>
     <table style="width:100%;" class="simple-table2" cellspacing="0">
       <tr>
         <th scope="col" align="left">Bill</th>
@@ -79,22 +88,21 @@
         <td><%= button_to("Remove", :action => 'remove_vote', :id => bill.id) if current_user == @user %></td>
       </tr>
       <% end %>
+    </table>
+  <% end %>
 
-    <% end %>
+  <h3 class="dark"><%= user_name("My", &:possessive) %> Opposed Bills</h3>
 
-    <tr><td><h3 class="dark"><%= user_name("My", &:possessive) %> Opposed Bills</h3></td></tr>
-      <% if @bills_opposed.empty? %>
-        <tr><td><p>No opposed bills yet. You can vote "nay" at the top of any bill's page.</p></td></tr>
-      <% else %>
-        <% if @bills_supported.empty? %>
-          <table style="width:100%;" class="simple-table2" cellspacing="0">
-        <% end %>
-      <tr><td style="border-bottom:none;"><%= will_paginate(@bills_supported, {:param_name => "s_page"}) %></td></tr>
+  <% if @bills_opposed.empty? %>
+    <p>No opposed bills yet. You can vote "nay" at the top of any bill's page.</p>
+  <% else %>
+    <p style="text-align:center;"><%= will_paginate(@bills_opposed, {:param_name => "s_page"}) %> </p>
+    <table style="width:100%;" class="simple-table2" cellspacing="0">
       <tr>
         <th scope="col" align="left">Bill</th>
         <th scope="col" align="left">Status</th>
         <th scope="col" align="left">Last Action</th>
-        <th scope="col" align="left"></th>
+        <th scope="col"></th>
       </tr>
       <% @bills_opposed.each do |bill| %>
       <tr>
@@ -107,12 +115,11 @@
         <td><%= button_to("Remove", :action => 'remove_vote', :id => bill.id) if current_user == @user %></td>
       </tr>
       <% end %>
-      <% end %>
-           </table>
-      <br />
-
-      <% end %>
-    <hr />
+    </table>
+    <br />
+  <% end %>
+  <hr />
 
 </div>
-</div></div>
+</div>
+</div>

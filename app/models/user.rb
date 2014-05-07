@@ -160,6 +160,11 @@ class User < ActiveRecord::Base
 
   scope :mypn_spammers, includes(:political_notebook => [:notebook_items]).where("notebook_items.spam = ?", true).order("users.login ASC")
 
+  %w(name email zipcode location profile actions tracked_items
+     friends political_notebook watchdog groups).each do |prop|
+    delegate prop.to_sym, :to => :user_privacy_options, :prefix => :share
+  end
+
   class << self
     def highest_rated_commenters
       cs = CommentScore.calculate(:count, :score, :include => "comment", :group => "comments.user_id", :order => "count_score DESC").collect {|p| p[1] > 3 && p[0] != nil ? p[0] : nil}.compact

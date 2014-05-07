@@ -74,7 +74,7 @@
         <% if @user == current_user %>
           <span style="margin:2px 5px 0 0;float:left;"><%= image_tag("private.png", :alt => "privacy", :title => "Privacy option") %></span>
             <%= form_for :user_privacy_options, @user.user_privacy_options, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
-              <%= f.select UserPrivacyOptions.column_names[11].to_sym, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
+              <%= f.select :friends, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
             <% end %>
         <% end %>
         <div class="clearfix"></div>

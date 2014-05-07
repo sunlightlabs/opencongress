@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
                   :chat_aim, :chat_yahoo, :chat_msn, :chat_icq, :chat_gtalk,
                   :show_aim, :show_full_name, :default_filter,
                   :representative_id, :zip_four, :district, :state,
-                  :partner_mailing, :privacy_option_attributes
+                  :partner_mailing, :user_privacy_options_attributes
 
   attr_accessor :accept_tos
   serialize :possible_states
@@ -49,7 +49,7 @@ class User < ActiveRecord::Base
   }
 
   after_create  :make_feed_key
-  after_create  :create_privacy_option
+  after_create  :create_user_privacy_options
   before_save :update_state_and_district, :if => Proc.new{
     zipcode_changed? || zip_four_changed?
   }
@@ -81,9 +81,9 @@ class User < ActiveRecord::Base
   after_save :update_subscription_options, :if => Proc.new { email_changed? || mailing_changed? }
   after_save :update_partner_subscription_options, :if => Proc.new { email_changed? || partner_mailing_changed? }
 
-  delegate :privatize!, :to => :privacy_option
+  delegate :privatize!, :to => :user_privacy_options
 
-  has_one  :privacy_option
+  has_one  :user_privacy_options
   has_one  :user_mailing_list
   has_one  :twitter_config
   has_one  :latest_ip_address, :class_name => "UserIpAddress", :order => "created_at DESC"
@@ -141,7 +141,7 @@ class User < ActiveRecord::Base
   def bookmarked_senators; bookmarked_people.sen; end
   def bookmarked_representatives; bookmarked_people.rep; end
 
-  accepts_nested_attributes_for :privacy_option
+  accepts_nested_attributes_for :user_privacy_options
 
   scope :for_state, lambda { |state| where("state = ?", state.upcase) }
   scope :for_district, lambda { |state, district| for_state(state).where("district = ?", district.to_i) }
@@ -203,7 +203,7 @@ class User < ActiveRecord::Base
     res = false
     if viewer.nil? or (viewer == :false)
       #logger.info "tis nil"
-      if self.privacy_option[option] == 2
+      if user_privacy_options[option] == 2
         #logger.info "tis allowed"
         res = true
       else
@@ -212,9 +212,9 @@ class User < ActiveRecord::Base
       end
     elsif viewer[:id] == self[:id]
       res = true
-    elsif self.friends.find_by_friend_id(viewer[:id]) && self.privacy_option[option] >= 1
+    elsif friends.find_by_friend_id(viewer[:id]) && send(:"share_#{option}") >= 1
       res = true
-    elsif self.privacy_option[option] == 2
+    elsif send(:"share_#{option}") == 2
       res = true
     else
       res = false
@@ -433,7 +433,7 @@ class User < ActiveRecord::Base
   end
 
   def public_tracking
-    if self.privacy_option['my_tracked_items'] == 2
+    if self.user_privacy_options['my_tracked_items'] == 2
        return true
     else
        return false

@@ -206,19 +206,6 @@ class User < ActiveRecord::Base
     delegate prop.to_sym, :to => :user_privacy_options, :prefix => :share
   end
 
-  ##
-  # TODO: Remove the below aliases after remapping user data to external classes!
-  # (After migration #20140424162910)
-  ##
-
-  def user_profile; def changed?
-    false
-  end; end
-
-  def user_options; def changed?
-    false
-  end; end
-
 
   # create related class instances on first access
   %w(user_profile user_options user_privacy_options).each do |meth|

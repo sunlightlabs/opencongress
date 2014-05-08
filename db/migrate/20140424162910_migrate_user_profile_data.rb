@@ -31,7 +31,7 @@ class MigrateUserProfileData < ActiveRecord::Migration
         :feed_key => u.feed_key
       )
       puts u.email
-      u.save!
+      u.save # Don't exit if validation fails, this stuff isn't crucial and is probably nil.
     end
   end
 

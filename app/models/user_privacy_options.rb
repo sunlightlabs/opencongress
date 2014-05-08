@@ -21,7 +21,7 @@
 class UserPrivacyOptions < ActiveRecord::Base
   belongs_to :user
 
-  ACCESSIBLE_ATTRS = %w(name email zipcode location profile actions friends
+  ACCESSIBLE_ATTRS = %w(name email zipcode location profile actions friends bookmarks
                         political_notebook watchdog groups).map(&:to_sym)
 
   PRIVACY_OPTIONS = {

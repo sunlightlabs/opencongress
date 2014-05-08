@@ -49,8 +49,7 @@ class UserProfile < ActiveRecord::Base
     zip_four_changed? ||
     street_address_changed? ||
     street_address_2_changed? ||
-    city_changed? ||
-    state_changed?
+    city_changed?
   }
 
   def full_name

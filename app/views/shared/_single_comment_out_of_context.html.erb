@@ -64,7 +64,7 @@
   </tr>
 </table>
 </div>
-<% if comment.user && comment.user.small_picture %>
+<% if comment.user && comment.user.user_profile.small_picture %>
 <div class="comment_pic"><img src="/images/users/<%= h(comment.user.login) %>_s.jpg" /></div>
 <% else %>
 <div style="clear:left;"></div>

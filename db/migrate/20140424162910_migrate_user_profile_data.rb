@@ -32,6 +32,7 @@ class MigrateUserProfileData < ActiveRecord::Migration
       )
       puts u.email
       u.save # Don't exit if validation fails, this stuff isn't crucial and is probably nil.
+      GC.start
     end
   end
 
@@ -52,7 +53,8 @@ class MigrateUserProfileData < ActiveRecord::Migration
       if u.status == 1
         u.accept_terms = true # this is safe because every authorized user has accepted the terms
       end
-      u.save!
+      u.save
+      GC.start
     end
   end
 end

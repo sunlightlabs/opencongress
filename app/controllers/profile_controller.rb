@@ -447,7 +447,7 @@ class ProfileController < ApplicationController
     begin
       tmp_file = params[:picture]['tmp_file']
       avatar = Avatar.new(tmp_file.read, :name => current_user.login)
-      current_user.main_picture, current_user.small_picture = avatar.create_sizes!
+      current_user.user_profile.main_picture, current_user.user_profile.small_picture = avatar.create_sizes!
       current_user.save(:validate => false)
     rescue
       flash.now[:warning] = "Failed to upload your picture"
@@ -461,9 +461,9 @@ class ProfileController < ApplicationController
   end
 
   def delete_images
-    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.main_picture}") if current_user.main_picture.present? rescue nil
-    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.small_picture}") if current_user.small_picture.present? rescue nil
-    current_user.main_picture = current_user.small_picture = nil
+    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.user_profile.main_picture}") if current_user.main_picture.present? rescue nil
+    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.user_profile.small_picture}") if current_user.small_picture.present? rescue nil
+    current_user.user_profile.main_picture = current_user.user_profile.small_picture = nil
     current_user.save(:validate => false)
     if request.xhr?
       flash.now[:notice] = "Profile picture deleted"

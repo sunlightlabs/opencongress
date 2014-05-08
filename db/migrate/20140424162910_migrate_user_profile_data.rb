@@ -14,7 +14,7 @@ class MigrateUserProfileData < ActiveRecord::Migration
     User.all.each do |u|
       next if u.email.nil?
       first_name, last_name = FullNameSplitter.split(u.full_name)
-      u.create_user_profile(
+      u.build_user_profile(
         :first_name => first_name,
         :last_name => last_name,
         :website => u.homepage,
@@ -24,7 +24,7 @@ class MigrateUserProfileData < ActiveRecord::Migration
         :zipcode => u.zipcode,
         :zip_four => u.zip_four,
       )
-      u.create_user_options(
+      u.build_user_options(
         :comment_threshold => u.default_filter,
         :opencongress_mail => u.mailing,
         :partner_mail => u.partner_mailing,

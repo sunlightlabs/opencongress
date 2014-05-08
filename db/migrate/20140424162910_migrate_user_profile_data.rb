@@ -11,7 +11,7 @@ class MigrateUserProfileData < ActiveRecord::Migration
   def self.up
     puts "Hang in there, this one is gonna touch every User instance"
 
-    User.each do |u|
+    User.all.each do |u|
       next if u.email.nil?
       first_name, last_name = FullNameSplitter.split(u.full_name)
       u.create_user_profile(
@@ -37,7 +37,7 @@ class MigrateUserProfileData < ActiveRecord::Migration
 
   def self.down
     puts "Hang in there, this one is gonna touch every User instance"
-    User.each do |u|
+    User.all.each do |u|
       u.full_name = [u.user_profile.first_name, u.user_profile.last_name].join(" ")
       u.homepage = u.user_profile.website
       u.about = u.user_profile.about

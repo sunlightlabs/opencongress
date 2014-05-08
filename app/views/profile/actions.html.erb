@@ -72,9 +72,9 @@
     <p style="text-align:center;"><%= will_paginate(@bills_supported, {:param_name => "s_page"}) %> </p>
     <table style="width:100%;" class="simple-table2" cellspacing="0">
       <tr>
-        <th scope="col" align="left">Bill</th>
-        <th scope="col" align="left">Status</th>
-        <th scope="col" align="left">Last Action</th>
+        <th scope="col" align="left" style="width: 45%">Bill</th>
+        <th scope="col" align="left" style="width: 16%">Status</th>
+        <th scope="col" align="left" style="width: 16%">Last Action</th>
         <th scope="col"></th>
       </tr>
       <% @bills_supported.each do |bill| %>
@@ -90,7 +90,7 @@
       <% end %>
     </table>
   <% end %>
-
+  <br />
   <h3 class="dark"><%= user_name("My", &:possessive) %> Opposed Bills</h3>
 
   <% if @bills_opposed.empty? %>
@@ -99,9 +99,9 @@
     <p style="text-align:center;"><%= will_paginate(@bills_opposed, {:param_name => "s_page"}) %> </p>
     <table style="width:100%;" class="simple-table2" cellspacing="0">
       <tr>
-        <th scope="col" align="left">Bill</th>
-        <th scope="col" align="left">Status</th>
-        <th scope="col" align="left">Last Action</th>
+        <th scope="col" align="left" style="width: 45%">Bill</th>
+        <th scope="col" align="left" style="width: 16%">Status</th>
+        <th scope="col" align="left" style="width: 16%">Last Action</th>
         <th scope="col"></th>
       </tr>
       <% @bills_opposed.each do |bill| %>

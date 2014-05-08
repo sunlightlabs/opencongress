@@ -22,6 +22,6 @@ class UserOptions < ActiveRecord::Base
   }
 
   belongs_to :user
-  update_email_subscription_when_changed user, [:opencongress_mail, :partner_mail]
+  # update_email_subscription_when_changed self.user, [:opencongress_mail, :partner_mail]
 
 end

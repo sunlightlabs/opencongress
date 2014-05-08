@@ -65,7 +65,7 @@ class User < ActiveRecord::Base
 
   # Callbacks
 
-  update_email_subscription_when_changed self, [:email]
+  # update_email_subscription_when_changed self, [:email]
   after_create :make_feed_key
   # on ban or delete, clean up this user's associations with various parts of the site
   after_save Proc.new {

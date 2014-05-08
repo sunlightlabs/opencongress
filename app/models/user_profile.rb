@@ -42,15 +42,16 @@ class UserProfile < ActiveRecord::Base
     :street_address_2 => "Street address 2nd line"
   }
 
-  after_save Proc.new {
-    LocationChangedService.new(user)
-  }, :if => Proc.new{
-    zipcode_changed? ||
-    zip_four_changed? ||
-    street_address_changed? ||
-    street_address_2_changed? ||
-    city_changed?
-  }
+  ## TODO: Enable this after profile migrations are run
+  # after_save Proc.new {
+  #   LocationChangedService.new(user)
+  # }, :if => Proc.new{
+  #   zipcode_changed? ||
+  #   zip_four_changed? ||
+  #   street_address_changed? ||
+  #   street_address_2_changed? ||
+  #   city_changed?
+  # }
 
   def full_name
     "#{first_name} #{last_name}"
@@ -89,9 +90,5 @@ class UserProfile < ActiveRecord::Base
     addr += "-#{zip_four}" if zip_four.present?
 
     addr
-  end
-
-  def update_user_state_and_district
-    user.update_state_and_district_from(:zipcode => zipcode, :zip_four => zip_four)
   end
 end

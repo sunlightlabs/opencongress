@@ -43,6 +43,7 @@ class User < ActiveRecord::Base
   include Authable
   include EmailListable
 
+
   # Validators
 
   validates_presence_of       :login, :email, :unless => :openid?
@@ -62,6 +63,7 @@ class User < ActiveRecord::Base
     :accept_tos => "Terms of service",
     :login => "Username"
   }
+
 
   # Callbacks
 
@@ -187,7 +189,7 @@ class User < ActiveRecord::Base
   delegate :privatize!, :to => :user_privacy_options
 
   ##
-  # Enable the below delegations after remapping user data to external classes!
+  # TODO: Enable the below delegations after remapping user data to external classes!
   # (After migration #20140424162910)
   ##
 
@@ -205,7 +207,7 @@ class User < ActiveRecord::Base
   end
 
   ##
-  # Remove the below aliases after remapping user data to external classes!
+  # TODO: Remove the below aliases after remapping user data to external classes!
   # (After migration #20140424162910)
   ##
 

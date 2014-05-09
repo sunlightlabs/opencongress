@@ -20,20 +20,21 @@ GIT
       ruby-progressbar (~> 1.0.0)
 
 GIT
-  remote: git://github.com/sunlightlabs/geocoder.git
-  revision: 796facd10dd43df77bfffd3f04d85e2f50420f72
-  branch: oc
-  specs:
-    geocoder (1.1.9)
-
-PATH
-  remote: /Users/dan/Code/git/sun/formageddon
+  remote: git://github.com/sunlightlabs/formageddon.git
+  revision: 6eb92179934e64e3c65744f998189f788777c119
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
       haml
       mechanize
       rufus-mnemo
+
+GIT
+  remote: git://github.com/sunlightlabs/geocoder.git
+  revision: 796facd10dd43df77bfffd3f04d85e2f50420f72
+  branch: oc
+  specs:
+    geocoder (1.1.9)
 
 GEM
   remote: http://rubygems.org/

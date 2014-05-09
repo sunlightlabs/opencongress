@@ -10,13 +10,13 @@
         %td= s.name
         %td= s.formageddon_contact_steps.size
         %td
-          - if s.formageddon_threads.any?
+          - if s.formageddon_threads.any? and s.formageddon_threads.first.formageddon_letters.any?
             Latest letter status:
             = s.formageddon_threads.first.formageddon_letters.first.created_at.strftime("%B %d, %Y")
             \:
             = s.formageddon_threads.first.formageddon_letters.first.status
             %br
-          - if s.formageddon_threads.any? and s.formageddon_threads.first.formageddon_letters.first.formageddon_delivery_attempts.first
+          - if s.formageddon_threads.any? and s.formageddon_threads.first.formageddon_letters.any? and s.formageddon_threads.first.formageddon_letters.first.formageddon_delivery_attempts.first
             - da = s.formageddon_threads.first.formageddon_letters.first.formageddon_delivery_attempts.first
             Delivery attempt:
             = da

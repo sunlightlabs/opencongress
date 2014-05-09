@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+  <body>
+
+    Please confirm whether you sent the following message to <%= @email.to %>.
+
+    <div>
+      <form action="<%= url_for(:controller => :email_congress, :action => :confirm, :only_path => false) %>">
+        <input type="hidden" name="confirmation_code" value="<%= @seed.confirmation_code %>">
+        <input type="submit" value="Yes, I sent this">
+      </form>
+    </div>
+
+    <hr>
+<pre>
+To: <%= @email.to_email %>
+From: <%= @email.from_email %>
+Subject: <%= @email.subject %>
+
+<%= @email.text_body %>
+</pre>
+
+  </body>
+
+</html>

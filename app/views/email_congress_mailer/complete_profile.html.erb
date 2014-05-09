@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  
+  <body>
+    <table>
+      <tr>
+        <td>
+          We recieved your message but we need to collect a few more pieces of
+          information required by your member's contact system. Please fill out
+          the form below:
+        </td>
+      </tr>
+    </table>
+
+    <% simple_form_for('profile', :url => '/email_congress/complete_profile', :method => "post") do |f| %>
+      <input type="hidden" name="confirmation_code" value="<%= @seed.confirmation_code %>">
+
+      <table>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :title, 'Title' %>
+          <%= f.text_field :title %>
+        </td> </tr>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :first_name, 'First name' %>
+          <%= f.text_field :first_name %>
+        </td> </tr>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :last_name, 'Last name' %>
+          <%= f.text_field :last_name %>
+        </td> </tr>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :street_address, 'Address' %>
+          <%= f.text_field :street_address %>
+        </td> </tr>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :street_address_2, 'Address (cont\'d)' %>
+          <%= f.text_field :street_address_2 %>
+        </td> </tr>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :city, 'City' %>
+          <%= f.text_field :city %>
+        </td> </tr>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :state, 'State' %>
+          <%= f.text_field :state %>
+        </td> </tr>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :zipcode, 'ZIP Code' %>
+          <%= f.text_field :zipcode, :maxlength => 5, :size => 5 %>
+          <%= f.text_field :zip_four, :maxlength => 4, :size => 4 %>
+        </td> </tr>
+        <tr> <td class="form-line-wrapper">
+          <%= f.label :mobile_phone, 'Phone' %>
+          <%= f.text_field :mobile_phone %>
+        </td> <tr>
+
+        <% if !@profile.accept_tos %>
+          <tr> <td class="form-line-wrapper">
+              We couldn't find an OpenCongress account for your email address. In
+              order for us to send your message you must first agree to our
+              terms of service, which will allow us to generate an account for
+              you.
+          </td> </tr>
+          <tr> <td class="form-line-wrapper">
+              <%= f.input :accept_tos, :as => :radio_buttons, :collection => [['Yes', true], ['No', false]] %>
+          </td> </tr>
+        <% end %>
+
+        <tr> <td class="form-line-wrapper">
+          <%= f.button :submit, :value => 'Complete' %>
+
+          <a href="<%= url_for(:only_path => false, :controller => :account, :action => :login, :return_to => url_for(:only_path => false, :controller => :email_congress, :action => :confirm, :confirmation_code => @seed.confirmation_code)) %>">I already have an account</a>
+        </td> </tr>
+
+        <tr>
+          <td class="form-line-wrapper">
+            <a class="retention-explanation">What if I don't want to provide this information?</a>
+            <div class="retention-explanation">
+              You can use the rest of our website without providing this
+              information. However, we must collect this information because
+              congressional contact systems require it. We retain this information
+              to ensure proper delivery.
+            </div>
+          </td>
+        </tr>
+
+    <% if @sender_user %>
+    <% end %>
+    <% end %> <!-- end form_for -->
+  </body>
+
+</html>

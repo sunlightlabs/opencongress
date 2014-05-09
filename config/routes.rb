@@ -38,6 +38,14 @@ OpenCongress::Application.routes.draw do
 
   resources :simple_captcha, :only => :show
 
+  scope 'email_congress', :controller => :email_congress do
+    match 'postmark/inbound', :action => :message_to_members
+    match 'complete_profile', :action => :complete_profile
+    match 'confirmed/:confirmation_code', :action => :confirmed
+    match 'confirm/:confirmation_code', :action => :confirm
+    match 'confirm', :action => :confirm
+  end
+
   # Allow downloading Web Service WSDL as a file with an extension
   # instead of a file named 'wsdl'
   # match ':controller/service.wsdl' => 'wsdl'

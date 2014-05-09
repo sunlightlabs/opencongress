@@ -37,6 +37,8 @@ gem "awesome_nested_set", ">= 2.0"
 
 gem 'curb'
 
+gem 'postmark-mitt'
+
 # Sunlight Foundation Congress API v3
 gem "congress", :git => "git://github.com/drinks/congress.git" , :branch => "allow-string-zipcodes"  #">= 0.2.0"
 

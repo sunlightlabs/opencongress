@@ -23,6 +23,8 @@ class Role < ActiveRecord::Base
     'sen' => 'Senator',
     'rep' => 'Representative'
   }
+
+  scope :on_date, lambda { |date| where(['startdate <= ? and enddate >= ?', date, date]) }
   
   def display_type
     @@TYPES[role_type]

@@ -1,0 +1,20 @@
+<p>
+  <% if logged_in? %>
+    Your letter will be delivered shortly. You can find your letter in <a href="<%= url_for(:controller => :profile, :action => :actions, :login => current_user.login) %>">your profile</a>.
+
+    <% if current_user.email != @seed.sender_email %>
+      <div>You sent this email from an address that differs from the one we have on file. Would you like to update your email address?</div>
+
+      <%= simple_form_for(current_user, :url => user_profile_path(current_user.login)) do |f| %>
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <input type="hidden" id="user_email" name="user[email]" value="<%= @seed.sender_email %>">
+        <%= f.button :submit, :value => 'Update It' %>
+      <% end %>
+
+      <a href="<%= url_for(:controller => :profile, :action => :show, :login => current_user.login) %>">No Thanks</a>
+    <% end %>
+
+  <% else %>
+    Your letter will be delivered shortly.
+  <% end %>
+</p>

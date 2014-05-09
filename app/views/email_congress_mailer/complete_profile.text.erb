@@ -1,0 +1,9 @@
+We recieved your message but we need to collect a few more pieces of
+information required by your member's contact system. Please fill out
+the form at the link below:
+
+<%= url_for(:controller => :email_congress,
+            :action => :complete_profile,
+            :only_path => false,
+            :confirmation_code => @seed.confirmation_code) %>
+

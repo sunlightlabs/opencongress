@@ -210,6 +210,7 @@ GEM
       jsmin (>= 1.0.1)
     jsmin (1.0.1)
     json (1.8.0)
+    json_pure (1.8.1)
     kgio (2.8.0)
     launchy (2.3.0)
       addressable (~> 2.3)
@@ -288,6 +289,9 @@ GEM
     postmark (1.0.0)
       json
       rake
+    postmark-mitt (0.0.11)
+      json_pure
+      multi_json
     postmark-rails (0.5.1)
       actionmailer (>= 3.0.0)
       postmark (~> 1.0)
@@ -481,6 +485,7 @@ DEPENDENCIES
   phaxio
   poltergeist
   possessive
+  postmark-mitt
   postmark-rails
   pry
   pry-debugger

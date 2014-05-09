@@ -11,6 +11,8 @@
 #  updated_at                 :datetime
 #
 
+require 'sexmachine'
+require 'full-name-splitter'
 # FIXME: This is ugly.
 require_dependency File.expand_path(
   'app/models/formageddon/formageddon_contact_step',
@@ -20,6 +22,15 @@ class Formageddon::FormageddonContactStep
   ##
   # This is a monkeypatch to force formageddon to send as a fax when it recovers from an error
   #
+
+  @@gender_guesser = SexMachine::Detector.new
+  @@prefix_for_gender = {
+    :male => 'Mr.',
+    :mostly_male => 'Mr.',
+    :female => 'Ms.',
+    :mostly_female => 'Ms.',
+    :andy => nil
+  }
 
   def save_after_error(ex, letter = nil, delivery_attempt = nil, save_states = true)
     @error_msg = "ERROR: #{ex}: #{$@[0..6].join("\n")}"
@@ -40,7 +51,8 @@ class Formageddon::FormageddonContactStep
   end
 
   def delegate_choice_value(options = {})
-    value = nil
+    value = options[:default]
+
     if options[:type] == :issue_area
       text = options[:letter].message rescue ''
       contactable = ContactCongressLettersFormageddonThread.where(
@@ -62,6 +74,17 @@ class Formageddon::FormageddonContactStep
           :headers => { "Content-Type" => "application/x-www-form-urlencoded"}
         ).body) rescue nil
       value || options[:default]
+
+    elsif options[:type] == :title
+      thread = options[:letter].formageddon_thread rescue nil
+      return value if thread.nil?
+      if thread.sender_first_name == thread.sender_last_name
+        first, last = FullNameSplitter.split(thread.sender_first_name)
+      else
+        first, last = [thread.sender_first_name, thread.sender_last_name]
+      end
+      return @@prefix_for_gender.fetch(@@gender_guesser.get_gender(first.strip), value)
+
     end
   end
 end

@@ -20,21 +20,20 @@ GIT
       ruby-progressbar (~> 1.0.0)
 
 GIT
-  remote: git://github.com/sunlightlabs/formageddon.git
-  revision: 157074f483ce8b373ecf196908370e70e150a973
+  remote: git://github.com/sunlightlabs/geocoder.git
+  revision: 796facd10dd43df77bfffd3f04d85e2f50420f72
+  branch: oc
+  specs:
+    geocoder (1.1.9)
+
+PATH
+  remote: /Users/dan/Code/git/sun/formageddon
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
       haml
       mechanize
       rufus-mnemo
-
-GIT
-  remote: git://github.com/sunlightlabs/geocoder.git
-  revision: 796facd10dd43df77bfffd3f04d85e2f50420f72
-  branch: oc
-  specs:
-    geocoder (1.1.9)
 
 GEM
   remote: http://rubygems.org/
@@ -380,6 +379,8 @@ GEM
       hashie (>= 1.1.0)
       uuidtools
     settingslogic (2.0.9)
+    sexmachine (0.0.6)
+      unicode_utils (>= 1.3.0)
     sexp_processor (4.2.1)
     silent-postgres (0.1.1)
     simple-rss (1.2.3)
@@ -502,6 +503,7 @@ DEPENDENCIES
   selenium-client
   sentry-raven
   settingslogic
+  sexmachine
   silent-postgres
   simple-rss
   simple_form

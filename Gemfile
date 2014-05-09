@@ -55,6 +55,8 @@ gem 'geocoder', :git => 'git://github.com/sunlightlabs/geocoder.git', :branch =>
 
 # Split names for first/last support
 gem 'full-name-splitter'
+# And determine their gender
+gem 'sexmachine'
 
 # OpenID
 gem 'ruby-openid'
@@ -96,7 +98,8 @@ gem 'simple_form'
 
 # Mail
 gem 'mechanize'
-gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git'
+# gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git'
+gem 'formageddon', :path => '/Users/dan/Code/git/sun/formageddon'
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'

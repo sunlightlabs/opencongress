@@ -7,6 +7,11 @@ class EmailCongressMailer < ActionMailer::Base
          :subject => "EmailCongress message has only HTML body: #{seed.email_subject}")
   end
 
+  def no_recipient_bounce (seed, rejected_addresses, unresolvable_addresses)
+    @unresolvable_addresses = unresolvable_addresses
+    @rejected_addresses = rejected_addresses
+  end
+
   def confirmation (seed)
     @seed = seed
     @email = Postmark::Mitt.new(seed.raw_source)

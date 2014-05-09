@@ -78,7 +78,7 @@ module EmailCongress
     end
 
     def copy_from_mapped_attributes (attr_map, src)
-      # TODO: can probably be removed
+      # TODO: Put to use to copy to formageddonthread objects
       attr_map.each do |from_attr, to_attr|
         existing_value = self.send(to_attr)
         new_value = src.send(from_attr)
@@ -161,7 +161,7 @@ module EmailCongress
 
   class << self
     def localpart_pattern
-      /(Rep|Sen)([-A-Za-z0-9]+)/i
+      /(Rep|Sen)[.]?([-A-Za-z0-9]+)/i
     end
 
     def parse_localpart (localpart)
@@ -186,7 +186,23 @@ module EmailCongress
       urls.flat_map(&duplicate_with_trailing_slash)
     end
 
-    def expand_special_addresses (addresses)
+    def email_address_for_website (website)
+      pattern = /^(?:www[.])?([a-z0-9]+)[.](house|senate)[.]gov$/i
+      url = URI.parse(website)
+      return nil if url.host.nil?
+      match = pattern.match(url.host.downcase)
+      return nil if match.nil?
+      nameish, chamber = match.captures
+      return "#{chamber.first(3).capitalize}.#{nameish.capitalize}"
+    end
+
+    def email_address_for_person (person)
+      return nil if person.website.blank?
+      email_address_for_website(person.website)
+    end
+
+    def expand_special_addresses (sender_user, addresses)
+      return addresses if @sender_user.nil?
       # TODO: Implement this
       addresses
     end
@@ -199,7 +215,7 @@ module EmailCongress
       rescue Mail::Field::ParseError
         return []
       end
-      return [] if Settings.email_congress_domains.include?(addr.domain)
+      return [] unless Settings.email_congress_domains.include?(addr.domain)
       addr1 = parse_localpart(addr.local)
       websites = websites_for_title_and_subdomain(addr1[:title], addr1[:subdomain])
 
@@ -208,7 +224,7 @@ module EmailCongress
       if date == Date.today
         people += Person.on_date(date).where(:website => websites).to_a
       end
-      people.uniq!
+      people.uniq
     end
 
     def congressmember_for_address (address, date=Date.today)
@@ -222,9 +238,81 @@ module EmailCongress
       members.first
     end
 
-    def profile_is_complete (profile)
-      profileish = ProfileProxy.new(profile)
-      profileish.valid?
+    def seed_for_postmark_object (obj)
+      if obj.is_a?(String)
+        email = Postmark::Mitt.new(JSON.load(json))
+      elsif obj.is_a?(Hash)
+        email = Postmark::Mitt.new(JSON.dump(obj))
+      elsif obj.is_a?(Postmark::Mitt)
+        email = obj
+      else
+        raise "Unable to construct EmailCongressLetterSeed for #{json.class.name}"
+      end
+
+      seed = EmailCongressLetterSeed.new
+      seed.raw_source = email.raw
+      seed.sender_email = email.from_email
+      seed.email_subject = email.subject
+      seed.email_body = email.text_body
+      seed.save!
+      return seed
+    end
+
+    def reify_as_formageddon_letter (seed)
+      # Creates a FormageddonLetter instance, not yet associated to a thread.
+      letter = Formageddon::FormageddonLetter.new
+      letter.subject = seed.email_subject
+      letter.message = email_body
+      letter.direction = 'TO_RECIPIENT'
+      letter.issue_area = nil   # This will be set if required by the contact form.
+      letter.status = nil  # This field captures errors. No errors at the outset.
+      letter.fax_id = nil  # This will be set if we fall back to faxing.
+      letter.save!
+      return letter
+    end
+
+    def reify_as_formageddon_thread (seed, sender, rcpt)
+      # Creates a FormageddonThread instance, not yet associated to a
+      # ContactCongressFormageddonThread
+      seed_profile = ProfileProxy.new(seed)
+      thread = Formageddon::FormageddonThread.new
+      seed_profile.copy_to(thread)
+      thread.formageddon_recipient = rcpt
+      thread.formageddon_sender = sender
+      thread.privacy = 'PRIVATE'
+      thread.save!
+      return thread
+    end
+
+    def reify_for_contact_congress (sender, seed, recipients)
+      # Establishes ContactCongress object graph, returning the
+      # ContactCongressLetter tying it all together.
+
+      throw "Seed ##{seed.id} (#{seed.confirmation_code}) is not confirmed." if !seed.confirmed?
+
+      ActiveRecord::Base.transaction do
+        ccl_threads = recipient.map do |rcpt|
+          thread = reify_as_formageddon_thread(sender, seed, rcpt)
+          letter = reify_as_formageddon_letter(sender, seed)
+          thread.formageddon_letters.add(letter)
+
+          ccl_thread = ContactCongressLettersFormageddonThread.new
+          ccl_thread.formageddon_thread = thread
+          ccl_thread.save!
+
+          ccl_thread
+        end
+
+        ccl_letter = ContactCongressLetter.new
+        ccl_letter.user = sender
+        ccl_letter.disposition = ''   # Leave blank for now. Do sentiment analysis in the future?
+        ccl_letter.contactable = nil  # Don't associate with a contactable topic, e.g. Bill.
+        ccl_letter.is_public = false  # Private because we cannot provide an up-front warning before the user sends an email.
+        ccl_letter.contact_congress_letters_formageddon_threads << ccl_threads
+        ccl_letter.save!
+
+        return ccl_letter
+      end
     end
   end
 end

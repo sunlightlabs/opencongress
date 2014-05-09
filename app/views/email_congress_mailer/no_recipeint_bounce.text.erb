@@ -1,0 +1,7 @@
+    <% if @unresolvable_addresses %>
+      <p>You tried to email <%= @unresolvable_addresses.to_sentence %> but those email addresses are unknown to our system.</p>
+    <% end %>
+
+    <% if @rejected_addresses %>
+      <p>You tried to email <%= @rejected_addresses.to_sentence %> but our system only allows you to email your own representatives.</p>
+    <% end %>

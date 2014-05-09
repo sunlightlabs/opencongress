@@ -161,6 +161,10 @@ class User < ActiveRecord::Base
   scope :mypn_spammers, includes(:political_notebook => [:notebook_items]).where("notebook_items.spam = ?", true).order("users.login ASC")
 
   class << self
+    def random_password
+      password = SecureRandom.random_number(178689910246017054531432477289437798228285773001601743140683775).to_s(36)
+    end
+
     def login_stub_for_profile (profile)
       address = Mail::Address.new(profile.email)
       stub = address.local.sub(/[^a-z0-9].*$/i, '') # remove any non-alphnumeric character and everything following it
@@ -185,10 +189,9 @@ class User < ActiveRecord::Base
 
     def generate_for_profile (profile)
       begin
-        password = SecureRandom.random_number(178689910246017054531432477289437798228285773001601743140683775).to_s(36)
         user = User.new(:login => unused_login(login_stub_for_profile(profile)),
                         :email => profile.email,
-                        :password => password,
+                        :password => random_password,
                         :accepted_tos_at => profile.accept_tos && Time.now || nil,
                         :full_name => profile.full_name,
                         :state => profile.state,

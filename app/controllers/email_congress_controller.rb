@@ -1,7 +1,6 @@
 require_dependency 'email_congress'
 class EmailCongressController < ApplicationController
 
-
   # User gets confirmation link or form requesting sender details.
 
   # Confirmation of email is done via nonce.
@@ -17,8 +16,8 @@ class EmailCongressController < ApplicationController
   before_filter :only_unresolved, :only => [:confirm, :complete_profile]
   before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile]
   before_filter :logout_if_necessary, :only => [:confirm, :complete_profile]
-  before_filter :lookup_recipients, :only => [:message_to_members]
-  before_filter :restrict_recipients, :only => [:message_to_members]
+  before_filter :lookup_recipients, :only => [:message_to_members, :confirmed]
+  before_filter :restrict_recipients, :only => [:message_to_members, :confirmed]
 
   def debug
     puts "=================="
@@ -38,12 +37,7 @@ class EmailCongressController < ApplicationController
     #   User is trying to email a nonexistent address
     #   User is trying to email someone they are not allowed to email
 
-    seed = EmailCongressLetterSeed.new
-    seed.raw_source = JSON.dump(@email_obj)
-    seed.sender_email = @email.from_email
-    seed.email_subject = @email.subject
-    seed.email_body = @email.text_body
-    seed.save!
+    seed = EmailCongress.seed_for_postmark_object(@email)
 
     if @email.text_body.blank? && !@email.html_body.blank?
       EmailCongressMailer.html_body_alert(seed).deliver
@@ -55,7 +49,9 @@ class EmailCongressController < ApplicationController
       @profile = @profile.merge(EmailCongress::ProfileProxy.new(@sender_user))
     end
 
-    if @sender_user && @profile.valid?
+    if @resolved_addresses.empty?
+      EmailCongressMailer.no_recipient_bounce(seed, @rejected_addresses, @unresolvable_addresses).deliver
+    elsif @sender_user && @profile.valid?
       EmailCongressMailer.confirmation(seed).deliver
     else
       EmailCongressMailer.complete_profile(seed, @profile).deliver
@@ -86,13 +82,24 @@ class EmailCongressController < ApplicationController
     # We have a user and a complete profile.
     @profile.copy_to(@seed)
     @seed.confirm!
-    # TODO: Actually convert to thread
-    puts "CONFIRMED SEED #{@seed.id}: #{@seed.email_subject}"
+
+    # TODO: Perhaps this should be rearranged so that if reify_for_contact_congress fails we continue to try to send the seed.
+    recipients = @recipients_by_address.map{ |addr, rcpt| rcpt }.compact
+    EmailCongress.reify_for_contact_congress(@sender_user, @seed, recipients)
+
     return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
   end
 
   def confirmed
     # TODO: Probably don't want to use application layout
+    # TODO: The template should warn about illegitamate recipients
+    if logged_in?
+      @prompt_for_password = current_user.previous_login_date.nil?
+      @prompt_for_email = current_user.email != @sender_user.email
+    else
+      @prompt_for_password = false
+      @prompt_for_email = false
+    end
   end
 
   def complete_profile
@@ -108,7 +115,7 @@ class EmailCongressController < ApplicationController
     if request.method_symbol == :post
       if @profile.valid?
         if !@sender_user
-          @sender_user = User.generate_for_profile(@profile)
+          @sender_user = current_user = User.generate_for_profile(@profile)
         else
           # TODO: Copy ProfileProxy to UserProfile instead of User
           @profile.copy_to(@sender_user)
@@ -137,10 +144,6 @@ class EmailCongressController < ApplicationController
     end
   end
 
-  def reload_email
-    @email = Postmark::Mitt.new(@seed.raw_source)
-  end
-
   def find_user
     @sender_user = User.find_by_email(@email.from_email)
   end
@@ -167,7 +170,7 @@ class EmailCongressController < ApplicationController
     # This expands any special recipient aliases and resolves each address to a
     # Person model, keeping a list of the nonexistent ones.
     @recipient_addresses = @email_obj.values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
-    @recipient_addresses = EmailCongress.expand_special_addresses(@recipient_addresses)
+    @recipient_addresses = EmailCongress.expand_special_addresses(@sender_user, @recipient_addresses)
     @recipients_by_address = Hash.new
     @recipient_addresses.each do |addr|
       begin
@@ -176,7 +179,8 @@ class EmailCongressController < ApplicationController
         @recipients_by_address[addr] = nil
       end
     end
-    @nonexistent_addresses = @recipients_by_address.select{ |_, rcpt| rcpt.nil? }.map(&:first)
+    @unresolvable_addresses = @recipients_by_address.select{ |addr, rcpt| rcpt.nil? }.map(&:first)
+    @resolved_addresses = @recipients_by_address.reject{ |attr, rcpt| rcpt.nil? }.map(&:first)
   end
 
   def restrict_recipients

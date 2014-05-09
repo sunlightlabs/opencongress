@@ -25,7 +25,7 @@ class ContactCongressLettersController < ApplicationController
       @sens = @reps = []
     end
 
-    @member_osids = (@sens + @reps).map(&:osid).select{|osid| not osid.nil?}
+    @member_osids = (@sens + @reps).map(&:osid).compact
 
     if @bill and params[:position].nil?
       render 'select_position'

@@ -1,20 +1,46 @@
-<p>
-  <% if logged_in? %>
-    Your letter will be delivered shortly. You can find your letter in <a href="<%= url_for(:controller => :profile, :action => :actions, :login => current_user.login) %>">your profile</a>.
+<% if logged_in? %>
+  Your letter will be delivered shortly. You can find your letter in <a href="<%= url_for(:controller => :profile, :action => :actions, :login => current_user.login) %>">your profile</a>.
 
-    <% if current_user.email != @seed.sender_email %>
-      <div>You sent this email from an address that differs from the one we have on file. Would you like to update your email address?</div>
+  <% if [@prompt_for_email, @prompt_for_password].any? %>
+    <%= simple_form_for(current_user, :url => user_profile_path(current_user.login)) do |f| %>
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
 
-      <%= simple_form_for(current_user, :url => user_profile_path(current_user.login)) do |f| %>
-        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-        <input type="hidden" id="user_email" name="user[email]" value="<%= @seed.sender_email %>">
-        <%= f.button :submit, :value => 'Update It' %>
+      <% if @prompt_for_email == true %>
+        <div>
+          <p>
+          You sent this email from an address that differs from the one we have on file. Would you like to update your email address?
+          </p>
+          <%= f.input :email, :value => @seed.sender_email %>
+        </div>
       <% end %>
 
-      <a href="<%= url_for(:controller => :profile, :action => :show, :login => current_user.login) %>">No Thanks</a>
-    <% end %>
+      <% if @prompt_for_password == true %>
+        <div>
+          <p>
+          In order to send your letter, we've created you an OpenCongress account. If
+          you would like to log into OpenCongress with your new account, you can
+          choose a password now:
+          </p>
+          <%= f.input :password, :as => :password %>
+          <%= f.input :password_confirmation, :as => :password %>
+        </div>
+      <% end %>
 
-  <% else %>
-    Your letter will be delivered shortly.
+      <%= f.button :submit, :value => 'Update It' %>
+      <a href="<%= user_profile_path(current_user.login) %>">No Thanks</a>
+    <% end %>
   <% end %>
-</p>
+
+<% else %> <%# The logged out case %>
+
+  <% if false %>
+    Don't reveal any information about the letter unless the user is logged
+    in. This should only ever happen to returning users who have a complete
+    profile and a recognized email address, familiar with the system... and attackers
+  <% end %>
+
+  <p>
+  Your letter will be delivered shortly.
+  </p>
+<% end %>
+

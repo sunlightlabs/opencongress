@@ -8,6 +8,7 @@
       %th Errors
       %th Replies
       %th Since last update
+      %th Successful deliveries
       %th Warnings
       %th Errors
       %th Replies
@@ -22,6 +23,7 @@
       %th --
       %th --
       %th --
+      %th --
 
     - @people.each do |p|
       %tr
@@ -31,6 +33,7 @@
         %td= p.formageddon_threads.includes(:formageddon_letters).where("formageddon_letters.status like 'WARNING%'").size
         %td= p.formageddon_threads.includes(:formageddon_letters).where("formageddon_letters.status like 'ERROR%'").size
         %td= p.formageddon_threads.includes(:formageddon_letters).where("formageddon_letters.status = 'RECEIVED'").size
+        %td= p.formageddon_threads.includes(:formageddon_letters).where("formageddon_threads.created_at >= ?", p.formageddon_contact_steps.last.updated_at).size rescue '?'
         %td= p.formageddon_threads.includes(:formageddon_letters).where("formageddon_threads.created_at >= ? and formageddon_letters.status = 'SENT'", p.formageddon_contact_steps.last.updated_at).size rescue '?'
         %td= p.formageddon_threads.includes(:formageddon_letters).where("formageddon_threads.created_at >= ? and formageddon_letters.status like 'WARNING%'", p.formageddon_contact_steps.last.updated_at).size rescue '?'
         %td= p.formageddon_threads.includes(:formageddon_letters).where("formageddon_threads.created_at >= ? and formageddon_letters.status like 'ERROR%'", p.formageddon_contact_steps.last.updated_at).size rescue '?'

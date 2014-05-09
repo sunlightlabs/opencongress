@@ -80,8 +80,8 @@ UNICORN_CFG=$HOME/src/shared/config/unicorn.rb
 PWD=`pwd`
 
 cd $HOME/src/current;
-pidfile_killer "$PIDFILE"
 pidfile_killer "$IMPORT_WORKER_PIDFILE"
+pidfile_killer "$PIDFILE"
 
 echo "Restarting unicorn"
 bundle exec unicorn_rails -c $UNICORN_CFG -D &&

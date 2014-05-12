@@ -193,10 +193,10 @@ class User < ActiveRecord::Base
   # (After migration #20140424162910)
   ##
 
-  # %w(zipcode zip_four street_address street_address_2 small_picture main_picture
-  #    first_name last_name full_name website about city coordinates location address mobile_phone).each do |prop|
-  #   delegate prop.to_sym, :to => :user_profile
-  # end
+  %w(zipcode zip_four street_address street_address_2 small_picture main_picture
+     first_name last_name full_name website about city coordinates location address mobile_phone).each do |prop|
+    delegate prop.to_sym, :to => :user_profile
+  end
 
   %w(comment_threshold opencongress_mail partner_mail sms_notifications email_notifications).each do |prop|
     delegate prop.to_sym, :to => :user_options

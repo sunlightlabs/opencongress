@@ -23,7 +23,7 @@ class MigrateUserProfileData < ActiveRecord::Migration
         from users;
     EOQ
 
-    User.where(:full_name).find_each do |u|
+    User.where("full_name is not NULL").find_each do |u|
       first, last = FullNameSplitter.split(u.full_name)
       User.where(:id => u.id).update_all(:first_name => first, :last_name => last)
       puts "Set #{u.email} to #{last}, #{first}."

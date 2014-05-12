@@ -9,7 +9,7 @@ require 'full-name-splitter'
 class CreateUserProfileAndRenamePrivacyOption < ActiveRecord::Migration
   def self.up
     create_table :user_profiles do |t|
-      t.integer :user_id
+      t.integer :user_id,                :unique => true
       t.string  :first_name
       t.string  :last_name
       t.string  :website
@@ -25,7 +25,7 @@ class CreateUserProfileAndRenamePrivacyOption < ActiveRecord::Migration
     end
 
     create_table :user_options do |t|
-      t.integer :user_id
+      t.integer :user_id,               :unique => true
       t.integer :comment_threshold,     :default => 5
       t.boolean :opencongress_mail,     :default => true
       t.boolean :partner_mail,          :default => false

@@ -9,52 +9,46 @@ require 'full-name-splitter'
 
 class MigrateUserProfileData < ActiveRecord::Migration
   def self.up
-    puts "Hang in there, this one is gonna touch every User instance"
+    execute <<-EOQ
+      insert into user_profiles
+        (user_id, first_name, last_name, website, about, main_picture, small_picture, zipcode, zip_four)
+        select id, full_name, full_name, homepage, about, main_picture, small_picture, zipcode, zip_four
+        from users;
+    EOQ
 
-    User.find_each do |u|
-      next if u.email.nil?
-      first_name, last_name = FullNameSplitter.split(u.full_name)
-      u.build_user_profile(
-        :first_name => first_name,
-        :last_name => last_name,
-        :website => u.homepage,
-        :about => u.about,
-        :main_picture => u.main_picture,
-        :small_picture => u.small_picture,
-        :zipcode => u.zipcode,
-        :zip_four => u.zip_four,
-      )
-      u.build_user_options(
-        :comment_threshold => u.default_filter,
-        :opencongress_mail => u.mailing,
-        :partner_mail => u.partner_mailing,
-        :feed_key => u.feed_key
-      )
-      puts u.email
-      u.save # Don't exit if validation fails, this stuff isn't crucial and is probably nil.
-      GC.start
+    execute <<-EOQ
+      insert into user_options
+        (user_id, comment_threshold, opencongress_mail, partner_mail, feed_key)
+        select id, default_filter, mailing, partner_mailing, feed_key
+        from users;
+    EOQ
+
+    User.where(:full_name).find_each do |u|
+      first, last = FullNameSplitter.split(u.full_name)
+      User.where(:id => u.id).update_all(:first_name => first, :last_name => last)
+      puts "Set #{u.email} to #{last}, #{first}."
     end
   end
 
   def self.down
-    puts "Hang in there, this one is gonna touch every User instance"
-    User.find_each do |u|
-      u.full_name = [u.user_profile.first_name, u.user_profile.last_name].join(" ")
-      u.homepage = u.user_profile.website
-      u.about = u.user_profile.about
-      u.main_picture = u.user_profile.main_picture
-      u.small_picture = u.user_profile.small_picture
-      u.zipcode = u.user_profile.zipcode
-      u.zip_four = u.user_profile.zip_four
-      u.default_filter = u.user_options.comment_threshold
-      u.mailing = u.user_options.opencongress_mail
-      u.partner_mailing = u.user_options.partner_mail
-      u.feed_key = u.user_options.feed_key
-      if u.status == 1
-        u.accept_terms = true # this is safe because every authorized user has accepted the terms
-      end
-      u.save
-      GC.start
-    end
+    execute <<-EOQ
+      update users
+      set
+        users.full_name       = CONCAT(user_profiles.first_name, ' ', user_profile.last_name)
+        users.homepage        = user_profiles.website
+        users.about           = user_profiles.about
+        users.main_picture    = user_profiles.main_picture
+        users.small_picture   = user_profiles.small_picture
+        users.zipcode         = user_profiles.zipcode
+        users.zip_four        = user_profiles.zip_four
+        users.default_filter  = user_options.comment_threashold
+        users.mailing         = user_options.opencongress_mail
+        users.partner_mailing = user_options.partner_mail
+        users.feed_key        = user_options.feed_key
+      inner join user_options on users.id = user_options.user_id
+      inner join user_profiles on users.id = user_profiles.user_id;
+    EOQ
+
+    execute "update users set accept_terms = TRUE where users.status 1;"
   end
 end

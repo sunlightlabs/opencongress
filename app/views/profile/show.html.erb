@@ -23,7 +23,7 @@
 
     <div id="about_me">
       <% if @user.can_view(:profile, current_user) %>
-        <p><label>About <%=h @user == current_user ? "me" : @user.login %></label> <%=h @user.about %></p>
+        <p><label>About <%=h @user == current_user ? "me" : @user.login %></label> <%=h @user.user_profile.about %></p>
       <% end %>
     </div>
 
@@ -49,15 +49,15 @@
       <% unless @user.location.blank? %>
         <% if @user.can_view(:location, current_user) %>
           <p><label>Location</label>
-          <%= @user.location %>
+          <%= @user.user_profile.location %>
           </p>
         <% end %>
       <% end %>
 
       <% if @user.can_view(:zipcode, current_user) %>
         <p><label>Zipcode</label>
-          <%= @user.zipcode %>
-          <%= "- #{@user.zip_four}" if @user.zip_four.present? %>
+          <%= @user.user_profile.zipcode %>
+          <%= "- #{@user.user_profile.zip_four}" if @user.user_profile.zip_four.present? %>
         </p>
       <% end %>
 

@@ -67,8 +67,7 @@ class User < ActiveRecord::Base
 
   # Callbacks
 
-  # update_email_subscription_when_changed self, [:email]
-  after_create :make_feed_key
+  update_email_subscription_when_changed self, [:email]
   # on ban or delete, clean up this user's associations with various parts of the site
   after_save Proc.new {
     privatize!
@@ -198,7 +197,7 @@ class User < ActiveRecord::Base
     delegate prop.to_sym, :to => :user_profile
   end
 
-  %w(comment_threshold opencongress_mail partner_mail sms_notifications email_notifications).each do |prop|
+  %w(comment_threshold opencongress_mail partner_mail sms_notifications email_notifications feed_key).each do |prop|
     delegate prop.to_sym, :to => :user_options
   end
 
@@ -226,6 +225,10 @@ class User < ActiveRecord::Base
     def find_all_by_ip(address)
        ip = UserIpAddress.int_form(address)
        self.find(:all, :include => [:user_ip_addresses], :conditions => ["user_ip_addresses.addr = ?", ip])
+    end
+
+    def find_by_feed_key_option(key)
+      self.includes(:user_options).where("user_options.feed_key = ?", key)
     end
   end # class << self
 
@@ -511,13 +514,6 @@ class User < ActiveRecord::Base
     return items
   end
 
-  def check_feed_key
-    unless feed_key
-      feed_key
-      update_attribute(:feed_key, Digest::SHA1.hexdigest("--#{login}--#{email}--ASDFASDFASDF@ASDFKTWDS"))
-    end
-  end
-
   def comment_warn(comment, admin)
     user_warnings.create({:warning_message => "Comment Warning for Comment #{comment.id}", :warned_by => admin.id})
     UserNotifier.comment_warning(self, comment).deliver
@@ -562,11 +558,6 @@ class User < ActiveRecord::Base
     !facebook_uid.blank?
   end
 
-  protected
-
-  def make_feed_key
-    check_feed_key
-  end
 
   private
 

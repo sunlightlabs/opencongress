@@ -22,6 +22,24 @@ class UserOptions < ActiveRecord::Base
   }
 
   belongs_to :user
-  # update_email_subscription_when_changed self.user, [:opencongress_mail, :partner_mail]
+
+  update_email_subscription_when_changed self.user, [:opencongress_mail, :partner_mail]
+  before_save :ensure_feed_key
+
+  def reset_feed_key
+    update_attribute(:feed_key, generate_feed_key)
+  end
+
+  protected
+
+  def ensure_feed_key
+    unless feed_key.present?
+      self.feed_key = generate_feed_key
+    end
+  end
+
+  def generate_feed_key
+    Digest::SHA1.hexdigest("--#{login}--#{email}--#{SecureRandom.hex}")
+  end
 
 end

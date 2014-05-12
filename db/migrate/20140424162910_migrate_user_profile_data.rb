@@ -31,22 +31,24 @@ class MigrateUserProfileData < ActiveRecord::Migration
   end
 
   def self.down
+    # NOTE: This is probably going to take like 3 years to run, just consider this irreversable.
     execute <<-EOQ
       update users
       set
-        users.full_name       = CONCAT(user_profiles.first_name, ' ', user_profile.last_name)
-        users.homepage        = user_profiles.website
-        users.about           = user_profiles.about
-        users.main_picture    = user_profiles.main_picture
-        users.small_picture   = user_profiles.small_picture
-        users.zipcode         = user_profiles.zipcode
-        users.zip_four        = user_profiles.zip_four
-        users.default_filter  = user_options.comment_threashold
-        users.mailing         = user_options.opencongress_mail
-        users.partner_mailing = user_options.partner_mail
-        users.feed_key        = user_options.feed_key
-      inner join user_options on users.id = user_options.user_id
-      inner join user_profiles on users.id = user_profiles.user_id;
+        full_name       = CONCAT(up.first_name, ' ', up.last_name),
+        homepage        = up.website,
+        about           = up.about,
+        main_picture    = up.main_picture,
+        small_picture   = up.small_picture,
+        zipcode         = up.zipcode,
+        zip_four        = up.zip_four,
+        default_filter  = uo.comment_threshold,
+        mailing         = uo.opencongress_mail,
+        partner_mailing = uo.partner_mail,
+        feed_key        = uo.feed_key
+      from users u
+      inner join user_options uo on u.id = uo.user_id
+      inner join user_profiles up on u.id = up.user_id;
     EOQ
 
     execute "update users set accept_terms = TRUE where users.status 1;"

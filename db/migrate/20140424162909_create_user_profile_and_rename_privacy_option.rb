@@ -34,6 +34,17 @@ class CreateUserProfileAndRenamePrivacyOption < ActiveRecord::Migration
       t.string  :feed_key
     end
 
+    add_index :user_profiles, :user_id, :unique => true
+    add_index :user_profiles, :zipcode
+    add_index :user_profiles, [:zipcode, :zip_four]
+
+    add_index :user_options, :user_id, :unique => true
+    add_index :user_options, :opencongress_mail
+    add_index :user_options, :partner_mail
+    add_index :user_options, :feed_key
+    add_index :user_options, :email_notifications
+    add_index :user_options, :sms_notifications
+
     rename_table :privacy_options, :user_privacy_options
     change_table :user_privacy_options do |t|
       t.rename :my_full_name, :name

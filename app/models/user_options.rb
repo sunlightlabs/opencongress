@@ -23,7 +23,7 @@ class UserOptions < ActiveRecord::Base
 
   belongs_to :user
 
-  update_email_subscription_when_changed self.user, [:opencongress_mail, :partner_mail]
+  update_email_subscription_when_changed :user, [:opencongress_mail, :partner_mail]
   before_save :ensure_feed_key
 
   def reset_feed_key

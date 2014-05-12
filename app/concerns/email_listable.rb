@@ -5,6 +5,7 @@ module EmailListable
 
   module ClassMethods
     def update_email_subscription_when_changed(user, props)
+      user = send(user) unless user.is_a? User
       after_save Proc.new{
         binding.pry
         EmailSubscriptionUpdatedService.new(user)

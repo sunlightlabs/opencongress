@@ -4,11 +4,10 @@ module EmailListable
   extend ActiveSupport::Concern
 
   module ClassMethods
-    def update_email_subscription_when_changed(user, props)
-      user = send(user) unless user.is_a? User
+    def update_email_subscription_when_changed(user_ref, props)
       after_save Proc.new{
-        binding.pry
-        EmailSubscriptionUpdatedService.new(user)
+        obj = (user_ref == :self) ? self : send(user_ref)
+        EmailSubscriptionUpdatedService.new(obj)
       }, :if => Proc.new{
         props.map{|p| return true if send(:"#{p}_changed?") }.compact.any?
       }

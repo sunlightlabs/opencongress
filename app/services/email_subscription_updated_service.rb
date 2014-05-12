@@ -8,7 +8,7 @@ class EmailSubscriptionUpdatedService
   }
 
   def initialize(user)
-    LISTS.each_with_index do |opt, list|
+    LISTS.each_pair do |opt, list|
       if user.user_options.send(:"#{opt.to_s}?")
         if user.email_changed? && !user.user_options.send(:"#{opt.to_s}_changed?")
           BlueStateDigital.remove_from_group_by_email(user.email_was, list)

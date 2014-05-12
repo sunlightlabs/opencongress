@@ -43,15 +43,15 @@ class UserProfile < ActiveRecord::Base
   }
 
   ## TODO: Enable this after profile migrations are run
-  # after_save Proc.new {
-  #   LocationChangedService.new(user)
-  # }, :if => Proc.new{
-  #   zipcode_changed? ||
-  #   zip_four_changed? ||
-  #   street_address_changed? ||
-  #   street_address_2_changed? ||
-  #   city_changed?
-  # }
+  after_save Proc.new {
+    LocationChangedService.new(user)
+  }, :if => Proc.new{
+    zipcode_changed? ||
+    zip_four_changed? ||
+    street_address_changed? ||
+    street_address_2_changed? ||
+    city_changed?
+  }
 
   def full_name
     "#{first_name} #{last_name}"

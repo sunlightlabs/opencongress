@@ -27,8 +27,6 @@ class UserOptions < ActiveRecord::Base
   update_email_subscription_when_changed :user, [:opencongress_mail, :partner_mail]
   before_save :ensure_feed_key
 
-  delegate :login, :to => :user, :prefix => :user
-  delegate :email, :to => :user, :prefix => :user
 
   def reset_feed_key
     update_attribute(:feed_key, generate_feed_key)
@@ -43,7 +41,7 @@ class UserOptions < ActiveRecord::Base
   end
 
   def generate_feed_key
-    Digest::SHA1.hexdigest("--#{user_login}--#{user_email}--#{SecureRandom.hex}")
+    SecureRandom.uuid
   end
 
 end

@@ -3,19 +3,20 @@
 # Table name: user_privacy_options
 #
 #  id                 :integer          not null, primary key
-#  name               :integer          default(0)
+#  name               :integer          default(1)
 #  email              :integer          default(0)
-#  zipcode            :integer          default(0)
-#  location           :integer          default(0)
-#  profile            :integer          default(0)
-#  actions            :integer          default(0)
-#  bookmarks          :integer          default(0)
-#  friends            :integer          default(0)
+#  zipcode            :integer          default(1)
+#  location           :integer          default(2)
+#  profile            :integer          default(2)
+#  actions            :integer          default(1)
+#  bookmarks          :integer          default(1)
+#  friends            :integer          default(1)
 #  user_id            :integer
 #  created_at         :datetime
 #  updated_at         :datetime
 #  political_notebook :integer          default(2)
 #  watchdog           :integer          default(2)
+#  groups             :integer          default(1)
 #
 
 class UserPrivacyOptions < ActiveRecord::Base

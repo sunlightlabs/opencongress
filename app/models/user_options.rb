@@ -9,6 +9,7 @@
 #  partner_mail        :boolean          default(FALSE)
 #  sms_notifications   :boolean          default(FALSE)
 #  email_notifications :boolean          default(TRUE)
+#  feed_key            :string(255)
 #
 
 require_dependency 'email_listable'

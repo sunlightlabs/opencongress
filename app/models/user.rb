@@ -16,20 +16,18 @@
 #  activation_code       :string(40)
 #  activated_at          :datetime
 #  password_reset_code   :string(40)
-#  accept_terms          :boolean
 #  user_role_id          :integer          default(0)
 #  representative_id     :integer
 #  previous_login_date   :datetime
 #  identity_url          :string(255)
-#  feed_key              :string(255)
 #  accepted_tos_at       :datetime
 #  authentication_token  :string(255)
 #  facebook_uid          :string(255)
+#  state                 :string(2)
+#  district              :integer
 #  district_needs_update :boolean          default(FALSE)
 #  possible_states       :text
 #  possible_districts    :text
-#  state                 :string(2)
-#  district              :integer
 #
 
 require 'digest/sha1'

@@ -104,7 +104,7 @@ class AccountController < ApplicationController
         cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
       end
       if self.current_user.fans.find(:first, :conditions => ["confirmed = ? AND created_at > ?", false, self.current_user.previous_login_date])
-        flash[:notice] = "Logged in * " + "<a href='#{url_for(:controller => 'friends', :login => self.current_user.login)}'>New Friends Requests!</a> *".html_safe
+        flash[:notice] = %Q[Logged in * <a href="#{url_for(:controller => 'friends', :login => self.current_user.login)}">New Friends Requests!</a> *]
       else
         flash[:notice] = "Logged in successfully"
       end

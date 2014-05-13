@@ -4,6 +4,7 @@
       %th Recipient
       %th Number of steps
       %th Last delivery attempt
+      %th Badge
       %th Actions
     - @people.each do |s|
       %tr
@@ -24,6 +25,8 @@
             = link_to "View delivery attempt", "/formageddon/delivery_attempts/edit/#{da.id}"
           - else
             No Attempt Made Yet
+        %td
+          = image_tag status_image_url(status_image_for(s))
         %td
           = link_to 'View Steps', :controller => 'formageddon/contact_steps', :action => 'show', :recipient_id => s.id, :recipient_type => s.class
           \|

@@ -6,6 +6,11 @@ class Admin::ContactCongressController < Admin::IndexController
     @people = Person.all_sitting
   end
 
+  def overview
+    @page_title = 'Contact Congress - At a Glance'
+    @people = Person.legislator.includes([:formageddon_threads, :formageddon_contact_steps])
+  end
+
   def letters
     @page_title = 'Contact Congress Letters'
     @letters = ContactCongressLetter.order('created_at DESC').all.paginate(:per_page => 50, :page => params[:page])

@@ -3,10 +3,6 @@ class ContactCongressLettersController < ApplicationController
   before_filter :page_view, :only => :show
   # before_filter :warn_geocode, :only => :new
 
-  SUCCESS_PATTERN = /SENT/
-  FAILURE_PATTERN = /SENT_AS_FAX|ERROR/
-  UNKNOWN_PATTERN = /WARNING|START|CAPTCHA_REQUIRED/
-
   def new
     @page_title = "Contact Congress"
 
@@ -296,19 +292,10 @@ class ContactCongressLettersController < ApplicationController
   def last
     @person = Person.find_by_bioguideid(params[:id])
     render_404 and return unless @person.present?
-    last_status = @person.formageddon_threads.first.formageddon_letters.first.status rescue nil
-    if (last_status =~ FAILURE_PATTERN).present?
-      img = 'fail.png'
-    elsif (last_status =~ SUCCESS_PATTERN).present?
-      img = 'success.png'
-    elsif (last_status =~ UNKNOWN_PATTERN).present?
-      img = 'unknown.png'
-    else
-      img = 'not_tried.png'
-    end
+    img = status_image_for @person
 
     respond_to do |format|
-      format.png {send_file "#{Rails.root}/public/images/contact-congress/#{img}", :type => 'image/png', :disposition => 'inline'}
+      format.png {send_file status_image_url(img), :type => 'image/png', :disposition => 'inline'}
       format.text {render :text => last_status}
     end
   end

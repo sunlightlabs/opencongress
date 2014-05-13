@@ -1,0 +1,20 @@
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Bioguide</th>
+      <th>Status</th>
+      <th>Percent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @people.each do |p| %>
+      <tr>
+        <td><%= link_to p.full_name, person_path(p.id) %></td>
+        <td><%= link_to p.bioguideid, "https://github.com/unitedstates/tree/master/members/#{p.bioguideid}" %></td>
+        <td><%= image_tag status_image_url(status_image_for(p)) %></td>
+        <td><%= success_percentage(p) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

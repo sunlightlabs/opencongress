@@ -8,7 +8,7 @@ class Admin::ContactCongressController < Admin::IndexController
 
   def overview
     @page_title = 'Contact Congress - At a Glance'
-    @people = Person.legislator.includes([:formageddon_threads, :formageddon_contact_steps])
+    @people = Person.legislator
   end
 
   def letters

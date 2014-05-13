@@ -103,7 +103,7 @@ class FriendsController < ApplicationController
     if params[:email]
       @results = User.find(:all, :conditions => ["LOWER(email) = ?", params[:email].downcase])
     elsif params[:name]
-      @results = User.find(:all, :conditions => ["CONCAT(first_name, ' ', last_name) = ?", params[:name].downcase])
+      @results = User.find(:all, :conditions => ["LOWER(CONCAT(first_name, ' ', last_name)) = ?", params[:name].downcase])
     elsif params[:login]
       @results = User.find(:all, :conditions => ["LOWER(login) = ?", params[:login].downcase])
     end

@@ -8,6 +8,8 @@ class EmailSubscriptionUpdatedService
   }
 
   def initialize(user)
+    return nil unless Settings.bsd_perform_updates == true
+
     LISTS.each_pair do |opt, list|
       if user.user_options.send(:"#{opt.to_s}?")
         if user.email_changed? && !user.user_options.send(:"#{opt.to_s}_changed?")

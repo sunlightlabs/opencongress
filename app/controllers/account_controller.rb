@@ -136,8 +136,6 @@ class AccountController < ApplicationController
           lat, lng = result.coordinates
           zipcode = result.postal_code
           zip_four = result.zip4 rescue nil
-          # This happens so the update_state_and_district method won't be invoked via callback
-          # on account of zipcode or zip_four being dirty.
           current_user.update_attributes(:state => result.state)
           current_user.user_profile.update_attributes(
             :zipcode => zipcode,
@@ -152,7 +150,9 @@ class AccountController < ApplicationController
       else
         current_user.user_profile.update_attributes(:zipcode => zipcode) if params[:zipcode].present?
       end
-      if current_user.state.present? and current_user.district.present?
+      #LocationChangedService should have been invoked but isn't reflected in current_user. Sorrrrrry I'm a bad person.
+      current_user.reload
+      if updated_user.state.present? and updated_user.district.present?
         flash[:notice] = "Your Congressional District (#{current_user.district_tag}) has been saved."
         activate_redirect(user_profile_path(:login => current_user.login))
         return

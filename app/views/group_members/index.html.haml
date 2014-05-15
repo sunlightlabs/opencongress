@@ -1,7 +1,7 @@
 = render 'groups/heading', :subtitle => "Members"
 
 .padding
-  - if @group.state or @group.district
+  - unless @group.state or @group.district
     %p.behave
       This list will only show members that have made their group memberships visible to you.
 

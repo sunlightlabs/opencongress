@@ -1817,7 +1817,7 @@ vertical-align: middle;
   _background: url('../images/note_heading.gif') 0 0 no-repeat;
 }
 
-.note a{
+.note a.close{
   float: right;
   display: block;
   margin: 30px 10px 0 0;

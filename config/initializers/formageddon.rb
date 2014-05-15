@@ -3,9 +3,14 @@ if defined? Formageddon
     config.admin_check_filter = :no_users
     config.user_method = :current_user
     config.sender_user_mapping = {
-      :sender_first_name => :full_name,
-      :sender_last_name => :full_name,
+      :sender_first_name => :first_name,
+      :sender_last_name => :last_name,
       :sender_email => :email,
+      :sender_address1 => :street_address,
+      :sender_address2 => :street_address_2,
+      :sender_city => :city,
+      :sender_state => :state,
+      :sender_phone => :mobile_phone,
       :sender_zip5 => :zipcode,
       :sender_state => :state
     }

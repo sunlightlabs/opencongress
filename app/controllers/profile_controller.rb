@@ -4,6 +4,7 @@ class ProfileController < ApplicationController
   before_filter :can_view_tab, :only => [:actions, :items_tracked, :bills, :my_votes, :comments, :person, :issues, :watchdog]
   before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
+  skip_before_filter :must_reaccept_tos?, :only => [:show, :edit, :update, :destroy, :upload_pic, :delete_images]
 
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])
@@ -38,7 +39,7 @@ class ProfileController < ApplicationController
     end
     if @user.update_attributes(params[:user])
       flash[:notice] = 'Your profile was updated.'
-      redirect_to edit_profile_path(@user.login)
+      redirect_to user_profile_path(@user.login)
     else
       flash[:warning] = @user.errors.full_messages.to_sentence
       redirect_to :back
@@ -437,17 +438,17 @@ class ProfileController < ApplicationController
 
   def update_privacy
      @user = current_user
-     params[:privacy_option].delete("user_id")
-     @user.privacy_option.update_attributes(params[:privacy_option])
+     params[:user_privacy_options].delete("user_id")
+     @user.user_privacy_options.update_attributes(params[:user_privacy_options])
      flash[:notice] = "Privacy Setting Updated"
-     redirect_back_or_default(user_profile_path(@user.login))
+     redirect_back_by_referer_or_default(user_profile_path(@user.login))
   end
 
   def upload_pic
     begin
       tmp_file = params[:picture]['tmp_file']
       avatar = Avatar.new(tmp_file.read, :name => current_user.login)
-      current_user.main_picture, current_user.small_picture = avatar.create_sizes!
+      current_user.user_profile.main_picture, current_user.user_profile.small_picture = avatar.create_sizes!
       current_user.save(:validate => false)
     rescue
       flash.now[:warning] = "Failed to upload your picture"
@@ -461,9 +462,9 @@ class ProfileController < ApplicationController
   end
 
   def delete_images
-    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.main_picture}") if current_user.main_picture.present? rescue nil
-    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.small_picture}") if current_user.small_picture.present? rescue nil
-    current_user.main_picture = current_user.small_picture = nil
+    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.user_profile.main_picture}") if current_user.main_picture.present? rescue nil
+    File.delete("#{Avatar::DEFAULT_UPLOAD_PATH}#{current_user.user_profile.small_picture}") if current_user.small_picture.present? rescue nil
+    current_user.user_profile.main_picture = current_user.user_profile.small_picture = nil
     current_user.save(:validate => false)
     if request.xhr?
       flash.now[:notice] = "Profile picture deleted"
@@ -482,11 +483,11 @@ class ProfileController < ApplicationController
   end
 
   def ratings
-    this_rating = params[:user]['default_filter'].to_i
+    this_rating = params[:user][:user_options_attributes][:comment_threshold].to_i
     logger.info(this_rating.to_s + " DEFAU")
     if this_rating > -1 && this_rating < 11
       user = current_user
-      user.update_attribute(:default_filter, this_rating)
+      user.update_attribute(:comment_threshold, this_rating)
     end
     redirect_to :controller => 'profile', :action => 'show', :login => current_user.login, :anchor => "comm_fil"
   end
@@ -519,11 +520,11 @@ class ProfileController < ApplicationController
   private
   def can_view_tab
     @user = User.find_by_login(params[:login])
-    if params[:action] == "actions" && @user.can_view(:my_actions, current_user)
+    if params[:action] == "actions" && @user.can_view(:actions, current_user)
       return true
     elsif params[:action] == "watchdog" && @user.can_view(:watchdog, current_user)
       return true
-    elsif @user.can_view(:my_tracked_items, current_user)
+    elsif @user.can_view(:bookmarks, current_user)
       return true
     else
       flash[:warning] = "That page isn't publicly viewable."

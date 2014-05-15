@@ -44,7 +44,7 @@ class NotebookItemsController < ApplicationController
       end
     else
       # since rss readers can't log into OC accounts, just see if the user has their PN privacy to 'everyone'
-      unless @user.can_view('my_political_notebook',nil)
+      unless @user.can_view(:political_notebook, nil)
         flash[:notice] = "You don't have permission to subscribe to that user's political notebook!"
         redirect_to :controller => 'index'
         return

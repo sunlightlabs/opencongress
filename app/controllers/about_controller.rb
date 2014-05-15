@@ -1,5 +1,6 @@
 class AboutController < ApplicationController
   skip_before_filter :has_accepted_tos?
+  skip_before_filter :must_reaccept_tos?
   skip_before_filter :has_district?
 
   def index

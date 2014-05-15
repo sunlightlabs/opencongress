@@ -1329,31 +1329,31 @@ class Person < ActiveRecord::Base
     "#{firstname} #{lastname}"
   end
   def title_full_name
-		"#{title} " + full_name
-	end
+    "#{title} " + full_name
+  end
 
-	def title_common
-	  return 'Senator' if senator?
-	  return 'Rep.' if representative?
-	  return ''
-	end
+  def title_common
+    return 'Senator' if senator?
+    return 'Rep.' if representative?
+    return ''
+  end
 
-	def title_long
-	  case self.title
-	    when 'Sen.'
-	      'Senator'
-	    when 'Rep.'
-	      'Representative'
-	  end
-	end
+  def title_long
+    case self.title
+      when 'Sen.'
+        'Senator'
+      when 'Rep.'
+        'Representative'
+    end
+  end
 
-	def title_for_share
-	  name
-	end
+  def title_for_share
+    name
+  end
 
-	def title_full_name_party_state
-	  title_full_name + " " + party_and_state
-	end
+  def title_full_name_party_state
+    title_full_name + " " + party_and_state
+  end
 
   def popular_name
     "#{nickname || firstname} #{lastname}"
@@ -1375,10 +1375,10 @@ class Person < ActiveRecord::Base
     self.to_param
   end
 
-	def rep_info
-	foo = /(\[.*\])/.match(name)
-	"#{foo.captures}"
-	end
+  def rep_info
+  foo = /(\[.*\])/.match(name)
+  "#{foo.captures}"
+  end
   def roles_sorted
     roles.sort { |r1, r2| r2.startdate <=> r1.startdate }
   end

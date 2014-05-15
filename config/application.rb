@@ -13,6 +13,9 @@ require File.expand_path('../../lib/plugins_loader', __FILE__)
 # Faxable includes a railtie and must be required before the env boots
 require File.expand_path('../../lib/faxable', __FILE__)
 
+# Load ActiveRecord extensions
+require File.expand_path('../../lib/active_record/humanized_attributes', __FILE__)
+
 module OpenCongress
   class Application < Rails::Application
 
@@ -29,13 +32,14 @@ module OpenCongress
                                 #{config.root}/app/queries
                                 #{config.root}/app/concerns
                                 #{config.root}/app/jobs
+                                #{config.root}/app/services
                                 )
 
     # Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.
     # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
 
-    config.active_record.observers = :user_observer, :friend_observer, :mailing_list_observer
+    config.active_record.observers = :user_observer, :friend_observer
 
     # Disable delivery errors if you bad email addresses should just be ignored
     # config.action_mailer.raise_delivery_errors = false

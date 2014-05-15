@@ -4,7 +4,7 @@
 
 <div class="container_16">
   <div class="space clear">&nbsp;</div>
-  <% if @user.can_view(:my_friends, current_user) %>
+  <% if @user.can_view(:friends, current_user) %>
     <div class="space clear">&nbsp;</div>
 
     <div class="grid_10">
@@ -73,8 +73,8 @@
         <h3 class="inline"><%= user_name("My", &:possessive) %> Friends</h3>
         <% if @user == current_user %>
           <span style="margin:2px 5px 0 0;float:left;"><%= image_tag("private.png", :alt => "privacy", :title => "Privacy option") %></span>
-            <%= form_for :privacy_option, @user.privacy_option, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
-              <%= f.select PrivacyOption.column_names[11].to_sym, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
+            <%= form_for :user_privacy_options, @user.user_privacy_options, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
+              <%= f.select :friends, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
             <% end %>
         <% end %>
         <div class="clearfix"></div>
@@ -100,7 +100,7 @@
                     <tr>
                       <td>
                         <% if friend.confirmed %>
-                          <% if friend.user.can_view(:my_location, current_user) %>
+                          <% if friend.user.can_view(:location, current_user) %>
                             <% if friend.user.district_tag %>
                               <%= friend.user.district_tag %>
                             <% end %>
@@ -110,7 +110,7 @@
                     </tr>
                   <% end %>
                   <% if friend.confirmed %>
-                    <% if friend.friend.homepage && friend.friend.show_homepage == true %>
+                    <% if friend.friend.homepage && friend.user.can_view(:profile, current_user) %>
                       <tr>
                         <td><%=h friend.friend.homepage %></td>
                       </tr>
@@ -178,5 +178,5 @@
     </div>
   <% else %>
     <p>Not Publicly Viewable</p>
-  <% end %><%# if @user.can_view %>
+  <% end %>
 </div>

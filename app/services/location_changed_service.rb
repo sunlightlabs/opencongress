@@ -9,9 +9,12 @@ class LocationChangedService
     # TODO: Allow user to send feedback if they get stuck here.
 
     @user = user
+    @user.update_attribute(:district, nil)
+
     @districts = get_districts
     # Multiple states can be returned per zcta. See: 53511
     @states = @districts.collect(&:state).uniq
+
     if @states.length == 1
       @user.state = @states.first
       @user.possible_states = []

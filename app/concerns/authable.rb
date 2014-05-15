@@ -57,6 +57,7 @@ module Authable
     :unconfirmed => 0,
     :active => 1,
     :email_only => 2,
+    :reaccept_tos => 3,
     :deleted => 5,
     :banned => 6
   }

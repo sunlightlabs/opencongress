@@ -9,6 +9,8 @@ class AccountController < ApplicationController
   after_filter :check_wiki, :only => [:login, :activate]
 
   skip_before_filter :has_accepted_tos?, :only => [:accept_tos, :logout]
+  skip_before_filter :must_reaccept_tos?, :only => [:reaccept_tos, :accept_tos, :logout]
+  skip_before_filter :warn_reaccept_tos?, :only => [:reaccept_tos, :accept_tos, :logout]
   skip_before_filter :is_authorized?, :only => [:logout]
   skip_before_filter :has_district?, :only => [:determine_district, :logout, :accept_tos]
 
@@ -114,15 +116,24 @@ class AccountController < ApplicationController
     end
   end
 
+  def reaccept_tos
+  end
+
   def accept_tos
     @page_title = "Please Accept our Terms of Service and Privacy Policy"
     if request.post?
       user = User.find_by_id(current_user.id)
       if params[:accept_tos] == "1"
         user.accepted_tos_at = Time.now
+        if user.status == User::STATUSES[:reaccept_tos]
+          user.status = User::STATUSES[:active]
+        end
         user.save!
         self.current_user = User.find_by_id(user.id)
         activate_redirect(user_profile_path(:login => current_user.login))
+      else
+        flash[:error] = "Please accept the terms of service before continuing."
+        redirect :back and return
       end
     end
   end

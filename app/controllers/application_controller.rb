@@ -14,6 +14,8 @@ class ApplicationController < ActionController::Base
   before_filter :clear_return_to
   before_filter :current_tab
   before_filter :has_accepted_tos?
+  before_filter :must_reaccept_tos?
+  before_filter :warn_reaccept_tos?
   before_filter :has_district?
   before_filter :get_site_text_page
   before_filter :is_authorized?
@@ -175,7 +177,23 @@ class ApplicationController < ActionController::Base
   def has_accepted_tos?
     if logged_in?
       unless current_user.accepted_tos?
-        redirect_to :controller => 'account', :action => 'accept_tos'
+        redirect_to :controller => 'account', :action => 'accept_tos' and return
+      end
+    end
+  end
+
+  def must_reaccept_tos?
+    if logged_in?
+      if current_user.status == User::STATUSES[:reaccept_tos]
+        redirect_to :controller => 'account', :action => 'reaccept_tos' and return
+      end
+    end
+  end
+
+  def warn_reaccept_tos?
+    if logged_in?
+      if current_user.status == User::STATUSES[:reaccept_tos]
+        flash.now[:info] = %Q[Our Default privacy settings have changed. <a href="/account/reaccept_tos">Click here to review and accept the changes</a>.].html_safe
       end
     end
   end

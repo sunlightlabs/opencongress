@@ -4,9 +4,9 @@ class ChangePrivacyOptionDefaults < ActiveRecord::Migration
     change_column_default :user_privacy_options, :zipcode, 1
     change_column_default :user_privacy_options, :location, 2
     change_column_default :user_privacy_options, :profile, 2
-    change_column_default :user_privacy_options, :actions, 1
-    change_column_default :user_privacy_options, :bookmarks, 1
-    change_column_default :user_privacy_options, :friends, 1
+    change_column_default :user_privacy_options, :actions, 2
+    change_column_default :user_privacy_options, :bookmarks, 2
+    change_column_default :user_privacy_options, :friends, 2
     change_column_default :user_privacy_options, :groups, 2
   end
 

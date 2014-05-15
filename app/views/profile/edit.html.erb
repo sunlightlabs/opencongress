@@ -38,6 +38,7 @@
         <%= f.simple_fields_for :user_profile, @user.user_profile do |p| %>
           <%= p.input :full_name %>
           <%= p.input :website %>
+          <%= p.input :mobile_phone, :label => "Telephone Number (SMS Capable)", :maxlength => 20 %>
           <%= p.input :about, :as => :text, :input_html => { :rows => 6 } %>
           <%= p.input :street_address %>
           <%= p.input :street_address_2 %>

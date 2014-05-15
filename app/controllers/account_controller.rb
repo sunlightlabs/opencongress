@@ -136,7 +136,7 @@ class AccountController < ApplicationController
           lat, lng = result.coordinates
           zipcode = result.postal_code
           zip_four = result.zip4 rescue nil
-          current_user.update_attributes(:state => result.state)
+          current_user.update_attributes(:state => result.state_code)
           current_user.user_profile.update_attributes(
             :zipcode => zipcode,
             :zip_four => zip_four,
@@ -148,10 +148,10 @@ class AccountController < ApplicationController
           no_reps and return
         end
       elsif params[:zipcode].present?
-        result = MultiGeocoder.search(zipcode).first
-        current_user.update_attributes(:state => result.state)
+        result = MultiGeocoder.search(params[:zipcode]).first
+        current_user.update_attributes(:state => result.state_code)
         current_user.user_profile.update_attributes(
-          :zipcode => zipcode,
+          :zipcode => result.zipcode,
           :city => result.city
         )
       end

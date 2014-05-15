@@ -72,7 +72,6 @@ module MultiGeocoder
     # For all of the cases where smartystreets fails,
     # use ESRI instead. The latter will not return a zip4.
     if [:zip9, :city_state, :street_only].include? type
-
       opts[:lookup] ||= :esri
       query = "#{query} USA"
     end

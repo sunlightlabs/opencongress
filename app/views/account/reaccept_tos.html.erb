@@ -52,10 +52,10 @@
         Be aware that new users of the site will be given a different set of
         default privacy settings, and we would encourage you to have a look at your own
         <% if logged_in? %>
-        <%= link_to "profile", edit_profile_path(:login => current_user.login) %>
+        <%= link_to "profile", edit_profile_path(:login => current_user.login) %>,
         <% else %>
-            profile
-        <% end %>, too.
+            profile,
+        <% end %> too.
     </p>
     <p>
         Please update your information to a degree of privacy that works for you but will also

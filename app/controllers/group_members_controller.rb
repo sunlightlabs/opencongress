@@ -30,10 +30,10 @@ class GroupMembersController < ApplicationController
       visible_users = VisibleByPrivacyOptionQuery.new(
         @group.users.includes(:group_members)
           .where("group_members.status != 'BOOTED'")
-          .order("UPPER(users.login)").paginate(:per_page => 100, :page => params[:page]),
+          .order("UPPER(users.login)"),
         :property => :groups,
         :observer => current_user).all
-      @group_members = @group.group_members.where(:user_id => visible_users.map(&:id))
+      @group_members = @group.group_members.where(:user_id => visible_users.map(&:id)).paginate(:per_page => 100, :page => params[:page])
     end
   end
 

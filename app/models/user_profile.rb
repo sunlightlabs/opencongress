@@ -15,11 +15,11 @@
 #  city             :string(255)
 #  latitude         :string(255)
 #  longitude        :string(255)
-#  state            :string(2)
 #  zipcode          :string(5)
 #  zip_four         :string(4)
 #  mobile_phone     :string(255)
 #
+
 require_dependency 'full-name-splitter'
 require_dependency 'location_changed_service'
 

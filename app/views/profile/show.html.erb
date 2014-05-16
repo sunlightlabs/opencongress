@@ -61,7 +61,7 @@
         </p>
       <% end %>
 
-      <% if @user.district.present? || @user == current_user %>
+      <% if (@user.district.present? && @user.status == 1) || @user == current_user %>
         <p>
         <label>Cong. District</label>
         <%= @user.district_tag rescue link_to("Find your district", :url => { :controller => :account, :action => :determine_district }) %>
@@ -107,6 +107,7 @@
         </em>
       </p>
 
+      <% if @user.status == 1 %>
       <% state_groups = @user.groups.where("state_id IS NOT NULL").where(:district_id => nil) %>
       <h3 class="margin-top">State <%= pluralize(state_groups.count, 'Group').sub(/^\d+? /, '') %></h3>
       <ul class='container_16'>
@@ -147,5 +148,7 @@
           </li>
         <% end %>
       </ul>
+      <% end %>
+
   </div>
 </div>

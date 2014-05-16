@@ -287,7 +287,7 @@ class District < ActiveRecord::Base
         # get this one wrong :/
         dsts = Congress.districts_locate(*MultiGeocoder.coordinates(address)).results
       end
-    rescue ArgumentError
+    rescue ArgumentError, Faraday::Error::ClientError
       dsts = []
     end
 

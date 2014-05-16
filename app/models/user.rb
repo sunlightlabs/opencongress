@@ -250,7 +250,6 @@ class User < ActiveRecord::Base
   # permissions method
   def can_view(option, viewer)
     res = false
-    binding.pry
     if viewer.nil? or (viewer == :false)
       #logger.info "tis nil"
       if user_privacy_options[option] == 2

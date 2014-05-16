@@ -15,6 +15,8 @@ module ContactCongressLettersHelper
         letter.contactable.typenumber.downcase.gsub(/\./, '') + " " + url)
     elsif letter.contactable_type == 'Subject'
       u("A letter to #Congress on @opencongress regarding #{letter.contactable.term}" + url)
+    else
+      u("A letter to #Congress on @opencongress: #{letter.formageddon_threads.first.formageddon_letters.first.subject}")
     end
   end
 

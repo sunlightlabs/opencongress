@@ -241,17 +241,22 @@ class User < ActiveRecord::Base
 
     def generate_for_profile (profile)
       begin
-        user = User.new(:login => unused_login(login_stub_for_profile(profile)),
-                        :email => profile.email,
-                        :password => random_password,
-                        :accepted_tos_at => profile.accept_tos && Time.now || nil,
-                        :full_name => profile.full_name,
-                        :state => profile.state,
-                        :zipcode => profile.zipcode,
-                        :zip_four => profile.zip_four)
-        user.save!
-        # TODO: bundle this in a transaction and save the UserProfile too.
-        return user
+        ActiveRecord::Base.transaction do
+          login = unused_login(login_stub_for_profile(profile))
+          user = User.new(:login => login,
+                          :email => profile.email,
+                          :password => random_password,
+                          :accepted_tos_at => profile.accept_tos && Time.now || nil,
+                          :state => profile.state)
+          user.save!
+          user = User.find_by_login(login)
+
+          uprof = UserProfile.new(profile.attributes_hash.slice(:first_name, :last_name, :mobile_phone, :street_address, :street_address_2, :city, :zipcode, :zip_four))
+          uprof.user = user
+          uprof.save!
+
+          return user
+        end
       rescue ActiveRecord::RecordInvalid => e
         if e.record.errors[:login].include?('has already been taken')
           retry

@@ -22,6 +22,7 @@ class CreateEmailCongressLetterSeeds < ActiveRecord::Migration
       t.datetime :resolved_at
       t.string :resolution
       t.string :confirmation_code, :limit => 255
+      t.integer :contact_congress_letter_id
 
       t.timestamps
     end

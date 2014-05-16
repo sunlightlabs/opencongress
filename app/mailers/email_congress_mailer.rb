@@ -1,15 +1,17 @@
 class EmailCongressMailer < ActionMailer::Base
   default :from => "noreply@opencongress.org"
 
-  def html_body_alert (seed)
-    @email = Postmark::Mitt.new(seed.raw_source)
+  def html_body_alert (email)
+    @email = email
     mail(:to => Settings.contact_us_email,
-         :subject => "EmailCongress message has only HTML body: #{seed.email_subject}")
+         :subject => "EmailCongress message has only HTML body: #{email.subject}")
   end
 
-  def no_recipient_bounce (seed, rejected_addresses, unresolvable_addresses)
+  def no_recipient_bounce (email, rejected_addresses, unresolvable_addresses)
     @unresolvable_addresses = unresolvable_addresses
     @rejected_addresses = rejected_addresses
+    mail(:to => email.from_email,
+         :subject => email.subject)
   end
 
   def confirmation (seed)

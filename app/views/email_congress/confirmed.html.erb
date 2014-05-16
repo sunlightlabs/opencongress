@@ -10,7 +10,7 @@
           <p>
           You sent this email from an address that differs from the one we have on file. Would you like to update your email address?
           </p>
-          <%= f.input :email, :value => @seed.sender_email %>
+          <%= f.input :email, :input_html => { :value => @seed.sender_email } %>
         </div>
       <% end %>
 

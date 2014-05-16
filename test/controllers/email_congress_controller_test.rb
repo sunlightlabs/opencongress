@@ -4,6 +4,10 @@ class EmailCongressControllerTest < ActionController::TestCase
   tests EmailCongressController
   include OpenCongress::Application.routes.url_helpers
 
+  def at_email_congress (localpart)
+    "#{localpart}@#{Settings.email_congress_domains.first}"
+  end
+
   def incoming_email (options=Hash.new)
     default_email = {
       "Date" => "Fri, 2 May 2014 16:29:46 -0400",
@@ -42,6 +46,7 @@ class EmailCongressControllerTest < ActionController::TestCase
 
   def teardown
     @seed.destroy unless @seed.nil?
+    @user.destroy unless @user.nil?
   end
 
   test 'bounce_for_illegitimate_recipeints' do
@@ -61,18 +66,37 @@ class EmailCongressControllerTest < ActionController::TestCase
   end
 
   test 'simple_path_for_known_user' do
-    incoming_seed
-    user = User.create(:accepted_tos_at => Time.zone.now,
-                       :full_name => 'John Doe',
-                       :email => @seed.sender_email,
-                       :login => 'jdoe',
-                       :password => User.random_password,
-                       :state => 'AL',
-                       :zipcode => '36445',  # Frisco City
-                       :zip_four => '')
-    user.save!
+    profile = EmailCongress::ProfileProxy.new(OpenStruct.new({
+      :first_name => 'John',
+      :last_name => 'Doe',
+      :email => 'user@example.com',
+      :street_address => '4236 Bowden St',
+      :city => 'Frisco City',
+      :state => 'AL',
+      :zipcode => '36445',
+      :zip_four => '',
+      :mobile_phone => '5555555555',
+      :accept_tos => true
+    }))
+    @user = User.new(:login => 'jdoe', :password => User.random_password)
+    @user.user_profile = UserProfile.new
+    MultiGeocoder.stub(:coordinates, [31.4228, -87.41734]) do
+      Congress.stub(:districts_locate, OpenStruct.new({ "results" => [OpenStruct.new({ "state" => "AL", "district" => 1 }) ], "count" => 1 })) do
+        profile.copy_to(@user)
+        @user.save!
+
+        profile.copy_to(@user.user_profile)
+        @user.user_profile.save!
+      end
+    end
+
+    incoming_seed({
+      "From" => @user.email,
+      "FromFull" => { "Name" => "", "Email" => @user.email },
+      "To" => at_email_congress('myreps'),
+      "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
+    })
     get(:confirm, {'confirmation_code' => @seed.confirmation_code})
-    # TODO: This requires the profile changes from Dan
     assert_redirected_to @controller.url_for(:action => :confirmed,
                                              :confirmation_code => @seed.confirmation_code)
   end

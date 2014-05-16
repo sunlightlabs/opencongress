@@ -16,8 +16,8 @@ class EmailCongressController < ApplicationController
   before_filter :only_unresolved, :only => [:confirm, :complete_profile]
   before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile]
   before_filter :logout_if_necessary, :only => [:confirm, :complete_profile]
-  before_filter :lookup_recipients, :only => [:message_to_members, :confirmed]
-  before_filter :restrict_recipients, :only => [:message_to_members, :confirmed]
+  before_filter :lookup_recipients, :only => [:message_to_members, :confirm, :confirmed]
+  before_filter :restrict_recipients, :only => [:message_to_members, :confirm, :confirmed]
 
   def debug
     puts "=================="
@@ -37,21 +37,24 @@ class EmailCongressController < ApplicationController
     #   User is trying to email a nonexistent address
     #   User is trying to email someone they are not allowed to email
 
-    seed = EmailCongress.seed_for_postmark_object(@email)
-
-    if @email.text_body.blank? && !@email.html_body.blank?
-      EmailCongressMailer.html_body_alert(seed).deliver
+    if @resolved_addresses.empty?
+      EmailCongressMailer.no_recipient_bounce(@email, @rejected_addresses, @unresolvable_addresses).deliver
       return head :ok
     end
+
+    if @email.text_body.blank? && !@email.html_body.blank?
+      EmailCongressMailer.html_body_alert(@email).deliver
+      return head :ok
+    end
+
+    seed = EmailCongress.seed_for_postmark_object(@email)
 
     @profile = EmailCongress::ProfileProxy.new(seed)
     if @sender_user
       @profile = @profile.merge(EmailCongress::ProfileProxy.new(@sender_user))
     end
 
-    if @resolved_addresses.empty?
-      EmailCongressMailer.no_recipient_bounce(seed, @rejected_addresses, @unresolvable_addresses).deliver
-    elsif @sender_user && @profile.valid?
+    if @sender_user && @profile.valid?
       EmailCongressMailer.confirmation(seed).deliver
     else
       EmailCongressMailer.complete_profile(seed, @profile).deliver
@@ -64,38 +67,45 @@ class EmailCongressController < ApplicationController
 
     @profile = EmailCongress::ProfileProxy.new(@seed)
     if @sender_user
-      user_profile = EmailCongress::ProfileProxy.new(@sender_user)
+      user_profile = EmailCongress::ProfileProxy.build(@sender_user.user_profile, @sender_user)
       @profile = @profile.merge(user_profile)
     end
 
-    if !@sender_user || !@profile.valid?
+    if !@profile.valid? || !@sender_user
       # Users who send a message from an unknown address will be directed to
       # :complete_profile in response to their initial email. If they change
       # their email address between the time of the initial email and when they
       # clicked the confirmation link, they would end up here due to the
       # !@sender_user condition.
-      flash[:error] = @profile.errors.full_messages.to_sentence
+      if @sender_user
+        flash[:error] = @profile.errors.full_messages.to_sentence
+      else
+        flash[:error] = "To send you message we need to collect the information below."
+      end
       return redirect_to(:action => :complete_profile,
                          :confirmation_code => @seed.confirmation_code)
     end
 
     # We have a user and a complete profile.
-    @profile.copy_to(@seed)
-    @seed.confirm!
-
-    # TODO: Perhaps this should be rearranged so that if reify_for_contact_congress fails we continue to try to send the seed.
-    recipients = @recipients_by_address.map{ |addr, rcpt| rcpt }.compact
-    EmailCongress.reify_for_contact_congress(@sender_user, @seed, recipients)
-
-    return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
+    begin
+      @profile.copy_to(@seed)
+      recipients = @recipients_by_address.map{ |addr, rcpt| rcpt }.compact
+      EmailCongress.reify_for_contact_congress(@sender_user, @seed, recipients)
+      @seed.confirm!
+      return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
+    rescue => e
+      # TODO: Write job to find these seeds and retry them.
+      capture_exception(e)
+      flash[:error] = "Your letter could not be sent due to technical difficulties. Please try again later."
+      return redirect_to(:action => :complete_profile, :confirmation_code => @seed.confirmation_code)
+    end
   end
 
   def confirmed
-    # TODO: Probably don't want to use application layout
     # TODO: The template should warn about illegitamate recipients
     if logged_in?
       @prompt_for_password = current_user.previous_login_date.nil?
-      @prompt_for_email = current_user.email != @sender_user.email
+      @prompt_for_email = current_user.email != @seed.sender_email
     else
       @prompt_for_password = false
       @prompt_for_email = false
@@ -103,10 +113,12 @@ class EmailCongressController < ApplicationController
   end
 
   def complete_profile
-    @seed_profile = EmailCongress::ProfileProxy.new(@seed)
-    @user_profile = EmailCongress::ProfileProxy.new(@sender_user || OpenStruct.new)
-    @profile = @seed_profile.merge(@user_profile)
+    @profile = EmailCongress::ProfileProxy.build(@seed)
+    if @sender_user
+      @profile = @profile.merge_many(@sender_user.user_profile, @sender_user)
+    end
     if params[:profile]
+      params[:profile].delete(:email)
       params[:profile][:accept_tos] = (params[:profile][:accept_tos] == 'true')
       @params_profile = EmailCongress::ProfileProxy.new(OpenStruct.new(params[:profile]))
       @profile = @params_profile.merge(@profile) # Values from the form should override existing values
@@ -115,10 +127,12 @@ class EmailCongressController < ApplicationController
     if request.method_symbol == :post
       if @profile.valid?
         if !@sender_user
-          @sender_user = current_user = User.generate_for_profile(@profile)
+          @sender_user = User.generate_for_profile(@profile)
+          @sender_user.activate!
+          self.current_user = @sender_user
         else
-          # TODO: Copy ProfileProxy to UserProfile instead of User
           @profile.copy_to(@sender_user)
+          @profile.copy_to(@sender_user.user_profile)
           @sender_user.save!
         end
 
@@ -188,6 +202,9 @@ class EmailCongressController < ApplicationController
     # This filter pares down the @recipient_addresses list, storing the
     # rejected addresses in @rejected_addresses. Those email addresses can be
     # used in the templates for confirmation emails.
+    #
+    # This leaves the controller method to deal with the error condition since
+    # the appropriate action will differ by method.
     if @sender_user
       req_set = Set.new(@recipient_addresses)
       legit_set = Set.new(@sender_user.my_congress_members)
@@ -200,6 +217,7 @@ class EmailCongressController < ApplicationController
     @seed = EmailCongressLetterSeed.find_by_confirmation_code(params[:confirmation_code])
     return render_404 if @seed.nil?
     @email = Postmark::Mitt.new(@seed.raw_source)
+    @email_obj = JSON.load(@seed.raw_source)
   end
 
   def only_resolved

@@ -27,6 +27,10 @@ module EmailCongress
       end
     end
 
+    def self.build (*sources)
+      return ProfileProxy.new.merge_many(*sources)
+    end
+
     def attributes
       @@ATTRS.clone
     end
@@ -50,24 +54,27 @@ module EmailCongress
     end
 
     def copy_from (src)
-      init_method = "copy_from_#{src.class.name.downcase}"
+      init_method = "copy_from_#{src.class.name.split(/::/).last.downcase}"
       if self.respond_to?(init_method)
         self.send(init_method, src)
       else
-        raise "Cannot initialize ProfileProxy from #{src.class.name} object."
+        raise "Cannot initialize ProfileProxy from #{src.class.name} object, no method #{init_method}"
       end
     end
 
     def copy_to (dst)
-      persist_method = "copy_to_#{dst.class.name.downcase}"
+      persist_method = "copy_to_#{dst.class.name.split(/::/).last.downcase}"
       if self.respond_to?(persist_method)
         self.send(persist_method, dst)
       else
-        raise "ProfileProxy cannot persist values to a #{dst.class.name} object."
+        raise "ProfileProxy cannot persist values to a #{dst.class.name} object, no method #{persist_method}"
       end
     end
 
     def merge (other)
+      unless other.is_a?(ProfileProxy)
+        other = ProfileProxy.new(other)
+      end
       merged = ProfileProxy.new
       # Existing values take precedence, so copy in reverse order.
       other.copy_to_generic_dest(merged)
@@ -76,9 +83,17 @@ module EmailCongress
       merged.accept_tos = [self.accept_tos, other.accept_tos].any?
       merged
     end
+    
+    def merge_many (other, *more)
+      merged = merge(other)
+      if more.empty?
+        return merged
+      else
+        return merged.merge_many(*more)
+      end
+    end
 
     def copy_from_mapped_attributes (attr_map, src)
-      # TODO: Put to use to copy to formageddonthread objects
       attr_map.each do |from_attr, to_attr|
         existing_value = self.send(to_attr)
         new_value = src.send(from_attr)
@@ -86,6 +101,34 @@ module EmailCongress
           self.send("#{to_attr}=", src.send(reader))
         end
       end
+    end
+
+    def copy_to_mapped_attributes (attr_map, dst)
+      attr_map.each do |from_attr, to_attr|
+        value = self.send(from_attr)
+        writer = "#{to_attr}="
+        if dst.respond_to?(writer) && !value.blank?
+          dst.send(writer, value)
+        end
+      end
+    end
+
+    def formageddon_attr_map
+      { :zipcode => :sender_zip5,
+        :zip_four => :sender_zip4,
+        :first_name => :sender_first_name,
+        :last_name => :sender_last_name,
+        :street_address => :sender_address1,
+        :street_address_2 => :sender_address2,
+        :city => :sender_city,
+        :state => :sender_state,
+        :mobile_phone => :sender_phone,
+        :email => :sender_email,
+        :title => :sender_title }
+    end
+
+    def copy_to_formageddonthread (dst)
+      copy_to_mapped_attributes(formageddon_attr_map, dst)
     end
 
     def copy_from_generic_source (src)
@@ -103,7 +146,6 @@ module EmailCongress
       self.attributes_hash.each do |attr_name, value|
         writer = "#{attr_name}="
         if dst.respond_to?(writer) && !value.blank?
-          puts "#{writer}#{value}"
           dst.send(writer, value)
         end
       end
@@ -131,7 +173,6 @@ module EmailCongress
 
     def copy_to_user (dst)
       copy_to_generic_dest(dst)
-      dst.full_name = self.full_name
       if self.accept_tos == true
         dst.accept_tos = '1'
         dst.accepted_tos_at ||= Time.now
@@ -144,10 +185,15 @@ module EmailCongress
     def copy_from_user (src)
       # will handle :zipcode, :zip_four, :state, :email
       copy_from_generic_source(src)
-      name_parts = src.full_name.split(/ /, 2)
-      self.first_name = name_parts.first
-      self.last_name = name_parts.second
       self.accept_tos = src.accepted_tos?
+    end
+
+    def copy_from_userprofile (src)
+      copy_from_generic_source(src)
+    end
+
+    def copy_to_userprofile (dst)
+      copy_to_generic_dest(dst)
     end
 
     def copy_from_openstruct (src)
@@ -258,20 +304,21 @@ module EmailCongress
       return seed
     end
 
-    def reify_as_formageddon_letter (seed)
+    def reify_as_formageddon_letter (thread, seed)
       # Creates a FormageddonLetter instance, not yet associated to a thread.
       letter = Formageddon::FormageddonLetter.new
       letter.subject = seed.email_subject
-      letter.message = email_body
+      letter.message = seed.email_body
       letter.direction = 'TO_RECIPIENT'
       letter.issue_area = nil   # This will be set if required by the contact form.
       letter.status = nil  # This field captures errors. No errors at the outset.
       letter.fax_id = nil  # This will be set if we fall back to faxing.
+      letter.formageddon_thread = thread
       letter.save!
       return letter
     end
 
-    def reify_as_formageddon_thread (seed, sender, rcpt)
+    def reify_as_formageddon_thread (sender, seed, rcpt)
       # Creates a FormageddonThread instance, not yet associated to a
       # ContactCongressFormageddonThread
       seed_profile = ProfileProxy.new(seed)
@@ -288,28 +335,28 @@ module EmailCongress
       # Establishes ContactCongress object graph, returning the
       # ContactCongressLetter tying it all together.
 
-      throw "Seed ##{seed.id} (#{seed.confirmation_code}) is not confirmed." if !seed.confirmed?
-
       ActiveRecord::Base.transaction do
-        ccl_threads = recipient.map do |rcpt|
+        ccl_letter = ContactCongressLetter.new
+        ccl_letter.user = sender
+        ccl_letter.disposition = ''   # Leave blank for now. Do sentiment analysis in the future?
+        ccl_letter.contactable = nil  # Don't associate with a contactable topic, e.g. Bill.
+        ccl_letter.is_public = false  # Private because we cannot provide an up-front warning before the user sends an email.
+        ccl_letter.save!
+
+        recipients.each do |rcpt|
           thread = reify_as_formageddon_thread(sender, seed, rcpt)
-          letter = reify_as_formageddon_letter(sender, seed)
-          thread.formageddon_letters.add(letter)
+          reify_as_formageddon_letter(thread, seed)
 
           ccl_thread = ContactCongressLettersFormageddonThread.new
+          ccl_thread.contact_congress_letter = ccl_letter
           ccl_thread.formageddon_thread = thread
           ccl_thread.save!
 
           ccl_thread
         end
 
-        ccl_letter = ContactCongressLetter.new
-        ccl_letter.user = sender
-        ccl_letter.disposition = ''   # Leave blank for now. Do sentiment analysis in the future?
-        ccl_letter.contactable = nil  # Don't associate with a contactable topic, e.g. Bill.
-        ccl_letter.is_public = false  # Private because we cannot provide an up-front warning before the user sends an email.
-        ccl_letter.contact_congress_letters_formageddon_threads << ccl_threads
-        ccl_letter.save!
+        seed.contact_congress_letter = ccl_letter
+        seed.save!
 
         return ccl_letter
       end

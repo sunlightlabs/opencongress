@@ -226,7 +226,7 @@ class User < ActiveRecord::Base
     end
 
     def find_by_feed_key_option(key)
-      self.includes(:user_options).where("user_options.feed_key = ?", key)
+      self.includes(:user_options).where("user_options.feed_key = ?", key).first
     end
   end # class << self
 
@@ -250,6 +250,7 @@ class User < ActiveRecord::Base
   # permissions method
   def can_view(option, viewer)
     res = false
+    binding.pry
     if viewer.nil? or (viewer == :false)
       #logger.info "tis nil"
       if user_privacy_options[option] == 2

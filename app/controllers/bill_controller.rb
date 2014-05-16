@@ -65,7 +65,7 @@ class BillController < ApplicationController
     @bills = {}
     @bill_counts = {}
     @types_from_params.each do |bill_type|
-      @bills[bill_type] = Bill.find_all_by_bill_type_and_session(bill_type, @congress, :order => 'lastaction DESC', :limit => 5)
+      @bills[bill_type] = Bill.find_all_by_bill_type_and_session(bill_type, @congress, :order => 'lastaction DESC NULLS LAST', :limit => 5)
       @bill_counts[bill_type] = Bill.count(:conditions => ['bill_type = ? AND session = ?', bill_type, @congress])
     end
 
@@ -350,7 +350,7 @@ class BillController < ApplicationController
       @feed_title = "Recent #{@chamber.capitalize} Bills"
       @bills = @bills.send("#{@chamber}_bills".to_sym)
     end
-    @bills = @bills.order("#{@sort} DESC").limit(20)
+    @bills = @bills.order("#{@sort} DESC NULLS LAST").limit(20)
     expires_in 60.minutes, :public => true
 
     render :action => 'list_atom', :layout => false

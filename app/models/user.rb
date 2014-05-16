@@ -185,11 +185,6 @@ class User < ActiveRecord::Base
 
   delegate :privatize!, :to => :user_privacy_options
 
-  ##
-  # TODO: Enable the below delegations after remapping user data to external classes!
-  # (After migration #20140424162910)
-  ##
-
   %w(zipcode zip_four street_address street_address_2 small_picture main_picture
      first_name last_name full_name website about city coordinates location address mobile_phone).each do |prop|
     delegate prop.to_sym, :to => :user_profile

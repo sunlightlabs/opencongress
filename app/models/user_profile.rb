@@ -42,7 +42,6 @@ class UserProfile < ActiveRecord::Base
     :street_address_2 => "Street address 2nd line"
   }
 
-  ## TODO: Enable this after profile migrations are run
   after_save Proc.new {
     LocationChangedService.new(user)
   }, :if => Proc.new{

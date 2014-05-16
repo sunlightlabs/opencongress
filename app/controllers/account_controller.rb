@@ -225,9 +225,8 @@ class AccountController < ApplicationController
     unless @existing_user
       @new_user = User.new
       @new_user.email = thread.sender_email
-      @new_user.zipcode = thread.sender_zip5
-      @new_user.zip_four = thread.sender_zip4
-      logger.info "setting zip_four to #{thread.sender_zip4}"
+      @new_user.user_profile.zipcode = thread.sender_zip5
+      @new_user.user_profile.zip_four = thread.sender_zip4
     end
 
     # TODO: This smells, find out how it's hit and refactor

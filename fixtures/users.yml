@@ -6,7 +6,7 @@ users_001:
   activated_at: 2008-01-14 04:19:05.480086
   location: Chesterfield, MA
   created_at: 2008-01-13 23:18:44.867131
-  default_filter: "5"
+  comment_threshold: "5"
   mailing: f
   last_login: 2010-04-02 08:49:05.425035
   crypted_password: e9df7394fdecfe1d3c354ef7818ba93ba9c67578
@@ -54,7 +54,7 @@ users_002:
   activated_at: 2010-01-13 16:50:45.022104
   location:
   created_at: 2010-01-13 10:48:47.772348
-  default_filter: "5"
+  comment_threshold: "5"
   mailing: t
   last_login: 2010-04-06 14:26:56.149317
   crypted_password: 0789967153cdd211bc1d07852a4eb26c0530c0d4

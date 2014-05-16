@@ -32,6 +32,7 @@
     <!--[if lt IE 7]>
     <%= javascript_include_tag 'ie8/IE8' %>
     <![endif]-->
+    <%= yield :javascripts_extra %>
   <% else %>
     <%= yield :javascripts %>
   <% end %>
@@ -53,6 +54,7 @@
     <!--[if IE 7]><style type="text/css">@import url("/stylesheets/ie7.css");</style><![endif]-->
 
     <%= stylesheet_link_tag 'https://s3.amazonaws.com/sf-icons/css/sf-icons.css' %>
+    <%= yield :stylesheets_extra %>
 
   <% else %>
     <%= yield :stylesheets %>

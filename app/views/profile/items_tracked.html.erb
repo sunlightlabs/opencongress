@@ -20,8 +20,8 @@
   <br />
   <div style="float:right;">
   <% if @user == current_user %>
-    <%= form_for :privacy_option, @user.privacy_option, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
-      <%= f.select PrivacyOption.column_names[10].to_sym, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
+    <%= form_for :user_privacy_options, @user.user_privacy_options, :url => {:controller => "/profile", :action => 'update_privacy' } do |f| %>
+      <%= f.select :bookmarks, [["Public",2],["Friends", 1], ["Private",0]], {}, {:onchange => "this.form.submit();"} %>
       <span style = "margin-left:10px;"><%= image_tag("private.png", :alt => "private", :title => "Private", :id => 'Privacy') %></span>
     <% end %>
   <% end %>

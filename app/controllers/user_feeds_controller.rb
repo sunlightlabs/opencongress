@@ -159,8 +159,8 @@ class UserFeedsController < ApplicationController
 
   def is_permitted_tracked?
     t_user = nil
-    t_user = User.find_by_feed_key(params[:key] ? params[:key] : "ASDFASDF")
-    if @user.can_view(:my_tracked_items, t_user) == true
+    t_user = User.find_by_feed_key_option(params[:key] ? params[:key] : "ASDFASDF")
+    if @user.can_view(:bookmarks, t_user) == true
       return true
     else
       flash[:warning] = "You are not permitted to view that feed!"
@@ -171,8 +171,8 @@ class UserFeedsController < ApplicationController
 
   def is_permitted_actions?
     t_user = nil
-    t_user = User.find_by_feed_key(params[:key] ? params[:key] : "ASDFASDF")
-    if @user.can_view(:my_actions, t_user) == true
+    t_user = User.find_by_feed_key_option(params[:key] ? params[:key] : "ASDFASDF")
+    if @user.can_view(:actions, t_user) == true
       return true
     else
       redirect_to '/'

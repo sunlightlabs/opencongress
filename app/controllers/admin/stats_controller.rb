@@ -271,21 +271,21 @@ class Admin::StatsController < Admin::IndexController
     end
   end
 
-  def partner_email
-    @page_title = "Partner Email Signups"
-    if params[:format] == 'csv'
-      @users = User.find(:all, :conditions => ["partner_mailing = ?", true],
-                        :order => 'created_at DESC')
-    else
-      @users = User.find(:all, :conditions => ["partner_mailing = ?", true],
-                        :order => 'created_at DESC').paginate(:page => params[:page])
-    end
+  # def partner_email
+  #   @page_title = "Partner Email Signups"
+  #   if params[:format] == 'csv'
+  #     @users = User.find(:all, :conditions => ["partner_mail= ?", true],
+  #                       :order => 'created_at DESC')
+  #   else
+  #     @users = User.find(:all, :conditions => ["partner_mail = ?", true],
+  #                       :order => 'created_at DESC').paginate(:page => params[:page])
+  #   end
 
-    respond_to do |format|
-      format.html
-      format.csv { render :layout => false }
-    end
-  end
+  #   respond_to do |format|
+  #     format.html
+  #     format.csv { render :layout => false }
+  #   end
+  # end
 
   def formageddon
     @people = Person.all_sitting

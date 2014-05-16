@@ -9,6 +9,8 @@ class AccountController < ApplicationController
   after_filter :check_wiki, :only => [:login, :activate]
 
   skip_before_filter :has_accepted_tos?, :only => [:accept_tos, :logout]
+  skip_before_filter :must_reaccept_tos?, :only => [:reaccept_tos, :accept_tos, :logout]
+  skip_before_filter :warn_reaccept_tos?, :only => [:reaccept_tos, :accept_tos, :logout]
   skip_before_filter :is_authorized?, :only => [:logout]
   skip_before_filter :has_district?, :only => [:determine_district, :logout, :accept_tos]
 
@@ -97,7 +99,6 @@ class AccountController < ApplicationController
       self.current_user.update_attribute(:previous_login_date, self.current_user.last_login ? self.current_user.last_login : Time.now)
       self.current_user.update_attribute(:last_login, Time.now)
       self.current_user.user_ip_addresses.find_or_create_by_addr(UserIpAddress.int_form(request.remote_ip))
-      self.current_user.check_feed_key
       process_login_actions
       cookies[:ocloggedin]="true"
       if params[:remember_me] == "1"
@@ -105,7 +106,7 @@ class AccountController < ApplicationController
         cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
       end
       if self.current_user.fans.find(:first, :conditions => ["confirmed = ? AND created_at > ?", false, self.current_user.previous_login_date])
-        flash[:notice] = "Logged in * " + "<a href='#{url_for(:controller => 'friends', :login => self.current_user.login)}'>New Friends Requests!</a> *"
+        flash[:notice] = %Q[Logged in * <a href="#{url_for(:controller => 'friends', :login => self.current_user.login)}">New Friends Requests!</a> *]
       else
         flash[:notice] = "Logged in successfully"
       end
@@ -115,15 +116,24 @@ class AccountController < ApplicationController
     end
   end
 
+  def reaccept_tos
+  end
+
   def accept_tos
     @page_title = "Please Accept our Terms of Service and Privacy Policy"
     if request.post?
       user = User.find_by_id(current_user.id)
       if params[:accept_tos] == "1"
         user.accepted_tos_at = Time.now
+        if user.status == User::STATUSES[:reaccept_tos]
+          user.status = User::STATUSES[:active]
+        end
         user.save!
         self.current_user = User.find_by_id(user.id)
         activate_redirect(user_profile_path(:login => current_user.login))
+      else
+        flash[:error] = "Please accept the terms of service before continuing."
+        redirect :back and return
       end
     end
   end
@@ -133,24 +143,33 @@ class AccountController < ApplicationController
     if request.post?
       if params[:address].present?
         begin
-          result = MultiGeocoder.search("#{params[:address]}, #{params[:zipcode]}").first
+          result = MultiGeocoder.search("#{params[:address]}, #{params[:zipcode]}", :lookup => :smarty_streets).first
           lat, lng = result.coordinates
           zipcode = result.postal_code
           zip_four = result.zip4 rescue nil
-          # This happens so the update_state_and_district method won't be invoked via callback
-          # on account of zipcode or zip_four being dirty.
-          User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode, :zip_four => zip_four)
-          new_district = current_user.update_state_and_district(:lat => lat, :lng => lng)
+          current_user.update_attributes(:state => result.state_code)
+          current_user.user_profile.update_attributes(
+            :zipcode => zipcode,
+            :zip_four => zip_four,
+            :street_address => result.delivery_line_1,
+            :street_address_2 => result.delivery_line_2,
+            :city => result.city,
+          )
         rescue NoMethodError
           no_reps and return
         end
-      else
-        User.where(:id => current_user.id).limit(1).update_all(:zipcode => zipcode) if params[:zipcode].present?
-        new_district = current_user.update_state_and_district
+      elsif params[:zipcode].present?
+        result = MultiGeocoder.search(params[:zipcode]).first
+        current_user.update_attributes(:state => result.state_code)
+        current_user.user_profile.update_attributes(
+          :zipcode => result.zipcode,
+          :city => result.city
+        )
       end
-      current_user.save
+      #LocationChangedService will have been invoked but isn't reflected in current_user. Sorrrrrry I'm a bad person.
+      current_user.reload
       if current_user.state.present? and current_user.district.present?
-        flash[:notice] = "Your Congressional District (#{new_district}) has been saved."
+        flash[:notice] = "Your Congressional District (#{current_user.district_tag}) has been saved."
         activate_redirect(user_profile_path(:login => current_user.login))
         return
       else
@@ -410,11 +429,11 @@ class AccountController < ApplicationController
   end
 
   def mailing_list
-   if params[:user][:mailing] && params[:user][:mailing] == "1"
-     current_user.mailing = true
+   if params[:user][:opencongress_mail] && params[:user][:opencongress_mail] == "1"
+     current_user.user_options.opencongress_mail = true
      flash[:notice] = "Subscribed to the Mailing List"
    else
-     current_user.mailing = false
+     current_user.user_options.opencongress_mail = false
      flash[:notice] = "Un-Subscribed from the Mailing List"
    end
    current_user.save!
@@ -422,11 +441,11 @@ class AccountController < ApplicationController
   end
 
   def partner_mailing_list
-   if params[:user][:partner_mailing] && params[:user][:partner_mailing] == "1"
-     current_user.partner_mailing = true
+   if params[:user][:partner_mail] && params[:user][:partner_mail] == "1"
+     current_user.user_options.partner_mail = true
      flash[:notice] = "Subscribed to the Mailing List"
    else
-     current_user.partner_mailing = false
+     current_user.user_oprions.partner_mail = false
      flash[:notice] = "Un-Subscribed from the Mailing List"
    end
    current_user.save!

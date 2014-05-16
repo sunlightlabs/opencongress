@@ -4,7 +4,7 @@
 </div>
 <% else %>
 <% def_fil = 5 %>
-<% def_fil = ( current_user.default_filter ? current_user.default_filter : 5 ) if logged_in? %>
+<% def_fil = current_user.user_options.comment_threshold || 5 if logged_in? %>
 <div id="comfl<%= comment.id.to_s %>" class="commentfl" style="clear:both;float:none;
 <% if (def_fil <= comment.average_rating) %>display:none;<%end%>">
 <p>Filtered Comment [<%= link_to_function "show", "new Effect.Appear('com#{comment.id.to_s}');Element.hide('comfl#{comment.id.to_s}');" %>]</p>
@@ -64,7 +64,7 @@
   </tr>
 </table>
 </div>
-<% if comment.user && comment.user.small_picture %>
+<% if comment.user && comment.user.user_profile.small_picture %>
 <div class="comment_pic"><img src="/images/users/<%= h(comment.user.login) %>_s.jpg" /></div>
 <% else %>
 <div style="clear:left;"></div>

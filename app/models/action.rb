@@ -18,6 +18,9 @@
 #  roll_call_number :integer
 #  created_at       :datetime
 #  govtrack_order   :integer
+#  in_committee     :text
+#  in_subcommittee  :text
+#  ordinal_position :integer
 #
 
 class Action < ActiveRecord::Base

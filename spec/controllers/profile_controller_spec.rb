@@ -30,13 +30,13 @@ describe ProfileController do
            session
       )
       user = User.find(current_user.id)
-      user.main_picture.should == 'dan_m.jpg'
-      user.small_picture.should == 'dan_s.jpg'
+      user.user_profile.main_picture.should == 'dan_m.jpg'
+      user.user_profile.small_picture.should == 'dan_s.jpg'
 
       post(:delete_images, {}, session)
       user = User.find(current_user.id)
-      user.main_picture.should be_nil
-      user.small_picture.should be_nil
+      user.user_profile.main_picture.should be_nil
+      user.user_profile.small_picture.should be_nil
     end
   end
 end

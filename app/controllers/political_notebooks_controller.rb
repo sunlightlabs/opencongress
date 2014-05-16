@@ -20,8 +20,8 @@ class PoliticalNotebooksController < ApplicationController
 
   def update_privacy
     @user = current_user
-    params[:privacy_option].delete("user_id")
-    @user.privacy_option.update_attributes(params[:privacy_option])
+    params[:user_privacy_options].delete("user_id")
+    @user.user_privacy_options.update_attributes(params[:user_privacy_options])
     redirect_to political_notebook_path({:login =>current_user.login})
   end
 

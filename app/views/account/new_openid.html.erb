@@ -17,7 +17,7 @@
 
 <div class="floatleft padding">
 
-<%= form_for :user do |f| %>
+<%= simple_form_for :user do |f| %>
 
 <div title="Account signup" id="signupform" class="form" style="margin-top:0px;">
   <h4>You have successfully authenticated via OpenID, however, to create your OpenCongress account, the following information is also required:</h4>
@@ -36,25 +36,27 @@
   <p class="zip_tell">(required, to find your Members of Congress)</p>
 
 
-  <div class="clear margintop floatleft behave">	<br/>
-    <%= f.check_box :mailing, :style => "margin-top:-6px;", :class => "tick" %>
-    <label class="send" for="user_mailling">Send me major updates about OpenCongress <em>(optional, about one email per month)</em></label>
+  <%= f.simple_fields_for :user_options do |o| %>
+  <div class="clear margintop floatleft behave"><br/>
+    <%= f.check_box :opencongress_mail, :style => "margin-top:-6px;", :class => "tick" %>
+    <label class="send" for="user_options_attributes_opencongress_mail">Send me major updates about OpenCongress <em>(optional, about one email per month)</em></label>
   </div>
 
-  <div class="clear margintop floatleft behave">	<br/>
-    <%= f.check_box :partner_mailing, :class => "tick" %>
-    <label class="send" for="user_mailling">Join the Participatory Politics Foundation and Sunlight Foundation email lists<em>(optional, hear about our new projects)</em></label>
+  <div class="clear margintop floatleft behave"><br/>
+    <%= f.check_box :partner_mail, :class => "tick" %>
+    <label class="send" for="user_options_attributes_partner_mail">Join the Participatory Politics Foundation and Sunlight Foundation email lists<em>(optional, hear about our new projects)</em></label>
   </div>
 
   <div class="clear margintop floatleft behave">
     <%= f.check_box :accept_tos, :class => "tick" %>
     <label class="toss" for "user_accept_tos" %>I agree to the <a href="/about/terms_of_service">Terms of Service</a> and <a href="/about/privacy_policy">Privacy Policy.</a></label>
   </div>
+  <% end %>
 
 
   <input type="image" value="Register" class="floatright margintop behave clear" src="<%= image_path 'register.png' %>" />
 
-  <div class="clear"><em>We will not share your email address with anyone for any reason.</em></div>
+  <div class="clear"><em>We will not share your email address with anyone for any reason, unless you ask us to.</em></div>
 
 </div>
 

@@ -294,7 +294,7 @@ class ApiController < ApplicationController
     else
       # Legacy -- record api hits by user_id.
       # turn this off by mid-2012?
-      u = User.find_by_feed_key(params[:key])
+      u = User.find_by_feed_key_option(params[:key])
       u.api_hits.create(:action => params[:action])
     end
   end

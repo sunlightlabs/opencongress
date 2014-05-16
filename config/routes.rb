@@ -178,6 +178,7 @@ OpenCongress::Application.routes.draw do
     match 'comments/atom/:object/:id', :action => 'atom_comments'
   end
 
+  get 'users/:login' => redirect {|params, request| Rails.application.routes.url_helpers.user_profile_path(params[:login]) }
   scope 'users/:login' do
     get 'profile' => 'profile#show', :as => :user_profile
     get 'profile/edit' => 'profile#edit', :as => :edit_profile

@@ -49,13 +49,13 @@
         your home state and district are no longer able to be made private.</strong>
     </p>
     <p>
-        However, be aware that new users of the site will be given a different set of
-        default privacy settings, and we would encourage you to have a look at your
+        Be aware that new users of the site will be given a different set of
+        default privacy settings, and we would encourage you to have a look at your own
         <% if logged_in? %>
-        <%= link_to "profile", edit_profile_path(:login => current_user.login) %>
+        <%= link_to "profile", edit_profile_path(:login => current_user.login) %>,
         <% else %>
-            profile
-        <% end %>.
+            profile,
+        <% end %> too.
     </p>
     <p>
         Please update your information to a degree of privacy that works for you but will also
@@ -67,7 +67,7 @@
 
     <hr>
 
-    <h3>New Information we will store on your behalf:</h3>
+    <h3>New information we will store on your behalf:</h3>
     <p>
         It's redundant that you should have to re-enter your
         address and phone number each time you contact your reps, so

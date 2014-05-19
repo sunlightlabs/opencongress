@@ -12,7 +12,7 @@
 #
 
 class ContactCongressTest < ActiveRecord::Base
-  scope :latest, -> { select("distinct on (bioguideid) *").order("created_at DESC") }
+  scope :latest, -> { select("distinct on (bioguideid) *").order("bioguideid, created_at DESC") }
   scope :passed, -> { where("status like ?", "SENT") }
   scope :failed, -> { where("status like ? or status like ?", "%ERROR%", "%SENT_AS_FAX%") }
   scope :unknown, -> { where("status like ? or status like ?", "%WARNING%", "%START%") }

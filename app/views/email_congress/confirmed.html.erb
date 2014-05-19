@@ -2,8 +2,7 @@
   Your letter will be delivered shortly. You can find your letter in <a href="<%= url_for(:controller => :profile, :action => :actions, :login => current_user.login) %>">your profile</a>.
 
   <% if [@prompt_for_email, @prompt_for_password].any? %>
-    <%= simple_form_for(current_user, :url => user_profile_path(current_user.login)) do |f| %>
-      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+    <%= simple_form_for(current_user, :url => user_profile_path(current_user.login), :remote => true) do |f| %>
 
       <% if @prompt_for_email == true %>
         <div>

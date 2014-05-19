@@ -40,7 +40,7 @@ OpenCongress::Application.routes.draw do
 
   scope 'email_congress', :controller => :email_congress do
     match 'postmark/inbound', :action => :message_to_members
-    match 'complete_profile', :action => :complete_profile
+    match 'complete_profile/:confirmation_code', :action => :complete_profile
     match 'confirmed/:confirmation_code', :action => :confirmed
     match 'confirm/:confirmation_code', :action => :confirm
     match 'confirm', :action => :confirm

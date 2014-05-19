@@ -1,5 +1,6 @@
 require_dependency 'email_congress'
 class EmailCongressController < ApplicationController
+  skip_before_filter :protect_from_forgery, :only => [:complete_profile]
 
   # User gets confirmation link or form requesting sender details.
 

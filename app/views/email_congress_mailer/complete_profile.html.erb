@@ -12,46 +12,47 @@
       </tr>
     </table>
 
-    <% simple_form_for('profile', :url => '/email_congress/complete_profile', :method => "post") do |f| %>
+    <form method="post" action="<%= url_for(:controller => :email_congress, :action => :complete_profile, :confirmation_code => @seed.confirmation_code) %>">
+      <input type="hidden" name="_method" value="put">
       <input type="hidden" name="confirmation_code" value="<%= @seed.confirmation_code %>">
 
       <table>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :title, 'Title' %>
-          <%= f.text_field :title %>
+            <label for="profile_title">Title</label>
+            <input id="profile_title" name="profile[title]" type="text" value="<%= @profile.title %>">
         </td> </tr>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :first_name, 'First name' %>
-          <%= f.text_field :first_name %>
+            <label for="profile_first_name">Title</label>
+            <input id="profile_first_name" name="profile[first_name]" type="text" value="<%= @profile.first_name %>">
         </td> </tr>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :last_name, 'Last name' %>
-          <%= f.text_field :last_name %>
+            <label for="profile_last_name">Title</label>
+            <input id="profile_last_name" name="profile[last_name]" type="text" value="<%= @profile.last_name %>">
         </td> </tr>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :street_address, 'Address' %>
-          <%= f.text_field :street_address %>
+            <label for="profile_street_address">Address</label>
+            <input id="profile_street_address" name="profile[street_address]" type="text" value="<%= @profile.street_address %>">
         </td> </tr>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :street_address_2, 'Address (cont\'d)' %>
-          <%= f.text_field :street_address_2 %>
+            <label for="profile_street_address_2">Unit/Suite/etc</label>
+            <input id="profile_street_address_2" name="profile[street_address_2]" type="text" value="<%= @profile.street_address_2 %>">
         </td> </tr>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :city, 'City' %>
-          <%= f.text_field :city %>
+            <label for="profile_city">City</label>
+            <input id="profile_city" name="profile[city]" type="text" value="<%= @profile.city %>">
         </td> </tr>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :state, 'State' %>
-          <%= f.text_field :state %>
+            <label for="profile_state">State</label>
+            <input id="profile_state" name="profile[state]" type="text" value="<%= @profile.state %>">
         </td> </tr>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :zipcode, 'ZIP Code' %>
-          <%= f.text_field :zipcode, :maxlength => 5, :size => 5 %>
-          <%= f.text_field :zip_four, :maxlength => 4, :size => 4 %>
+            <label for="profile_zipcode">ZIP Code</label>
+            <input id="profile_zipcode" name="profile[zipcode]" type="text" value="<%= @profile.zipcode %>">
+            <input id="profile_zip_four" name="profile[zip_four]" type="text" value="<%= @profile.zip_four %>">
         </td> </tr>
         <tr> <td class="form-line-wrapper">
-          <%= f.label :mobile_phone, 'Phone' %>
-          <%= f.text_field :mobile_phone %>
+            <label for="profile_mobile_phone">Title</label>
+            <input id="profile_mobile_phone" name="profile[mobile_phone]" type="text" value="<%= @profile.mobile_phone %>">
         </td> <tr>
 
         <% if !@profile.accept_tos %>
@@ -62,12 +63,15 @@
               you.
           </td> </tr>
           <tr> <td class="form-line-wrapper">
-              <%= f.input :accept_tos, :as => :radio_buttons, :collection => [['Yes', true], ['No', false]] %>
+              <input id="profile_accept_tos" name="profile[accept_tos]" type="radio" value="true">
+              <label for="profile_accept_tos">Yes</label>
+              <input id="profile_accept_tos" name="profile[accept_tos]" type="radio" value="false">
+              <label for="profile_accept_tos">No</label>
           </td> </tr>
         <% end %>
 
         <tr> <td class="form-line-wrapper">
-          <%= f.button :submit, :value => 'Complete' %>
+            <input type="submit" id="profile_submit" class="btn" name="commit" value="Complete">
 
           <a href="<%= url_for(:only_path => false, :controller => :account, :action => :login, :return_to => url_for(:only_path => false, :controller => :email_congress, :action => :confirm, :confirmation_code => @seed.confirmation_code)) %>">I already have an account</a>
         </td> </tr>
@@ -84,9 +88,10 @@
           </td>
         </tr>
 
-    <% if @sender_user %>
-    <% end %>
-    <% end %> <!-- end form_for -->
+      </table>
+      <% if @sender_user %>
+      <% end %>
+    </form>
   </body>
 
 </html>

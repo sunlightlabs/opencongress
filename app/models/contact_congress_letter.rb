@@ -46,4 +46,7 @@ class ContactCongressLetter < ActiveRecord::Base
     formageddon_threads.first.privacy
   end
 
+  def public?
+    privacy == 'PUBLIC'
+  end
 end

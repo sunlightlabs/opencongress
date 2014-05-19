@@ -165,6 +165,9 @@ OpenCongress::Application.routes.draw do
   # map.connect ':controller/:action/:id'
 
 
+  scope 'contact_congress_letters', :controller => 'contact_congress_letters' do
+    post ':id', :action => :update
+  end
   resources :contact_congress_letters, :only => [:index, :show, :new, :update] do
     get 'create_from_formageddon', :on => :collection # create uses POST and we'll be redirecting to create
     get 'get_recipients', :on => :collection

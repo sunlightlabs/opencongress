@@ -16,7 +16,7 @@ module ContactCongressLettersHelper
     elsif letter.contactable_type == 'Subject'
       u("A letter to #Congress on @opencongress regarding #{letter.contactable.term}" + url)
     else
-      u("A letter to #Congress on @opencongress: #{letter.formageddon_threads.first.formageddon_letters.first.subject}")
+      u("A letter to #Congress on @opencongress: #{letter.subject}")
     end
   end
 
@@ -48,5 +48,24 @@ module ContactCongressLettersHelper
     else
       "This letter was sent from #{letter.formageddon_thread.formageddon_sender.login} to #{letter.formageddon_thread.formageddon_recipient} on #{letter.created_at.strftime('%B %d, %Y')}."
     end
+  end
+
+  def opposite_privacy (letter)
+    if letter.privacy == 'PRIVATE'
+      'PUBLIC'
+    elsif letter.privacy == 'PUBLIC'
+      'PRIVATE'
+    else
+      raise "Invalid privacy setting for letter #{letter.id}: #{letter.privacy}"
+    end
+  end
+
+  def privacy_button_classes (letter, button)
+    classes = ['btn', 'pull-left']
+    if letter.privacy.upcase == button.to_s.upcase
+      classes.push('active')
+      classes.push('disabled')
+    end
+    return classes.join(' ')
   end
 end

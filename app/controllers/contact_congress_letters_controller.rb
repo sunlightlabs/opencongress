@@ -262,7 +262,11 @@ class ContactCongressLettersController < ApplicationController
       @contact_congress_letter.save
     end
 
-    redirect_to @contact_congress_letter, :notice => "Letter setting has been updated."
+    return redirect_to(url_for(:action => :show,
+                               :id => @contact_congress_letter.id,
+                               :t => Time.zone.now.to_i,
+                               :only_path => false),
+                       {:notice => "Letter setting has been updated."})
   end
 
   # Deprecated

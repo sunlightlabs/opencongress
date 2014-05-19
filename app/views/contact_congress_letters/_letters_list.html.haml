@@ -24,6 +24,8 @@
             = l.contactable.title_common
           - elsif l.contactable_type == 'Subject'
             = l.contactable.term
+          - else
+            = l.subject
   
         .grid_2= l.formageddon_threads.first.privacy
         - if l.privacy == "PUBLIC" or (current_user != :false and current_user == l.user)

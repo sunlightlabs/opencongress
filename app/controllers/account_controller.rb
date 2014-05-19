@@ -133,7 +133,7 @@ class AccountController < ApplicationController
         activate_redirect(user_profile_path(:login => current_user.login))
       else
         flash[:error] = "Please accept the terms of service before continuing."
-        redirect :back and return
+        redirect_to :back and return
       end
     end
   end

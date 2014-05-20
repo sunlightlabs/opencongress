@@ -12,9 +12,9 @@ namespace :formageddon do
       elsif ENV["STATUS"].present?
         case ENV["STATUS"]
         when "failed"
-          ids = ContactCongressTest.latest.failed.to_a.map(&:bioguideid)
+          ids = ContactCongressTest.recently_failed.to_a.map(&:bioguideid)
         when "unconfirmed"
-          ids = ContactCongressTest.latest.unknown.to_a.map(&:bioguideid)
+          ids = ContactCongressTest.recently_unknown.to_a.map(&:bioguideid)
         else
           ids = []
         end

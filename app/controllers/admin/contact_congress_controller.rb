@@ -8,11 +8,10 @@ class Admin::ContactCongressController < Admin::IndexController
 
   def overview
     @page_title = 'Last Delivery Attempt'
-    @tests = ContactCongressTest.latest
-    @passed = @tests.passed
-    @failed = @tests.failed
-    @captcha_required = @tests.captcha_required
-    @unknown = @tests.unknown
+    @passed = ContactCongressTest.recently_passed
+    @failed = ContactCongressTest.recently_failed
+    @captcha_required = ContactCongressTest.recently_captcha_required
+    @unknown = ContactCongressTest.recently_unknown
   end
 
   def letters

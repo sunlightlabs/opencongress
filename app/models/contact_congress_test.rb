@@ -17,4 +17,20 @@ class ContactCongressTest < ActiveRecord::Base
   scope :failed, -> { where("status like ? or status like ?", "%ERROR%", "%SENT_AS_FAX%") }
   scope :unknown, -> { where("status like ? or status like ?", "%WARNING%", "%START%") }
   scope :captcha_required, -> { where("status like ?", "%CAPTCHA_REQUIRED%") }
+
+  def recently_passed
+    latest.to_a.select{|t| t.status =~ /\ASENT\Z/ }
+  end
+
+  def recently_failed
+    latest.to_a.select{|t| t.status =~ /ERROR|SENT_AS_FAX/ }
+  end
+
+  def recently_unknown
+    latest.to_a.select{|t| t.status =~ /WARNING/ }
+  end
+
+  def recently_captcha_required
+    latest.to_a.select{|t| t.status =~ /CAPTCHA_REQUIRED/ }
+  end
 end

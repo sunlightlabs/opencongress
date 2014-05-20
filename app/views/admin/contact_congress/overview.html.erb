@@ -10,7 +10,7 @@
   <tbody>
     <% if @passed.any? %>
     <tr>
-      <td colspan="4"><%= @passed.to_a.count %> Successes</td>
+      <td colspan="4"><%= @passed.count %> Successes</td>
     </tr>
     <tr>
       <% @passed.each do |p| %>
@@ -21,7 +21,7 @@
 
     <% if @failed.any? %>
     <tr>
-      <td colspan="4"><%= @failed.to_a.count %> Failures</td>
+      <td colspan="4"><%= @failed.count %> Failures</td>
     </tr>
     <tr>
       <% @failed.each do |p| %>
@@ -32,7 +32,7 @@
 
     <% if @unknown.any? %>
     <tr>
-      <td colspan="4"><%= @unknown.to_a.count %> Unknown</td>
+      <td colspan="4"><%= @unknown.count %> Unknown</td>
     </tr>
     <tr>
       <% @unknown.each do |p| %>
@@ -43,7 +43,7 @@
 
     <% if @captcha_required.any? %>
     <tr>
-      <td colspan="4"><%= @captcha_required.to_a.count %> Captcha Required</td>
+      <td colspan="4"><%= @captcha_required.count %> Captcha Required</td>
     </tr>
     <tr>
       <% @captcha_required.each do |p| %>

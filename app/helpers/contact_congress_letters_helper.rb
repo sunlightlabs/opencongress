@@ -68,4 +68,18 @@ module ContactCongressLettersHelper
     end
     return classes.join(' ')
   end
+
+  def body_as_paragraphs (letter)
+    trimmed = letter.message.strip
+    normalizedLineBreaks = trimmed.gsub(/(\r\n|\n\r)/, "\n")
+    normalizedWhitespace = normalizedLineBreaks.gsub(/^\s+$/m, '')
+    hasConsecutiveLineBreaks = !normalizedWhitespace.index(/[\r\n]{2,}/).nil?
+    if hasConsecutiveLineBreaks == true
+      lineBreakPattern = /[\r\n]{2,}/
+    else
+      lineBreakPattern = /[\r\n]/
+    end
+    withPTags = normalizedWhitespace.gsub(lineBreakPattern, "\n</p>\n\n<p>\n")
+    "<p>\n#{withPTags}\n</p>".html_safe
+  end
 end

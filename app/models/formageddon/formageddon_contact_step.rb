@@ -73,7 +73,7 @@ class Formageddon::FormageddonContactStep
           :body => { "text" => text, "choices" => options[:option_list]},
           :headers => { "Content-Type" => "application/x-www-form-urlencoded"}
         ).body) rescue nil
-      value || options[:default]
+      return value || options[:default]
 
     elsif options[:type] == :title
       thread = options[:letter].formageddon_thread rescue nil
@@ -86,5 +86,6 @@ class Formageddon::FormageddonContactStep
       return @@prefix_for_gender.fetch(@@gender_guesser.get_gender(first.strip), value)
 
     end
+    value
   end
 end

@@ -18,16 +18,21 @@ end
 
 updated = 0
 clone_path = File.join(Settings.data_path, 'contact-congress')
+datafile_path = File.join(clone_path, 'members')
 Person.legislator.each do |p|
-  begin
-    UnitedStates::ContactCongress.import_contact_steps_for p, "#{clone_path}/members/#{p.bioguideid}.yaml"
-    OCLogger.log "Updated form for #{p.bioguideid}."
-    updated += 1
-  rescue NoMethodError
-    OCLogger.log "Unable to import #{p.firstname} #{p.lastname} (#{p.bioguideid}): <#{$!.class}: #{$!}>"
-    OCLogger.log $@.join("\n")
-  rescue
-    OCLogger.log "Unable to import #{p.firstname} #{p.lastname} (#{p.bioguideid}): <#{$!.class}: #{$!}>"
+  last_build = Person.formageddon_contact_steps.first.created_at rescue Time.new(0)
+  changed = `cd #{datafile_path} && git log -1 --since=#{last_run.iso8601} #{leg.bioguideid}.yaml`.present?
+  if changed
+    begin
+      UnitedStates::ContactCongress.import_contact_steps_for p, "#{clone_path}/members/#{p.bioguideid}.yaml"
+      OCLogger.log "Updated form for #{p.bioguideid}."
+      updated += 1
+    rescue NoMethodError
+      OCLogger.log "Unable to import #{p.firstname} #{p.lastname} (#{p.bioguideid}): <#{$!.class}: #{$!}>"
+      OCLogger.log $@.join("\n")
+    rescue
+      OCLogger.log "Unable to import #{p.firstname} #{p.lastname} (#{p.bioguideid}): <#{$!.class}: #{$!}>"
+    end
   end
 end
 

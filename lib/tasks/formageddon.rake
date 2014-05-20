@@ -9,15 +9,26 @@ namespace :formageddon do
     task :all => :environment do
       if ENV["BIOGUIDE"].present?
         recipients = [Person.find_by_bioguideid(ENV["BIOGUIDE"])]
+      elsif ENV["STATUS"].present?
+        case ENV["STATUS"]
+        when "failed"
+          ids = ContactCongressTest.latest.failed.to_a.map(&:bioguideid)
+        when "unconfirmed"
+          ids = ContactCongressTest.latest.unknown.to_a.map(&:bioguideid)
+        else
+          ids = []
+        end
+        recipients = Person.where(:bioguideid => ids)
       else
         recipients = Person.legislator
       end
       recipients.each do |leg|
+        puts "Testing #{leg.bioguideid}..."
         TestFormageddonJob.perform(leg.bioguideid)
       end
     end
 
-    desc "Tests sending to legislators which have changed since the last run"
+    desc "Tests sending to legislators whose files have changed since the last run"
     task :updated => :environment do
       recipients = Person.legislator
       data_path = File.join(Settings.data_path, 'contact-congress')
@@ -35,6 +46,19 @@ namespace :formageddon do
         GC.start
       end
     end
+
+    desc "Tests sending to legislators who were unconfirmed in the last run"
+    task :unconfirmed => :environment do
+      ENV['STATUS'] = 'unconfirmed'
+      Rake::Task['formageddon:test:all'].invoke
+    end
+
+    desc "Tests sending to legislators who failed in the last run"
+    task :failed => :environment do
+      ENV['STATUS'] = 'failed'
+      Rake::Task['formageddon:test:all'].invoke
+    end
+
   end
   task :test => "test:updated"
 end

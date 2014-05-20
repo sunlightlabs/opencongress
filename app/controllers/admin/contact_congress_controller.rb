@@ -7,8 +7,12 @@ class Admin::ContactCongressController < Admin::IndexController
   end
 
   def overview
-    @page_title = 'Contact Congress - At a Glance'
-    @people = Person.legislator
+    @page_title = 'Last Delivery Attempt'
+    @tests = ContactCongressTest.latest
+    @passed = @tests.passed
+    @failed = @tests.failed
+    @captcha_required = @tests.captcha_required
+    @unknown = @tests.unknown
   end
 
   def letters
@@ -19,5 +23,13 @@ class Admin::ContactCongressController < Admin::IndexController
   def stats
     @page_title = 'Contact Congress Stats'
     @people = Person.all_sitting
+  end
+
+  def result
+    @test = ContactCongressTest.find(params[:id])
+    form_url = Person.find_by_bioguideid(@test.bioguideid).formageddon_contact_steps.first.command.sub('visit::', '')
+    uri = Addressable::URI.parse(form_url)
+    @baseurl = "#{uri.scheme}://#{uri.host}"
+    render "result", :layout => false
   end
 end

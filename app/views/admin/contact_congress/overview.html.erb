@@ -8,13 +8,48 @@
     </tr>
   </thead>
   <tbody>
-    <% @people.each do |p| %>
-      <tr>
-        <td><%= link_to p.full_name, person_path(p.id) %></td>
-        <td><%= link_to p.bioguideid, "https://github.com/unitedstates/tree/master/members/#{p.bioguideid}" %></td>
-        <td><%= image_tag status_image_url(status_image_for(p)) %></td>
-        <td><%= success_percentage(p) %></td>
-      </tr>
+    <% if @passed.any? %>
+    <tr>
+      <td colspan="4"><%= @passed.to_a.count %> Successes</td>
+    </tr>
+    <tr>
+      <% @passed.each do |p| %>
+      <%= render :partial => 'contact_congress_test', :locals => { :p => p } %>
+      <% end %>
+    </tr>
+    <% end %>
+
+    <% if @failed.any? %>
+    <tr>
+      <td colspan="4"><%= @failed.to_a.count %> Failures</td>
+    </tr>
+    <tr>
+      <% @failed.each do |p| %>
+      <%= render :partial => 'contact_congress_test', :locals => { :p => p } %>
+      <% end %>
+    </tr>
+    <% end %>
+
+    <% if @unknown.any? %>
+    <tr>
+      <td colspan="4"><%= @unknown.to_a.count %> Unknown</td>
+    </tr>
+    <tr>
+      <% @unknown.each do |p| %>
+      <%= render :partial => 'contact_congress_test', :locals => { :p => p } %>
+      <% end %>
+    </tr>
+    <% end %>
+
+    <% if @captcha_required.any? %>
+    <tr>
+      <td colspan="4"><%= @captcha_required.to_a.count %> Captcha Required</td>
+    </tr>
+    <tr>
+      <% @captcha_required.each do |p| %>
+      <%= render :partial => 'contact_congress_test', :locals => { :p => p } %>
+      <% end %>
+    </tr>
     <% end %>
   </tbody>
 </table>

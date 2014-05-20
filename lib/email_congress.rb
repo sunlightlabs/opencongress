@@ -1,3 +1,5 @@
+require 'nanp'
+
 module EmailCongress
 
   class ProfileProxy
@@ -19,6 +21,15 @@ module EmailCongress
     validates_presence_of :zipcode
     validates_presence_of :email
     validates_presence_of :mobile_phone
+    validate :phone_number_formatting
+
+    def phone_number_formatting
+      nanp_number = NANP::PhoneNumber.new(mobile_phone)
+      if !nanp_number.valid?
+        errors.add(:mobile_phone, nanp_number.error)
+      end
+      nil
+    end
 
     def initialize (src=nil)
       @errors = ActiveModel::Errors.new(self)
@@ -43,6 +54,18 @@ module EmailCongress
     def persisted?
       # Satisfied ActiveModel::Conversion
       false
+    end
+
+    def mobile_phone= (phone_number)
+      nanp_number = NANP::PhoneNumber.new(phone_number)
+      if nanp_number.valid?
+        # We won't have to display an error, so reformat it.
+        @mobile_phone = nanp_number.to_s
+      else
+        # We'll validate again before save and show the error there, so save
+        # the invalid value.
+        @mobile_phone = phone_number
+      end
     end
 
     def full_zipcode

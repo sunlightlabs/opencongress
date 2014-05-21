@@ -81,7 +81,7 @@ class EmailCongressController < ApplicationController
       if @sender_user
         flash[:error] = @profile.errors.full_messages.to_sentence
       else
-        flash[:error] = "To send you message we need to collect the information below."
+        flash[:error] = "To send your message we need to collect the information below."
       end
       return redirect_to(:action => :complete_profile,
                          :confirmation_code => @seed.confirmation_code)
@@ -89,14 +89,25 @@ class EmailCongressController < ApplicationController
 
     # We have a user and a complete profile.
     begin
+      if @sender_user.user_profile.zip_four.blank?
+        # Some congress members require the zip_four but we don't include it in
+        # the profile form.
+        ZipInferrenceService.new(@sender_user.user_profile)
+      end
       @profile.copy_to(@seed)
       recipients = @recipients_by_address.map{ |addr, rcpt| rcpt }.compact
-      EmailCongress.reify_for_contact_congress(@sender_user, @seed, recipients)
+      cc_letter = EmailCongress.reify_for_contact_congress(@sender_user, @seed, recipients)
+      cc_letter.formageddon_threads.each do |thread|
+        letter = thread.formageddon_letters.first
+        if letter
+          letter.delay.send_letter
+        end
+      end
       @seed.confirm!
       return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
     rescue => e
       # TODO: Write job to find these seeds and retry them.
-      capture_exception(e)
+      Raven.capture_exception(e)
       flash[:error] = "Your letter could not be sent due to technical difficulties. Please try again later."
       return redirect_to(:action => :complete_profile, :confirmation_code => @seed.confirmation_code)
     end
@@ -115,17 +126,15 @@ class EmailCongressController < ApplicationController
 
   def complete_profile
     @profile = EmailCongress::ProfileProxy.build(@seed)
-    if @sender_user
-      @profile = @profile.merge_many(@sender_user.user_profile, @sender_user)
-    end
-    if params[:profile]
-      params[:profile].delete(:email)
-      params[:profile][:accept_tos] = (params[:profile][:accept_tos] == 'true')
-      @params_profile = EmailCongress::ProfileProxy.new(OpenStruct.new(params[:profile]))
-      @profile = @params_profile.merge(@profile) # Values from the form should override existing values
-    end
 
     if request.method_symbol == :post
+      if params[:profile]
+        params[:profile].delete(:email)
+        params[:profile][:accept_tos] = (params[:profile][:accept_tos] == 'true') || @sender_user.accepted_tos?
+        @params_profile = EmailCongress::ProfileProxy.new(OpenStruct.new(params[:profile]))
+        @profile = @params_profile.merge(@profile) # Values from the form should override existing values
+      end
+
       if @profile.valid?
         if !@sender_user
           @sender_user = User.generate_for_profile(@profile)
@@ -144,6 +153,10 @@ class EmailCongressController < ApplicationController
         else
           @profile.errors.add(:account, "could not be created due to technical difficulties")
         end
+      end
+    elsif request.method_symbol == :get
+      if @sender_user
+        @profile = @profile.merge_many(@sender_user.user_profile, @sender_user)
       end
     end
   end

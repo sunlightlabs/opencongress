@@ -24,6 +24,7 @@ module EmailCongress
     validate :phone_number_formatting
 
     def phone_number_formatting
+      return if @mobile_phone.blank?
       nanp_number = NANP::PhoneNumber.new(mobile_phone)
       if !nanp_number.valid?
         errors.add(:mobile_phone, nanp_number.error)
@@ -333,13 +334,13 @@ module EmailCongress
     end
 
     def reify_as_formageddon_letter (thread, seed)
-      # Creates a FormageddonLetter instance, not yet associated to a thread.
+      # Creates a FormageddonLetter instance, associated with the given FormageddonThread.
       letter = Formageddon::FormageddonLetter.new
       letter.subject = seed.email_subject
       letter.message = seed.email_body
       letter.direction = 'TO_RECIPIENT'
       letter.issue_area = nil   # This will be set if required by the contact form.
-      letter.status = nil  # This field captures errors. No errors at the outset.
+      letter.status = 'START'   # This field will capture send errors if they occur.
       letter.fax_id = nil  # This will be set if we fall back to faxing.
       letter.formageddon_thread = thread
       letter.save!

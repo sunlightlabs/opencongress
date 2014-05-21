@@ -7,7 +7,7 @@ module EmailCongress
     include ActiveModel::Conversion
     include ActiveModel::Validations
 
-    @@ATTRS = [:email, :accept_tos, :title, :first_name, :last_name,
+    @@ATTRS = [:email, :accept_tos, :first_name, :last_name,
                :mobile_phone, :street_address, :street_address_2, :city,
                :state, :zipcode, :zip_four]
     attr_accessor(*@@ATTRS)
@@ -148,8 +148,7 @@ module EmailCongress
         :city => :sender_city,
         :state => :sender_state,
         :mobile_phone => :sender_phone,
-        :email => :sender_email,
-        :title => :sender_title }
+        :email => :sender_email }
     end
 
     def copy_to_formageddonthread (dst)

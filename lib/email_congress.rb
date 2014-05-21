@@ -27,6 +27,8 @@ module EmailCongress
       nanp_number = NANP::PhoneNumber.new(mobile_phone)
       if !nanp_number.valid?
         errors.add(:mobile_phone, nanp_number.error)
+      elsif nanp_number.local?
+        errors.add(:mobile_phone, "You cannot use a local telephone number. Please provide your area code.")
       end
       nil
     end
@@ -58,7 +60,7 @@ module EmailCongress
 
     def mobile_phone= (phone_number)
       nanp_number = NANP::PhoneNumber.new(phone_number)
-      if nanp_number.valid?
+      if nanp_number.valid? && !nanp_number.local?
         # We won't have to display an error, so reformat it.
         @mobile_phone = nanp_number.to_s
       else

@@ -59,6 +59,10 @@ module EmailCongress
     end
 
     def mobile_phone= (phone_number)
+      if phone_number.blank?
+        return @mobile_phone = phone_number
+      end
+
       nanp_number = NANP::PhoneNumber.new(phone_number)
       if nanp_number.valid? && !nanp_number.local?
         # We won't have to display an error, so reformat it.

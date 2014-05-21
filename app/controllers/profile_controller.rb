@@ -5,6 +5,7 @@ class ProfileController < ApplicationController
   before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
   skip_before_filter :must_reaccept_tos?, :only => [:show, :edit, :update, :destroy, :upload_pic, :delete_images]
+  skip_before_filter :has_district?, :only => [:show, :edit, :update, :destroy, :upload_pic, :delete_images]
 
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])

@@ -21,7 +21,7 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: 76bace22bc2af12635210102d3772c30c4cdf579
+  revision: b6f150dac5ba24c96d4541618a1e4b311b044cfb
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)

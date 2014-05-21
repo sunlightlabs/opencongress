@@ -34,7 +34,7 @@ namespace :formageddon do
       data_path = File.join(Settings.data_path, 'contact-congress')
       datafile_path = File.join(data_path, 'members')
       recipients.each do |leg|
-        last_run = ContactCongressTest.find_by_bioguideid(leg.bioguideid).created_at rescue Time.new(0)
+        last_run = ContactCongressTest.find_by_bioguideid(leg.bioguideid).created_at || Time.new(0) rescue Time.new(0)
         changed = `cd #{datafile_path} && git log -1 --since=#{last_run.iso8601} #{leg.bioguideid}.yaml`.present?
         if changed
           puts "Testing #{leg.bioguideid}..."

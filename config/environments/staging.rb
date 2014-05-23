@@ -14,6 +14,10 @@ OpenCongress::Application.configure do
   config.action_mailer.raise_delivery_errors = false
   config.action_mailer.perform_deliveries = false
   config.action_mailer.delivery_method = :postmark
+  config.action_mailer.default_url_options = {
+    :host => 'staging.opencongress.org',
+    :port => 3000
+  }
 
   config.faxable.deliver_faxes = false
 

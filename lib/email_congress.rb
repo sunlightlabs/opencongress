@@ -313,6 +313,11 @@ module EmailCongress
       members.first
     end
 
+    def pending_seeds (user)
+      email = user.is_a?(User) ? user.email : user
+      EmailCongressLetterSeed.unresolved.where(:sender_email => email).to_a
+    end
+
     def seed_for_postmark_object (obj)
       if obj.is_a?(String)
         email = Postmark::Mitt.new(JSON.load(json))

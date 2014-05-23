@@ -1,4 +1,5 @@
 require 'authenticated_system'
+require_dependency 'email_congress'
 
 class ApplicationController < ActionController::Base
   protect_from_forgery :if => :logged_in?
@@ -13,6 +14,7 @@ class ApplicationController < ActionController::Base
   before_filter :facebook_check
   before_filter :clear_return_to
   before_filter :current_tab
+  before_filter :pending_email_seed_prompt
   before_filter :has_accepted_tos?
   before_filter :must_reaccept_tos?
   before_filter :warn_reaccept_tos?
@@ -194,6 +196,15 @@ class ApplicationController < ActionController::Base
     if logged_in?
       if current_user.status == User::STATUSES[:reaccept_tos]
         flash.now[:info] = %Q[Our Default privacy settings have changed. <a href="/account/reaccept_tos">Click here to review and accept the changes</a>.].html_safe
+      end
+    end
+  end
+
+  def pending_email_seed_prompt
+    if logged_in?
+      seeds = EmailCongress.pending_seeds(current_user.email)
+      if seeds.count > 0
+        flash.now[:info] = %Q[You have an unfinished email re: <a href="#{url_for(:controller => :email_congress, :action => :confirm, :confirmation_code => seeds.first.confirmation_code)}">#{seeds.first.email_subject}</a>].html_safe
       end
     end
   end

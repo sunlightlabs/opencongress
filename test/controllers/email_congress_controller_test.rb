@@ -81,22 +81,25 @@ class EmailCongressControllerTest < ActionController::TestCase
     @user = User.new(:login => 'jdoe', :password => User.random_password)
     @user.user_profile = UserProfile.new
     MultiGeocoder.stub(:coordinates, [31.4228, -87.41734]) do
-      Congress.stub(:districts_locate, OpenStruct.new({ "results" => [OpenStruct.new({ "state" => "AL", "district" => 1 }) ], "count" => 1 })) do
-        profile.copy_to(@user)
-        @user.save!
+      MultiGeocoder.stub(:search, [OpenStruct.new({ "zipcode" => "36445", "zip4" => "5420" })]) do
+        Congress.stub(:districts_locate, OpenStruct.new({ "results" => [OpenStruct.new({ "state" => "AL", "district" => 1 }) ], "count" => 1 })) do
+          profile.copy_to(@user)
+          @user.save!
 
-        profile.copy_to(@user.user_profile)
-        @user.user_profile.save!
+          profile.copy_to(@user.user_profile)
+          @user.user_profile.save!
+
+          incoming_seed({
+            "From" => @user.email,
+            "FromFull" => { "Name" => "", "Email" => @user.email },
+            "To" => at_email_congress('myreps'),
+            "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
+          })
+          get(:confirm, {'confirmation_code' => @seed.confirmation_code})
+        end
       end
     end
-
-    incoming_seed({
-      "From" => @user.email,
-      "FromFull" => { "Name" => "", "Email" => @user.email },
-      "To" => at_email_congress('myreps'),
-      "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
-    })
-    get(:confirm, {'confirmation_code' => @seed.confirmation_code})
+    assert_equal nil, flash[:error]
     assert_redirected_to @controller.url_for(:action => :confirmed,
                                              :confirmation_code => @seed.confirmation_code)
   end

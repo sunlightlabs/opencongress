@@ -38,7 +38,7 @@ class EmailCongressController < ApplicationController
     #   User is trying to email a nonexistent address
     #   User is trying to email someone they are not allowed to email
 
-    if @resolved_addresses.empty?
+    if @recipient_addresses.empty?
       EmailCongressMailer.no_recipient_bounce(@email, @rejected_addresses, @unresolvable_addresses).deliver
       return head :ok
     end
@@ -208,7 +208,7 @@ class EmailCongressController < ApplicationController
       end
     end
     @unresolvable_addresses = @recipients_by_address.select{ |addr, rcpt| rcpt.nil? }.map(&:first)
-    @resolved_addresses = @recipients_by_address.reject{ |attr, rcpt| rcpt.nil? }.map(&:first)
+    @recipient_addresses = @recipients_by_address.reject{ |attr, rcpt| rcpt.nil? }.map(&:first)
   end
 
   def restrict_recipients
@@ -220,10 +220,9 @@ class EmailCongressController < ApplicationController
     # This leaves the controller method to deal with the error condition since
     # the appropriate action will differ by method.
     if @sender_user
-      req_set = Set.new(@recipient_addresses)
-      legit_set = Set.new(@sender_user.my_congress_members)
-      @rejected_addresses = (req_set - legit_set).to_a
-      @recipient_addresses = (req_set & legit_set).to_a
+      restrictions = EmailCongress.restrict_recipients(@sender_user, @recipient_addresses)
+      @rejected_addresses = restrictions[:rejected]
+      @recipient_addresses = restrictions[:allowed]
     end
   end
 

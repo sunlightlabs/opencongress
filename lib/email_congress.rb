@@ -262,23 +262,36 @@ module EmailCongress
     end
 
     def email_address_for_website (website)
-      pattern = /^(?:www[.])?([a-z0-9]+)[.](house|senate)[.]gov$/i
+      pattern = /^(?:www[.])?([-a-z0-9]+)[.](house|senate)[.]gov$/i
       url = URI.parse(website)
       return nil if url.host.nil?
       match = pattern.match(url.host.downcase)
       return nil if match.nil?
       nameish, chamber = match.captures
-      return "#{chamber.first(3).capitalize}.#{nameish.capitalize}"
+      prefix = (chamber.downcase == 'senate') ? 'Sen' : 'Rep'
+      return "#{prefix.capitalize}.#{nameish.capitalize}"
     end
 
     def email_address_for_person (person)
-      return nil if person.website.blank?
-      email_address_for_website(person.website)
+      return nil if person.url.blank?
+      email_address_for_website(person.url)
+    end
+
+    def email_addresses_for_people (people)
+      people.map{ |p| email_address_for_person(p) }.compact
     end
 
     def expand_special_addresses (sender_user, addresses)
-      return addresses if @sender_user.nil?
-      # TODO: Implement this
+      return addresses if sender_user.nil?
+      addresses = addresses.flat_map do |addr|
+        if addr =~ /^myreps@/
+          myreps_address = Mail::Address.new(addr)
+          if Settings.email_congress_domains.include?(myreps_address.domain)
+            next EmailCongress.email_addresses_for_people(sender_user.my_congress_members)
+          end
+        end
+        addr
+      end
       addresses
     end
 
@@ -311,6 +324,18 @@ module EmailCongress
         raise "Multiple Person models for the same address: #{address} as of #{date}"
       end
       members.first
+    end
+
+    def restrict_recipients (sender, addresses)
+      if sender.nil?
+        return {:allowed => [], :rejected => addresses}
+      else
+        legit_set = Set.new(email_addresses_for_people(sender.my_congress_members))
+        requested_set = Set.new(addresses)
+        rejected = (requested_set - legit_set).to_a
+        allowed = (requested_set & legit_set).to_a
+        return {:allowed => allowed, :rejected => rejected}
+      end
     end
 
     def pending_seeds (user)

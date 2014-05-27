@@ -269,7 +269,7 @@ module EmailCongress
       return nil if match.nil?
       nameish, chamber = match.captures
       prefix = (chamber.downcase == 'senate') ? 'Sen' : 'Rep'
-      return "#{prefix.capitalize}.#{nameish.capitalize}"
+      return "#{prefix.capitalize}.#{nameish.capitalize}@#{Settings.email_congress_domain}"
     end
 
     def email_address_for_person (person)
@@ -286,7 +286,7 @@ module EmailCongress
       addresses = addresses.flat_map do |addr|
         if addr =~ /^myreps@/
           myreps_address = Mail::Address.new(addr)
-          if Settings.email_congress_domains.include?(myreps_address.domain)
+          if Settings.email_congress_domain == myreps_address.domain
             next EmailCongress.email_addresses_for_people(sender_user.my_congress_members)
           end
         end
@@ -303,7 +303,7 @@ module EmailCongress
       rescue Mail::Field::ParseError
         return []
       end
-      return [] unless Settings.email_congress_domains.include?(addr.domain)
+      return [] unless Settings.email_congress_domain == addr.domain
       addr1 = parse_localpart(addr.local)
       websites = websites_for_title_and_subdomain(addr1[:title], addr1[:subdomain])
 

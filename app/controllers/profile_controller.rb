@@ -79,6 +79,10 @@ class ProfileController < ApplicationController
                         AND bill_votes.user_id = #{@user.id}) b ON b.bill_id = bills.id
                       ORDER BY b.created_at", :per_page=>20, :page => params[:o_page])
 
+    if logged_in?
+      @unfinished_emails = EmailCongress.pending_seeds(current_user.email)
+    end
+
     @title_class = "tab-nav"
     @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login.possessive} Actions"}
     @my_comments = Comment.paginate(:conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => params[:page])

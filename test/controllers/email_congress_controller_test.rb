@@ -5,7 +5,7 @@ class EmailCongressControllerTest < ActionController::TestCase
   include OpenCongress::Application.routes.url_helpers
 
   def at_email_congress (localpart)
-    "#{localpart}@#{Settings.email_congress_domains.first}"
+    "#{localpart}@#{Settings.email_congress_domain}"
   end
 
   def incoming_email (options=Hash.new)

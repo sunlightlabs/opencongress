@@ -38,4 +38,26 @@ class EmailCongressLetterSeed < ActiveRecord::Base
     # TODO: This should probably be a more specific exception class
     raise 'Unable to generate a unique confirmation code'
   end
+
+  def sender_user
+    User.find_by_email(sender_email)
+  end
+
+  def decoded_recipient_addresses
+    recipient_addresses = JSON.load(raw_source).values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
+    recipient_addresses = EmailCongress.expand_special_addresses(sender_user, recipient_addresses)
+    @decoded_recipients ||= EmailCongress.restrict_recipients(sender_user, recipient_addresses)
+  end
+
+  def rejected_recipient_addresses
+    return decoded_recipient_addresses[:rejected]
+  end
+
+  def allowed_recipient_addresses
+    return decoded_recipient_addresses[:allowed]
+  end
+
+  def allowed_recipients
+    return allowed_recipient_addresses.map{ |a| EmailCongress.congressmember_for_address(a) }
+  end
 end

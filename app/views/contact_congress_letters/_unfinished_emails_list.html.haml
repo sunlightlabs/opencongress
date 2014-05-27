@@ -1,0 +1,20 @@
+%ul.grid_16
+  %li.grid_16
+    %span.grid_2
+      %strong Date
+    %span.grid_3
+      %strong To
+    %span.grid_6
+      %strong Regarding
+
+  - unfinished_emails_list.each do |email_seed| 
+    %li.grid_16.margin-bottom
+      .grid_2= email_seed.created_at.strftime('%B %d, %Y')
+      .grid_3
+        - email_seed.allowed_recipients.each do |rcpt|
+          &nbsp;
+          = link_to_person(rcpt)
+      .grid_6= email_seed.email_subject
+      .grid_2 PRIVATE
+      .grid_1= link_to "Finish", url_for(:controller => :email_congress, :action => :complete_profile, :confirmation_code => email_seed.confirmation_code), :class => 'button silver small'
+

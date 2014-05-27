@@ -203,8 +203,10 @@ class ApplicationController < ActionController::Base
   def pending_email_seed_prompt
     if logged_in?
       seeds = EmailCongress.pending_seeds(current_user.email)
-      if seeds.count > 0
-        flash.now[:info] = %Q[You have an unfinished email re: <a href="#{url_for(:controller => :email_congress, :action => :confirm, :confirmation_code => seeds.first.confirmation_code)}">#{seeds.first.email_subject}</a>].html_safe
+      if seeds.count == 1
+        flash.now[:info] = %Q[You have an unfinished email re: <a href="#{url_for(:controller => :email_congress, :action => :complete_profile, :confirmation_code => seeds.first.confirmation_code)}">#{seeds.first.email_subject}</a>].html_safe
+      elsif seeds.count > 1
+        flash.now[:info] = %Q[You have an #{seeds.count} <a href="#{url_for(:controller => :profile, :action => :actions)}">unfinished emails</a>].html_safe
       end
     end
   end

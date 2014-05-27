@@ -19,18 +19,13 @@
         = "#{link_to(truncate(@contact_congress_letter.contactable.typenumber + ' ' + @contact_congress_letter.contactable.title_common, :length => 170), bill_path(@contact_congress_letter.contactable))}.".html_safe
 
 
-  .bootstrap-enabled
+  %div.privacy_buttons
     - if logged_in? and current_user == @contact_congress_letter.user
       %span Privacy setting:
-      .btn-group{:data => {:toggle => 'buttons-radio'}}
-        = form_tag({:controller => :contact_congress_letters, :action => :update, :id => @contact_congress_letter.id}, {}) do |f|
-          - if !@contact_congress_letter.public?
-            %input{:type => :hidden, :name => :privacy, :value => opposite_privacy(@contact_congress_letter)}
-          = button_to "Public", contact_congress_letter_path(@contact_congress_letter), :class => privacy_button_classes(@contact_congress_letter, :public), :autocomplete => :off
-        = form_tag({:controller => :contact_congress_letters, :action => :update, :id => @contact_congress_letter.id}, {}) do |f|
-          - if @contact_congress_letter.public?
-            %input{:type => :hidden, :name => :privacy, :value => opposite_privacy(@contact_congress_letter)}
-          = button_to "Private", contact_congress_letter_path(@contact_congress_letter), :class => privacy_button_classes(@contact_congress_letter, :private), :autocomplete => :off
+      .clear
+      = privacy_button_to(@contact_congress_letter, :public)
+      = privacy_button_to(@contact_congress_letter, :private)
+
     - else
       %span
         A public message by

@@ -50,23 +50,26 @@ module ContactCongressLettersHelper
     end
   end
 
-  def opposite_privacy (letter)
-    if letter.privacy == 'PRIVATE'
-      'PUBLIC'
-    elsif letter.privacy == 'PUBLIC'
-      'PRIVATE'
-    else
-      raise "Invalid privacy setting for letter #{letter.id}: #{letter.privacy}"
-    end
-  end
-
   def privacy_button_classes (letter, button)
-    classes = ['btn', 'pull-left']
+    classes = ['button', 'small', 'silver']
     if letter.privacy.upcase == button.to_s.upcase
       classes.push('active')
       classes.push('disabled')
     end
     return classes.join(' ')
+  end
+
+  def privacy_button_to (letter, button)
+    active = (letter.privacy.downcase.to_sym == button)
+    button_html = form_tag(contact_congress_letter_path(letter), :method => :post) do
+      [hidden_field_tag(:privacy, button.to_s.upcase),
+       submit_tag(button.to_s.capitalize,
+                  :disabled => active,
+                  :class => privacy_button_classes(letter, button))].join('').html_safe
+    end
+    wrapper_class = active ? 'active' : ''
+    wrapped_button_html = %Q[<div class="#{wrapper_class}">#{button_html}</div>]
+    return wrapped_button_html.html_safe
   end
 
   def body_as_paragraphs (letter)

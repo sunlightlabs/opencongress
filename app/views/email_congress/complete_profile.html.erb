@@ -1,90 +1,83 @@
+<div class="bootstrap-enabled row">
+  <div class="span6 offset3">
 
-<%= error_messages_for('profile', :header_message => nil) %>
+    <%= simple_form_for('profile', :path => '/email_congress/complete_profile', :method => "post", as: 'user_horizontal', html: { class: 'form-horizontal' }, wrapper: :custom_horizontal_form,
+      wrapper_mappings: {
+        check_boxes: :horizontal_radio_and_checkboxes,
+        radio_buttons: :horizontal_radio_and_checkboxes,
+        file: :horizontal_file_input,
+        boolean: :horizontal_boolean
+      }) do |f| %>
+      <input type="hidden" name="confirmation_code" value="<%= @seed.confirmation_code %>">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
 
-<%= simple_form_for('profile', :path => '/email_congress/complete_profile', :method => "post") do |f| %>
-  <input type="hidden" name="confirmation_code" value="<%= @seed.confirmation_code %>">
-  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-
-  <% if @sender_user %>
-    <div class="user-warning">
-      <% if logged_in? %>
-        Not <%= @sender_user.login %>?
-        <a class="btn btn-small" href="<%= url_for(:controller => :account, :action => :logout, :next => request.url) %>">
-          Logout
-        </a>
-      <% else %>
-        <%= @sender_user.login %>
+      <% if @sender_user %>
+        <div class="row user-message">
+              <% if logged_in? %>
+              <span class="username">
+                Not <%= @sender_user.login %>?
+                <a class="btn btn-small" href="<%= url_for(:controller => :account, :action => :logout, :next => request.url) %>">
+                  Logout
+                </a>
+              </span>
+              <% else %>
+              <span class="username">
+                Hi <%= @sender_user.login %>,
+              </span>
+              <% end %>
+              <p>We need you to fill out the form below before we can send your email to Senator Charles Schumer, Senator Kristen Gilibrand and Representative Peter King.</p>
+        </div>
       <% end %>
-    </div>
-  <% end %>
 
-  <div class="form-line-wrapper">
-    <%= f.label :first_name, 'First name' %>
-    <%= f.text_field :first_name %>
-  </div>
-  <div class="form-line-wrapper">
-    <%= f.label :last_name, 'Last name' %>
-    <%= f.text_field :last_name %>
-  </div>
-  <div class="form-line-wrapper">
-    <%= f.label :street_address, 'Address' %>
-    <%= f.text_field :street_address %>
-  </div>
-  <div class="form-line-wrapper">
-    <%= f.label :street_address_2, 'Address (cont\'d)' %>
-    <%= f.text_field :street_address_2 %>
-  </div>
-  <div class="form-line-wrapper">
-    <%= f.label :city, 'City' %>
-    <%= f.text_field :city %>
-  </div>
-  <div class="form-line-wrapper">
-    <%= f.label :state, 'State' %>
-    <%= f.text_field :state %>
-  </div>
-  <div class="form-line-wrapper">
-    <%= f.label :zipcode, 'ZIP Code' %>
-    <%= f.text_field :zipcode, :maxlength => 5, :size => 5 %>
-    <%= f.text_field :zip_four, :maxlength => 4, :size => 4 %>
-  </div>
-  <div class="form-line-wrapper">
-    <%= f.label :mobile_phone, 'Phone' %>
-    <%= f.text_field :mobile_phone %>
-  </div>
+        <%= error_messages_for('profile', :header_message => nil) %>
 
-  <% if !@sender_user || !@sender_user.accepted_tos? %>
-    <div class="form-line-wrapper">
-      <% if !@sender_user %>
-        We couldn't find an OpenCongress account for your email address. In
-        order for us to send your message you must first agree to our
-        terms of service, which will allow us to generate an account for
-        you.
-      <% elsif !@sender_user.accepted_tos? %>
-        Our terms of service have been updated since you last used your
-        OpenCongress account. In order for us to send your message you must
-        first agree to these updated terms of service.
+        <%= f.input :first_name %>
+        <%= f.input :last_name %>
+        <%= f.input :street_address %>
+        <%= f.input :street_address_2, :required => false %>
+        <%= f.input :city %>
+        <%= f.input :state, :collection => State::ABBREVIATIONS %>
+        <%= f.input :zipcode, :maxlength => 5, :size => 5 %>
+        <%= f.input :mobile_phone %>
+
+      <% if !@sender_user || !@sender_user.accepted_tos? %>
+        <div class="form-line-wrapper">
+          <% if !@sender_user %>
+            We couldn't find an OpenCongress account for your email address. In
+            order for us to send your message you must first agree to our
+            terms of service, which will allow us to generate an account for
+            you.
+          <% elsif !@sender_user.accepted_tos? %>
+            Our terms of service have been updated since you last used your
+            OpenCongress account. In order for us to send your message you must
+            first agree to these updated terms of service.
+          <% end %>
+        </div>
+        <%= f.input :accept_tos, :as => :radio_buttons, :collection => [['Yes', true], ['No', false]] %>
       <% end %>
-    </div>
-    <%= f.input :accept_tos, :as => :radio_buttons, :collection => [['Yes', true], ['No', false]] %>
-  <% end %>
+      <div class="control-group">
+        <div class="controls">
+          <%= f.button :submit, :value => 'Continue' %>
+        </div>
+      </div>
 
-  <%= f.button :submit, :value => 'Complete' %>
+      <div class="form-line-wrapper">
+        <% if !@sender_user %>
+          <a href="<%= url_for(:only_path => false, :controller => :account, :action => :login, :return_to => url_for(:only_path => false, :controller => :email_congress, :action => :confirm, :confirmation_code => @seed.confirmation_code)) %>">I already have an account</a>
+        <% end %>
+      </div>
 
-  <div class="form-line-wrapper">
-    <% if !@sender_user %>
-      <a href="<%= url_for(:only_path => false, :controller => :account, :action => :login, :return_to => url_for(:only_path => false, :controller => :email_congress, :action => :confirm, :confirmation_code => @seed.confirmation_code)) %>">I already have an account</a>
-    <% end %>
-  </div>
+      <div class="retention-explanation divider-top">
+        <a href="#">What if I don't want to provide this information?</a>
+        <p>
+          You can use the rest of our website without providing this
+          information. However, we must collect this information because
+          congressional contact systems require it. We retain this information
+          to ensure proper delivery.
+        </p>
+      </div>
+    <% end %> <!-- end form_for -->
 
-  <div class="form-line-wrapper">
-    <a class="retention-explanation">What if I don't want to provide this information?</a>
-    <div class="retention-explanation">
-      You can use the rest of our website without providing this
-      information. However, we must collect this information because
-      congressional contact systems require it. We retain this information
-      to ensure proper delivery.
-    </div>
-  </div>
-<% end %> <!-- end form_for -->
+</div>
 
 

@@ -1,0 +1,75 @@
+.bootstrap-enabled abbr[title], .bootstrap-enabled abbr[data-original-title] {
+    border-bottom: none;
+    cursor: pointer;
+}
+
+.bootstrap-enabled .user-message {
+    padding: 30px 0;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 26px;
+}
+
+.bootstrap-enabled .username {
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.bootstrap-enabled .form-horizontal .control-group {
+    margin-bottom: 10px;
+}
+
+.bootstrap-enabled .form-horizontal .controls {
+    margin-left: 145px;
+}
+
+.bootstrap-enabled .form-horizontal .control-label {
+    width: 120px;
+}
+
+.bootstrap-enabled input,
+.bootstrap-enabled textarea,
+.bootstrap-enabled .uneditable-input,
+.bootstrap-enabled input[type="text"],
+.bootstrap-enabled input[type="tel"] {
+    width: 275px;
+    border: 1px solid #c4d9e4;
+}
+
+.bootstrap-enabled .form-horizontal select {
+    width: 290px;
+}
+
+.bootstrap-enabled .btn.btn-default {
+    width: 290px;
+    border: 1px solid #50a4ed;
+    box-shadow: none;
+    background: #50a4ed;
+    color: #fff;
+    text-shadow: none;
+}
+
+.bootstrap-enabled .btn.btn-default:hover {
+    background: #4b9ade;
+}
+
+.divider-top {
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 1px dashed #c4d9e4;
+}
+
+.errorExplanation {
+    padding: 15px;
+    margin-left: -20px;
+    border: 1px solid #eed3d7;
+    border-radius: 4px;
+    background: #f2dede;
+    color: #b94a48;
+}
+
+.errorExplanation p {
+    padding-bottom: 15px;
+    color: #b94a48;
+}

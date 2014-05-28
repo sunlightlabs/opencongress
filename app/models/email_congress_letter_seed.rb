@@ -1,6 +1,4 @@
 class EmailCongressLetterSeed < ActiveRecord::Base
-  # TODO: Add a job to clean up older seeds
-
   belongs_to :contact_congress_letter
 
   before_validation :generate_confirmation_code

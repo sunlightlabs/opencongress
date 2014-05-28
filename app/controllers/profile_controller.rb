@@ -81,7 +81,7 @@ class ProfileController < ApplicationController
                       ORDER BY b.created_at", :per_page=>20, :page => params[:o_page])
 
     if logged_in?
-      @unfinished_emails = EmailCongress.pending_seeds(current_user.email)
+      @unfinished_emails = EmailCongress.pending_seeds(current_user.email).sort_by(&:created_at).reverse
     end
 
     @title_class = "tab-nav"

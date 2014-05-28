@@ -12,11 +12,12 @@ class EmailCongressController < ApplicationController
   # All details for a message are stored on an EmailCongressLetterSeed model
   # until it is converted to a FormageddonThread and then disposed of.
 
+  before_filter :login_required, :only => [:discard]
   before_filter :decode_email, :only => [:message_to_members]
-  before_filter :find_by_confirmation_code, :only => [:confirm, :complete_profile, :confirmed]
+  before_filter :find_by_confirmation_code, :only => [:confirm, :complete_profile, :confirmed, :discard]
   before_filter :only_resolved, :only => [:confirmed]
-  before_filter :only_unresolved, :only => [:confirm, :complete_profile]
-  before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile]
+  before_filter :only_unresolved, :only => [:confirm, :complete_profile, :discard]
+  before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile, :discard]
   before_filter :logout_if_necessary, :only => [:confirm, :complete_profile]
   before_filter :lookup_recipients, :only => [:message_to_members, :confirm, :confirmed]
   before_filter :restrict_recipients, :only => [:message_to_members, :confirm, :confirmed]
@@ -160,6 +161,24 @@ class EmailCongressController < ApplicationController
         @profile = @profile.merge_many(@sender_user.user_profile, @sender_user)
       end
     end
+  end
+
+  def discard
+    unless request.method_symbol == :post
+      return render_404
+    end
+
+    unless @sender_user == current_user
+      return redirect_to(:controller => :index, :action => :index)
+    end
+
+    @seed.resolved = true
+    @seed.resolution = 'discarded by user'
+    @seed.resolved_at = Time.zone.now
+    @seed.save!
+
+    flash[:notice] = "Discarded email re: #{@seed.email_subject}"
+    return redirect_to(:controller => :profile, :action => :actions, :login => current_user.login)
   end
 
   ### TODO: mark private when done

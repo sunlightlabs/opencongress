@@ -721,3 +721,8 @@ form.edit_user #privacy_settings select { display: inline-block; margin: 5px 0; 
 
 /* add to friends div */
 #fdiv { margin-top: 14px; }
+
+.actions .email_actions > form,
+.actions .email_actions > form > div {
+    display: inline-block;
+}

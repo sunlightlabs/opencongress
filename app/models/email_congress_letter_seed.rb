@@ -28,8 +28,8 @@ class EmailCongressLetterSeed < ActiveRecord::Base
   def generate_confirmation_code!
     # Generating a confirmation_code, overwriting any existing code
     10.times.each do |n|
-      candidate = SecureRandom.random_number(2**16).to_s(36)
-      # TODO: candidate = SecureRandom.random_number(2**256).to_s(36)
+      bits = Settings.to_hash.fetch('email_congress_confirmation_code_bits', 256)
+      candidate = SecureRandom.random_number(2 ** bits).to_s(36)
       unique = (EmailCongressLetterSeed.where(:confirmation_code => candidate).count() == 0)
       next if !unique
       self.confirmation_code = candidate

@@ -95,6 +95,8 @@ module OpenCongress
       107 => '2001-01-01'
     }
 
+    ActiveSupport::JSON.backend = 'JSONGem'
+
     require 'ostruct'
   end
 end

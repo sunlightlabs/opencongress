@@ -12,6 +12,6 @@ module EmailCongressHelper
   end
 
   def email_formatted_contact_email
-    %Q[<a style="color:#96bbcf" href="mailto:#{Settings.contact_us_email}">#{addr}</a>].html_safe
+    %Q[<a style="color:#96bbcf" href="mailto:#{Settings.contact_us_email}">#{Settings.contact_us_email}</a>].html_safe
   end
 end

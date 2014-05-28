@@ -108,7 +108,6 @@ class EmailCongressController < ApplicationController
       @seed.confirm!
       return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
     rescue => e
-      # TODO: Write job to find these seeds and retry them.
       Raven.capture_exception(e)
       flash[:error] = "Your letter could not be sent due to technical difficulties. Please try again later."
       return redirect_to(:action => :complete_profile, :confirmation_code => @seed.confirmation_code)
@@ -116,7 +115,6 @@ class EmailCongressController < ApplicationController
   end
 
   def confirmed
-    # TODO: The template should warn about illegitamate recipients
     if logged_in?
       @prompt_for_password = current_user.previous_login_date.nil?
       @prompt_for_email = current_user.email != @seed.sender_email
@@ -181,7 +179,7 @@ class EmailCongressController < ApplicationController
     return redirect_to(:controller => :profile, :action => :actions, :login => current_user.login)
   end
 
-  ### TODO: mark private when done
+  private #############################################################
   def decode_email
     request_body = request.body.read
     @email_obj = JSON.load(request_body)

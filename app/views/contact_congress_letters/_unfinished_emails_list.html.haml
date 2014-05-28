@@ -20,5 +20,6 @@
       .grid_2 PRIVATE
       .grid_3.email_actions
         = link_to "Finish", url_for(:controller => :email_congress, :action => :complete_profile, :confirmation_code => email_seed.confirmation_code), :class => 'button blue small'
-        = button_to "Discard", url_for(:controller => :email_congress, :action => :discard, :confirmation_code => email_seed.confirmation_code), :class => 'button red small'
+        = button_to "Discard", url_for(:controller => :email_congress, :action => :discard, :confirmation_code => email_seed.confirmation_code), :class => 'button red small', :confirm => "Are you sure you want to delete this email?"
+
 

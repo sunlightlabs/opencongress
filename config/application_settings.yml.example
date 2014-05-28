@@ -99,6 +99,17 @@ defaults: &defaults
   # This points to an instance of https://github.com/drinks/select-solver, for choosing subject dropdown values based on message content.
   formageddon_select_box_delegate_url: http://solver.example.com/choose.json
 
+  # These settings are for EmailCongress, which is the email interface to ContactCongress.
+  # This is the part of email addresses after the @ symbol.
+  email_congress_domain: opencongress.org
+  # The number of days after a seed has been updated before discarding it. This
+  # applies to both confirmed and unconfirmed seeds.
+  email_congress_seed_expiration: 90
+  # Determines the maximum length of the confirmation codes. Greater values
+  # provide greater security. Divide by 5.17 to approximate the number of
+  # characters. A value in the range 100-256 should be good for production.
+  email_congress_confirmation_code_bits: 256
+
   ## EMAIL SUBSCRIPTION SETTINGS
   # The vendor signup form urls that email subscriptions post to. The way this works is Sunlight-specific.
   email_subscription_url: http://subscribe.example.com/opencongress

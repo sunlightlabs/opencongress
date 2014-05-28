@@ -30,7 +30,7 @@
     <% end %>
 
     <h3 class="dark"><%= user_name("My", &:possessive) %> Letters to Congress</h3>
-    <%= render :partial => 'contact_congress_letters/letters_list', :object => @user.contact_congress_letters %>
+    <%= render :partial => 'contact_congress_letters/letters_list', :object => @user.contact_congress_letters.reorder('created_at DESC') %>
 
     <h3 class="dark"><%= user_name("My", &:possessive) %> Comments</h3>
     <p style="text-align:center;clear:both;"><%= will_paginate(@my_comments) %></p>

@@ -25,7 +25,7 @@
                 Hi <%= @sender_user.login %>,
               </span>
               <% end %>
-              <p>We need you to fill out the form below before we can send your email<%= if @seed.allowed_recipients.any? %>
+              <p>We need you to fill out the form below before we can send your email<% if @seed.allowed_recipients.any? %>
                   to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>
                   <% end %>.
               </p>

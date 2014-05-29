@@ -138,7 +138,7 @@ class EmailCongressController < ApplicationController
 
       if @profile.valid?
         if !@sender_user
-          @sender_user = User.generate_for_profile(@profile)
+          @sender_user = User.generate_for_profile(@profile, :suppress_activation_email => true)
           @sender_user.activate!
           self.current_user = @sender_user
         else

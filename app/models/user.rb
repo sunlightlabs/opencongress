@@ -173,7 +173,7 @@ class User < ActiveRecord::Base
                   :representative_id, :state, :district, :user_privacy_options_attributes,
                   :user_options_attributes, :user_profile_attributes
 
-  attr_accessor :accept_tos, :email_confirmation
+  attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email
 
   accepts_nested_attributes_for :user_privacy_options, :user_profile, :user_options
 
@@ -239,7 +239,7 @@ class User < ActiveRecord::Base
       return nil
     end
 
-    def generate_for_profile (profile)
+    def generate_for_profile (profile, options=HashWithIndifferentAccess.new)
       begin
         ActiveRecord::Base.transaction do
           login = unused_login(login_stub_for_profile(profile))
@@ -247,7 +247,9 @@ class User < ActiveRecord::Base
                           :email => profile.email,
                           :password => random_password,
                           :accepted_tos_at => profile.accept_tos && Time.now || nil,
-                          :state => profile.state)
+                          :state => profile.state
+                          )
+          user.suppress_activation_email = options[:suppress_activation_email]
           user.save!
           user = User.find_by_login(login)
 
@@ -610,6 +612,10 @@ class User < ActiveRecord::Base
 
   def facebook_connect_user?
     !facebook_uid.blank?
+  end
+
+  def should_receive_activation_email?
+    !facebook_connect_user? && !suppress_activation_email
   end
 
 

@@ -12,29 +12,25 @@
       <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
 
       <div class="row user-message">
-        <% if @sender_user %>
-              <% if logged_in? %>
-              <span class="username">
-                Not <%= @sender_user.login %>?
-                <a class="btn btn-small" href="<%= url_for(:controller => :account, :action => :logout, :next => request.url) %>">
-                  Logout
-                </a>
-              </span>
-              <% else %>
-              <span class="username">
-                Hi <%= @sender_user.login %>,
-              </span>
-              <% end %>
-              <p>We need you to fill out the form below before we can send your email<% if @seed.allowed_recipients.any? %>
-                  to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>
-                  <% end %>.
-              </p>
+      <% if @sender_user %>
+        <% if logged_in? %>
+        <span class="username">
+          Not <%= @sender_user.login %>?
+          <a class="btn btn-small" href="<%= url_for(:controller => :account, :action => :logout, :next => request.url) %>">
+            Logout
+          </a>
+        </span>
         <% else %>
-          <span class="username">
-            Hi [unregistered email],
-          </span>
-          <p>We need you to fill out the form below before we can send your email to [placeholder names].</p>
+        <span class="username">
+          Hi <%= @sender_user.login %>,
+        </span>
         <% end %>
+      <% else %>
+        Hi there!
+      <% end %>
+        <p>We need you to fill out the form below before we can send your email<% if @seed.allowed_recipients.any? %>
+            to <%= @seed.allowed_recipients.any? ? @seed.allowed_recipients.map(&:full_name).to_sentence : "your representatives" %><% end %>.
+        </p>
       </div>
 
         <%= error_messages_for('profile', :header_message => nil) %>
@@ -51,8 +47,7 @@
       <% if !@sender_user || !@sender_user.accepted_tos? %>
           <%= f.input :accept_tos, :as => :boolean, inline_label: 'I accept the terms and services', label: false %>
       <% end %>
-
-      <div class="control-group">
+      <div class="control-group" id="submit-buttons">
         <div class="controls">
           <%= f.button :submit, :value => 'Continue' %>
         </div>
@@ -99,4 +94,10 @@
 
 </div>
 
+<script>
+  (function($){
+    $(function(){
 
+    });
+  })(jQuery);
+</script>

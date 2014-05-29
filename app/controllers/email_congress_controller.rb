@@ -220,12 +220,6 @@ class EmailCongressController < ApplicationController
     cleaned = EmailCongress.cleaned_recipient_list(@sender_user, recipient_addresses)
     @recipient_addresses = cleaned.map(&:first)
     @recipients = cleaned.map(&:second)
-
-    ### OLD:
-    # @recipient_addresses = @email_obj.values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
-    # @recipients = EmailCongress.resolve_addresses(@sender_user, @recipient_addresses)
-    # @recipients = EmailCongress.restrict_recipients(@sender_user, @recipients)
-    # @recipient_addresses = @recipients.map{ |rcpt| EmailCongress.email_address_for_person(rcpt) }
   end
 
   def find_by_confirmation_code

@@ -1,4 +1,4 @@
-<div class="bootstrap-enabled row">
+<div class="bootstrap-enabled row email-congress">
   <div class="span6 offset3">
 
     <%= simple_form_for('profile', :path => '/email_congress/complete_profile', :method => "post", as: 'user_horizontal', html: { class: 'form-horizontal' }, wrapper: :custom_horizontal_form,
@@ -11,8 +11,8 @@
       <input type="hidden" name="confirmation_code" value="<%= @seed.confirmation_code %>">
       <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
 
-      <% if @sender_user %>
-        <div class="row user-message">
+      <div class="row user-message">
+        <% if @sender_user %>
               <% if logged_in? %>
               <span class="username">
                 Not <%= @sender_user.login %>?
@@ -25,9 +25,14 @@
                 Hi <%= @sender_user.login %>,
               </span>
               <% end %>
-              <p>We need you to fill out the form below before we can send your email to Senator Charles Schumer, Senator Kristen Gilibrand and Representative Peter King.</p>
-        </div>
-      <% end %>
+              <p>We need you to fill out the form below before we can send your email to [placeholder names].</p>
+        <% else %>
+          <span class="username">
+            Hi [unregistered email],
+          </span>
+          <p>We need you to fill out the form below before we can send your email to [placeholder names].</p>
+        <% end %>
+      </div>
 
         <%= error_messages_for('profile', :header_message => nil) %>
 
@@ -41,41 +46,53 @@
         <%= f.input :mobile_phone %>
 
       <% if !@sender_user || !@sender_user.accepted_tos? %>
-        <div class="form-line-wrapper">
-          <% if !@sender_user %>
-            We couldn't find an OpenCongress account for your email address. In
-            order for us to send your message you must first agree to our
-            terms of service, which will allow us to generate an account for
-            you.
-          <% elsif !@sender_user.accepted_tos? %>
-            Our terms of service have been updated since you last used your
-            OpenCongress account. In order for us to send your message you must
-            first agree to these updated terms of service.
-          <% end %>
-        </div>
-        <%= f.input :accept_tos, :as => :radio_buttons, :collection => [['Yes', true], ['No', false]] %>
+          <%= f.input :accept_tos, :as => :boolean, inline_label: 'I accept the terms and services', label: false %>
       <% end %>
+
       <div class="control-group">
         <div class="controls">
           <%= f.button :submit, :value => 'Continue' %>
         </div>
       </div>
 
-      <div class="form-line-wrapper">
-        <% if !@sender_user %>
-          <a href="<%= url_for(:only_path => false, :controller => :account, :action => :login, :return_to => url_for(:only_path => false, :controller => :email_congress, :action => :confirm, :confirmation_code => @seed.confirmation_code)) %>">I already have an account</a>
-        <% end %>
+      <div class="control-group">
+        <div class="controls">
+          <% if !@sender_user %>
+            <a class="alt-link" href="<%= url_for(:only_path => false, :controller => :account, :action => :login, :return_to => url_for(:only_path => false, :controller => :email_congress, :action => :confirm, :confirmation_code => @seed.confirmation_code)) %>">I already have an OpenCongress account</a>
+          <% end %>
+        </div>
       </div>
 
-      <div class="retention-explanation divider-top">
-        <a href="#">What if I don't want to provide this information?</a>
-        <p>
-          You can use the rest of our website without providing this
-          information. However, we must collect this information because
-          congressional contact systems require it. We retain this information
-          to ensure proper delivery.
-        </p>
+      <div class="retention-explanation">
+        <div class="divider-top">
+          <strong>Why do I need to agree to your terms and conditions?</strong>
+          <% if !@sender_user || !@sender_user.accepted_tos? %>
+          <p>
+            <% if !@sender_user %>
+              We couldn't find an OpenCongress account for your email address. In
+              order for us to send your message you must first agree to our
+              terms of service, which will allow us to generate an account for
+              you.
+            <% elsif !@sender_user.accepted_tos? %>
+              Our terms of service have been updated since you last used your
+              OpenCongress account. In order for us to send your message you must
+              first agree to these updated terms of service.
+            <% end %>
+          </p>
+          <% end %>
+        </div>
+
+        <div class="divider-top">
+          <strong>What if I don't want to provide this information?</strong>
+          <p>
+            You can use the rest of our website without providing this
+            information. However, we must collect this information because
+            congressional contact systems require it. We retain this information
+            to ensure proper delivery.
+          </p>
+        </div>
       </div>
+
     <% end %> <!-- end form_for -->
 
 </div>

@@ -1,4 +1,4 @@
-<div class="bootstrap-enabled row">
+<div class="bootstrap-enabled row email-congress">
   <div class="span6 offset3">
     <div class="user-message">
       <p>Thanks, [username].</p>
@@ -6,19 +6,17 @@
         Your letter will be delivered shortly to [placeholder names]. You can find your letter in <a href="<%= url_for(:controller => :profile, :action => :actions, :login => current_user.login) %>">your profile</a>.
 
         <% if [@prompt_for_email, @prompt_for_password].any? %>
-          <%= simple_form_for(current_user, :url => user_profile_path(current_user.login), :remote => true) do |f| %>
+          <%= simple_form_for(current_user, :url => user_profile_path(current_user.login), :remote => true, html: { class: 'full-width-form' }) do |f| %>
 
             <% if @prompt_for_email == true %>
-              <div>
-                <p>
-                You sent this email from an address that differs from the one we have on file. Would you like to update your email address?
-                </p>
-                <%= f.input :email, :input_html => { :value => @seed.sender_email } %>
-              </div>
+              <div class="alert-info">
+                  <p>You sent this email from an address that differs from the one we have on file. Would you like to update your email address?</p>
+                  <%= f.input_field :email, :input_html => { :value => @seed.sender_email } %>
+              <!-- </div> -->
             <% end %>
 
             <% if @prompt_for_password == true %>
-              <div>
+              <!-- <div> -->
                 <p>
                 In order to send your letter, we've created you an OpenCongress account. If
                 you would like to log into OpenCongress with your new account, you can
@@ -26,11 +24,19 @@
                 </p>
                 <%= f.input :password, :as => :password %>
                 <%= f.input :password_confirmation, :as => :password %>
-              </div>
+              <!-- </div> -->
             <% end %>
-
-            <%= f.button :submit, :value => 'Update It' %>
-            <a href="<%= user_profile_path(current_user.login) %>">No Thanks</a>
+            <div class="control-group">
+              <div class="controls">
+                <%= f.button :submit, :value => 'Update It' %>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="controls">
+                <a class="alt-link" href="<%= user_profile_path(current_user.login) %>">No Thanks</a>
+              </div>
+            </div>
+            </div>
           <% end %>
         <% end %>
 

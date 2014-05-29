@@ -1,9 +1,9 @@
-.bootstrap-enabled abbr[title], .bootstrap-enabled abbr[data-original-title] {
+.bootstrap-enabled.email-congress.email-congress abbr[title], .bootstrap-enabled.email-congress abbr[data-original-title] {
     border-bottom: none;
     cursor: pointer;
 }
 
-.bootstrap-enabled .user-message {
+.bootstrap-enabled.email-congress .user-message {
     padding: 30px 0;
     font-family: Helvetica, Arial, sans-serif;
     font-size: 20px;
@@ -11,37 +11,38 @@
     line-height: 26px;
 }
 
-.bootstrap-enabled .username {
+.bootstrap-enabled.email-congress .username {
     display: inline-block;
     padding-bottom: 10px;
 }
 
-.bootstrap-enabled .form-horizontal .control-group {
+.bootstrap-enabled.email-congress .form-horizontal .control-group {
     margin-bottom: 10px;
 }
 
-.bootstrap-enabled .form-horizontal .controls {
+.bootstrap-enabled.email-congress .form-horizontal .controls {
     margin-left: 145px;
 }
 
-.bootstrap-enabled .form-horizontal .control-label {
+.bootstrap-enabled.email-congress .form-horizontal .control-label {
     width: 120px;
 }
 
-.bootstrap-enabled input,
-.bootstrap-enabled textarea,
-.bootstrap-enabled .uneditable-input,
-.bootstrap-enabled input[type="text"],
-.bootstrap-enabled input[type="tel"] {
+.bootstrap-enabled.email-congress input,
+.bootstrap-enabled.email-congress input[type="text"],
+.bootstrap-enabled.email-congress input[type="tel"] {
     width: 275px;
     border: 1px solid #c4d9e4;
 }
 
-.bootstrap-enabled .form-horizontal select {
+.bootstrap-enabled.email-congress .form-horizontal select {
     width: 290px;
 }
 
-.bootstrap-enabled .btn.btn-default {
+.bootstrap-enabled.email-congress label.checkbox input[type="checkbox"] {
+    width: 30px;
+}
+.bootstrap-enabled.email-congress .btn.btn-default {
     width: 290px;
     border: 1px solid #50a4ed;
     box-shadow: none;
@@ -50,17 +51,28 @@
     text-shadow: none;
 }
 
-.bootstrap-enabled .btn.btn-default:hover {
+.bootstrap-enabled.email-congress .btn.btn-default:hover {
     background: #4b9ade;
 }
 
-.divider-top {
-    margin-top: 30px;
-    padding: 20px 0;
-    border-top: 1px dashed #c4d9e4;
+.bootstrap-enabled.email-congress form.full-width-form input {
+    width: 400px;
 }
 
-.errorExplanation {
+.bootstrap-enabled.email-congress form.full-width-form .btn.btn-default {
+    width: 414px;
+}
+
+.bootstrap-enabled.email-congress .retention-explanation {
+    margin: 50px 0;
+}
+
+.bootstrap-enabled.email-congress .divider-top {
+    border-top: 1px dashed #c4d9e4;
+    padding-top: 20px;
+}
+
+.bootstrap-enabled.email-congress .errorExplanation {
     padding: 15px;
     margin-left: -20px;
     border: 1px solid #eed3d7;
@@ -69,7 +81,30 @@
     color: #b94a48;
 }
 
-.errorExplanation p {
+.bootstrap-enabled.email-congress .errorExplanation p {
     padding-bottom: 15px;
     color: #b94a48;
+}
+
+.bootstrap-enabled.email-congress .alert-info {
+    margin: 35px 15px 15px;
+    padding: 15px;
+    border: 1px solid #bce8f1;
+    border-radius: 4px;
+    background: #d9edf7;
+    margin-left: 0px;
+}
+
+.bootstrap-enabled.email-congress .alert-info p {
+    margin-bottom: 20px;
+}
+
+.bootstrap-enabled.email-congress a.alt-link {
+    text-align: center;
+    font-size: 14px;
+    display: block;
+}
+
+.bootstrap-enabled.email-congress .alert-info a.alt-link {
+    margin-left: 0px;
 }

@@ -34,7 +34,7 @@ class EmailCongressController < ApplicationController
 
   def message_to_members
     # Spawns a EmailCongressLetter model and sends a verification email.
-    # Potention error conditions:
+    # Potential error conditions:
     #   New user
     #   User is not activated
     #   User is trying to email a nonexistent address

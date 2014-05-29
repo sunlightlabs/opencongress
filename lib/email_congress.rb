@@ -327,12 +327,11 @@ module EmailCongress
     end
 
     def restrict_recipients (sender, addresses)
-      Rails.logger.info("Sender: #{sender.login}, Addresses: #{addresses.to_sentence}")
       if sender.nil?
         return {:allowed => [], :rejected => addresses}
       else
-        legit_set = Set.new(email_addresses_for_people(sender.my_congress_members))
-        requested_set = Set.new(addresses)
+        legit_set = Set.new(email_addresses_for_people(sender.my_congress_members).map(&:downcase))
+        requested_set = Set.new(addresses.map(&:downcase))
         rejected = (requested_set - legit_set).to_a
         allowed = (requested_set & legit_set).to_a
         return {:allowed => allowed, :rejected => rejected}

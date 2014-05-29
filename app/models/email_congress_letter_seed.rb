@@ -1,3 +1,5 @@
+require_dependency 'email_congress'
+
 class EmailCongressLetterSeed < ActiveRecord::Base
   belongs_to :contact_congress_letter
 

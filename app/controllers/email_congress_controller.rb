@@ -131,7 +131,7 @@ class EmailCongressController < ApplicationController
     if request.method_symbol == :post
       if params[:profile]
         params[:profile].delete(:email)
-        params[:profile][:accept_tos] = (params[:profile][:accept_tos] == 'true') || (@sender_user && @sender_user.accepted_tos?)
+        params[:profile][:accept_tos] = (params[:profile][:accept_tos] == '1') || (@sender_user && @sender_user.accepted_tos?)
         @params_profile = EmailCongress::ProfileProxy.new(OpenStruct.new(params[:profile]))
         @profile = @params_profile.merge(@profile) # Values from the form should override existing values
       end

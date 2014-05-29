@@ -373,13 +373,13 @@ module EmailCongress
 
     def seed_for_postmark_object (obj)
       if obj.is_a?(String)
-        email = Postmark::Mitt.new(JSON.load(json))
+        email = Postmark::Mitt.new(JSON.load(obj))
       elsif obj.is_a?(Hash)
         email = Postmark::Mitt.new(JSON.dump(obj))
       elsif obj.is_a?(Postmark::Mitt)
         email = obj
       else
-        raise "Unable to construct EmailCongressLetterSeed for #{json.class.name}"
+        raise "Unable to construct EmailCongressLetterSeed for #{obj.class.name}"
       end
 
       seed = EmailCongressLetterSeed.new

@@ -124,6 +124,23 @@ class EmailCongressControllerTest < ActionController::TestCase
                                              :confirmation_code => @seed.confirmation_code)
   end
 
+  test 'known_user_cannot_send_outside_district' do
+    with_jdoe do |user|
+      other_state = State::ABBREVIATIONS.values.reject{ |st| st == user.state }.first
+      other_sen = Person.sen.where(:state => other_state).first
+      rcpt_addr = EmailCongress.email_address_for_person(other_sen)
+      incoming_seed({
+        "To" => rcpt_addr,
+        "ToFull" => [ { "Email" => rcpt_addr, "Name" => "" } ]
+      })
+      get(:confirm, :confirmation_code => @seed.confirmation_code)
+      assert_redirected_to @controller.url_for(:action => :complete_profile,
+                                               :confirmation_code => @seed.confirmation_code)
+      get(:complete_profile, :confirmation_code => @seed.confirmation_code)
+      assert_response :success
+    end
+  end
+
   test 'simple_path_for_known_user' do
     with_jdoe do |user|
       incoming_seed({

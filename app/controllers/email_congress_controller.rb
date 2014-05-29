@@ -74,13 +74,13 @@ class EmailCongressController < ApplicationController
       @profile = @profile.merge(user_profile)
     end
 
-    if !@profile.valid? || !@sender_user
+    if !@profile.valid? || !@sender_user || @recipients.empty?
       # Users who send a message from an unknown address will be directed to
       # :complete_profile in response to their initial email. If they change
       # their email address between the time of the initial email and when they
       # clicked the confirmation link, they would end up here due to the
       # !@sender_user condition.
-      if @sender_user
+      if @sender_user && !@recipients.empty?
         flash[:error] = @profile.errors.full_messages.to_sentence
       else
         flash[:error] = "To send your message we need to collect the information below."

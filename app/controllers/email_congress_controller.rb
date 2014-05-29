@@ -20,7 +20,6 @@ class EmailCongressController < ApplicationController
   before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile, :discard]
   before_filter :logout_if_necessary, :only => [:confirm, :complete_profile]
   before_filter :lookup_recipients, :only => [:message_to_members, :confirm, :confirmed]
-  before_filter :restrict_recipients, :only => [:message_to_members, :confirm, :confirmed]
 
   def debug
     puts "=================="
@@ -40,8 +39,8 @@ class EmailCongressController < ApplicationController
     #   User is trying to email a nonexistent address
     #   User is trying to email someone they are not allowed to email
 
-    if @recipient_addresses.empty?
-      EmailCongressMailer.no_recipient_bounce(@email, @rejected_addresses, @unresolvable_addresses).deliver
+    if @recipient_addresses.empty? && @sender_user
+      EmailCongressMailer.no_recipient_bounce(@email).deliver
       return head :ok
     end
 
@@ -57,7 +56,7 @@ class EmailCongressController < ApplicationController
       @profile = @profile.merge(EmailCongress::ProfileProxy.new(@sender_user))
     end
 
-    if @sender_user && @profile.valid?
+    if @sender_user && @profile.valid? && !@sender_user.district_needs_update?
       EmailCongressMailer.confirmation(seed).deliver
     else
       EmailCongressMailer.complete_profile(seed, @profile).deliver
@@ -98,8 +97,7 @@ class EmailCongressController < ApplicationController
         ZipInferrenceService.new(@sender_user.user_profile)
       end
       @profile.copy_to(@seed)
-      recipients = @recipients_by_address.map{ |addr, rcpt| rcpt }.compact
-      cc_letter = EmailCongress.reify_for_contact_congress(@sender_user, @seed, recipients)
+      cc_letter = EmailCongress.reify_for_contact_congress(@sender_user, @seed, @recipients)
       cc_letter.formageddon_threads.each do |thread|
         letter = thread.formageddon_letters.first
         if letter
@@ -133,7 +131,7 @@ class EmailCongressController < ApplicationController
     if request.method_symbol == :post
       if params[:profile]
         params[:profile].delete(:email)
-        params[:profile][:accept_tos] = (params[:profile][:accept_tos] == 'true') || @sender_user.accepted_tos?
+        params[:profile][:accept_tos] = (params[:profile][:accept_tos] == 'true') || (@sender_user && @sender_user.accepted_tos?)
         @params_profile = EmailCongress::ProfileProxy.new(OpenStruct.new(params[:profile]))
         @profile = @params_profile.merge(@profile) # Values from the form should override existing values
       end
@@ -218,33 +216,16 @@ class EmailCongressController < ApplicationController
   def lookup_recipients
     # This expands any special recipient aliases and resolves each address to a
     # Person model, keeping a list of the nonexistent ones.
-    @recipient_addresses = @email_obj.values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
-    @recipient_addresses = EmailCongress.expand_special_addresses(@sender_user, @recipient_addresses)
-    @recipients_by_address = Hash.new
-    @recipient_addresses.each do |addr|
-      begin
-        @recipients_by_address[addr] = EmailCongress.congressmember_for_address(addr)
-      rescue
-        @recipients_by_address[addr] = nil
-      end
-    end
-    @unresolvable_addresses = @recipients_by_address.select{ |addr, rcpt| rcpt.nil? }.map(&:first)
-    @recipient_addresses = @recipients_by_address.reject{ |attr, rcpt| rcpt.nil? }.map(&:first)
-  end
+    recipient_addresses = @email_obj.values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
+    cleaned = EmailCongress.cleaned_recipient_list(@sender_user, recipient_addresses)
+    @recipient_addresses = cleaned.map(&:first)
+    @recipients = cleaned.map(&:second)
 
-  def restrict_recipients
-    # Sometimes the user will try to email members that don't represent them,
-    # This filter pares down the @recipient_addresses list, storing the
-    # rejected addresses in @rejected_addresses. Those email addresses can be
-    # used in the templates for confirmation emails.
-    #
-    # This leaves the controller method to deal with the error condition since
-    # the appropriate action will differ by method.
-    if @sender_user
-      restrictions = EmailCongress.restrict_recipients(@sender_user, @recipient_addresses)
-      @rejected_addresses = restrictions[:rejected]
-      @recipient_addresses = restrictions[:allowed]
-    end
+    ### OLD:
+    # @recipient_addresses = @email_obj.values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
+    # @recipients = EmailCongress.resolve_addresses(@sender_user, @recipient_addresses)
+    # @recipients = EmailCongress.restrict_recipients(@sender_user, @recipients)
+    # @recipient_addresses = @recipients.map{ |rcpt| EmailCongress.email_address_for_person(rcpt) }
   end
 
   def find_by_confirmation_code

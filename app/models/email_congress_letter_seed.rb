@@ -41,21 +41,24 @@ class EmailCongressLetterSeed < ActiveRecord::Base
     User.find_by_email(sender_email)
   end
 
-  def decoded_recipient_addresses
-    recipient_addresses = JSON.load(raw_source).values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
-    recipient_addresses = EmailCongress.expand_special_addresses(sender_user, recipient_addresses)
-    @decoded_recipients ||= EmailCongress.restrict_recipients(sender_user, recipient_addresses)
+  def raw_recipient_addresses
+    @recipient_addresses ||= JSON.load(raw_source).values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
   end
 
-  def rejected_recipient_addresses
-    return decoded_recipient_addresses[:rejected]
+  def clean_recipient_list
+    return @clean_recipient_list unless @clean_recipient_list.nil?
+    @clean_recipient_list = EmailCongress.cleaned_recipient_list(sender_user, raw_recipient_addresses)
   end
 
   def allowed_recipient_addresses
-    return decoded_recipient_addresses[:allowed]
+    return clean_recipient_list.map(&:first)
+  end
+
+  def rejected_recipient_addresses
+    (Set.new(raw_recipient_addresses) - Set.new(allowed_recipient_addresses)).to_a
   end
 
   def allowed_recipients
-    return allowed_recipient_addresses.map{ |a| EmailCongress.congressmember_for_address(a) }
+    return clean_recipient_list.map(&:second)
   end
 end

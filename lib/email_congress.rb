@@ -282,17 +282,28 @@ module EmailCongress
     end
 
     def expand_special_addresses (sender_user, addresses)
-      return addresses if sender_user.nil?
-      addresses = addresses.flat_map do |addr|
+      addresses.flat_map do |addr|
         if addr =~ /^myreps@/
-          myreps_address = Mail::Address.new(addr)
-          if Settings.email_congress_domain == myreps_address.domain
+          if sender_user.nil?
+            next []
+          else
             next EmailCongress.email_addresses_for_people(sender_user.my_congress_members)
           end
+        else
+          next addr
         end
-        addr
       end
-      addresses
+    end
+
+    def resolve_addresses (sender_user, addresses)
+      addresses = expand_special_addresses(sender_user, addresses)
+      return addresses.map{ |a| EmailCongress.congressmember_for_address(a) rescue nil }.compact
+    end
+
+    def cleaned_recipient_list (sender_user, recipient_addresses)
+      recipients = EmailCongress.resolve_addresses(sender_user, recipient_addresses)
+      recipients = EmailCongress.restrict_recipients(sender_user, recipients)
+      return recipients.map{ |rcpt| [EmailCongress.email_address_for_person(rcpt), rcpt] }
     end
 
     def congressmembers_for_address (address, date=Date.today)
@@ -326,16 +337,12 @@ module EmailCongress
       members.first
     end
 
-    def restrict_recipients (sender, addresses)
-      if sender.nil?
-        return {:allowed => [], :rejected => addresses}
-      else
-        legit_set = Set.new(email_addresses_for_people(sender.my_congress_members).map(&:downcase))
-        requested_set = Set.new(addresses.map(&:downcase))
-        rejected = (requested_set - legit_set).to_a
-        allowed = (requested_set & legit_set).to_a
-        return {:allowed => allowed, :rejected => rejected}
+    def restrict_recipients (sender, recipients)
+      rcpts = Set.new(recipients)
+      unless sender.nil? || sender.district_needs_update?
+        rcpts &= Set.new(sender.my_congress_members)
       end
+      return rcpts
     end
 
     def pending_seeds (user)

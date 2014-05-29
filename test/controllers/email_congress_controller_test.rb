@@ -41,46 +41,7 @@ class EmailCongressControllerTest < ActionController::TestCase
     return @seed
   end
 
-  def setup
-  end
-
-  def teardown
-    @seed.destroy unless @seed.nil?
-    @user.destroy unless @user.nil?
-  end
-
-  test 'bounce_for_illegitimate_recipeints' do
-    delivery_cnt_before = ActionMailer::Base.deliveries.length
-    @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({"To" => "user@example.com", "ToFull" => { "Name" => "", "Email" => "user@example.com" }}))
-    post(:message_to_members)
-    delivery_cnt_after = ActionMailer::Base.deliveries.length
-    assert_response :success
-    assert_not_equal delivery_cnt_before, delivery_cnt_after
-
-    message = ActionMailer::Base.deliveries.last
-    assert_match(/^Could not deliver message:/, message.subject)
-  end
-
-  test 'no_bounce_for_new_user_emailing_myreps' do
-    delivery_cnt_before = ActionMailer::Base.deliveries.length
-    @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({"To" => at_email_congress('myreps'), "ToFull" => { "Name" => "", "Email" => at_email_congress('myreps') }}))
-    post(:message_to_members)
-    delivery_cnt_after = ActionMailer::Base.deliveries.length
-    assert_response :success
-    assert_not_equal delivery_cnt_before, delivery_cnt_after
-
-    message = ActionMailer::Base.deliveries.last
-    assert_no_match(/^Could not deliver message:/, message.subject)
-  end
-
-  test 'confirming_new_seed_redirects' do
-    incoming_seed
-    get(:confirm, {'confirmation_code' => @seed.confirmation_code})
-    assert_redirected_to @controller.url_for(:action => :complete_profile,
-                                             :confirmation_code => @seed.confirmation_code)
-  end
-
-  test 'simple_path_for_known_user' do
+  def with_jdoe
     profile = EmailCongress::ProfileProxy.new(OpenStruct.new({
       :first_name => 'John',
       :last_name => 'Doe',
@@ -104,15 +65,74 @@ class EmailCongressControllerTest < ActionController::TestCase
           profile.copy_to(@user.user_profile)
           @user.user_profile.save!
 
-          incoming_seed({
-            "From" => @user.email,
-            "FromFull" => { "Name" => "", "Email" => @user.email },
-            "To" => at_email_congress('myreps'),
-            "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
-          })
-          get(:confirm, {'confirmation_code' => @seed.confirmation_code})
+          yield(@user)
         end
       end
+    end
+  end
+
+  def setup
+  end
+
+  def teardown
+    @seed.destroy unless @seed.nil?
+    @user.destroy unless @user.nil?
+  end
+
+  test 'bounce_for_illegitimate_recipient_for_known_user' do
+    with_jdoe do |user|
+      delivery_cnt_before = ActionMailer::Base.deliveries.length
+      @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({"To" => "user@example.com", "ToFull" => { "Name" => "", "Email" => "user@example.com" }, "From" => user.email, "FromFull" => {"Name" => user.full_name, "Email" => user.email}}))
+      post(:message_to_members)
+      delivery_cnt_after = ActionMailer::Base.deliveries.length
+      assert_response :success
+      assert_not_equal delivery_cnt_before, delivery_cnt_after
+
+      message = ActionMailer::Base.deliveries.last
+      assert_match(/^Could not deliver message:/, message.subject)
+    end
+  end
+
+  test 'no_bounce_for_illegitimate_recipeints_for_new_user' do
+    delivery_cnt_before = ActionMailer::Base.deliveries.length
+    @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({"To" => "user@example.com", "ToFull" => { "Name" => "", "Email" => "user@example.com" }}))
+    post(:message_to_members)
+    delivery_cnt_after = ActionMailer::Base.deliveries.length
+    assert_response :success
+    assert_not_equal delivery_cnt_before, delivery_cnt_after
+
+    message = ActionMailer::Base.deliveries.last
+    assert_no_match(/^Could not deliver message:/, message.subject)
+  end
+
+  test 'no_bounce_for_new_user_emailing_myreps' do
+    delivery_cnt_before = ActionMailer::Base.deliveries.length
+    @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({"To" => at_email_congress('myreps'), "ToFull" => { "Name" => "", "Email" => at_email_congress('myreps') }}))
+    post(:message_to_members)
+    delivery_cnt_after = ActionMailer::Base.deliveries.length
+    assert_response :success
+    assert_not_equal delivery_cnt_before, delivery_cnt_after
+
+    message = ActionMailer::Base.deliveries.last
+    assert_no_match(/^Could not deliver message:/, message.subject)
+  end
+
+  test 'confirming_new_seed_redirects' do
+    incoming_seed
+    get(:confirm, {'confirmation_code' => @seed.confirmation_code})
+    assert_redirected_to @controller.url_for(:action => :complete_profile,
+                                             :confirmation_code => @seed.confirmation_code)
+  end
+
+  test 'simple_path_for_known_user' do
+    with_jdoe do |user|
+      incoming_seed({
+        "From" => user.email,
+        "FromFull" => { "Name" => "", "Email" => user.email },
+        "To" => at_email_congress('myreps'),
+        "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
+      })
+      get(:confirm, {'confirmation_code' => @seed.confirmation_code})
     end
     assert_equal nil, flash[:error]
     assert_redirected_to @controller.url_for(:action => :confirmed,

@@ -1,7 +1,1 @@
-<% if @unresolvable_addresses %>
-You tried to email <%= @unresolvable_addresses.to_sentence %> but those email addresses are unknown to our system.
-<% end %>
-
-<% if @rejected_addresses %>
-You tried to email <%= @rejected_addresses.to_sentence %> but our system only allows you to email your own representatives.
-<% end %>
+You tried to email <%= @email.to %> but those addresses are either unknown to us or outside your congressional district.

@@ -8,9 +8,8 @@ class EmailCongressMailer < ActionMailer::Base
          :subject => "EmailCongress message has only HTML body: #{email.subject}")
   end
 
-  def no_recipient_bounce (email, rejected_addresses, unresolvable_addresses)
-    @unresolvable_addresses = unresolvable_addresses
-    @rejected_addresses = rejected_addresses
+  def no_recipient_bounce (email)
+    @email = email
     mail(:to => email.from_email,
          :subject => "Could not deliver message: #{email.subject}")
   end

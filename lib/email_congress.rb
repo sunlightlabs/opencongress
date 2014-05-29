@@ -113,7 +113,7 @@ module EmailCongress
       merged.accept_tos = [self.accept_tos, other.accept_tos].any?
       merged
     end
-    
+
     def merge_many (other, *more)
       merged = merge(other)
       if more.empty?
@@ -327,6 +327,7 @@ module EmailCongress
     end
 
     def restrict_recipients (sender, addresses)
+      Rails.logger.info("Sender: #{sender.login}, Addresses: #{addresses.to_sentence}")
       if sender.nil?
         return {:allowed => [], :rejected => addresses}
       else

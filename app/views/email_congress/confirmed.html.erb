@@ -1,9 +1,9 @@
 <div class="bootstrap-enabled row email-congress">
   <div class="span6 offset3">
     <div class="user-message">
-      <p>Thanks, [username].</p>
+      <p>Thanks!</p>
       <% if logged_in? %>
-        Your letter will be delivered shortly to [placeholder names]. You can find your letter in <a href="<%= url_for(:controller => :profile, :action => :actions, :login => current_user.login) %>">your profile</a>.
+        Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>. You can find your letter in <a href="<%= url_for(:controller => :profile, :action => :actions, :login => current_user.login) %>">your profile</a>.
 
         <% if [@prompt_for_email, @prompt_for_password].any? %>
           <%= simple_form_for(current_user, :url => user_profile_path(current_user.login), :remote => true, html: { class: 'full-width-form' }) do |f| %>
@@ -49,7 +49,7 @@
         <% end %>
 
         <p>
-        Your letter will be delivered shortly to [placeholder names].
+        Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>.
         </p>
       <% end %>
       </div>

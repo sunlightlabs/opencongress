@@ -4,8 +4,10 @@
       %strong Date
     %span.grid_3
       %strong To
-    %span.grid_6
+    %span.grid_5
       %strong Regarding
+    %span.grid_2
+      %strong Privacy
 
   - unfinished_emails_list.each do |email_seed| 
     %li.grid_16.margin-bottom
@@ -14,7 +16,10 @@
         - email_seed.allowed_recipients.each do |rcpt|
           = link_to_person(rcpt)
         &nbsp;
-      .grid_6= email_seed.email_subject
+      .grid_5= email_seed.email_subject
       .grid_2 PRIVATE
-      .grid_1= link_to "Finish", url_for(:controller => :email_congress, :action => :complete_profile, :confirmation_code => email_seed.confirmation_code), :class => 'button silver small'
+      .grid_3.email_actions
+        = link_to "Finish", url_for(:controller => :email_congress, :action => :complete_profile, :confirmation_code => email_seed.confirmation_code), :class => 'button blue small'
+        = button_to "Discard", url_for(:controller => :email_congress, :action => :discard, :confirmation_code => email_seed.confirmation_code), :class => 'button red small', :confirm => "Are you sure you want to delete this email?"
+
 

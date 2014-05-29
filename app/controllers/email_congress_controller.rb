@@ -12,11 +12,12 @@ class EmailCongressController < ApplicationController
   # All details for a message are stored on an EmailCongressLetterSeed model
   # until it is converted to a FormageddonThread and then disposed of.
 
+  before_filter :login_required, :only => [:discard]
   before_filter :decode_email, :only => [:message_to_members]
-  before_filter :find_by_confirmation_code, :only => [:confirm, :complete_profile, :confirmed]
+  before_filter :find_by_confirmation_code, :only => [:confirm, :complete_profile, :confirmed, :discard]
   before_filter :only_resolved, :only => [:confirmed]
-  before_filter :only_unresolved, :only => [:confirm, :complete_profile]
-  before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile]
+  before_filter :only_unresolved, :only => [:confirm, :complete_profile, :discard]
+  before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile, :discard]
   before_filter :logout_if_necessary, :only => [:confirm, :complete_profile]
   before_filter :lookup_recipients, :only => [:message_to_members, :confirm, :confirmed]
   before_filter :restrict_recipients, :only => [:message_to_members, :confirm, :confirmed]
@@ -33,7 +34,7 @@ class EmailCongressController < ApplicationController
 
   def message_to_members
     # Spawns a EmailCongressLetter model and sends a verification email.
-    # Potention error conditions:
+    # Potential error conditions:
     #   New user
     #   User is not activated
     #   User is trying to email a nonexistent address
@@ -67,6 +68,7 @@ class EmailCongressController < ApplicationController
   def confirm
     # Completes the seed -> letter conversion.
 
+    @page_title = "Confirm Your Email"
     @profile = EmailCongress::ProfileProxy.new(@seed)
     if @sender_user
       user_profile = EmailCongress::ProfileProxy.build(@sender_user.user_profile, @sender_user)
@@ -107,7 +109,6 @@ class EmailCongressController < ApplicationController
       @seed.confirm!
       return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
     rescue => e
-      # TODO: Write job to find these seeds and retry them.
       Raven.capture_exception(e)
       flash[:error] = "Your letter could not be sent due to technical difficulties. Please try again later."
       return redirect_to(:action => :complete_profile, :confirmation_code => @seed.confirmation_code)
@@ -115,7 +116,7 @@ class EmailCongressController < ApplicationController
   end
 
   def confirmed
-    # TODO: The template should warn about illegitamate recipients
+    @page_title = "Your Email is Confirmed"
     if logged_in?
       @prompt_for_password = current_user.previous_login_date.nil?
       @prompt_for_email = current_user.email != @seed.sender_email
@@ -126,6 +127,7 @@ class EmailCongressController < ApplicationController
   end
 
   def complete_profile
+    @page_title = "Complete Your Profile and Send Your Email"
     @profile = EmailCongress::ProfileProxy.build(@seed)
 
     if request.method_symbol == :post
@@ -162,7 +164,25 @@ class EmailCongressController < ApplicationController
     end
   end
 
-  ### TODO: mark private when done
+  def discard
+    unless request.method_symbol == :post
+      return render_404
+    end
+
+    unless @sender_user == current_user
+      return redirect_to(:controller => :index, :action => :index)
+    end
+
+    @seed.resolved = true
+    @seed.resolution = 'discarded by user'
+    @seed.resolved_at = Time.zone.now
+    @seed.save!
+
+    flash[:notice] = "Discarded email re: #{@seed.email_subject}"
+    return redirect_to(:controller => :profile, :action => :actions, :login => current_user.login)
+  end
+
+  private #############################################################
   def decode_email
     request_body = request.body.read
     @email_obj = JSON.load(request_body)

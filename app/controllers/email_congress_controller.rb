@@ -14,12 +14,12 @@ class EmailCongressController < ApplicationController
 
   before_filter :login_required, :only => [:discard]
   before_filter :decode_email, :only => [:message_to_members]
-  before_filter :find_by_confirmation_code, :only => [:confirm, :complete_profile, :confirmed, :discard]
+  before_filter :find_by_confirmation_code, :only => [:confirm, :complete_profile, :recipients_for_profile, :confirmed, :discard]
   before_filter :only_resolved, :only => [:confirmed]
-  before_filter :only_unresolved, :only => [:confirm, :complete_profile, :discard]
-  before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile, :discard]
+  before_filter :only_unresolved, :only => [:confirm, :complete_profile, :recipients_for_profile, :discard]
+  before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile, :recipients_for_profile, :discard]
   before_filter :logout_if_necessary, :only => [:confirm, :complete_profile]
-  before_filter :lookup_recipients, :only => [:message_to_members, :confirm, :complete_profile, :confirmed]
+  before_filter :lookup_recipients, :only => [:message_to_members, :confirm, :complete_profile, :recipients_for_profile, :confirmed]
 
   def debug
     puts "=================="
@@ -160,6 +160,27 @@ class EmailCongressController < ApplicationController
         @profile = @profile.merge_many(@sender_user.user_profile, @sender_user)
       end
     end
+  end
+
+  def recipients_for_profile
+    profile = EmailCongress::ProfileProxy.new(OpenStruct.new(params[:profile]))
+    if @sender_user
+      profile = profile.merge(@sender_user.user_profile)
+    end
+    lat, lng = MultiGeocoder.coordinates(profile.mailing_address)
+    dsts = Congress.districts_locate(lat, lng).results rescue []
+    rcpts = dsts.flat_map do |d|
+      # district = District.includes(:state).where(:state => { :abbreviation => d[:state] },
+      #                                            :district_number => d[:district]).first
+      district = District.find_by_district_tag("#{d[:state]}-#{d[:district]}")
+      next [district.rep, *district.sens]
+    end
+    rcpts = Set.new(rcpts).to_a.map do |p|
+      phash = p.attributes.slice("govtrack_id", "title", "state", "district")
+      phash[:full_name] = p.full_name
+      next phash
+    end
+    render :json => rcpts
   end
 
   def discard

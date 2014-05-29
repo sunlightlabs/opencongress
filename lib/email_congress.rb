@@ -83,6 +83,27 @@ module EmailCongress
       [self.first_name, self.last_name].join(' ').strip
     end
 
+    def mailing_address
+      addr = ""
+      if street_address.present?
+        addr += "#{street_address}"
+        if street_address_2.present?
+          addr += " #{street_address_2},"
+        else
+          addr += ","
+        end
+        addr += " " if state.present? || zipcode.present?
+      end
+      if state.present?
+        addr += "#{city}, " if city.present?
+        addr += "#{state}"
+      end
+      addr += " #{zipcode}" if zipcode.present?
+      addr += "-#{zip_four}" if zip_four.present?
+
+      addr
+    end
+
     def copy_from (src)
       init_method = "copy_from_#{src.class.name.split(/::/).last.downcase}"
       if self.respond_to?(init_method)

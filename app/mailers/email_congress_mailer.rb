@@ -12,7 +12,7 @@ class EmailCongressMailer < ActionMailer::Base
     @unresolvable_addresses = unresolvable_addresses
     @rejected_addresses = rejected_addresses
     mail(:to => email.from_email,
-         :subject => email.subject)
+         :subject => "Could not deliver message: #{email.subject}")
   end
 
   def confirmation (seed)

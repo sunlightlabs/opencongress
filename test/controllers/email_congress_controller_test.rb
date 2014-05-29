@@ -56,6 +56,21 @@ class EmailCongressControllerTest < ActionController::TestCase
     delivery_cnt_after = ActionMailer::Base.deliveries.length
     assert_response :success
     assert_not_equal delivery_cnt_before, delivery_cnt_after
+
+    message = ActionMailer::Base.deliveries.last
+    assert_match(/^Could not deliver message:/, message.subject)
+  end
+
+  test 'no_bounce_for_new_user_emailing_myreps' do
+    delivery_cnt_before = ActionMailer::Base.deliveries.length
+    @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({"To" => at_email_congress('myreps'), "ToFull" => { "Name" => "", "Email" => at_email_congress('myreps') }}))
+    post(:message_to_members)
+    delivery_cnt_after = ActionMailer::Base.deliveries.length
+    assert_response :success
+    assert_not_equal delivery_cnt_before, delivery_cnt_after
+
+    message = ActionMailer::Base.deliveries.last
+    assert_no_match(/^Could not deliver message:/, message.subject)
   end
 
   test 'confirming_new_seed_redirects' do

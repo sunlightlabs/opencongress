@@ -56,6 +56,9 @@
                             <p style="color: #555555; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; text-align: left; line-height: 19px; font-size: 16px; margin: 0 0 10px; padding: 0;" align="left">
                               <small style="font-size: 12px;">Don't worry, you'll only need to do this once. Congressional offices require the address information below in order to deliver your message.</small>
                             </p>
+                            <p style="color: #555555; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; text-align: left; line-height: 19px; font-size: 16px; margin: 0 0 10px; padding: 0;" align="left">
+                            <small style="font-size: 12px;"><strong>Note:</strong> Once you've provided your address, your email's recipients may change. We will only provide you with email addresses for the members of Congress who represent you.</small>
+                            </p>
                             <% if @seed.rejected_recipient_addresses.any? %>
                             <p style="color: #555555; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; text-align: left; line-height: 19px; font-size: 16px; margin: 0 0 10px; padding: 0;" align="left">
                             <small style="font-size: 12px;">Note: We cannot send your email to <%=raw email_formatted_emails_for(@seed, :disposition => :rejected) %> as they do not represent you.</small>

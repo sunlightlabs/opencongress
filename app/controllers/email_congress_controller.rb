@@ -68,6 +68,7 @@ class EmailCongressController < ApplicationController
   def confirm
     # Completes the seed -> letter conversion.
 
+    @page_title = "Confirm Your Email"
     @profile = EmailCongress::ProfileProxy.new(@seed)
     if @sender_user
       user_profile = EmailCongress::ProfileProxy.build(@sender_user.user_profile, @sender_user)
@@ -115,6 +116,7 @@ class EmailCongressController < ApplicationController
   end
 
   def confirmed
+    @page_title = "Your Email is Confirmed"
     if logged_in?
       @prompt_for_password = current_user.previous_login_date.nil?
       @prompt_for_email = current_user.email != @seed.sender_email
@@ -125,6 +127,7 @@ class EmailCongressController < ApplicationController
   end
 
   def complete_profile
+    @page_title = "Complete Your Profile and Send Your Email"
     @profile = EmailCongress::ProfileProxy.build(@seed)
 
     if request.method_symbol == :post

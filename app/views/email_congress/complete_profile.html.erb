@@ -158,11 +158,11 @@
 
       }
       $('#change_warning').find('.btn-close').click(function(){
-        $(this).parents('#change_warning').hide().parents('.control-group').find('.controls').show().find('.btn').removeClass('.btn-disabled');
+        $(this).parents('#change_warning').hide().parents('.control-group').find('.controls').show().find('.btn').prop('disabled', false);
       });
       $('#profile_submit').click(function(e){
         e.preventDefault();
-        $(this).addClass('btn-disabled');
+        $(this).prop('disabled', true);
         var data = $(this).parents('form').serializeObject();
         $.ajax({
           url: '/email_congress/recipients_for_profile',

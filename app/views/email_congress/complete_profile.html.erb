@@ -135,9 +135,9 @@
     $(function(){
       function handleChangedRecipients(data) {
         changes = [];
-        $(data).each(function(obj){
-          if($(FORM.recipients).pluck('govtrack_id').index(obj.govtrack_id) == -1) {
-            changes.push(obj);
+        $($(FORM.recipients).pluck('govtrack_id')).each(function(i, id){
+          if($(data).pluck('govtrack_id').index(id) == -1) {
+            changes.push(id)
           }
         });
         if (changes.length) {
@@ -149,10 +149,9 @@
       function showChangeWarning(recipients){
         var dialog = $('#change_warning')
         var para = dialog.find('.recipients');
-        console.log(recipients, para.html())
         window.recipients = recipients;
         window.j = $;
-        para.html($(recipients).pluck('full_name').toArray().join(','));
+        para.html($(recipients).pluck('full_name').toArray().join(', '));
         dialog.show()
               .parent().find('.controls').hide();
 

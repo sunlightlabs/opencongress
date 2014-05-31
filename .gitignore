@@ -25,3 +25,5 @@ Vagrantfile
 .*.swp
 TAGS
 *.sqlite3
+helium.json
+sendhelium

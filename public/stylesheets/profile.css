@@ -711,7 +711,7 @@ form.edit_user label { width: 100px; }
 form.edit_user label.radio { width: auto; text-align: left; }
 form.edit_user button:first-child,
 form.edit_user .form-actions { padding-left: 110px; }
-form.edit_user select { margin: 5px 0; }
+form.edit_user select { height: 24px; padding: 5px; margin: 0; }
 form.edit_user input[type=radio] { margin-right: 5px; }
 form.edit_user #site_preferences label { display: block; width: auto; text-align: left; }
 form.edit_user #site_preferences label.radio { display: inline; }
@@ -721,3 +721,8 @@ form.edit_user #privacy_settings select { display: inline-block; margin: 5px 0; 
 
 /* add to friends div */
 #fdiv { margin-top: 14px; }
+
+.actions .email_actions > form,
+.actions .email_actions > form > div {
+    display: inline-block;
+}

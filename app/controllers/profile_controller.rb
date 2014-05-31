@@ -6,6 +6,7 @@ class ProfileController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
   skip_before_filter :must_reaccept_tos?, :only => [:show, :edit, :update, :destroy, :upload_pic, :delete_images]
   skip_before_filter :has_district?, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
+  skip_before_filter :pending_email_seed_prompt, :only => [:actions]
 
   def show
     @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])
@@ -29,7 +30,7 @@ class ProfileController < ApplicationController
         flash[:error] = "Passwords do not match, your profile was not updated."
         redirect_to :back and return
       end
-      if User.authenticate(@user.login, old_pass).is_a?(User)
+      if @user.previous_login_date.nil? || User.authenticate(@user.login, old_pass).is_a?(User)
         @user.password = new_pass
         @user.save
         flash[:notice] = "Your password was changed."
@@ -79,6 +80,10 @@ class ProfileController < ApplicationController
                         bill_votes.created_at, bill_votes.bill_id FROM bill_votes WHERE bill_votes.support = 1
                         AND bill_votes.user_id = #{@user.id}) b ON b.bill_id = bills.id
                       ORDER BY b.created_at", :per_page=>20, :page => params[:o_page])
+
+    if logged_in?
+      @unfinished_emails = EmailCongress.pending_seeds(current_user.email).sort_by(&:created_at).reverse
+    end
 
     @title_class = "tab-nav"
     @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login.possessive} Actions"}

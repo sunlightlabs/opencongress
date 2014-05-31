@@ -35,6 +35,7 @@ class UserProfile < ActiveRecord::Base
   delegate :state, :to => :user
   delegate :state=, :to => :user
   delegate :state_changed?, :to => :user
+  delegate :district_needs_update?, :to => :user, :prefix => true
 
   HUMANIZED_ATTRIBUTES = {
     :zip_four => "ZIP code +4 extension",
@@ -51,6 +52,7 @@ class UserProfile < ActiveRecord::Base
     street_address_2_changed? ||
     city_changed? ||
     state.blank? && zipcode.present?
+    user_district_needs_update?
   }
 
   def full_name

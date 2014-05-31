@@ -1,6 +1,6 @@
 class UserObserver < ActiveRecord::Observer
   def after_create(user)
-    UserNotifier.signup_notification(user).deliver unless user.facebook_connect_user?
+    UserNotifier.signup_notification(user).deliver if user.should_receive_activation_email?
   end
 
   def after_save(user)

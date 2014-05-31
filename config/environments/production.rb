@@ -13,6 +13,7 @@ OpenCongress::Application.configure do
 
   # Send mail with postmark
   config.action_mailer.delivery_method = :postmark
+  config.action_mailer.default_url_options = { :host => "www.opencongress.org" }
 
   # Send faxes
   config.faxable.deliver_faxes = true

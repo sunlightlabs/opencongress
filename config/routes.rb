@@ -38,6 +38,14 @@ OpenCongress::Application.routes.draw do
 
   resources :simple_captcha, :only => :show
 
+  scope 'email_congress', :controller => :email_congress do
+    match 'postmark/inbound', :action => :message_to_members
+    match 'complete_profile/:confirmation_code', :action => :complete_profile
+    match 'confirmed/:confirmation_code', :action => :confirmed
+    match 'confirm/:confirmation_code', :action => :confirm
+    match 'confirm', :action => :confirm
+  end
+
   # Allow downloading Web Service WSDL as a file with an extension
   # instead of a file named 'wsdl'
   # match ':controller/service.wsdl' => 'wsdl'
@@ -157,6 +165,9 @@ OpenCongress::Application.routes.draw do
   # map.connect ':controller/:action/:id'
 
 
+  scope 'contact_congress_letters', :controller => 'contact_congress_letters' do
+    post ':id', :action => :update
+  end
   resources :contact_congress_letters, :only => [:index, :show, :new, :update] do
     get 'create_from_formageddon', :on => :collection # create uses POST and we'll be redirecting to create
     get 'get_recipients', :on => :collection

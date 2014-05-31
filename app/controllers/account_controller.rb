@@ -306,10 +306,6 @@ class AccountController < ApplicationController
   end
 
   def logout
-    if params[:wiki_return_page]
-      session[:return_to] = "#{wiki_base_url}/#{params[:wiki_return_page]}"
-    end
-    redirect_loc = session[:return_to]
     self.current_user.forget_me if logged_in?
     cookies.delete :auth_token
     cookies.delete '_session_id'
@@ -335,10 +331,14 @@ class AccountController < ApplicationController
     force_fb_cookie_delete
 
     reset_session
-    # session[:return_to] = redirect_loc
+    if params[:wiki_return_page]
+      return redirect_to("#{wiki_base_url}/#{params[:wiki_return_page]}")
+    end
+    if params[:next]
+      return redirect_to(params[:next])
+    end
     flash[:notice] = "You have been logged out."
 
-    #redirect_back_or_default('/')
     redirect_to :controller => 'index'
   end
 

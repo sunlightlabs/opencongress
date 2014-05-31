@@ -1,0 +1,57 @@
+<div class="bootstrap-enabled row email-congress">
+  <div class="span6 offset3">
+    <div class="user-message">
+      <p>Thanks!</p>
+      <% if logged_in? %>
+        Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>. You can find your letter in <a href="<%= url_for(:controller => :profile, :action => :actions, :login => current_user.login) %>">your profile</a>.
+
+        <% if [@prompt_for_email, @prompt_for_password].any? %>
+          <%= simple_form_for(current_user, :url => user_profile_path(current_user.login), html: { class: 'full-width-form' }) do |f| %>
+
+            <% if @prompt_for_email == true %>
+              <div class="alert-info">
+                  <p>You sent this email from an address that differs from the one we have on file. Would you like to update your email address?</p>
+                  <%= f.input_field :email, :input_html => { :value => @seed.sender_email } %>
+              <!-- </div> -->
+            <% end %>
+
+            <% if @prompt_for_password == true %>
+              <!-- <div> -->
+                <p>
+                In order to send your letter, we've created you an OpenCongress account. If
+                you would like to log into OpenCongress with your new account, you can
+                choose a password now:
+                </p>
+                <%= f.input :password, :as => :password %>
+                <%= f.input :password_confirmation, :as => :password %>
+              <!-- </div> -->
+            <% end %>
+            <div class="control-group">
+              <div class="controls">
+                <%= f.button :submit, :value => 'Update It' %>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="controls">
+                <a class="alt-link" href="<%= user_profile_path(current_user.login) %>">No Thanks</a>
+              </div>
+            </div>
+            </div>
+          <% end %>
+        <% end %>
+
+      <% else %> <%# The logged out case %>
+
+        <% if false %>
+          Don't reveal any information about the letter unless the user is logged
+          in. This should only ever happen to returning users who have a complete
+          profile and a recognized email address, familiar with the system... and attackers
+        <% end %>
+
+        <p>
+        Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>.
+        </p>
+      <% end %>
+      </div>
+    </div>
+</div>

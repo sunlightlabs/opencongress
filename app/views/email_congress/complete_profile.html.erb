@@ -1,0 +1,175 @@
+<div class="bootstrap-enabled row email-congress">
+  <div class="span6 offset3">
+
+    <%= simple_form_for('profile', :path => '/email_congress/complete_profile', :method => "post", as: 'user_horizontal', html: { class: 'form-horizontal' }, wrapper: :custom_horizontal_form,
+      wrapper_mappings: {
+        check_boxes: :horizontal_radio_and_checkboxes,
+        radio_buttons: :horizontal_radio_and_checkboxes,
+        file: :horizontal_file_input,
+        boolean: :horizontal_boolean
+      }) do |f| %>
+      <input type="hidden" name="confirmation_code" value="<%= @seed.confirmation_code %>">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+      <div class="row user-message">
+      <% if @sender_user %>
+        <% if logged_in? %>
+        <span class="username">
+          Not <%= @sender_user.login %>?
+          <a class="btn btn-small" href="<%= url_for(:controller => :account, :action => :logout, :next => request.url) %>">
+            Logout
+          </a>
+        </span>
+        <% else %>
+        <span class="username">
+          Hi <%= @sender_user.login %>,
+        </span>
+        <% end %>
+      <% else %>
+        Hi there!
+      <% end %>
+        <p>We need you to fill out the form below before we can send your email<% if @seed.allowed_recipients.any? %>
+            to <%= @seed.allowed_recipients.any? ? @seed.allowed_recipients.map(&:full_name).to_sentence : "your representatives" %><% end %>.
+        </p>
+      </div>
+
+        <%= error_messages_for('profile', :header_message => nil) %>
+
+        <%= f.input :first_name %>
+        <%= f.input :last_name %>
+        <%= f.input :street_address %>
+        <%= f.input :street_address_2, :required => false %>
+        <%= f.input :city %>
+        <%= f.input :state, :collection => State::ABBREVIATIONS %>
+        <%= f.input :zipcode, :maxlength => 5, :size => 5 %>
+        <%= f.input :mobile_phone %>
+
+      <% if !@sender_user || !@sender_user.accepted_tos? %>
+          <%= f.input :accept_tos, :as => :boolean, inline_label: 'I accept the terms of service and privacy policy', label: false %>
+      <% end %>
+      <div class="control-group">
+        <div class="controls">
+          <%= f.button :submit, :value => 'Continue' %>
+        </div>
+
+        <div class="alert alert-info" id="change_warning" style="display:none">
+          <h4>Your email's recipients have changed.</h4>
+          <p>Based on the information you provided, your email will now be routed to: <span class="recipients"></span>.</p>
+          <p>Our policy is to only send emails to the members who represent you.</p>
+          <button type="submit" class="btn btn-primary">That's fine, send it!</button> &nbsp;
+          <button type="button" class="btn btn-close">Go back and adjust my info</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls">
+          <% if !@sender_user %>
+            <a class="alt-link" href="<%= url_for(:only_path => false, :controller => :account, :action => :login, :return_to => url_for(:only_path => false, :controller => :email_congress, :action => :confirm, :confirmation_code => @seed.confirmation_code)) %>">I already have an OpenCongress account</a>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="retention-explanation">
+        <div class="divider-top">
+          <strong>Why do I need to agree to your terms and privacy policy?</strong>
+          <% if !@sender_user || !@sender_user.accepted_tos? %>
+          <p>
+            <% if !@sender_user %>
+              We couldn't find an OpenCongress account for your email address. In
+              order for us to send your message you must first agree to our
+              terms of service, which will allow us to generate an account for
+              you. <a href="/terms">View the terms here.</a>
+            <% elsif !@sender_user.accepted_tos? %>
+              Our terms of service have been updated since you last used your
+              OpenCongress account. In order for us to send your message you must
+              first agree to these updated terms of service.
+            <% end %>
+          </p>
+          <% end %>
+        </div>
+        <div class="divider-top">
+          <strong>What if I don't want to provide this information?</strong>
+          <p>
+            You can use the rest of our website without providing this
+            information. However, we must collect this information because
+            congressional contact systems require it. We retain this information
+            to ensure proper delivery.
+          </p>
+        </div>
+      </div>
+
+    <% end %> <!-- end form_for -->
+
+</div>
+
+<script>
+  window.FORM || (FORM = {recipients: []});
+  <% @recipients.each do |person| %>
+  FORM.recipients.push(<%=raw ({ :govtrack_id => person.govtrack_id, :full_name => person.full_name }).to_json %>);
+  <% end %>
+</script>
+<script>
+  (function($){
+    // pluck implementation
+    $.fn.pluck = function(key){
+      return $(this).map(function(idx, obj){
+        return obj[key];
+      });
+    };
+    //serialize forms to json
+    $.fn.serializeObject = function(){
+       var o = {};
+       var a = this.serializeArray();
+       $.each(a, function() {
+           if (o[this.name]) {
+               if (!o[this.name].push) {
+                   o[this.name] = [o[this.name]];
+               }
+               o[this.name].push(this.value || '');
+           } else {
+               o[this.name] = this.value || '';
+           }
+       });
+       return o;
+    };
+    $(function(){
+      function handleChangedRecipients(data) {
+        changes = [];
+        $($(FORM.recipients).pluck('govtrack_id')).each(function(i, id){
+          if($(data).pluck('govtrack_id').index(id) == -1) {
+            changes.push(id)
+          }
+        });
+        if (changes.length) {
+          showChangeWarning(data);
+        } else {
+          $('#profile_submit').parents('form').submit();
+        };
+      };
+      function showChangeWarning(recipients){
+        var dialog = $('#change_warning')
+        var para = dialog.find('.recipients');
+        window.recipients = recipients;
+        window.j = $;
+        para.html($(recipients).pluck('full_name').toArray().join(', '));
+        dialog.show()
+              .parent().find('.controls').hide();
+
+      }
+      $('#change_warning').find('.btn-close').click(function(){
+        $(this).parents('#change_warning').hide().parents('.control-group').find('.controls').show().find('.btn').prop('disabled', false);
+      });
+      $('#profile_submit').click(function(e){
+        e.preventDefault();
+        $(this).prop('disabled', true);
+        var data = $(this).parents('form').serializeObject();
+        $.ajax({
+          url: '/email_congress/recipients_for_profile',
+          type: 'POST',
+          data: data,
+          success: handleChangedRecipients
+        });
+      });
+    });
+  })(jQuery);
+</script>

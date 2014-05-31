@@ -132,6 +132,10 @@ display: relative;
   margin-bottom: 20px;
 }
 
+.formageddon_letter .body p {
+    margin: 0 0 1.75em 0;
+}
+
 .contact_congress .status_bar {
   width: 900px;
   float: left;
@@ -869,9 +873,10 @@ clear: both;
   background: -moz-linear-gradient(top,  #fff,  #f9f9f9); 
 
   text-shadow: 0 1px 0px #fff;
-font-family: helvetica, arial, sans-serif;
-font-size: 13px;
-padding: 70px;
+  font-family: helvetica, arial, sans-serif;
+  font-size: 17px;
+  line-height: 20px;
+  padding: 55px;
 }
 
 
@@ -1020,7 +1025,7 @@ padding-top: 20px;
 
 .contact_congress_letter .formageddon_letter{
 float: left;
-width: 420px;
+width: 460px;
 margin-left: 30px;
 
 margin-bottom: 60px;
@@ -1117,6 +1122,15 @@ padding-bottom: 20px;
 text-align: left;
 padding-bottom: 0px;
 
+}
+
+.contact_congress_letter .privacy_buttons {
+    margin: 10px 0 0 30px;
+    padding: 0;
+}
+
+.contact_congress_letter .privacy_buttons > div {
+    display: inline-block;
 }
 
 .contact_congress_letter #bill{

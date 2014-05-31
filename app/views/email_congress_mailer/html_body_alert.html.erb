@@ -1,0 +1,27 @@
+<html>
+
+  <body>
+    <p>
+    A user sent a message to the EmailCongress address that contains an HTML
+    body but doesn't not contain a plain text alternative.
+    </p>
+
+    <ul>
+      <li>From: <%= @email.from %></li>
+      <li>To: <%= @email.to %></li>
+      <li>Cc: <%= @email.cc %></li>
+      <li>Bcc: <%= @email.bcc %></li>
+      <li>Subject: <%= @email.subject %></li>
+    </ul>
+
+    <p>
+    The original HTML body:
+    </p>
+    <hr>
+    <p>
+    <%= @email.html_body %>
+    </p>
+  </body>
+
+</html>
+

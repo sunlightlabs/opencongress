@@ -173,7 +173,7 @@ class User < ActiveRecord::Base
                   :representative_id, :state, :district, :user_privacy_options_attributes,
                   :user_options_attributes, :user_profile_attributes
 
-  attr_accessor :accept_tos, :email_confirmation
+  attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email
 
   accepts_nested_attributes_for :user_privacy_options, :user_profile, :user_options
 
@@ -208,6 +208,61 @@ class User < ActiveRecord::Base
 
 
   class << self
+    def random_password
+      password = SecureRandom.random_number(178689910246017054531432477289437798228285773001601743140683775).to_s(36)
+    end
+
+    def login_stub_for_profile (profile)
+      address = Mail::Address.new(profile.email)
+      stub = address.local.sub(/[^a-z0-9].*$/i, '') # remove any non-alphnumeric character and everything following it
+      if stub.length < 5
+        # In case we stripped off too much, or their email address is just ridiculously short
+        stub = "#{profile.first_name}#{profile.last_name.first}"
+      end
+      stub
+    end
+
+    def unused_login (stub, max_attempts=100)
+      candidate = stub
+      (0..max_attempts).each do |attempt|
+        user = User.find_by_login(candidate)
+        if user.nil?
+          return candidate
+        end
+        candidate = stub + SecureRandom.random_number(9999).to_s(10)
+      end
+      return nil
+    end
+
+    def generate_for_profile (profile, options=HashWithIndifferentAccess.new)
+      begin
+        ActiveRecord::Base.transaction do
+          login = unused_login(login_stub_for_profile(profile))
+          user = User.new(:login => login,
+                          :email => profile.email,
+                          :password => random_password,
+                          :accepted_tos_at => profile.accept_tos && Time.now || nil,
+                          :state => profile.state
+                          )
+          user.suppress_activation_email = options[:suppress_activation_email]
+          user.save!
+          user = User.find_by_login(login)
+
+          uprof = UserProfile.new(profile.attributes_hash.slice(:first_name, :last_name, :mobile_phone, :street_address, :street_address_2, :city, :zipcode, :zip_four))
+          uprof.user = user
+          uprof.save!
+
+          return user
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        if e.record.errors[:login].include?('has already been taken')
+          retry
+        else
+          raise
+        end
+      end
+    end
+
     def highest_rated_commenters
       cs = CommentScore.calculate(:count, :score, :include => "comment", :group => "comments.user_id", :order => "count_score DESC").collect {|p| p[1] > 3 && p[0] != nil ? p[0] : nil}.compact
       CommentScore.calculate(:avg, :score, :include => "comment", :group => "comments.user_id", :conditions => ["comments.user_id in (?)", cs], :order => "avg_score DESC").each do |k|
@@ -398,6 +453,9 @@ class User < ActiveRecord::Base
   def my_reps
     Person.find_current_representatives_by_state_and_district(state, district)
   end
+  def my_congress_members
+    [my_sens, my_reps].compact.flatten
+  end
 
   def my_approved_reps
     person_approvals.find(:all, :include => [:person], :conditions => ["people.name LIKE ? AND rating > 5", '%Rep.%']).collect {|p| p.person.id}
@@ -549,6 +607,10 @@ class User < ActiveRecord::Base
 
   def facebook_connect_user?
     !facebook_uid.blank?
+  end
+
+  def should_receive_activation_email?
+    !facebook_connect_user? && !suppress_activation_email
   end
 
 

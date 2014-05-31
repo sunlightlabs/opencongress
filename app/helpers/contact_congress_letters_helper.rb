@@ -15,6 +15,8 @@ module ContactCongressLettersHelper
         letter.contactable.typenumber.downcase.gsub(/\./, '') + " " + url)
     elsif letter.contactable_type == 'Subject'
       u("A letter to #Congress on @opencongress regarding #{letter.contactable.term}" + url)
+    else
+      u("A letter to #Congress on @opencongress: #{letter.subject}")
     end
   end
 
@@ -46,5 +48,41 @@ module ContactCongressLettersHelper
     else
       "This letter was sent from #{letter.formageddon_thread.formageddon_sender.login} to #{letter.formageddon_thread.formageddon_recipient} on #{letter.created_at.strftime('%B %d, %Y')}."
     end
+  end
+
+  def privacy_button_classes (letter, button)
+    classes = ['button', 'small', 'silver']
+    if letter.privacy.upcase == button.to_s.upcase
+      classes.push('active')
+      classes.push('disabled')
+    end
+    return classes.join(' ')
+  end
+
+  def privacy_button_to (letter, button)
+    active = (letter.privacy.downcase.to_sym == button)
+    button_html = form_tag(contact_congress_letter_path(letter), :method => :post) do
+      [hidden_field_tag(:privacy, button.to_s.upcase),
+       submit_tag(button.to_s.capitalize,
+                  :disabled => active,
+                  :class => privacy_button_classes(letter, button))].join('').html_safe
+    end
+    wrapper_class = active ? 'active' : ''
+    wrapped_button_html = %Q[<div class="#{wrapper_class}">#{button_html}</div>]
+    return wrapped_button_html.html_safe
+  end
+
+  def body_as_paragraphs (letter)
+    trimmed = letter.message.strip
+    normalizedLineBreaks = trimmed.gsub(/(\r\n|\n\r)/, "\n")
+    normalizedWhitespace = normalizedLineBreaks.gsub(/^\s+$/m, '')
+    hasConsecutiveLineBreaks = !normalizedWhitespace.index(/[\r\n]{2,}/).nil?
+    if hasConsecutiveLineBreaks == true
+      lineBreakPattern = /[\r\n]{2,}/
+    else
+      lineBreakPattern = /[\r\n]/
+    end
+    withPTags = normalizedWhitespace.gsub(lineBreakPattern, "\n</p>\n\n<p>\n")
+    "<p>\n#{withPTags}\n</p>".html_safe
   end
 end

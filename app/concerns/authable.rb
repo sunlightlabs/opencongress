@@ -87,7 +87,7 @@ module Authable
     end
 
     def is_active?
-      status && is_authorized?
+      !is_unconfirmed? && is_authorized?
     end
     alias_method :activated?, :is_active?
     alias_method :enabled, :is_active?

@@ -14,8 +14,9 @@ class EmailCongressMailer < ActionMailer::Base
          :subject => "Could not deliver message: #{email.subject}")
   end
 
-  def confirmation (seed)
+  def confirmation (seed, sender_user)
     @seed = seed
+    @sender_user = sender_user
     @email = Postmark::Mitt.new(seed.raw_source)
     mail(:to => seed.sender_email,
          :subject => "Please confirm your EmailCongress message: #{seed.email_subject}")

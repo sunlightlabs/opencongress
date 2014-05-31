@@ -57,7 +57,7 @@ class EmailCongressController < ApplicationController
     end
 
     if @sender_user && @profile.valid? && !@sender_user.district_needs_update?
-      EmailCongressMailer.confirmation(seed).deliver
+      EmailCongressMailer.confirmation(seed, @sender_user).deliver
     else
       EmailCongressMailer.complete_profile(seed, @profile).deliver
     end

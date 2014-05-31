@@ -145,8 +145,8 @@ class EmailCongressControllerTest < ActionController::TestCase
     with_jdoe do |user|
       delivery_cnt_before = ActionMailer::Base.deliveries.length
       @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({
-        "To" => "user@example.com",
-        "ToFull" => { "Name" => "", "Email" => "user@example.com" },
+        "To" => at_email_congress('myreps'),
+        "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ],
         "From" => user.email,
         "FromFull" => {"Name" => user.full_name, "Email" => user.email
       }}))

@@ -141,7 +141,26 @@ class EmailCongressControllerTest < ActionController::TestCase
     end
   end
 
-  test 'simple_path_for_known_user' do
+  test 'simple_path_for_known_user_email' do
+    with_jdoe do |user|
+      delivery_cnt_before = ActionMailer::Base.deliveries.length
+      @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({
+        "To" => "user@example.com",
+        "ToFull" => { "Name" => "", "Email" => "user@example.com" },
+        "From" => user.email,
+        "FromFull" => {"Name" => user.full_name, "Email" => user.email
+      }}))
+      post(:message_to_members)
+      delivery_cnt_after = ActionMailer::Base.deliveries.length
+      assert_response :success
+      assert_not_equal delivery_cnt_before, delivery_cnt_after
+
+      message = ActionMailer::Base.deliveries.last
+      assert_match(/^Please confirm your EmailCongress message:/, message.subject)
+    end
+  end
+
+  test 'simple_path_for_known_user_confirmation' do
     with_jdoe do |user|
       incoming_seed({
         "From" => user.email,

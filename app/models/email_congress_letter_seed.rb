@@ -44,7 +44,7 @@ class EmailCongressLetterSeed < ActiveRecord::Base
   end
 
   def raw_recipient_addresses
-    @recipient_addresses ||= JSON.load(raw_source).values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"]}.uniq
+    @recipient_addresses ||= JSON.load(raw_source).values_at("ToFull", "CcFull", "BccFull").flatten.compact.map{|o| o["Email"] }.uniq
   end
 
   def clean_recipient_list
@@ -57,7 +57,10 @@ class EmailCongressLetterSeed < ActiveRecord::Base
   end
 
   def rejected_recipient_addresses
-    (Set.new(raw_recipient_addresses) - Set.new(allowed_recipient_addresses)).to_a
+    requested = Set.new(raw_recipient_addresses)
+    lc_allowed = Set.new(allowed_recipient_addresses.map(&:downcase))
+    rejected = requested.reject{ |a| lc_allowed.include?(a.downcase) }
+    return rejected.to_a
   end
 
   def allowed_recipients

@@ -1,5 +1,5 @@
 class EmailCongressMailer < ActionMailer::Base
-  default :from => "noreply@opencongress.org"
+  default :from => "OpenCongress <noreply@opencongress.org>"
   helper :email_congress
 
   def html_body_alert (email)

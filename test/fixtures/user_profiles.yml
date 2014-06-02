@@ -1,0 +1,9 @@
+jdoe:
+  user_id: 1
+  first_name: John
+  last_name: Doe
+  street_address: '4236 Bowden St'
+  city: Frisco City
+  zipcode: '36445'
+  zip_four:
+  mobile_phone: '5555555555'

@@ -41,59 +41,22 @@ class EmailCongressControllerTest < ActionController::TestCase
     return @seed
   end
 
-  def with_jdoe
-    profile = EmailCongress::ProfileProxy.new(OpenStruct.new({
-      :first_name => 'John',
-      :last_name => 'Doe',
-      :email => 'user@example.com',
-      :street_address => '4236 Bowden St',
-      :city => 'Frisco City',
-      :state => 'AL',
-      :zipcode => '36445',
-      :zip_four => '',
-      :mobile_phone => '5555555555',
-      :accept_tos => true
-    }))
-    @user = User.new(:login => 'jdoe', :password => User.random_password)
-    @user.user_profile = UserProfile.new
-    MultiGeocoder.stub(:coordinates, [31.4228, -87.41734]) do
-      MultiGeocoder.stub(:search, [OpenStruct.new({ "zipcode" => "36445", "zip4" => "5420" })]) do
-        Congress.stub(:districts_locate, OpenStruct.new({ "results" => [OpenStruct.new({ "state" => "AL", "district" => 1 }) ], "count" => 1 })) do
-          profile.copy_to(@user)
-          @user.save!
-
-          profile.copy_to(@user.user_profile)
-          @user.user_profile.save!
-
-          yield(@user)
-        end
-      end
-    end
+  def assert_email_delivery
+    delivery_cnt_before = ActionMailer::Base.deliveries.length
+    yield
+    delivery_cnt_after = ActionMailer::Base.deliveries.length
+    assert_not_equal delivery_cnt_before, delivery_cnt_after
   end
 
   def setup
+    @user = users(:jdoe)
   end
 
   def teardown
     @seed.destroy unless @seed.nil?
-    @user.destroy unless @user.nil?
   end
 
-  test 'bounce_for_illegitimate_recipient_for_known_user' do
-    with_jdoe do |user|
-      delivery_cnt_before = ActionMailer::Base.deliveries.length
-      @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({"To" => "user@example.com", "ToFull" => { "Name" => "", "Email" => "user@example.com" }, "From" => user.email, "FromFull" => {"Name" => user.full_name, "Email" => user.email}}))
-      post(:message_to_members)
-      delivery_cnt_after = ActionMailer::Base.deliveries.length
-      assert_response :success
-      assert_not_equal delivery_cnt_before, delivery_cnt_after
-
-      message = ActionMailer::Base.deliveries.last
-      assert_match(/^Could not deliver message:/, message.subject)
-    end
-  end
-
-  test 'no_bounce_for_illegitimate_recipeints_for_new_user' do
+  test 'no_bounce_for_illegitimate_recipients_for_new_user' do
     delivery_cnt_before = ActionMailer::Base.deliveries.length
     @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({"To" => "user@example.com", "ToFull" => { "Name" => "", "Email" => "user@example.com" }}))
     post(:message_to_members)
@@ -124,51 +87,72 @@ class EmailCongressControllerTest < ActionController::TestCase
                                              :confirmation_code => @seed.confirmation_code)
   end
 
-  test 'known_user_cannot_send_outside_district' do
-    with_jdoe do |user|
-      other_state = State::ABBREVIATIONS.values.reject{ |st| st == user.state }.first
-      other_sen = Person.sen.where(:state => other_state).first
-      rcpt_addr = EmailCongress.email_address_for_person(other_sen)
-      incoming_seed({
-        "To" => rcpt_addr,
-        "ToFull" => [ { "Email" => rcpt_addr, "Name" => "" } ]
-      })
-      get(:confirm, :confirmation_code => @seed.confirmation_code)
-      assert_redirected_to @controller.url_for(:action => :complete_profile,
-                                               :confirmation_code => @seed.confirmation_code)
-      get(:complete_profile, :confirmation_code => @seed.confirmation_code)
-      assert_response :success
-    end
+  ### Tests for known users:
+  def set_raw_post_body (body)
+    @request.env['RAW_POST_DATA'] = body
   end
 
-  test 'simple_path_for_known_user_email' do
-    with_jdoe do |user|
-      delivery_cnt_before = ActionMailer::Base.deliveries.length
-      @request.env['RAW_POST_DATA'] = JSON.dump(incoming_email({
+  test 'bounce_for_illegitimate_recipient_for_known_user' do
+    assert_email_delivery do
+      email = incoming_email({
+        "To" => "user@example.com",
+        "ToFull" => { "Name" => "", "Email" => "user@example.com" },
+        "From" => @user.email, "FromFull" => {"Name" => @user.full_name, "Email" => @user.email}
+      })
+      set_raw_post_body JSON.dump(email)
+      post(:message_to_members)
+      assert_response :success
+    end
+
+    message = ActionMailer::Base.deliveries.last
+    assert_match(/^Could not deliver message:/, message.subject)
+  end
+
+  test 'cannot_send_outside_district' do
+    other_state = State::ABBREVIATIONS.values.reject{ |st| st == @user.state }.first
+    other_sen = Person.sen.where(:state => other_state).first
+    rcpt_addr = EmailCongress.email_address_for_person(other_sen)
+    incoming_seed({
+      "To" => rcpt_addr,
+      "ToFull" => [ { "Email" => rcpt_addr, "Name" => "" } ]
+    })
+    get(:confirm, :confirmation_code => @seed.confirmation_code)
+    assert_redirected_to @controller.url_for(:action => :complete_profile,
+                                             :confirmation_code => @seed.confirmation_code)
+    get(:complete_profile, :confirmation_code => @seed.confirmation_code)
+    assert_response :success
+  end
+
+  test 'simple_confirmation_path' do
+    assert_email_delivery do
+      email = incoming_email({
         "To" => at_email_congress('myreps'),
         "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ],
-        "From" => user.email,
-        "FromFull" => {"Name" => user.full_name, "Email" => user.email
-      }}))
+        "From" => @user.email,
+        "FromFull" => {"Name" => @user.full_name, "Email" => @user.email}
+      })
+      set_raw_post_body JSON.dump(email)
       post(:message_to_members)
-      delivery_cnt_after = ActionMailer::Base.deliveries.length
       assert_response :success
-      assert_not_equal delivery_cnt_before, delivery_cnt_after
-
-      message = ActionMailer::Base.deliveries.last
-      assert_match(/^Please confirm your EmailCongress message:/, message.subject)
     end
+
+    message = ActionMailer::Base.deliveries.last
+    assert_match(/^Please confirm your EmailCongress message:/, message.subject)
   end
 
-  test 'simple_path_for_known_user_confirmation' do
-    with_jdoe do |user|
-      incoming_seed({
-        "From" => user.email,
-        "FromFull" => { "Name" => "", "Email" => user.email },
-        "To" => at_email_congress('myreps'),
-        "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
-      })
-      get(:confirm, {'confirmation_code' => @seed.confirmation_code})
+  test 'successful_confirmation' do
+    incoming_seed({
+      "From" => @user.email,
+      "FromFull" => { "Name" => "", "Email" => @user.email },
+      "To" => at_email_congress('myreps'),
+      "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
+    })
+    MultiGeocoder.stub(:coordinates, [31.4228, -87.41734]) do
+      MultiGeocoder.stub(:search, [OpenStruct.new({ "zipcode" => "36445", "zip4" => "5420" })]) do
+        Congress.stub(:districts_locate, OpenStruct.new({ "results" => [OpenStruct.new({ "state" => "AL", "district" => 1 }) ], "count" => 1 })) do
+          get(:confirm, {'confirmation_code' => @seed.confirmation_code})
+        end
+      end
     end
     assert_equal nil, flash[:error]
     assert_redirected_to @controller.url_for(:action => :confirmed,

@@ -107,6 +107,7 @@ class EmailCongressController < ApplicationController
       @seed.confirm!
       return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
     rescue => e
+      raise unless Rails.env.production?
       Raven.capture_exception(e)
       flash[:error] = "Your letter could not be sent due to technical difficulties. Please try again later."
       return redirect_to(:action => :complete_profile, :confirmation_code => @seed.confirmation_code)

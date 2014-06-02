@@ -110,7 +110,7 @@ class AccountController < ApplicationController
       else
         flash[:notice] = "Logged in successfully"
       end
-      redirect_back_or_default(user_profile_url(current_user.login), :uncacheable => true)
+      redirect_back_or_default(user_pr'ofile_url(current_user.login), :uncacheable => true)
     else
       flash.now[:warning] = "Login failed"
     end
@@ -580,6 +580,8 @@ class AccountController < ApplicationController
     if !(referrer_hash[:controller] == 'account' && %w(login signup index).include?(referrer_hash[:action])) && request.referrer =~ /^https?:\/\/#{Regexp.escape(Settings.base_url.sub(/^https?:\/\//, ''))}/
     # unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
       session[:return_to] = request.referrer
+    elsif params[:next].present?
+      session[:return_to] = params[:next]
     end
   end
 

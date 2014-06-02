@@ -25,8 +25,6 @@
     <% if @unfinished_emails.present? %>
       <h3 class="dark">My Unfinished Emails</h3>
       <%= render :partial => 'contact_congress_letters/unfinished_emails_list', :object => @unfinished_emails %>
-    <% else %>
-      <h3>No Unfinished Emails</h3>
     <% end %>
 
     <h3 class="dark"><%= user_name("My", &:possessive) %> Letters to Congress</h3>

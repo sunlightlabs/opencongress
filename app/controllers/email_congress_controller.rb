@@ -198,7 +198,7 @@ class EmailCongressController < ApplicationController
     @seed.save!
 
     flash[:notice] = "Discarded email re: #{@seed.email_subject}"
-    return redirect_to(:controller => :profile, :action => :actions, :login => current_user.login)
+    return redirect_to(user_actions_path(:login => current_user.login))
   end
 
   private #############################################################

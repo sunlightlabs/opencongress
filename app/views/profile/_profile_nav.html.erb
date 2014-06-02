@@ -7,22 +7,16 @@
 
             <% if @user.can_view(:bookmarks, current_user) %>
             <li class="" style="" id="ItemsTracked">
-                <%= link_to "<span>Tracked Items</span>".html_safe,
-                     {:controller => 'profile',
-                      :action => 'items_tracked',
-                      :login => @user.login},
-                      :class => ["items_tracked", "bills", "person", "committees", "issues"].include?(controller.action_name) ? "arrow_button active" : "arrow_button" %>
+                <%= link_to "<span>Tracked Items</span>".html_safe, user_items_tracked_path(:login => @user.login),
+                        :class => ["items_tracked", "bills", "person", "committees", "issues"].include?(controller.action_name) ? "arrow_button active" : "arrow_button" %>
 
             </li>
             <% end %>
 
             <% if @user.can_view(:actions, current_user) %>
             <li class="" id="Actions">
-              <%= link_to "<span>Actions</span>".html_safe,
-                      {:controller => 'profile',
-                       :action => 'actions',
-                       :login => @user.login},
-                       :class => params[:action] == "actions" ? "arrow_button active" : "arrow_button" %></li>
+              <%= link_to "<span>Actions</span>".html_safe, user_actions_path(:login => @user.login),
+                      :class => params[:action] == "actions" ? "arrow_button active" : "arrow_button" %></li>
             <% end %>
 
             <% if @user.can_view(:friends, current_user) %>
@@ -40,7 +34,8 @@
 
             <% if @user.can_view(:watchdog, current_user) %>
             <li class="" id="Watchdog">
-                <%= link_to "<span>Watchdog</span>".html_safe, user_watchdog_path(@user.login), :class => controller.action_name == "watchdog" ? "arrow_button active" : "arrow_button" %>
+                <%= link_to "<span>Watchdog</span>".html_safe, user_watchdog_path(@user.login),
+                        :class => controller.action_name == "watchdog" ? "arrow_button active" : "arrow_button" %>
             </li>
             <% end %>
         </ul>

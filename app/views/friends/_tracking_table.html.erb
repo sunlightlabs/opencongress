@@ -29,7 +29,7 @@
     </td>
     <td class="centered">
       <% if u.can_view(:actions, current_user) %>
-        <%= link_to(u.action_count, :controller => :profile, :action => :actions, :login => u.login) %>
+        <%= link_to(u.action_count, user_actions_path(:login => u.login)) %>
       <% else %>
         <%= private_img %>
       <% end %>

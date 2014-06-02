@@ -269,6 +269,7 @@ module EmailCongress
 
     def websites_for_title_and_subdomain (title, subdomain)
       duplicate_with_trailing_slash = lambda { |url| [url, "#{url}/"] }
+      subdomain = subdomain.downcase
       urls = case title.downcase
       when "rep"
         ["http://#{subdomain}.house.gov",

@@ -51,7 +51,7 @@ class UserProfile < ActiveRecord::Base
     street_address_changed? ||
     street_address_2_changed? ||
     city_changed? ||
-    state.blank? && zipcode.present?
+    state.blank? && zipcode.present? ||
     user_district_needs_update?
   }
 

@@ -42,8 +42,7 @@ class EmailCongressController < ApplicationController
     #   User is trying to email a nonexistent address
     #   User is trying to email someone they are not allowed to email
 
-    inbound_address = Settings.to_hash['email_congress_inbound_address']
-    if inbound_address.present? && !@email.bcc.nil? && @email.bcc.downcase != inbound_address.downcase
+    unless @email_authenticated
       OCLogger.log "Sending incoming email (#{@email.message_id}; #{@email.subject}) to a black hole because it lacks an authenticating BCC header."
       return head :ok
     end
@@ -215,8 +214,25 @@ class EmailCongressController < ApplicationController
   def decode_email
     request_body = request.body.read
     @email_obj = JSON.load(request_body)
+
+    inbound_address = Settings.to_hash['email_congress_inbound_address']
+    if inbound_address.blank?
+      @email_authenticated = true
+    else
+      bcc = @email_obj["Bcc"]
+      # Require that the inbound address is in the Bcc header:
+      @email_authenticated = (!bcc.nil? && bcc.downcase.include?(inbound_address.downcase))
+      # Strip the inbound address out of the Bcc header. It is a Postmark
+      # implementation detail that should be hidden from the rest of the
+      # system.
+      if !@email_obj["Bcc"].nil?
+        @email_obj["Bcc"] = @email_obj["Bcc"].gsub(inbound_address, '')
+        @email_obj["BccFull"] = @email_obj["BccFull"].reject{ |pair| pair["Email"].downcase == inbound_address.downcase }
+      end
+    end
+
     begin
-      @email = Postmark::Mitt.new(request_body)
+      @email = Postmark::Mitt.new(JSON.dump(@email_obj))
     rescue
       head :bad_request
     end

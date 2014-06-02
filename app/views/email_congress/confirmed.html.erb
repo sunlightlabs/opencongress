@@ -6,7 +6,7 @@
         Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>. You can find your letter in <a href="<%= user_actions_path(:login => current_user.login) %>">your profile</a>.
 
         <% if [@prompt_for_email, @prompt_for_password].any? %>
-          <%= simple_form_for(current_user, :url => user_profile_path(current_user.login), html: { class: 'full-width-form' }) do |f| %>
+          <%= simple_form_for(current_user, :url => user_profile_path(current_user.login), :wrapper => :vertical_form, :html => { class: 'full-width-form' }) do |f| %>
 
             <% if @prompt_for_email == true %>
               <div class="alert-info">

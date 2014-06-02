@@ -69,10 +69,12 @@
         </div>
       </div>
 
+    <% end %> <!-- end form_for -->
+
       <div class="retention-explanation">
+        <% if !@sender_user || !@sender_user.accepted_tos? %>
         <div class="divider-top">
-          <strong>Why do I need to agree to your terms and privacy policy?</strong>
-          <% if !@sender_user || !@sender_user.accepted_tos? %>
+          <h6>Why do I need to agree to your terms and privacy policy?</h6>
           <p>
             <% if !@sender_user %>
               We couldn't find an OpenCongress account for your email address. In
@@ -85,10 +87,10 @@
               first agree to these updated terms of service.
             <% end %>
           </p>
-          <% end %>
         </div>
+          <% end %>
         <div class="divider-top">
-          <strong>What if I don't want to provide this information?</strong>
+          <h6>What if I don't want to provide this information?</h6>
           <p>
             You can use the rest of our website without providing this
             information. However, we must collect this information because
@@ -98,47 +100,13 @@
         </div>
       </div>
 
-    <% end %> <!-- end form_for -->
 
-  <table class="body" style="border-spacing: 0; border-collapse: collapse; vertical-align: top; text-align: left; height: 100%; width: 100%; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; background: #f8f8f8; margin: 0; padding: 0;" bgcolor="#f8f8f8">
-    <tr style="vertical-align: top; text-align: left; padding: 0;" align="left">
-      <td class="center" align="center" valign="top" style="border-collapse: collapse !important; vertical-align: top; text-align: center; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; margin: 0; padding: 0;">
-        <table class="row divider" style="border-spacing: 0; border-collapse: collapse; vertical-align: top; text-align: left; width: 100%; position: relative; border-top-style: dashed; border-top-width: 1px; border-top-color: #c4d9e4; margin-top: 15px; padding: 15px 0;">
-          <tr style="vertical-align: top; text-align: left; padding: 0;" align="left">
-            <td style="border-collapse: collapse !important; vertical-align: top; text-align: left; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; margin: 0; padding: 0;" align="left" valign="top">
-              <table class="container" style="border-spacing: 0; border-collapse: collapse; vertical-align: top; text-align: inherit; width: 580px; margin: 0 auto; padding: 0;">
-                <tr style="vertical-align: top; text-align: left; padding: 0;" align="left">
-                  <td style="border-collapse: collapse !important; vertical-align: top; text-align: left; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; margin: 0; padding: 0;" align="left" valign="top">
-                    <table class="row email-message" style="border-spacing: 0; border-collapse: collapse; vertical-align: top; text-align: left; width: 100%; position: relative; display: block; padding: 25px 0;">
-                      <tr style="vertical-align: top; text-align: left; padding: 0;" align="left">
-                        <td class="wrapper last" style="border-collapse: collapse !important; vertical-align: top; text-align: left; position: relative; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; margin: 0; padding: 0px;" align="left" valign="top">
-
-                          <table class="twelve columns" style="border-spacing: 0; border-collapse: collapse; vertical-align: top; text-align: left; width: 580px; margin: 0 auto; padding: 0;">
-                            <tr style="vertical-align: top; text-align: left; padding: 0;" align="left">
-                              <td style="border-collapse: collapse !important; vertical-align: top; text-align: left; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; margin: 0; padding: 0px 0px 10px;" align="left" valign="top">
-                                <h6 style="color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; text-align: left; line-height: 1.3; word-break: normal; font-size: 16px; margin: 0; padding: 0;" align="left">Your Email Message:</h6>
-                              </td>
-                            </tr>
-                            <tr style="vertical-align: top; text-align: left; padding: 0;" align="left">
-                              <td class="quote-message" style="border-collapse: collapse !important; vertical-align: top; text-align: left; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; border-left-width: 5px; border-left-color: #c4d9e4; border-left-style: solid; background: #ffffff; margin: 0; padding: 25px;" align="left" bgcolor="#ffffff" valign="top">
-                                <p style="color: #555555; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; text-align: left; line-height: 19px; font-size: 12px; margin: 0 0 10px; padding: 0;" align="left"><%= body_as_paragraphs(@seed.email_body) %></p>
-                              </td>
-                              <td class="expander" style="border-collapse: collapse !important; vertical-align: top; text-align: left; visibility: hidden; width: 0px; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; margin: 0; padding: 0;" align="left" valign="top"></td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-                    <!-- container end below -->
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+    <div class="divider-top">
+      <h6>Your Email Message:</h6>
+      <div class="email-message">
+        <%= body_as_paragraphs(@seed.email_body) %>
+      </div>
+    </div>
 
 </div>
 

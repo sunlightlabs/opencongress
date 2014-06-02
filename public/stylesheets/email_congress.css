@@ -64,7 +64,7 @@
 }
 
 .bootstrap-enabled.email-congress .retention-explanation {
-    margin: 50px 0;
+    margin: 50px 0 25px;
 }
 
 .bootstrap-enabled.email-congress .divider-top {
@@ -107,4 +107,12 @@
 
 .bootstrap-enabled.email-congress .alert-info a.alt-link {
     margin-left: 0px;
+}
+
+.bootstrap-enabled.email-congress .email-message {
+    margin-top: 20px;
+    margin-bottom: 50px;
+    padding: 20px;
+    border-left: 5px solid #c4d9e4;
+    background: #f9f9f9;
 }

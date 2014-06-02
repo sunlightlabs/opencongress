@@ -110,7 +110,7 @@ class AccountController < ApplicationController
       else
         flash[:notice] = "Logged in successfully"
       end
-      redirect_back_or_default(user_pr'ofile_url(current_user.login), :uncacheable => true)
+      redirect_back_or_default(user_profile_url(current_user.login), :uncacheable => true)
     else
       flash.now[:warning] = "Login failed"
     end

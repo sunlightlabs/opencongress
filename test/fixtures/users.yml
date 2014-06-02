@@ -1,0 +1,7 @@
+jdoe:
+  id: 1
+  email: jdoe@example.com
+  login: jdoe
+  state: AL
+  district: 1
+  accepted_tos_at: 2014-01-01T12:00:00.0-05:00

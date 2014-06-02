@@ -2,7 +2,7 @@ Please confirm whether you sent the following message to <%= @email.to %>.
 
 <%= url_for(:controller => :email_congress, :action => :confirm, :only_path => false, :confirmation_code => @seed.confirmation_code) %>
 
-To:      <%= @email.to_email %>
+To:      <%= @email.to %>
 From:    <%= @email.from_email %>
 Subject: <%= @email.subject %>
 

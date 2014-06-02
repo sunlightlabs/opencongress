@@ -304,6 +304,7 @@ module EmailCongress
     end
 
     def expand_special_addresses (sender_user, addresses)
+      inbound_address = Settings.to_hash['email_congress_inbound_address']
       addresses.flat_map do |addr|
         if addr =~ /^myreps@/
           if sender_user.nil?
@@ -311,6 +312,8 @@ module EmailCongress
           else
             next EmailCongress.email_addresses_for_people(sender_user.my_congress_members)
           end
+        elsif inbound_address.present? && addr.downcase == inbound_address.downcase
+          next []
         else
           next addr
         end

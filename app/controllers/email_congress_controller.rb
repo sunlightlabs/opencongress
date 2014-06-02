@@ -1,3 +1,4 @@
+require 'o_c_logger'
 require_dependency 'email_congress'
 class EmailCongressController < ApplicationController
   skip_before_filter :protect_from_forgery, :only => [:complete_profile]
@@ -40,6 +41,12 @@ class EmailCongressController < ApplicationController
     #   User is not activated
     #   User is trying to email a nonexistent address
     #   User is trying to email someone they are not allowed to email
+
+    inbound_address = Settings.to_hash['email_congress_inbound_address']
+    if inbound_address.present? && !@email.bcc.nil? && @email.bcc.downcase != inbound_address.downcase
+      OCLogger.log "Sending incoming email (#{@email.message_id}; #{@email.subject}) to a black hole because it lacks an authenticating BCC header."
+      return head :ok
+    end
 
     if @recipient_addresses.empty? && @sender_user
       EmailCongressMailer.no_recipient_bounce(@email).deliver
@@ -109,6 +116,7 @@ class EmailCongressController < ApplicationController
       @seed.confirm!
       return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
     rescue => e
+      raise unless Rails.env.production?
       Raven.capture_exception(e)
       flash[:error] = "Your letter could not be sent due to technical difficulties. Please try again later."
       return redirect_to(:action => :complete_profile, :confirmation_code => @seed.confirmation_code)

@@ -109,6 +109,10 @@ defaults: &defaults
   # provide greater security. Divide by 5.17 to approximate the number of
   # characters. A value in the range 100-256 should be good for production.
   email_congress_confirmation_code_bits: 256
+  # Postmark Inbound adds a BCC header with an address generated from your API
+  # key. You should set this to that address in production to avoid
+  # surreptitious spam.
+  email_congress_inbound_address:
 
   ## EMAIL SUBSCRIPTION SETTINGS
   # The vendor signup form urls that email subscriptions post to. The way this works is Sunlight-specific.

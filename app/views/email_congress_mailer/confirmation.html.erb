@@ -145,7 +145,7 @@
                             </tr>
                             <tr style="vertical-align: top; text-align: left; padding: 0;" align="left">
                               <td class="quote-message" style="border-collapse: collapse !important; vertical-align: top; text-align: left; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; border-left-width: 5px; border-left-color: #c4d9e4; border-left-style: solid; background: #ffffff; margin: 0; padding: 25px;" align="left" bgcolor="#ffffff" valign="top">
-                                <p style="color: #555555; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; text-align: left; line-height: 19px; font-size: 12px; margin: 0 0 10px; padding: 0;" align="left"><pre><%= @seed.email_body %></pre></p>
+                                <p style="color: #555555; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; text-align: left; line-height: 19px; font-size: 12px; margin: 0 0 10px; padding: 0;" align="left"><%= body_as_paragraphs(@seed.email_body) %></p>
                               </td>
                               <td class="expander" style="border-collapse: collapse !important; vertical-align: top; text-align: left; visibility: hidden; width: 0px; color: #444444; font-family: 'Helvetica', 'Arial', sans-serif; font-weight: normal; line-height: 19px; font-size: 16px; margin: 0; padding: 0;" align="left" valign="top"></td>
                             </tr>

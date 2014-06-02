@@ -22,7 +22,7 @@ class Emailer < ActionMailer::Base
     content_type "text/html"
 
     @recipients         = 'oc-errors@lists.ppolitics.org'
-    @from               = 'Open Congress Logger <noreply@opencongress.org>'
+    @from               = 'OpenCongress Logger <noreply@opencongress.org>'
     @subject            = "Exception in #{env['REQUEST_URI']}"
     @sent_on            = sent_on
     @body["exception"]  = exception
@@ -35,7 +35,7 @@ class Emailer < ActionMailer::Base
   def rake_error(exception, message)
     @subject    = "OpenCongress Rake Task Error"
     @recipients = "oc-rake-errors@lists.ppolitics.org"
-    @from       = 'Open Congress Rake Tasks <noreply@opencongress.org>'
+    @from       = 'OpenCongress Rake Tasks <noreply@opencongress.org>'
     @body['exception'] = exception
     @body['message'] = message
     @body['time'] = Time.now

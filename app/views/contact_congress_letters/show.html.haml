@@ -63,7 +63,7 @@
 
   .formageddon_letter
     .subject= @contact_congress_letter.subject
-    .body= body_as_paragraphs(@contact_congress_letter)
+    .body= body_as_paragraphs(@contact_congress_letter.message)
     
   - unless @additional_letters.empty?
     - @additional_letters.each do |l|

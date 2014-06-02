@@ -72,8 +72,8 @@ module ContactCongressLettersHelper
     return wrapped_button_html.html_safe
   end
 
-  def body_as_paragraphs (letter)
-    trimmed = letter.message.strip
+  def body_as_paragraphs (message_body)
+    trimmed = message_body.strip
     normalizedLineBreaks = trimmed.gsub(/(\r\n|\n\r)/, "\n")
     normalizedWhitespace = normalizedLineBreaks.gsub(/^\s+$/m, '')
     hasConsecutiveLineBreaks = !normalizedWhitespace.index(/[\r\n]{2,}/).nil?

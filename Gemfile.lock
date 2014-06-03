@@ -21,12 +21,13 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: d881457dfdf16c0e1b752f25a8e214b71ef206ae
+  revision: b88d8168e913c4c42be61a021732c35e7a18780a
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
       haml
       mechanize
+      naught
       rufus-mnemo
 
 GIT
@@ -255,6 +256,7 @@ GEM
     multi_xml (0.5.4)
     multipart-post (1.2.0)
     mysql (2.9.1)
+    naught (1.0.0)
     net-http-digest_auth (1.4)
     net-http-persistent (2.9.4)
     net-scp (1.1.2)

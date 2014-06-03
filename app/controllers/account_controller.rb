@@ -196,6 +196,7 @@ class AccountController < ApplicationController
       if @user.save
         @user.activate!
         self.current_user = @user
+        UserNotifier.activation(@user).deliver
         flash[:notice] = 'You have successfully signed up with your Facebook Account!'
 
         activate_redirect
@@ -256,6 +257,7 @@ class AccountController < ApplicationController
       if @user.save
         @user.activate!
         self.current_user = @user
+        UserNotifier.activation(@user).deliver
 
         @group_invite.user = @user
         @group_invite.save
@@ -348,6 +350,7 @@ class AccountController < ApplicationController
     @user = User.find_by_activation_code(params[:id])
     if @user and @user.activate!
       self.current_user = @user
+      UserNotifier.activation(@user).deliver
       cookies[:ocloggedin]="true"
 
       activate_redirect

@@ -613,11 +613,6 @@ class User < ActiveRecord::Base
     !facebook_connect_user? && !suppress_activation_email
   end
 
-  def should_receive_activation_email?
-    recently_activated? && !suppress_activation_email
-  end
-
-
   private
 
   def destroy_comments!

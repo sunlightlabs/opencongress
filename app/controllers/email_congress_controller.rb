@@ -88,11 +88,7 @@ class EmailCongressController < ApplicationController
       # their email address between the time of the initial email and when they
       # clicked the confirmation link, they would end up here due to the
       # !@sender_user condition.
-      if @sender_user && !@recipients.empty?
-        flash[:error] = @profile.errors.full_messages.to_sentence
-      else
-        flash[:error] = "To send your message we need to collect the information below."
-      end
+      flash[:error] = "To send your message we need to collect the information below."
       return redirect_to(:action => :complete_profile,
                          :confirmation_code => @seed.confirmation_code)
     end

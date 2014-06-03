@@ -350,6 +350,6 @@ BillText = {
     // bind close buttons on groups/mypn *ducks*
     $(document).on('click', '.close_add_notebook', function(){
       NotebookForm.hideAllForms();
-    })
+    });
   });
 })(jQuery);

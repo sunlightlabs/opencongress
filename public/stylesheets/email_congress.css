@@ -116,3 +116,13 @@
     border-left: 5px solid #c4d9e4;
     background: #f9f9f9;
 }
+
+@media screen and (max-device-width: 480px) {
+    .bootstrap-enabled.email-congress .form-horizontal .control-label {
+        float: none;
+        text-align: left;
+    }
+    .bootstrap-enabled.email-congress .form-horizontal .controls {
+        margin-left: 0;
+    }
+}

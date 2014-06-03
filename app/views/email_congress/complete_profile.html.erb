@@ -29,7 +29,7 @@
         Hi there!
       <% end %>
         <p>We need you to fill out the form below before we can send your email<% if @seed.allowed_recipients.any? %>
-            to <%= @seed.allowed_recipients.any? ? @seed.allowed_recipients.map(&:full_name).to_sentence : "your representatives" %><% end %>.
+            to <%= @seed.allowed_recipients.any? ? @seed.allowed_recipients.map(&:title_full_name).to_sentence : "your representatives" %><% end %>.
         </p>
       </div>
 

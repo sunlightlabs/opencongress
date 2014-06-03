@@ -1319,15 +1319,19 @@ class Person < ActiveRecord::Base
       "N/A"
     end
   end
+
   def select_list_name
     "#{lastname}, #{firstname} (#{party_and_state})"
   end
+
   def short_name
     "#{title} " + lastname
   end
+
   def full_name
     "#{firstname} #{lastname}"
   end
+
   def title_full_name
     "#{title} " + full_name
   end

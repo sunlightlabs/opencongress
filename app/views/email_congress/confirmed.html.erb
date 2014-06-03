@@ -3,7 +3,7 @@
     <div class="user-message">
       <p>Thanks!</p>
       <% if logged_in? %>
-        Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>. You can find your letter in <a href="<%= user_actions_path(:login => current_user.login) %>">your profile</a>.
+        Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:title_full_name).to_sentence %>. You can find your letter in <a href="<%= user_actions_path(:login => current_user.login) %>">your profile</a>.
 
         <% if [@prompt_for_email, @prompt_for_password].any? %>
           <%= simple_form_for(current_user, :url => user_profile_path(current_user.login), :wrapper => :vertical_form, :html => { class: 'full-width-form' }) do |f| %>
@@ -52,7 +52,7 @@
         <% end %>
 
         <p>
-        Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:full_name).to_sentence %>.
+        Your letter will be delivered shortly to <%= @seed.allowed_recipients.map(&:title_full_name).to_sentence %>.
         </p>
       <% end %>
       </div>

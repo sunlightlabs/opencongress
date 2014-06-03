@@ -1,12 +1,20 @@
-<div class="people_header clearfix">
+<div class="people_header clearfix" itemscope itemtype="http://schema.org/Person">
   <div id="name">
-    <h3><em><% if !@person.is_sitting? %>Former <% end %><%= @person.title %> <%= @person.full_name %></em></h3>
+    <h3><em><span itemprop="jobTitle"><% if !@person.is_sitting? %>Former <% end %><%= @person.title %></span> <span itemprop="name"><%= @person.full_name %></span></em></h3>
     <h5>
-      <%= @person.party %> &nbsp;&bull;&nbsp;
-      <%= link_to("#{@person.district.to_i.ordinalize} District", state_district_path(@person.state, @person.district)) + ', ' if @person.in_a_valid_district? %>
-      <%= "#{State.for_abbrev(@person.state)} &nbsp;&bull;&nbsp;".html_safe unless @person.state.blank? %> 
-      <%= @person.is_sitting? ? "#{@person.consecutive_roles.size.ordinalize} Term" : "#{@person.consecutive_roles.size} Terms" %> &nbsp;&bull;&nbsp;
+      <span itemprop="affiliation"><%= @person.party %></span> &nbsp;&bull;&nbsp;
+      <span itemprop="affiliation">
+        <%= link_to("#{@person.district.to_i.ordinalize} District", state_district_path(@person.state, @person.district)) + ', ' if @person.in_a_valid_district? %>
+        <%= "#{State.for_abbrev(@person.state)}".html_safe unless @person.state.blank? %> 
+      </span>
+      <% if @person.is_sitting? %>
+        &nbsp;&bull;&nbsp;
+        <%= @person.consecutive_roles.size.ordinalize %> Term
+      <% else %>
+        <%= @person.consecutive_roles.size %> Terms
+      <% end %>
       <% if @person.consecutive_roles.last %>
+        &nbsp;&bull;&nbsp;
         Sworn In <%= @person.consecutive_roles.last.startdate.strftime("%Y") %>
       <% end %>
     </h5>
@@ -42,7 +50,7 @@
     </div>
   <% end %> 
 
-  <img class="floatright bio_avatar legislator-photo-full" src="/images/<%= @person.photo_path(:full, :ignore_missing) %>">
+  <img itemprop="image" class="floatright bio_avatar legislator-photo-full" src="/images/<%= @person.photo_path(:full, :ignore_missing) %>">
 
   <div class="clearfix">
   </div>

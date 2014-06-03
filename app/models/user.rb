@@ -609,8 +609,12 @@ class User < ActiveRecord::Base
     !facebook_uid.blank?
   end
 
-  def should_receive_activation_email?
+  def should_receive_creation_email?
     !facebook_connect_user? && !suppress_activation_email
+  end
+
+  def should_receive_activation_email?
+    recently_activated? && !suppress_activation_email
   end
 
 

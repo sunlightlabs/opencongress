@@ -71,34 +71,34 @@
 
     <% end %> <!-- end form_for -->
 
-      <div class="retention-explanation">
-        <% if !@sender_user || !@sender_user.accepted_tos? %>
-        <div class="divider-top">
-          <h6>Why do I need to agree to your terms and privacy policy?</h6>
-          <p>
-            <% if !@sender_user %>
-              We couldn't find an OpenCongress account for your email address. In
-              order for us to send your message you must first agree to our
-              terms of service, which will allow us to generate an account for
-              you. <a href="/terms">View the terms here.</a>
-            <% elsif !@sender_user.accepted_tos? %>
-              Our terms of service have been updated since you last used your
-              OpenCongress account. In order for us to send your message you must
-              first agree to these updated terms of service.
-            <% end %>
-          </p>
-        </div>
+    <div class="retention-explanation">
+      <% if !@sender_user || !@sender_user.accepted_tos? %>
+      <div class="divider-top">
+        <h6>Why do I need to agree to your terms and privacy policy?</h6>
+        <p>
+          <% if !@sender_user %>
+            We couldn't find an OpenCongress account for your email address. In
+            order for us to send your message you must first agree to our
+            terms of service, which will allow us to generate an account for
+            you. <a href="/terms">View the terms here.</a>
+          <% elsif !@sender_user.accepted_tos? %>
+            Our terms of service have been updated since you last used your
+            OpenCongress account. In order for us to send your message you must
+            first agree to these updated terms of service.
           <% end %>
-        <div class="divider-top">
-          <h6>What if I don't want to provide this information?</h6>
-          <p>
-            You can use the rest of our website without providing this
-            information. However, we must collect this information because
-            congressional contact systems require it. We retain this information
-            to ensure proper delivery.
-          </p>
-        </div>
+        </p>
       </div>
+        <% end %>
+      <div class="divider-top">
+        <h6>What if I don't want to provide this information?</h6>
+        <p>
+          You can use the rest of our website without providing this
+          information. However, we must collect this information because
+          congressional contact systems require it. We retain this information
+          to ensure proper delivery.
+        </p>
+      </div>
+    </div>
 
 
     <div class="divider-top">
@@ -107,7 +107,7 @@
         <%= body_as_paragraphs(@seed.email_body) %>
       </div>
     </div>
-
+  </div>
 </div>
 
 <script>

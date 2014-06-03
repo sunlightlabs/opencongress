@@ -42,6 +42,11 @@ class EmailCongressController < ApplicationController
     #   User is trying to email a nonexistent address
     #   User is trying to email someone they are not allowed to email
 
+    if @sender_user && @sender_user.is_banned?
+      OCLogger.log "Sending incoming email (#{@email.message_id}; #{@email.subject}) to a black hole because it was sent from a banned user (#{@sender_user.id}, #{@sender_user.login})."
+      return head :ok
+    end
+
     unless @email_authenticated
       OCLogger.log "Sending incoming email (#{@email.message_id}; #{@email.subject}) to a black hole because it lacks an authenticating BCC header."
       return head :ok

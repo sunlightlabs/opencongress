@@ -50,7 +50,7 @@
   </div>
 <% end %>
 
-<% if @person.votes? %>
+<% if @person.is_sitting? && @person.votes? %>
   <div class="compare_select">
     <form id="person_vote_compare_select" action="/people/compare" method="get">
       <span>Compare votes to</span>

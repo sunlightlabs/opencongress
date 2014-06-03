@@ -30,7 +30,8 @@ class ProfileController < ApplicationController
         flash[:error] = "Passwords do not match, your profile was not updated."
         redirect_to :back and return
       end
-      if @user.previous_login_date.nil? || User.authenticate(@user.login, old_pass).is_a?(User)
+      if (params[:password_reset_code].present? && (params[:password_reset_code] == @user.password_reset_code)) || User.authenticate(@user.login, old_pass).is_a?(User)
+        @user.reset_password
         @user.password = new_pass
         @user.save
         flash[:notice] = "Your password was changed."

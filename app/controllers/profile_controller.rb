@@ -32,9 +32,9 @@ class ProfileController < ApplicationController
       end
       if (params[:user][:password_reset_code].present? && (params[:user][:password_reset_code] == @user.password_reset_code)) || User.authenticate(@user.login, old_pass).is_a?(User)
         @user.reset_password
-        @user.instance_variable_set(:@reset_password, nil)
         @user.password = new_pass
         @user.save
+        @user.instance_variable_set(:@reset_password, nil)
         flash[:notice] = "Your new password has been set."
       else
         flash[:error] = "Your old password was incorrect."

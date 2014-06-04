@@ -244,7 +244,11 @@ class User < ActiveRecord::Base
                           :accepted_tos_at => profile.accept_tos && Time.now || nil,
                           :state => profile.state
                           )
-          user.make_password_reset_code
+          # Authable#make_password_reset_code is private and that's probably not
+          # a bad thing. This, however is a kludge. FIXME.
+          user.forgot_password
+          user.instance_variable_set(:@forgot_password, nil)
+
           user.suppress_activation_email = options[:suppress_activation_email]
           user.save!
           user = User.find_by_login(login)

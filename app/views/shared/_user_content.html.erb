@@ -77,7 +77,7 @@
   <% elsif object.class.to_s == "Person" %>
     <div class="rep_info">
       <% unless object.website.blank? %>
-        Official website:<br />
+      <strong>Official website:</strong><br />
         <ul>
           <li><a href="<%= object.website %>" target="_new"><%= object.website %></a></li>
           <% unless object.contact_webform.blank? %>
@@ -101,6 +101,12 @@
           <%= "<strong>Fax:</strong> #{object.fax}".html_safe unless object.fax.blank? %>
         </div>
         <br />
+      <% end %>
+
+      <% unless (email = (EmailCongress.email_address_for_person(object) rescue nil)).blank? %>
+        <div class="email">
+        <strong>Email:</strong> <%= link_to(email, "mailto:#{email}") %>
+        </div>
       <% end %>
 
       <% if (object.twitter_id.present? rescue false) %>

@@ -1,3 +1,25 @@
+# == Schema Information
+#
+# Table name: user_profiles
+#
+#  id               :integer          not null, primary key
+#  user_id          :integer
+#  first_name       :string(255)
+#  last_name        :string(255)
+#  website          :string(255)
+#  about            :text
+#  main_picture     :string(255)
+#  small_picture    :string(255)
+#  street_address   :string(255)
+#  street_address_2 :string(255)
+#  city             :string(255)
+#  latitude         :string(255)
+#  longitude        :string(255)
+#  zipcode          :string(5)
+#  zip_four         :string(4)
+#  mobile_phone     :string(255)
+#
+
 jdoe:
   user_id: 1
   first_name: John

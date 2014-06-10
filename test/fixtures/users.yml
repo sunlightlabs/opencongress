@@ -1,3 +1,35 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                    :integer          not null, primary key
+#  login                 :string(255)
+#  email                 :string(255)
+#  crypted_password      :string(40)
+#  salt                  :string(40)
+#  created_at            :datetime
+#  updated_at            :datetime
+#  remember_token        :string(255)
+#  remember_created_at   :datetime
+#  status                :integer          default(0)
+#  last_login            :datetime
+#  activation_code       :string(40)
+#  activated_at          :datetime
+#  password_reset_code   :string(40)
+#  user_role_id          :integer          default(0)
+#  representative_id     :integer
+#  previous_login_date   :datetime
+#  identity_url          :string(255)
+#  accepted_tos_at       :datetime
+#  authentication_token  :string(255)
+#  facebook_uid          :string(255)
+#  state                 :string(2)
+#  district              :integer
+#  district_needs_update :boolean          default(FALSE)
+#  possible_states       :text
+#  possible_districts    :text
+#
+
 jdoe:
   id: 1
   email: jdoe@example.com

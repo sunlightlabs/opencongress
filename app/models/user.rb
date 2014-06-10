@@ -54,7 +54,9 @@ class User < ActiveRecord::Base
   validates_length_of         :email,    :within => 3..100, :unless => :openid?
   validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :message => "is invalid"
   validates_format_of         :login, :with => /^\w+$/, :message => "can only contain letters and numbers (no spaces)."
-  validates_uniqueness_of     :login, :email, :identity_url, :case_sensitive => false, :allow_nil => true
+  validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
+  validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
+  validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
 
   HUMANIZED_ATTRIBUTES = {
     :email => "E-mail address",

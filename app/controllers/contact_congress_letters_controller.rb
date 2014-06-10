@@ -298,6 +298,7 @@ class ContactCongressLettersController < ApplicationController
   def last
     @person = Person.find_by_bioguideid(params[:id])
     render_404 and return unless @person.present?
+    last_status = @person.formageddon_threads.first.formageddon_letters.first.status rescue nil
     img = status_image_for @person
 
     respond_to do |format|

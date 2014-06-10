@@ -3,6 +3,8 @@ class ContactCongressLettersController < ApplicationController
   before_filter :page_view, :only => :show
   # before_filter :warn_geocode, :only => :new
 
+  include Admin::ContactCongressLettersHelper
+
   def new
     @page_title = "Contact Congress"
 

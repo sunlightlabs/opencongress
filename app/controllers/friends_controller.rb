@@ -372,8 +372,10 @@ class FriendsController < ApplicationController
     if params[:login]
       @user = User.find_by_login(params[:login])
     end
-    if @user.nil?
-      @user = current_user
+    if @user.nil? && logged_in? && params[:login].blank?
+      redirect_to url_for(:controller => params[:controller], :action => params[:action], :login => current_user)
+    else
+      render_404 and return
     end
   end
 

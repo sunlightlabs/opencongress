@@ -7,14 +7,8 @@ GIT
       ruby-progressbar (~> 1.2)
 
 GIT
-  remote: git://github.com/sunlightlabs/geocoder.git
-  revision: 796facd10dd43df77bfffd3f04d85e2f50420f72
-  branch: oc
-  specs:
-    geocoder (1.1.9)
-
-PATH
-  remote: ~/Code/git/sun/formageddon
+  remote: git://github.com/sunlightlabs/formageddon.git
+  revision: 706df16220f579a8869300ef09f14859deaf6e10
   specs:
     formageddon (0.0.0)
       delayed_job (~> 2.1)
@@ -22,6 +16,13 @@ PATH
       mechanize
       naught
       rufus-mnemo
+
+GIT
+  remote: git://github.com/sunlightlabs/geocoder.git
+  revision: 796facd10dd43df77bfffd3f04d85e2f50420f72
+  branch: oc
+  specs:
+    geocoder (1.1.9)
 
 GEM
   remote: http://rubygems.org/
@@ -138,7 +139,7 @@ GEM
       daemons
     diff-lcs (1.2.5)
     docile (1.1.4)
-    domain_name (0.5.18)
+    domain_name (0.5.19)
       unf (>= 0.0.5, < 1.0.0)
     ejs (1.1.1)
     em-websocket (0.5.1)

@@ -38,6 +38,7 @@ gem 'rack-contrib'
 gem 'memcache-client'
 gem 'beanstalk-client'
 gem 'oauth'
+gem 'twitter_oauth'
 gem 'facebooker2'
 gem "validates_captcha"
 gem "open_id_authentication"

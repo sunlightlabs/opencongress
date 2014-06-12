@@ -439,6 +439,10 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
+    twitter_oauth (0.4.94)
+      json (>= 1.8.0)
+      mime-types (>= 1.16)
+      oauth (>= 0.4.7)
     tzinfo (0.3.39)
     uglifier (2.5.0)
       execjs (>= 0.3.0)
@@ -556,6 +560,7 @@ DEPENDENCIES
   simplecov
   spork
   titlecase
+  twitter_oauth
   uglifier
   unicode_utils
   unicorn

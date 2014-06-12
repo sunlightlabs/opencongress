@@ -1,4 +1,4 @@
-require 'authenticated_system'
+require_dependency 'authenticated_system'
 require_dependency 'email_congress'
 
 class ApplicationController < ActionController::Base

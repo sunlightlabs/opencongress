@@ -60,8 +60,6 @@ gem 'possessive'
 gem 'mechanize'
 # gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git'
 gem 'formageddon', :path => '~/Code/git/sun/formageddon'
-# Automatically determine gender from name
-gem 'sexmachine'
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'

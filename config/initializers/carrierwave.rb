@@ -7,6 +7,7 @@ CarrierWave.configure do |config|
     :provider => 'AWS',
     :aws_access_key_id => ApiKeys.aws_access_key_id,
     :aws_secret_access_key =>  ApiKeys.aws_secret_access_key,
+    :region => 'us-east-1'
 
     # Note: S3 uploads into "uploads" dir on the host.
   }

@@ -58,8 +58,7 @@ gem 'possessive'
 
 # Mail
 gem 'mechanize'
-# gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git'
-gem 'formageddon', :path => '~/Code/git/sun/formageddon'
+gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git'
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'

@@ -1,6 +1,6 @@
 /*
 *= require app/states
-*= require self
+*= require_self
 */
 
 .col1, .col2 {

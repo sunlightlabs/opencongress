@@ -305,8 +305,9 @@ class AccountController < ApplicationController
 
       suffixes = ['wikiToken', 'wiki_session', 'wikiUserID', 'wikiUserName']
       suffix_pattern = Regexp.new("(#{suffixes.join('|')})$")
-      bye_bye_list = cookies.keys.select do |k|
-        not suffix_pattern.match(k).nil?
+      bye_bye_list = []
+      cookies.each do |k, v|
+        bye_bye_list << k if not suffix_pattern.match(k).nil?
       end
       bye_bye_list.each do |k|
         cookies.delete k, {:domain => cookie_domain}

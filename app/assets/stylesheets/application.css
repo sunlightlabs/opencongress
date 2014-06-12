@@ -1,6 +1,7 @@
 /*
 *= require 960
 *= require reset
+*= require bootstrap-custom
 *= require base/classes
 *= require base/modal
 *= require base/typo
@@ -8,6 +9,5 @@
 *= require jqModal
 *= require jquery.jcarousel
 *= require jquery.rating
-*= require bootstrap-custom
 *= require_self
 */

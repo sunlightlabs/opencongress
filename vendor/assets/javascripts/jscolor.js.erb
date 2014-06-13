@@ -31,7 +31,11 @@ var jscolor = {
 	},
 
 	getDir : function() {
-		return '<%= asset_path("jscolor/") %>';
+		if (location.host == 'www.opencongress.org' || location.host == 'staging.opencongress.org') {
+			return '/assets/jscolor/';
+		} else {
+			return '/assets/javascripts/jscolor/'
+		}
 	},
 
 	bind : function() {

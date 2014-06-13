@@ -27,7 +27,6 @@ pre.code{
 	#head{ height:30px; position:fixed; width:100%; z-index:9999; left:0; top:25px; }
 	#foot{ height:25px; position:fixed; width:100%; z-index:9999; left:0; bottom:0; }
 	#wrap{ padding:55px 0; }
-	#wrap{ padding:65px 0 !IE; }
 	html > body #roof{ height:14px; }
 }
 

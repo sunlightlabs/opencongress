@@ -779,6 +779,7 @@ background: url(<%= asset_path('play.png') %>) center -96px no-repeat !important
 #SEQUENCER CSS:
 #resizable css:
 */
+
 .ui-resizable-handle { position: absolute !important; background: #ddd !important; display: none !important; }
 .ui-resizable .ui-resizable-handle { display: block }
 .ui-resizable-e { z-index:5 !important; position:absolute !important; cursor: e-resize !important;
@@ -789,9 +790,19 @@ background: url(<%= asset_path('play.png') %>) center -96px no-repeat !important
 	width: 15px !important;height:19px !important; top: 0px !important; bottom: 0px !important; left: 0px !important;
 	background: transparent url(<%= asset_path('slider_handle_green.gif') %>) no-repeat scroll 0% 0% !important;
 }
-.ui-dragSpan {filter: alpha(opacity=70) !important; -moz-opacity: .7 !important; background-color:#AAF !important; position:absolute !important; left: 10px !important; right:10px !important;height:19px !important;  }
+.ui-dragSpan {
+    filter: alpha(opacity=70) !important;
+    -moz-opacity: .7 !important;
+    background-color:#AAF !important;
+    position:absolute !important;
+    left: 10px !important;
+    right:10px !important;
+    height:19px !important;
+}
 
-#remote search css:
+/*
+# remote search css:
+*/
 
 ul.rsd_cp_tabs {
 	border-bottom:1px solid #CCCCCC !important;

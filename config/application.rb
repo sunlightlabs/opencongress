@@ -20,7 +20,7 @@ module OpenCongress
     config.assets.enabled = true
     config.assets.version = '1.0'
     config.assets.paths << "#{Rails.root}/app/assets/html"
-    config.assets.precompile += %w( vendor/**/*.css vendor/**/*.js vendor/assets/images/*.* )
+    config.assets.precompile << "vendor/*"
 
     # Detect and handle jsonp requests
     require 'rack/contrib'

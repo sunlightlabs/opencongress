@@ -12,16 +12,18 @@ module EmailCongress
                :state, :zipcode, :zip_four]
     attr_accessor(*@@ATTRS)
 
-    validates_acceptance_of :accept_tos, :allow_nil => true, :accept => true
-    validates_presence_of :first_name
-    validates_presence_of :last_name
-    validates_presence_of :street_address
-    validates_presence_of :city
-    validates_presence_of :state
-    validates_presence_of :zipcode
-    validates_presence_of :email
-    validates_presence_of :mobile_phone
-    validate :phone_number_formatting
+    validates_acceptance_of     :accept_tos, :allow_nil => true, :accept => true
+    validates_presence_of       :first_name
+    validates_presence_of       :last_name
+    validates_presence_of       :street_address
+    validates_presence_of       :city
+    validates_presence_of       :state
+    validates_presence_of       :zipcode
+    validates_presence_of       :email
+    validates_presence_of       :mobile_phone
+    validates_numericality_of   :zipcode, :only_integer => true, :allow_blank => true, :message => "should be all numbers"
+    validates_length_of         :zipcode, :is => 5, :allow_blank => true, :message => "should be 5 digits"
+    validate                    :phone_number_formatting
 
     def phone_number_formatting
       return if @mobile_phone.blank?

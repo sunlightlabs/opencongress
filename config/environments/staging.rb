@@ -5,7 +5,7 @@ OpenCongress::Application.configure do
 
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
-  config.serve_static_assets = true
+  config.serve_static_assets = false
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
@@ -32,15 +32,10 @@ OpenCongress::Application.configure do
 
   Paperclip.options[:command_path] = "/usr/local/bin"
 
-  ## removed when switched to rails 3.  still necessary??
-  # if defined?(PhusionPassenger)
-  #     PhusionPassenger.on_event(:starting_worker_process) do |forked|
-  #         if forked
-  #             # We're in smart spawning mode.
-  #             Rails.cache.instance_variable_get(:@data).reset
-  #         else
-  #             # We're in conservative spawning mode. We don't need to do anything.
-  #         end
-  #     end
-  # end
+  config.assets.compress = true
+
+  config.assets.compile = false
+
+  config.assets.digest = true
+
 end

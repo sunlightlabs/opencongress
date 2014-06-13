@@ -24,8 +24,8 @@ module OpenCongress
       if path =~ /\.(css|js)\z/
         full_path = Rails.application.assets.resolve(path).to_path
         app_assets_path = Rails.root.join('app', 'assets').to_path
-        lib_assets_path = Rails.root.join('app', 'assets').to_path
-        vendor_assets_path = Rails.root.join('app', 'assets').to_path
+        lib_assets_path = Rails.root.join('lib', 'assets').to_path
+        vendor_assets_path = Rails.root.join('vendor', 'assets').to_path
         if ( full_path.starts_with?(app_assets_path) ||
              full_path.starts_with?(lib_assets_path) ||
              full_path.starts_with?(vendor_assets_path) )
@@ -39,7 +39,6 @@ module OpenCongress
         false
       end
     end
-    config.assets.precompile += %w( *.js )
 
     # Detect and handle jsonp requests
     require 'rack/contrib'

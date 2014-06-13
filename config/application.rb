@@ -26,9 +26,9 @@ module OpenCongress
         app_assets_path = Rails.root.join('app', 'assets').to_path
         lib_assets_path = Rails.root.join('app', 'assets').to_path
         vendor_assets_path = Rails.root.join('app', 'assets').to_path
-        if ( full_path.starts_with? app_assets_path ||
-             full_path.starts_with? lib_assets_path ||
-             full_path.starts_with? vendor_assets_path )
+        if ( full_path.starts_with?(app_assets_path) ||
+             full_path.starts_with?(lib_assets_path) ||
+             full_path.starts_with?(vendor_assets_path) )
           puts "including asset: " + full_path
           true
         else

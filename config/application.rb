@@ -39,6 +39,7 @@ module OpenCongress
         false
       end
     end
+    config.assets.precompile += %w( *.js )
 
     # Detect and handle jsonp requests
     require 'rack/contrib'

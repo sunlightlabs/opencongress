@@ -221,6 +221,9 @@ class User < ActiveRecord::Base
         # In case we stripped off too much, or their email address is just ridiculously short
         stub = "#{profile.first_name}#{profile.last_name.first}"
       end
+      if stub.length < 5
+        stub = "newuser"
+      end
       stub
     end
 

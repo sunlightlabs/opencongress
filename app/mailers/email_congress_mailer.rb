@@ -20,7 +20,7 @@ class EmailCongressMailer < ActionMailer::Base
     @sender_user = sender_user
     @email = Postmark::Mitt.new(seed.raw_source)
     mail(:to => seed.sender_email,
-         :subject => "Please confirm your EmailCongress message: #{seed.email_subject}")
+         :subject => "Please confirm your message to Congress: #{seed.email_subject}")
   end
 
   def complete_profile (seed, profile)
@@ -28,6 +28,6 @@ class EmailCongressMailer < ActionMailer::Base
     @seed = seed
     @email = Postmark::Mitt.new(seed.raw_source)
     mail(:to => seed.sender_email,
-         :subject => "Please complete your EmailCongress message: #{seed.email_subject}")
+         :subject => "Please complete your message to Congress: #{seed.email_subject}")
   end
 end

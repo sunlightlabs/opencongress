@@ -1,3 +1,31 @@
+# == Schema Information
+#
+# Table name: email_congress_letter_seeds
+#
+#  id                         :integer          not null, primary key
+#  raw_source                 :text
+#  sender_email               :string(255)
+#  sender_title               :string(255)
+#  sender_first_name          :string(255)
+#  sender_last_name           :string(255)
+#  sender_street_address      :string(255)
+#  sender_street_address_2    :string(255)
+#  sender_city                :string(255)
+#  sender_state               :string(255)
+#  sender_zipcode             :string(255)
+#  sender_zip_four            :string(255)
+#  sender_mobile_phone        :string(255)
+#  email_subject              :string(255)
+#  email_body                 :text
+#  resolved                   :boolean          default(FALSE)
+#  resolved_at                :datetime
+#  resolution                 :string(255)
+#  confirmation_code          :string(255)
+#  contact_congress_letter_id :integer
+#  created_at                 :datetime
+#  updated_at                 :datetime
+#
+
 require_dependency 'email_congress'
 
 class EmailCongressLetterSeed < ActiveRecord::Base

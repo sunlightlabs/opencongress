@@ -30,11 +30,12 @@ class ProfileController < ApplicationController
         flash[:error] = "Passwords do not match, your profile was not updated."
         redirect_to :back and return
       end
-      if (params[:password_reset_code].present? && (params[:password_reset_code] == @user.password_reset_code)) || User.authenticate(@user.login, old_pass).is_a?(User)
+      if (params[:user][:password_reset_code].present? && (params[:user][:password_reset_code] == @user.password_reset_code)) || User.authenticate(@user.login, old_pass).is_a?(User)
         @user.reset_password
         @user.password = new_pass
         @user.save
-        flash[:notice] = "Your password was changed."
+        @user.instance_variable_set(:@reset_password, nil)
+        flash[:notice] = "Your new password has been set."
       else
         flash[:error] = "Your old password was incorrect."
         redirect_to :back and return

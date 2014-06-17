@@ -3,6 +3,8 @@ class ContactCongressLettersController < ApplicationController
   before_filter :page_view, :only => :show
   # before_filter :warn_geocode, :only => :new
 
+  include Admin::ContactCongressLettersHelper
+
   def new
     @page_title = "Contact Congress"
 
@@ -296,6 +298,7 @@ class ContactCongressLettersController < ApplicationController
   def last
     @person = Person.find_by_bioguideid(params[:id])
     render_404 and return unless @person.present?
+    last_status = @person.formageddon_threads.first.formageddon_letters.first.status rescue nil
     img = status_image_for @person
 
     respond_to do |format|

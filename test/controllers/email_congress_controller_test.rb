@@ -137,7 +137,7 @@ class EmailCongressControllerTest < ActionController::TestCase
     end
 
     message = ActionMailer::Base.deliveries.last
-    assert_match(/^Please confirm your EmailCongress message:/, message.subject)
+    assert_match(/^Please confirm your message to Congress:/, message.subject)
   end
 
   test 'successful_confirmation' do

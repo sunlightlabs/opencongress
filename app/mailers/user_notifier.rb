@@ -20,7 +20,7 @@ class UserNotifier < ActionMailer::Base
 
   def reset_password(user)
     setup_email(user)
-    @subject    += 'Your password has been reset'
+    @subject    += 'Your password has been set'
   end
 
   def comment_warning(user, comment)

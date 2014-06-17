@@ -37,6 +37,7 @@ if defined? Formageddon
       "newsletter_action" => 'unsubscribe'
     }
 
+    config.log_with_sentry = true
 
   end
 end

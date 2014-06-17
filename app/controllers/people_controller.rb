@@ -1,4 +1,6 @@
 require_dependency 'person'
+require_dependency 'email_congress'
+
 class PeopleController < ApplicationController
   include ActionView::Helpers::NumberHelper
 

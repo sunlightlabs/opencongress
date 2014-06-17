@@ -9,6 +9,7 @@
 #  values              :text
 #  created_at          :datetime
 #  updated_at          :datetime
+#  submitted_form      :text
 #
 
 class ContactCongressTest < ActiveRecord::Base

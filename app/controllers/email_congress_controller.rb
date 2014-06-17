@@ -185,7 +185,7 @@ class EmailCongressController < ApplicationController
       district = District.find_by_district_tag("#{d[:state]}-#{d[:district]}")
       next [district.rep, *district.sens]
     end
-    rcpts = Set.new(rcpts).to_a.map do |p|
+    rcpts = Set.new(rcpts.compact).to_a.map do |p|
       phash = p.attributes.slice("govtrack_id", "title", "state", "district")
       phash[:full_name] = p.full_name
       next phash

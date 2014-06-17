@@ -232,7 +232,10 @@ class AccountController < ApplicationController
 
     # TODO: This smells, find out how it's hit and refactor
     if request.post? && @new_user.present?
-      @new_user.update_attributes(params[:user])
+      # TODO: Replace this with assign_attributes once upgraded to Rails 3.2
+      [:password, :accept_tos, :login].each do |attr|
+        @new_user.send("#{attr.to_s}=", params[:user][attr])
+      end
 
       if @new_user.save
         redirect_to(:controller => 'account', :action => 'confirm', :login => @new_user.login)

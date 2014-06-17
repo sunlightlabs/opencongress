@@ -18,7 +18,10 @@ module EmailCongress
     validates_presence_of :street_address
     validates_presence_of :city
     validates_presence_of :state
-    validates_presence_of :zipcode
+    validates_numericality_of   :zipcode, :only_integer => true, :allow_blank => true, :message => "should be all numbers"
+    validates_numericality_of   :zip_four, :only_integer => true, :allow_blank => true, :message => "should be all numbers"
+    validates_length_of         :zipcode, :is => 5, :allow_blank => true, :message => "should be 5 digits"
+    validates_length_of         :zip_four, :is => 4, :allow_blank => true, :message => "should be 4 digits"
     validates_presence_of :email
     validates_presence_of :mobile_phone
     validate :phone_number_formatting

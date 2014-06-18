@@ -1,8 +1,12 @@
 module EmailCongressHelper
   def email_formatted_names_for(seed)
-    seed.allowed_recipients.map do |person|
-      %Q[<span class="rep-name" style="color: #000;">#{person.title} #{person.name}</span>].html_safe
-    end.to_sentence
+    if seed.allowed_recipients.empty?
+      return "your representatives".html_safe
+    else
+      return seed.allowed_recipients.map do |person|
+        %Q[<span class="rep-name" style="color: #000;">#{person.title} #{person.name}</span>].html_safe
+      end.to_sentence
+    end
   end
 
   def email_formatted_emails_for(seed, options={:disposition => :allowed})

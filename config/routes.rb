@@ -142,9 +142,12 @@ OpenCongress::Application.routes.draw do
   # Temporary redirect for DRM's announcement post
   match 'about/ppf-askthem' => redirect('/articles/view/2537-Big-News')
 
-  match 'issues' => 'issue#index', :as => :issues
-  match 'issues/all/(:id)' => 'issue#all', :as => :all_issues
   match 'issues/most_viewed' => 'issue#most_viewed', :as => :most_viewed_issues
+  match 'issues/all/(:id)' => 'issue#all', :as => :all_issues
+  match 'issues' => 'issue#index', :as => :issues
+
+  match 'roll_call', :controller => :roll_call, :action => :index
+  match 'committee', :controller => :committee, :action => :index
 
   scope 'issues', :controller => 'issue' do
     match 'show/:id', :action => 'show', :as => :issue

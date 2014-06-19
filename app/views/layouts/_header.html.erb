@@ -64,8 +64,8 @@
     <div class="left">
         <ul class="nav-items">
             <li id="bill_nav"><%= link_to '<span>Bills</span>'.html_safe, :controller => 'bill', :action => :all  %></li>
-            <li id="sens_nav"><%= link_to '<span>Senators</span>'.html_safe, :controller => 'people', :action => :senators  %></li>
-            <li id="reps_nav"><%= link_to '<span>Representatives</span>'.html_safe, :controller => 'people', :action => :representatives  %></li>
+            <li id="sens_nav"><%= link_to '<span>Senators</span>'.html_safe, :action => 'people_list', :person_type => 'senators', :controller => :people %></li>
+            <li id="reps_nav"><%= link_to '<span>Representatives</span>'.html_safe, :action => 'people_list', :person_type => 'representatives', :controller => :people  %></li>
             <li id="vote_nav"><%= link_to '<span>Votes</span>'.html_safe, :controller => 'roll_call' %></li>
             <li id="ishu_nav"><%= link_to '<span>Issues</span>'.html_safe, :controller => 'issue' %></li>
             <li id="comm_nav"><%= link_to '<span>Committees</span>'.html_safe, :controller => 'committee' %></li>

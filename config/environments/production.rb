@@ -19,7 +19,7 @@ OpenCongress::Application.configure do
   config.faxable.deliver_faxes = true
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
-  config.action_controller.asset_host = "http://d6ekjl42nohi3.cloudfront.net"
+  config.action_controller.asset_host = "https://d6ekjl42nohi3.cloudfront.net"
 
   # Use the git revision of this release
   # RELEASE_NUMBER = %x{cat REVISION | cut -c -7}.rstrip

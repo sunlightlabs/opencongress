@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
 def do_stats_for_person(s)
+  s.build_person_stats if s.person_stats.nil?
+
   s.person_stats.sponsored_bills = s.bills.count
   s.person_stats.cosponsored_bills = s.bills_cosponsored.count
   s.person_stats.sponsored_bills_passed = s.bills.select{ |b| b.enacted_action != nil }.size

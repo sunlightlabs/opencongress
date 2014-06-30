@@ -36,7 +36,7 @@ For Ubuntu 14.04 (Trusty):
 # install needed libraries
 sudo apt-get install postgresql postgresql-server-dev-9.3 libxml2-dev \
                      libxslt-dev libcurl4-openssl-dev libmysqlclient-dev \
-                     imagemagick
+                     imagemagick libssl-dev libreadline-dev
 ```
 
 

@@ -1,0 +1,39 @@
+<div id="heading">
+    <h2>Determine Your Congressional District</h2>
+</div>
+
+<div class="padding">
+    <div class="bootstrap-enabled row">
+        <p class="behave">
+            <strong> We can't find your exact Congressional District from your zipcode alone.</strong>
+        </p>
+        <p>
+            This is probably because your zipcode overlaps multiple Congressional District boundaries.
+        </p>
+        <p class="behave">
+            (Due to recent changes to OpenCongress, we now require all users to link their account to their Congressional District.)
+        </p>
+        <br>
+        <p class="behave">
+            <strong>Please enter your street address in field below and we'll determine your district.</strong>
+        </p>
+        <br>
+
+        <%= simple_form_for('profile', :path => '/account/determine_district', :method => "post", as: 'user_horizontal', html: { class: 'form-horizontal' }, wrapper: :custom_horizontal_form ) do |f| %>
+
+            <%= error_messages_for('profile', :header_message => nil) %>
+
+            <%= f.input :street_address %>
+            <%= f.input :street_address_2, :required => false %>
+            <%= f.input :city %>
+            <%= f.input :state, :collection => State::ABBREVIATIONS %>
+            <%= f.input :zipcode, placeholder:current_user.zipcode, :maxlength => 5, :size => 5 %>
+
+            <div class="control-group">
+                <div class="controls">
+                    <%= f.button :submit, :value => 'Find my Congressional District' %>
+                </div>
+            </div>
+        <% end %>
+    </div>
+</div>

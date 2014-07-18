@@ -38,11 +38,21 @@ require_dependency 'visible_by_privacy_option_query'
 
 # this model expects a certain database layout and its based on the name/login pattern.
 class User < ActiveRecord::Base
+
+  #========== INCLUDES
+
   include Authable
   include EmailListable
 
+  #========== CONSTANTS
 
-  # Validators
+  HUMANIZED_ATTRIBUTES = {
+      :email => "E-mail address",
+      :accept_tos => "Terms of service",
+      :login => "Username"
+  }
+
+  #========== VALIDATORS
 
   validates_presence_of       :login, :email, :unless => :openid?
   # validates_confirmation_of   :email, :message => 'should match confirmation'
@@ -58,14 +68,16 @@ class User < ActiveRecord::Base
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
 
-  HUMANIZED_ATTRIBUTES = {
-    :email => "E-mail address",
-    :accept_tos => "Terms of service",
-    :login => "Username"
-  }
+  # This filter merges the validation errors in user_profile with user so that input forms using attributes
+  # from user_profile spit have the validation messages as they appear in user_profile. Otherwise, the message
+  # is prepended by the words User profile.
+  after_validation do
+    user_profile.errors.each  { |name, value| errors.add(name.to_sym(), value) }
+    errors.delete_if { |name, value| name.to_s().include? 'user_profile' }
+    # user_profile.errors.clear() - may need this later
+  end
 
-
-  # Callbacks
+    #========== CALLBACKS
 
   update_email_subscription_when_changed :self, [:email]
   # on ban or delete, clean up this user's associations with various parts of the site
@@ -83,10 +95,9 @@ class User < ActiveRecord::Base
     destroy_twitter_config!
   }, :if => Proc.new { (is_banned? || is_deactivated?) && status_changed? }
 
+  #========== RELATIONS
 
-  # Relations
-
-  has_one  :user_profile
+  has_one  :user_profile, :autosave => true, :dependent => :destroy
   has_one  :user_privacy_options
   has_one  :user_options
   has_one  :user_mailing_list
@@ -135,6 +146,8 @@ class User < ActiveRecord::Base
 
   has_many   :contact_congress_letters
 
+  #========== ALIASES
+
   alias_attribute :username, :login
 
   # These are just here for some consistency in naming patterns
@@ -142,8 +155,7 @@ class User < ActiveRecord::Base
   alias_method :supported_bills, :bills_supported
   alias_method :opposed_bills, :bills_opposed
 
-
-  # Scopes
+  #========== SCOPES
 
   scope :for_state, lambda {|state| where("state = ?", state.upcase) }
   scope :for_district, lambda {|state, district| for_state(state).where("district = ?", district.to_i) }
@@ -166,26 +178,30 @@ class User < ActiveRecord::Base
   def bookmarked_senators; bookmarked_people.sen; end
   def bookmarked_representatives; bookmarked_people.rep; end
 
+  #========== ACCESSORS
 
-  # Accessors
+  accepts_nested_attributes_for :user_privacy_options, :user_profile, :user_options
 
   # Note that some attrs are defined in authable_model
   # accept_tos and email_confirmation are unpersisted accessors for validation only
   attr_accessible :email, :accept_tos, :accepted_tos_at, :remember_created_at,
                   :representative_id, :state, :district, :user_privacy_options_attributes,
-                  :user_options_attributes, :user_profile_attributes
+                  :user_options_attributes, :user_profile_attributes, :zipcode, :street_address,
+                  :street_address_2, :city, :district_needs_update
 
   attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email
 
-  accepts_nested_attributes_for :user_privacy_options, :user_profile, :user_options
+  #========== SERIALIZERS
 
-  serialize :possible_states
-  serialize :possible_districts
+  serialize :possible_states     # List serialization
+  serialize :possible_districts  # List serialization
 
+  #========== DELEGATED ATTRIBUTES / METHODS
 
-  # Delegated Methods
-
-  delegate :privatize!, :to => :user_privacy_options
+  delegate :zipcode=, :to => :user_profile
+  delegate :street_address=, :to => :user_profile
+  delegate :street_address_2=, :to => :user_profile
+  delegate :city=, :to => :user_profile
 
   %w(zipcode zip_four street_address street_address_2 small_picture main_picture
      first_name last_name full_name website about city coordinates location address mobile_phone).each do |prop|
@@ -201,6 +217,10 @@ class User < ActiveRecord::Base
     delegate prop.to_sym, :to => :user_privacy_options, :prefix => :share
   end
 
+  delegate :privatize!,               :to => :user_privacy_options
+  delegate :change_location!,         :to => :user_profile
+  delegate :mailing_address,          :to => :user_profile
+  delegate :mailing_address_as_hash,  :to => :user_profile
 
   # create related class instances on first access
   %w(user_profile user_options user_privacy_options).each do |meth|
@@ -208,8 +228,9 @@ class User < ActiveRecord::Base
     define_method(meth.to_sym){ send(:"_#{meth}") || send(:"build_#{meth}")}
   end
 
-
+  #========== STATIC METHODS
   class << self
+
     def random_password
       password = SecureRandom.random_number(178689910246017054531432477289437798228285773001601743140683775).to_s(36)
     end
@@ -248,7 +269,7 @@ class User < ActiveRecord::Base
                           :password => random_password,
                           :accepted_tos_at => profile.accept_tos && Time.now || nil,
                           :state => profile.state
-                          )
+          )
           # Authable#make_password_reset_code is protected and that's probably not
           # a bad thing. This, however is a kludge. FIXME.
           user.send(:make_password_reset_code)
@@ -280,14 +301,22 @@ class User < ActiveRecord::Base
     end
 
     def find_all_by_ip(address)
-       ip = UserIpAddress.int_form(address)
-       self.find(:all, :include => [:user_ip_addresses], :conditions => ["user_ip_addresses.addr = ?", ip])
+      ip = UserIpAddress.int_form(address)
+      self.find(:all, :include => [:user_ip_addresses], :conditions => ["user_ip_addresses.addr = ?", ip])
     end
 
     def find_by_feed_key_option(key)
       self.includes(:user_options).where("user_options.feed_key = ?", key).first
     end
+
   end # class << self
+
+  #========== PUBLIC METHODS
+  public
+
+  def has_state_and_district?
+    state.present? and district.present?
+  end
 
   def placeholder
     "placeholder"
@@ -390,14 +419,14 @@ class User < ActiveRecord::Base
   # TODO: Deprecate me
   def definitive_district
     if my_district.compact.length == 1
-       t_state, t_district = my_district.first.split('-')
-       this_state = State.find_by_abbreviation(t_state)
-       this_district = this_state.districts.find_by_district_number(t_district) if this_state
-       if this_district
-         return this_district.id
-       else
-         return nil
-       end
+      t_state, t_district = my_district.first.split('-')
+      this_state = State.find_by_abbreviation(t_state)
+      this_district = this_state.districts.find_by_district_number(t_district) if this_state
+      if this_district
+        return this_district.id
+      else
+        return nil
+      end
     else
       return nil
     end
@@ -417,14 +446,14 @@ class User < ActiveRecord::Base
   # TODO: Deprecate me
   def definitive_district_object
     if my_district.compact.length == 1
-       t_state, t_district = my_district.first.split('-')
-       this_state = State.find_by_abbreviation(t_state)
-       this_district = this_state.districts.find_by_district_number(t_district) if this_state
-       if this_district
-         return this_district
-       else
-         return nil
-       end
+      t_state, t_district = my_district.first.split('-')
+      this_state = State.find_by_abbreviation(t_state)
+      this_district = this_state.districts.find_by_district_number(t_district) if this_state
+      if this_district
+        return this_district
+      else
+        return nil
+      end
     else
       return nil
     end
@@ -434,7 +463,7 @@ class User < ActiveRecord::Base
     friends_logins = friends.collect{|p| "login:#{p.friend.login}"}
     unless friends_logins.empty?
       User.find_by_solr("#{friends_logins.join(' OR ')}",
-           :facets => {:browse => ["my_state_f:\"#{my_state}\""]}, :limit => 100).results
+                        :facets => {:browse => ["my_state_f:\"#{my_state}\""]}, :limit => 100).results
     else
       return []
     end
@@ -447,7 +476,7 @@ class User < ActiveRecord::Base
       friends_logins = friends.collect{|p| "login:#{p.friend.login}"}
       unless friends_logins.empty?
         User.find_by_solr("#{friends_logins.join(' OR ')}",
-          :facets => {:browse => ["my_district_f:#{my_district}"]}, :limit => 100).results
+                          :facets => {:browse => ["my_district_f:#{my_district}"]}, :limit => 100).results
       else
         return []
       end
@@ -512,9 +541,9 @@ class User < ActiveRecord::Base
 
   def public_tracking
     if user_privacy_options.tracked_items == 2
-       return true
+      return true
     else
-       return false
+      return false
     end
   end
 
@@ -584,8 +613,8 @@ class User < ActiveRecord::Base
       puts k.login
       number = k.r1_tally.to_i
       User.find_all_by_login(k.login, :order => "created_at desc").each do |j|
-         number = number - 1
-         j.destroy unless number == 1
+        number = number - 1
+        j.destroy unless number == 1
       end
     end
 
@@ -593,8 +622,8 @@ class User < ActiveRecord::Base
       puts k.email
       number = k.r1_tally.to_i
       User.find_all_by_email(k.email, :order => "created_at desc").each do |j|
-         number = number - 1
-         j.destroy unless number == 1
+        number = number - 1
+        j.destroy unless number == 1
       end
     end
 
@@ -611,7 +640,7 @@ class User < ActiveRecord::Base
   end
 
   def openid?
-   !identity_url.blank?
+    !identity_url.blank?
   end
 
   def facebook_connect_user?
@@ -622,6 +651,7 @@ class User < ActiveRecord::Base
     !facebook_connect_user? && !suppress_activation_email
   end
 
+  #========== PRIVATE METHODS
   private
 
   def destroy_comments!
@@ -667,5 +697,10 @@ class User < ActiveRecord::Base
   def destroy_twitter_config!
     twitter_config.destroy rescue nil
   end
+
+  def attributes_protected_by_default
+    []
+  end
+
 
 end

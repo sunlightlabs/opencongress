@@ -180,7 +180,7 @@ OpenCongress::Application.routes.draw do
   end
 
   scope :controller => 'account' do
-    for action in %w{ login why logout signup welcome contact_congress}
+    for action in %w{ login why logout signup welcome contact_congress determine_district }
       match action, :action => action
     end
 

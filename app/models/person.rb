@@ -853,6 +853,9 @@ class Person < ActiveRecord::Base
                 :conditions => ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today])
   end
 
+
+
+
   ##
   # This returns a pair of arrays: [ [sen1, sen2], [rep1, ... repN] ]
   # Callers must check the length of the rep array in case
@@ -866,6 +869,8 @@ class Person < ActiveRecord::Base
     else
       legs = []
     end
+
+    #ap(legs)
 
     return nil if legs.empty?
 

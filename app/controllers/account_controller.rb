@@ -1,6 +1,8 @@
 require_dependency 'multi_geocoder'
+require_dependency 'location_changed_service'
 
 class AccountController < ApplicationController
+
   before_filter :login_from_cookie, :except => [:reset_password]
   before_filter :login_required, :only => [:index, :welcome, :accept_tos, :determine_district, :change_pw,
                                            :mailing_list, :partner_mailing_list]
@@ -19,22 +21,22 @@ class AccountController < ApplicationController
 
 #  observer :user_observer
 
-    class << self
-      def shared_domain (a, b)
-        as = a.split('.')
-        bs = b.split('.')
-        cs = common_prefix(as.reverse, bs.reverse)
-        if cs.length > 1
-          cs.reverse.join('.')
-        else
-          nil
-        end
-      end
-
-      def common_prefix (as, bs)
-        as.zip(bs).select{ |a, b| a == b }.map(&:first)
+  class << self
+    def shared_domain (a, b)
+      as = a.split('.')
+      bs = b.split('.')
+      cs = common_prefix(as.reverse, bs.reverse)
+      if cs.length > 1
+        cs.reverse.join('.')
+      else
+        nil
       end
     end
+
+    def common_prefix (as, bs)
+      as.zip(bs).select{ |a, b| a == b }.map(&:first)
+    end
+  end
 
   def index
     redirect_to(user_profile_path(:login => current_user.login))
@@ -87,7 +89,7 @@ class AccountController < ApplicationController
     end
 
     if using_open_id?
-       open_id_authentication(params[:openid_url])
+      open_id_authentication(params[:openid_url])
     elsif params[:user]
       self.current_user = User.authenticate(params[:user][:login], params[:user][:password])
       return unless request.post?
@@ -138,43 +140,65 @@ class AccountController < ApplicationController
     end
   end
 
+  ##
+  # Page with form allowing user to enter and submit address information to match them with a congressman
+  #
+  # @url_path   account/determine_district
+  # @post_data  params[:user] => {:street_address, :street_address_2, :city, :state, :zipcode}
+  #
   def determine_district
-    @page_title = "Determine Your Congressional District"
+    @page_title = 'Determine Your Congressional District'
     if request.post?
-      if params[:address].present?
-        begin
-          result = MultiGeocoder.search("#{params[:address]}, #{params[:zipcode]}", :lookup => :smarty_streets).first
-          lat, lng = result.coordinates
-          zipcode = result.postal_code
-          zip_four = result.zip4 rescue nil
-          current_user.update_attributes(:state => result.state_code)
-          current_user.user_profile.update_attributes(
-            :zipcode => zipcode,
-            :zip_four => zip_four,
-            :street_address => result.delivery_line_1,
-            :street_address_2 => result.delivery_line_2,
-            :city => result.city,
-          )
-        rescue NoMethodError
-          no_reps and return
+      params_user = params[:user].symbolize_keys()
+      if [:street_address, :city, :state, :zipcode].any? { |key| params_user.key?(key) and not params_user[key].blank? }
+        if current_user.update_attributes(params_user) && current_user.reload() && current_user.has_state_and_district?#  current_user.state.present? && current_user.district.present?
+          flash[:notice] = "Your Congressional District (#{current_user.district_tag}) has been saved."
+          activate_redirect(user_profile_path(:login => current_user.login))
+          return
         end
-      elsif params[:zipcode].present?
-        result = MultiGeocoder.search(params[:zipcode]).first
-        current_user.update_attributes(:state => result.state_code)
-        current_user.user_profile.update_attributes(
-          :zipcode => result.zipcode,
-          :city => result.city
-        )
       end
+
+      no_reps and return
+
+
+
+
+
+
+      # if params[:address].present?
+      #  begin
+      #    result = MultiGeocoder.search("#{params[:address]}, #{params[:zipcode]}", :lookup => :smarty_streets).first
+      #    lat, lng = result.coordinates
+      #    zipcode = result.postal_code
+      #    zip_four = result.zip4 rescue nil
+      #    current_user.update_attributes(:state => result.state_code)
+      #    current_user.user_profile.update_attributes(
+      #        :zipcode => zipcode,
+      #        :zip_four => zip_four,
+      #        :street_address => result.delivery_line_1,
+      #        :street_address_2 => result.delivery_line_2,
+      #        :city => result.city,
+      #    )
+      #  rescue NoMethodError
+      #    no_reps and return
+      #  end
+      #elsif params[:zipcode].present?
+      #  result = MultiGeocoder.search(params[:zipcode]).first
+      #  current_user.update_attributes(:state => result.state_code)
+      #  current_user.user_profile.update_attributes(
+      #      :zipcode => result.zipcode,
+      #      :city => result.city
+      #  )
+      #end
       #LocationChangedService will have been invoked but isn't reflected in current_user. Sorrrrrry I'm a bad person.
-      current_user.reload
-      if current_user.state.present? and current_user.district.present?
-        flash[:notice] = "Your Congressional District (#{current_user.district_tag}) has been saved."
-        activate_redirect(user_profile_path(:login => current_user.login))
-        return
-      else
-        no_reps and return
-      end
+      #current_user.reload
+      #if current_user.state.present? and current_user.district.present?
+      #  flash[:notice] = "Your Congressional District (#{current_user.district_tag}) has been saved."
+      #  activate_redirect(user_profile_path(:login => current_user.login))
+      #  return
+      #else
+      #  no_reps and return
+      #end
     end
   end
 
@@ -273,7 +297,7 @@ class AccountController < ApplicationController
   end
 
   def signup
-    @page_title = "Create a New Account"
+    @page_title = 'Create a New Account'
 
     @user = User.new(params[:user])
     @user.email = session[:invite].invitee_email unless session[:invite].nil? or request.post?
@@ -282,14 +306,8 @@ class AccountController < ApplicationController
 
     @user.accepted_tos_at = Time.now if @user.accept_tos
 
-    # FIXME: Use different tooling for this, namely the district and state fields on the user.
-    # Also, why the eff were we storing a rep id but not state/district... wot.
-    if @user.zipcode
-      @senators, @reps = Person.find_current_congresspeople_by_zipcode(@user.zipcode, @user.zip_four)
-      @user.representative_id = @reps.first.id if (@reps && @reps.length == 1)
-    end
+    if @user.save_with_captcha() && @user.reload()
 
-    if @user.save_with_captcha
       # check for an invitation
       if session[:invite]
         Friend.create_confirmed_friendship(@user, session[:invite].inviter)
@@ -434,32 +452,33 @@ class AccountController < ApplicationController
   end
 
   def mailing_list
-   if params[:user][:opencongress_mail] && params[:user][:opencongress_mail] == "1"
-     current_user.user_options.opencongress_mail = true
-     flash[:notice] = "Subscribed to the Mailing List"
-   else
-     current_user.user_options.opencongress_mail = false
-     flash[:notice] = "Un-Subscribed from the Mailing List"
-   end
-   current_user.save!
-   redirect_back_or_default(user_profile_path(:login => current_user.login))
+    if params[:user][:opencongress_mail] && params[:user][:opencongress_mail] == "1"
+      current_user.user_options.opencongress_mail = true
+      flash[:notice] = "Subscribed to the Mailing List"
+    else
+      current_user.user_options.opencongress_mail = false
+      flash[:notice] = "Un-Subscribed from the Mailing List"
+    end
+    current_user.save!
+    redirect_back_or_default(user_profile_path(:login => current_user.login))
   end
 
   def partner_mailing_list
-   if params[:user][:partner_mail] && params[:user][:partner_mail] == "1"
-     current_user.user_options.partner_mail = true
-     flash[:notice] = "Subscribed to the Mailing List"
-   else
-     current_user.user_oprions.partner_mail = false
-     flash[:notice] = "Un-Subscribed from the Mailing List"
-   end
-   current_user.save!
-   redirect_back_or_default(user_profile_path(:login => current_user.login))
+    if params[:user][:partner_mail] && params[:user][:partner_mail] == "1"
+      current_user.user_options.partner_mail = true
+      flash[:notice] = "Subscribed to the Mailing List"
+    else
+      current_user.user_oprions.partner_mail = false
+      flash[:notice] = "Un-Subscribed from the Mailing List"
+    end
+    current_user.save!
+    redirect_back_or_default(user_profile_path(:login => current_user.login))
   end
 
 
   def why
   end
+
 
   def invited
     invite = FriendInvite.find_by_invite_key(params[:id])
@@ -516,7 +535,7 @@ class AccountController < ApplicationController
         # first we need to get the token
         data = "action=login&lgname=#{CGI::escape(current_user.login)}&lgpassword=#{ApiKeys.wiki_pass}&#{ApiKeys.wiki_key}=1&format=json"
         headers = {
-          'Content-Type' => 'application/x-www-form-urlencoded'
+            'Content-Type' => 'application/x-www-form-urlencoded'
         }
         http = Net::HTTP.new(wiki_uri.host, 80)
         path = "#{wiki_uri.path}/api.php"
@@ -537,8 +556,8 @@ class AccountController < ApplicationController
         j = JSON.parse(resp.body)
         data = "action=login&lgname=#{CGI::escape(current_user.login)}&lgpassword=#{ApiKeys.wiki_pass}&#{ApiKeys.wiki_key}=1&lgtoken=#{j['login']['token']}&format=json"
         headers = {
-          'Content-Type' => 'application/x-www-form-urlencoded',
-          'Cookie' => resp['set-cookie']
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Cookie' => resp['set-cookie']
         }
         resp, data = http.post(path, data, headers)
         returned_cookies = resp['set-cookie'].split(',')
@@ -584,7 +603,7 @@ class AccountController < ApplicationController
   def get_return_location
     referrer_hash = ActionController::Routing::Routes.recognize_path(request.referrer)
     if !(referrer_hash[:controller] == 'account' && %w(login signup index).include?(referrer_hash[:action])) && request.referrer =~ /^https?:\/\/#{Regexp.escape(Settings.base_url.sub(/^https?:\/\//, ''))}/
-    # unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
+      # unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
       session[:return_to] = request.referrer
     elsif params[:next].present?
       session[:return_to] = params[:next]
@@ -606,7 +625,7 @@ class AccountController < ApplicationController
             flash[:error] = "Error saving the fields from your OpenID profile: #{current_user.errors.full_messages.to_sentence}"
           end
         else
-         u = User.new()
+          u = User.new()
           {'login=' => 'nickname', 'email=' => 'email', 'full_name=' => 'fullname'}.each do |attr, reg|
             u.send(attr, registration[reg]) unless registration[reg].blank?
           end
@@ -657,9 +676,9 @@ class AccountController < ApplicationController
           bill = Bill.find_by_ident(session[:login_action][:bill])
           if bill
             position = case session[:login_action][:action]
-                       when 'support_bill' then :support
-                       when 'oppose_bill' then :oppose
-                       else nil
+                         when 'support_bill' then :support
+                         when 'oppose_bill' then :oppose
+                         else nil
                        end
             if position
               BillVote.establish_user_position(bill, current_user, position)
@@ -671,26 +690,26 @@ class AccountController < ApplicationController
       if session[:login_action] and session[:login_action][:action_result]
         if session[:login_action][:action_result] == 'track'
           case session[:login_action][:url]
-          when /\/bill\/([0-9]{3}-\w{2,})\//
-            ident = $1
-            if ident
-              bill = Bill.find_by_ident(ident)
-              if bill
-                bookmark = Bookmark.new(:user_id => current_user.id)
-                bill.bookmarks << bookmark
+            when /\/bill\/([0-9]{3}-\w{2,})\//
+              ident = $1
+              if ident
+                bill = Bill.find_by_ident(ident)
+                if bill
+                  bookmark = Bookmark.new(:user_id => current_user.id)
+                  bill.bookmarks << bookmark
+                end
               end
-            end
-          when /\/([^\/]+)\/[^\/]+\/(\d+)/
-            obj = {'people' => 'Person', 'issues' => 'Subject', 'committee' => 'Committee'}[$1]
-            id = $2
-            if id && obj
-              object = Object.const_get(obj)
-              this_object = object.find_by_id(id)
-              if this_object
-                bookmark = Bookmark.new(:user_id => current_user.id)
-                this_object.bookmarks << bookmark
+            when /\/([^\/]+)\/[^\/]+\/(\d+)/
+              obj = {'people' => 'Person', 'issues' => 'Subject', 'committee' => 'Committee'}[$1]
+              id = $2
+              if id && obj
+                object = Object.const_get(obj)
+                this_object = object.find_by_id(id)
+                if this_object
+                  bookmark = Bookmark.new(:user_id => current_user.id)
+                  this_object.bookmarks << bookmark
+                end
               end
-            end
           end
         elsif session[:login_action][:action_result] == 'contact_congress'
           session[:formageddon_unsent_threads].each do |t|

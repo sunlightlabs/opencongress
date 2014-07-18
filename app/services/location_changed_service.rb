@@ -1,20 +1,32 @@
+require 'multi_geocoder'
+
 class LocationChangedService
 
   JOIN_STATUS = 'MEMBER'
 
+  ##
+  # Resets state, district, and representative_id based on whatever address
+  # data is available for the user. If multi results returned, user stays in
+  # 'give us your address' purgatory.
+  # TODO: Allow user to send feedback if they get stuck here.
+  #
+  # @user {User} The user to update district, state, and representative for
+  #
   def initialize(user)
-    # Resets state and district based on lat/lng if present
-    # if missing, tries to get from zip. If multiple results returned,
-    # user stays in 'give us your address' purgatory.
-    # TODO: Allow user to send feedback if they get stuck here.
+
+    UserProfile.skip_callback(:save, :after, :change_location!)
 
     @user = user
     @user.update_attribute(:district, nil)
+    @user.district_needs_update = true
 
-    @districts = get_districts
-    # Multiple states can be returned per zcta. See: 53511
+    # Get possible district and state for this user
+    @districts = get_districts()
+
+    # Multiple states can be returned per zcta. "EXAMPLE: 53511"
     @states = @districts.collect(&:state).uniq
 
+    # Handles updating state and district data for user
     if @states.length == 1
       @user.state = @states.first
       @user.possible_states = []
@@ -31,23 +43,46 @@ class LocationChangedService
       @user.possible_districts = @districts.collect {|d| "#{d.state}-#{d.district}"}
     end
 
-    @user.save
-    join_default_groups
-    @user.district_tag
+    # Handles setting representative id and saving user.
+    if @user.state && @user.district
+      rep = Person.find_current_representatives_by_state_and_district(@user.state, @user.district)
+      @user.representative_id = rep ? rep.first.id : nil
+      # TODO log failure of Person lookup by state and district?
+    else
+      @user.representative_id = nil
+    end
+
+    # Save and skip the change_location callback so we don't enter infinite loop
+    @user.save()
+    join_default_groups()
+    UserProfile.set_callback(:save, :after, :change_location!)
+    return @user.district_tag()
   end
 
   protected
 
+  ##
+  # Gets a user's possible district(s) by performing an exhaustive lookup of address information
+  # starting from zipcode and moving to full address.
+  #
+  # @return {Hash} contains attributes "results" and "count". The "results" attribute maps
+  #                to a List of Hashes that contain attributes "state" and "district".
+  #
   def get_districts
-    if @user.user_profile.mailing_address =~ /\A[\d]{5}\Z/
-      dsts = Congress.districts_locate(@user.user_profile.zipcode)
-    else
-      lat, lng = MultiGeocoder.coordinates(@user.user_profile.mailing_address)
-      dsts = Congress.districts_locate(lat, lng).results rescue []
+    dsts = []
+    if @user.zipcode  # try to locate districts from zipcode
+      dsts = Congress.districts_locate(@user.zipcode).results rescue [] # external API call
     end
-    dsts
+    if dsts and dsts.length != 1 and @user.street_address
+      lat, lng = MultiGeocoder.coordinates(@user.mailing_address_as_hash())
+      dsts = Congress.districts_locate(lat, lng).results rescue [] # external API call magic
+    end
+    return dsts
   end
 
+  ##
+  # Join user in default groups for their district and state
+  #
   def join_default_groups
     if @user.state.present?
       state_group = State.find_by_abbreviation(@user.state).group rescue nil

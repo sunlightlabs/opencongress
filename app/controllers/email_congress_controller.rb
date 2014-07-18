@@ -135,7 +135,7 @@ class EmailCongressController < ApplicationController
   end
 
   def complete_profile
-    @page_title = "Complete Your Profile and Send Your Email"
+    @page_title = 'Complete Your Profile and Send Your Email'
     @profile = EmailCongress::ProfileProxy.build(@seed)
 
     if request.method_symbol == :post

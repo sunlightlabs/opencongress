@@ -271,12 +271,13 @@ class District < ActiveRecord::Base
   # it would return just KY-1.
 
   def self.from_address (address)
-
     query_info = MultiGeocoder.explain(address)
     begin
       if query_info.is_zip5?
         # Skip the geocode if this is a zip5
+        ap(query_info.query_zip5)
         dsts = Congress.districts_locate(query_info.query_zip5).results
+        ap(dsts)
       elsif query_info.is_full_address? or query_info.is_zip9?
         # Use coordinates if this is likely to return a decently precise point
         dsts = Congress.districts_locate(*MultiGeocoder.coordinates(address)).results
@@ -287,9 +288,12 @@ class District < ActiveRecord::Base
         # get this one wrong :/
         dsts = Congress.districts_locate(*MultiGeocoder.coordinates(address)).results
       end
-    rescue ArgumentError, Faraday::Error::ClientError
+    rescue ArgumentError , Faraday::Error::ClientError => error
+      puts error.message
       dsts = []
     end
+
+    ap(dsts)
 
     if dsts.length == 1
       includes(:state).where(:district_number => dsts.first.district,

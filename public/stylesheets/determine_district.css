@@ -1,0 +1,15 @@
+.bootstrap-enabled .errorExplanation
+{
+    padding: 15px;
+    margin-left: -20px;
+    border: 1px solid #eed3d7;
+    border-radius: 4px;
+    background: #f2dede;
+    color: #b94a48;
+}
+
+.bootstrap-enabled .errorExplanation p
+{
+    padding-bottom: 15px;
+    color: #b94a48;
+}

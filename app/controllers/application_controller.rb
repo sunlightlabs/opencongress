@@ -14,11 +14,11 @@ class ApplicationController < ActionController::Base
   before_filter :facebook_check
   before_filter :clear_return_to
   before_filter :current_tab
-  before_filter :pending_email_seed_prompt
   before_filter :has_accepted_tos?
   before_filter :must_reaccept_tos?
   before_filter :warn_reaccept_tos?
   before_filter :has_district?
+  before_filter :pending_email_seed_prompt
   before_filter :get_site_text_page
   before_filter :is_authorized?
   before_filter :set_simple_comments
@@ -214,7 +214,7 @@ class ApplicationController < ActionController::Base
   def has_district?
     if logged_in?
       if current_user.state.nil? or current_user.my_district.size != 1
-        redirect_to :controller => 'account', :action => 'determine_district' unless (
+        redirect_to(url_for(:controller => 'account', :action => 'determine_district')) unless (
           params[:action] == 'determine_district' or
           params[:action] == 'accept_tos' or
           params[:action] == 'logout'

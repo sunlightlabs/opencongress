@@ -10,9 +10,12 @@ module EmailCongressHelper
   end
 
   def email_formatted_emails_for(seed, options={:disposition => :allowed})
-    seed.send("#{options[:disposition].to_s}_recipient_addresses".to_sym).map do |addr|
-      %Q[<a style="color:#96bbcf" href="mailto:#{addr}">#{addr}</a>].html_safe
-    end.to_sentence
+    if seed.allowed_recipients.empty?
+      return 'your representatives'.html_safe
+    else
+      return seed.send("#{options[:disposition].to_s}_recipient_addresses".to_sym).map do |addr|
+             %Q[<a style="color:#96bbcf" href="mailto:#{addr}">#{addr}</a>].html_safe end.to_sentence()
+    end
   end
 
   def email_formatted_contact_email

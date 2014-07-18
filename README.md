@@ -20,7 +20,7 @@ Then connect to your new VM:
 
     vagrant ssh
 
-From here, you can skip down to 'install the bundle'
+From here, you can skip down to 'gem install bundler'
 
 ### Running locally
 
@@ -30,9 +30,15 @@ mysql or sqlite.  The following commands are suggestions, but ultimately
 you'll need to get postgres running to be able to run the app.  We are
 currently running postgres 9.1 in production.
 
-For Ubuntu:
+For Ubuntu 14.04 (Trusty):
 
-    sudo apt-get install postgresql postgresql-client postgresql-contrib libpq-dev ruby-dev rubygems libopenssl-ruby imagemagick libmagick++-dev gcj-4.4-jre wkhtmltopdf
+```bash
+# install needed libraries
+sudo apt-get install postgresql postgresql-server-dev-9.3 libxml2-dev \
+                     libxslt-dev libcurl4-openssl-dev libmysqlclient-dev \
+                     imagemagick libssl-dev libreadline-dev
+```
+
 
 For Mac OS X, start by installing [Homebrew](http://mxcl.github.io/homebrew/),
 then run:
@@ -43,15 +49,25 @@ Follow the instructions after the packages install for initializing your databas
 
 ---
 
-Install the bundle:
+Install Ruby and the bundle of dependencies:
 
-    [sudo] gem install bundler
-    bundle install
+```bash
+# install rbenv (see: https://github.com/sstephenson/rbenv#basic-github-checkout)
+git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+source ~/.bash_profile
 
+# install ruby
+rbenv install 1.9.3-p484
 
-__Note for OS X:__ *You may need to specify additional compile options
+gem install bundler
+rbenv rehash            # this puts the "bundle" command in your PATH
+bundle install
+```
+
+__Note for OS X:__ You may need to specify additional compile options
 for your gems. Try: `ARCHFLAGS="-arch x86_64" bundle install`
-
 
 ---
 
@@ -71,8 +87,18 @@ empty databases for the three environments (test, development,
 production).  The migration command will populate the development
 database with an empty schema.
 
-    rake db:init
-    rake db:migrate
+```bash
+# make a postgres superuser for opencongress
+sudo -u postgres createuser opencongress -sP
+
+# Make sure to put your password in config/database.yml!
+
+# create the postgres database
+sudo -u postgres createdb opencongress_development -O opencongress
+
+rake db:init
+rake db:migrate
+```
 
 ### Legislative Data (optional)
 

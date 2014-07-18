@@ -74,7 +74,7 @@ class User < ActiveRecord::Base
   after_validation do
     user_profile.errors.each  { |name, value| errors.add(name.to_sym(), value) }
     errors.delete_if { |name, value| name.to_s().include? 'user_profile' }
-    # user_profile.errors.clear() - may need this later
+    # user_profile.errors.clear() - may need this later for some reason
   end
 
     #========== CALLBACKS

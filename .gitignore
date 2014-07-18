@@ -27,3 +27,5 @@ TAGS
 *.sqlite3
 helium.json
 sendhelium
+.idea
+.idea/*

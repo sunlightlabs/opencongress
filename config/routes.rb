@@ -201,6 +201,7 @@ OpenCongress::Application.routes.draw do
     delete 'profile/images' => 'profile#delete_images', :as => :delete_profile_images
 
     scope 'profile' do
+
       resource :political_notebook do
         collection do
           post :update_privacy
@@ -216,17 +217,35 @@ OpenCongress::Application.routes.draw do
         resources :notebook_files
       end
 
+      # get 'friends' => 'friends#index', :as => :friends
+
+
+      # /users/:login/profile/friends
+
       scope 'friends', :controller => 'friends' do
+
         for action in %w{ import_contacts like_voters invite_contacts near_me invite invite_form }
           match action, :action => action, :as => 'friends_' + action
         end
 
         for action in %w{ confirm deny } do
-          match action + '/:id', :action => action, :as => 'friends_add_' + action
+          match action + '/:login', :action => action, :as => 'friends_add_' + action
         end
+
       end
 
       resources :friends
+
+      #get 'friends' => 'friends#index', :as => :friends
+
+
+
+
+
+
+
+      #end
+      ###
 
       scope :controller => 'profile' do
         for action in %w{ actions items_tracked watchdog edit_profile bills_supported tracked_rss user_actions_rss bills_opposed my_votes bills comments issues committees groups } do
@@ -235,6 +254,7 @@ OpenCongress::Application.routes.draw do
 
         match ':person_type', :action => 'person'
       end
+
     end # profile
 
     match 'feeds/:action(/:key)', :controller => 'user_feeds'

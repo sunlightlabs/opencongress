@@ -11,6 +11,8 @@ class FriendsController < ApplicationController
   # GET /friends
   # GET /friends.xml
   def index
+    puts "GETS TO THE INDEX!!!!!"
+
     @friends = @user.friends.all
     @fans = @user.fans
     @total_recent_friends_activity = Friend.recent_activity(@friends)

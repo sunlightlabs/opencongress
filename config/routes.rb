@@ -227,7 +227,7 @@ OpenCongress::Application.routes.draw do
         end
 
         for action in %w{ confirm deny } do
-          match action + '/:login', :action => action, :as => 'friends_add_' + action
+          match action + '/:id', :action => action, :as => 'friends_add_' + action
         end
       end
 

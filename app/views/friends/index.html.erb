@@ -110,9 +110,9 @@
                     </tr>
                   <% end %>
                   <% if friend.confirmed %>
-                    <% if friend.friend.homepage && friend.user.can_view(:profile, current_user) %>
+                    <% if friend.friend.website && friend.user.can_view(:profile, current_user) %>
                       <tr>
-                        <td><%=h friend.friend.homepage %></td>
+                        <td><%=h link_to(friend.friend.website,friend.friend.website) %></td>
                       </tr>
                     <% end %>
                     <tr>

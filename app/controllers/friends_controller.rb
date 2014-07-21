@@ -316,7 +316,6 @@ class FriendsController < ApplicationController
   def add
    if request.post?
       friend_to_be = User.find_by_id(params[:id])
-      ap(friend_to_be)
       if current_user.friends.find_by_id(params[:id])
         render :text => "Already your friend!" and return
       end
@@ -328,7 +327,7 @@ class FriendsController < ApplicationController
   def confirm
     friending = Friend.find_by_friend_id_and_user_id(current_user.id, params[:id])
     if friending
-      friending.confirm
+      friending.confirm!
       flash[:notice] = "Friend Added"
       redirect_to friends_path(current_user.login)
     else

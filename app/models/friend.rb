@@ -15,7 +15,7 @@ class Friend < ActiveRecord::Base
   belongs_to :user
   belongs_to :friend, :class_name => "User", :foreign_key => "friend_id"
 
-  def confirm
+  def confirm!
     @confirmed = true
     update_attributes!({:confirmed => true, :confirmed_at => Time.new})
   end

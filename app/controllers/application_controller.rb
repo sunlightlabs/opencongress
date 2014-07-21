@@ -176,6 +176,33 @@ class ApplicationController < ActionController::Base
 
   private
 
+  ##
+  # Sets the @user instance variable to login argument. Defaults to the :login parameter. This method
+  # can be used in conjunction with must_be_owner and filters to tailor views for the current_user
+  #
+  # @param  login   set the @user instance variable to the provided login (if the user exists)
+  #
+  def set_user_by_login!(login=params[:login])
+    if login
+      @user ||= User.find_by_login(login) and return
+    end
+    if @user.nil? && logged_in? && login.blank?
+      redirect_to url_for(:controller => params[:controller], :action => login, :login => current_user.login)
+    else
+      render_404 and return
+    end
+  end
+
+  def must_be_owner
+    if current_user == @user
+      return true
+    else
+      flash[:error] = 'You are not allowed to access that page.'
+      redirect_to :controller => 'index'
+      return false
+    end
+  end
+
   def has_accepted_tos?
     if logged_in?
       unless current_user.accepted_tos?

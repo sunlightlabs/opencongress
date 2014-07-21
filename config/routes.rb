@@ -193,6 +193,7 @@ OpenCongress::Application.routes.draw do
     match 'comments/atom/:object/:id', :action => 'atom_comments'
   end
 
+  # /users/:login
   scope 'users/:login' do
     get 'profile' => 'profile#show', :as => :user_profile
     get 'profile/edit' => 'profile#edit', :as => :edit_profile
@@ -200,6 +201,7 @@ OpenCongress::Application.routes.draw do
     delete 'profile' => 'profile#destroy', :as => :destroy_profile
     delete 'profile/images' => 'profile#delete_images', :as => :delete_profile_images
 
+    # /users/:login/profile
     scope 'profile' do
 
       resource :political_notebook do
@@ -217,13 +219,9 @@ OpenCongress::Application.routes.draw do
         resources :notebook_files
       end
 
-      # get 'friends' => 'friends#index', :as => :friends
-
-
-      # /users/:login/profile/friends
-
+      # /users/:login/profile/friends/:action
+      resources :friends
       scope 'friends', :controller => 'friends' do
-
         for action in %w{ import_contacts like_voters invite_contacts near_me invite invite_form }
           match action, :action => action, :as => 'friends_' + action
         end
@@ -231,35 +229,22 @@ OpenCongress::Application.routes.draw do
         for action in %w{ confirm deny } do
           match action + '/:login', :action => action, :as => 'friends_add_' + action
         end
-
       end
 
-      resources :friends
-
-      #get 'friends' => 'friends#index', :as => :friends
-
-
-
-
-
-
-
-      #end
-      ###
-
+      # /users/:login/profile/:action
       scope :controller => 'profile' do
         for action in %w{ actions items_tracked watchdog edit_profile bills_supported tracked_rss user_actions_rss bills_opposed my_votes bills comments issues committees groups } do
           match action, :action => action, :as => 'user_' + action
         end
-
         match ':person_type', :action => 'person'
       end
 
-    end # profile
+    end # scope 'profile'
 
     match 'feeds/:action(/:key)', :controller => 'user_feeds'
 
-  end # users/:login
+  end # scope 'users/:login'
+
   get 'users/:login' => redirect {|params, request| Rails.application.routes.url_helpers.user_profile_path(params[:login]) }
 
   match 'video/rss' => 'video#all', :format => 'atom'
@@ -305,6 +290,7 @@ OpenCongress::Application.routes.draw do
 
   resources :contact, :only => [:index, :create]
 
+  match ':controller(/:action(/:login))'
   match ':controller(/:action(/:id))'
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 

@@ -1,17 +1,21 @@
 class FriendsController < ApplicationController
-  #require 'contacts'
+  # require 'contacts'
   layout 'application'
 
-  before_filter :get_user
-  before_filter :login_required, :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
-  before_filter :must_be_owner, :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
-  before_filter :find_bill_by_ident, :only => [:supporting_bill, :opposing_bill]
-  before_filter :find_person_by_govtrack_id, :only => [:supporting_person, :opposing_person]
+  #========== FILTERS
+
+  before_filter :set_user_by_login!
+  before_filter :login_required,              :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
+  before_filter :must_be_owner,               :only => [:invite_form, :import_contacts,:invite_contacts,:new,:add,:create,:destroy,:update,:edit,:confirm]
+  before_filter :find_bill_by_ident,          :only => [:supporting_bill, :opposing_bill]
+  before_filter :find_person_by_govtrack_id,  :only => [:supporting_person, :opposing_person]
+
+  #========== PUBLIC METHODS
+  public
 
   # GET /friends
   # GET /friends.xml
   def index
-    puts "GETS TO THE INDEX!!!!!"
 
     @friends = @user.friends.all
     @fans = @user.fans
@@ -368,26 +372,26 @@ class FriendsController < ApplicationController
     render :layout => false
   end
 
+  #========== PRIVATE METHODS
   private
 
-  def get_user
-    if params[:login]
-      @user = User.find_by_login(params[:login])
-    end
-    if @user.nil? && logged_in? && params[:login].blank?
-      redirect_to url_for(:controller => params[:controller], :action => params[:action], :login => current_user)
-    else
-      render_404 and return
-    end
-  end
+  #def get_user
+  #  if params[:login]
+  #    @user = User.find_by_login(params[:login])
+  #  elsif @user.nil? && logged_in? && params[:login].blank?
+  #    redirect_to url_for(:controller => params[:controller], :action => params[:action], :login => current_user)
+  #  else
+  #    render_404 and return
+  #  end
+  #end
 
-  def must_be_owner
-    if current_user == @user
-      return true
-    else
-      flash[:error] = "You are not allowed to access that page."
-      redirect_to :controller => 'index'
-      return false
-    end
-  end
+  #def must_be_owner
+  #  if current_user == @user
+  #    return true
+  #  else
+  #    flash[:error] = "You are not allowed to access that page."
+  #    redirect_to :controller => 'index'
+  #    return false
+  #  end
+  #end
 end

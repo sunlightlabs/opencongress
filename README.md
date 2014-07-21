@@ -43,7 +43,7 @@ sudo apt-get install postgresql postgresql-server-dev-9.3 libxml2-dev \
 For Mac OS X, start by installing [Homebrew](http://mxcl.github.io/homebrew/),
 then run:
 
-    brew install postgresql postgresql-server ImageMagick md5sha1sum wget wkhtmltopdf
+    brew install postgresql postgresql-server ImageMagick md5sha1sum wget wkhtmltopdf ghostscript
 
 Follow the instructions after the packages install for initializing your database
 

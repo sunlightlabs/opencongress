@@ -53,7 +53,7 @@ gem 'paperclip'
 gem 'unicode_utils'
 
 # Geocoding users on create
-gem 'geocoder', :git => 'git://github.com/sunlightlabs/geocoder.git', :branch => 'oc'
+gem 'geocoder', :git => 'git://github.com/sunlightlabs/geocoder.git'
 
 # Split names for first/last support
 gem 'full-name-splitter'

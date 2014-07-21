@@ -222,7 +222,7 @@ OpenCongress::Application.routes.draw do
       # /users/:login/profile/friends/:action
       resources :friends
       scope 'friends', :controller => 'friends' do
-        for action in %w{ import_contacts like_voters invite_contacts near_me invite invite_form }
+        for action in %w{ import_contacts like_voters invite_contacts near_me invite invite_form add }
           match action, :action => action, :as => 'friends_' + action
         end
 

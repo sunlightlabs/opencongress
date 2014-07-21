@@ -404,7 +404,7 @@ EOT
       options[:update] = "fdiv" if options[:update].nil?
       friend_login = CGI::escapeHTML(friend.login)
       f = current_user.friends.find_by_friend_id(friend.id)
-      options[:url] = { :controller => 'friends', :action => 'add', :login => current_user.login, :id => friend.id }
+      options[:url] = url_for(:controller => 'friends', :action => 'add', :login => current_user.login, :id => friend.id)
       if f.nil? && friend != current_user
         link_to_remote("Add #{friend_login} to Friends", options)
       elsif f.nil? && friend == current_user

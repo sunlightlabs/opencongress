@@ -9,7 +9,7 @@
     <div id="picture_detail">
       <%= profile_image_for(@user, :editable => false) %>
       <div id="fdiv">
-        <%= add_friend_link_ajax(@user, :html => { :class => "button small blue" }) if current_user != @user %>
+        <%= add_friend_link_ajax(@user, {:html => { :class => "button small blue" }}) if current_user != @user %>
       </div>
     </div>
 

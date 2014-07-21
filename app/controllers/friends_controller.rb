@@ -316,6 +316,7 @@ class FriendsController < ApplicationController
   def add
    if request.post?
       friend_to_be = User.find_by_id(params[:id])
+      ap(friend_to_be)
       if current_user.friends.find_by_id(params[:id])
         render :text => "Already your friend!" and return
       end

@@ -33,6 +33,7 @@ class EmailCongressLetterSeed < ActiveRecord::Base
 
   before_validation :generate_confirmation_code
   validates_uniqueness_of :confirmation_code
+  validates_length_of :email_body, :maximum => 8000, :message => 'Please shorten the body of your message', :allow_blank => true
 
   scope :unresolved, lambda { where(:resolved => false) }
 

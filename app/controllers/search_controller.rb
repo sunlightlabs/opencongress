@@ -2,16 +2,20 @@ class SearchController < ApplicationController
   include ActionView::Helpers::TextHelper
 
   def index
-    @page_title = "Search OpenCongress"
+    @page_title = 'Search OpenCongress'
   end
 
   def tips
-    @page_title = "Search Tips"
+    @page_title = 'Search Tips'
   end
 
   def result
     @query = truncate(params[:q], :length => 255)
-    @page = (params[:page] || 1).to_i
+    # TODO: this is a quick fix to handle malformed input. The most robust solution
+    # is to move validation of a query into a search model and to validate and store all the
+    # search parameters
+    @page = (params[:page] && params[:page].to_i() > 0) ? params[:page].to_i() : 1
+    # @page = ((params[:page] || 1).to_i)
     @found_items = 0
     @congresses = params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"]
 
@@ -127,7 +131,7 @@ class SearchController < ApplicationController
           if (@congresses == ["#{Settings.default_congress}"])
             flash.now[:error] = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
           else
-            flash.now[:error] = "Sorry, your search returned no results."
+            flash.now[:error] = 'Sorry, your search returned no results.'
           end
         end
       end

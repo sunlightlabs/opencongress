@@ -8,7 +8,11 @@
 #
 
 class Search < ActiveRecord::Base
-  
+
+  # TODO: add field to link a user search to user if one exists
+  # TODO: add list field for what to search in and sessions
+  #
+
   def Search.top_search_terms(num = 100, since = Settings.default_count_time)
     Search.find_by_sql(["SELECT LOWER(search_text) as text, COUNT(id) as count 
                          FROM searches 

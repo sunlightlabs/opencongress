@@ -80,7 +80,7 @@ class EmailCongressController < ApplicationController
   def confirm
     # Completes the seed -> letter conversion.
 
-    @page_title = "Confirm Your Email"
+    @page_title = 'Confirm Your Email'
     @profile = EmailCongress::ProfileProxy.new(@seed)
     if @sender_user
       user_profile = EmailCongress::ProfileProxy.build(@sender_user.user_profile, @sender_user)
@@ -93,32 +93,28 @@ class EmailCongressController < ApplicationController
       # their email address between the time of the initial email and when they
       # clicked the confirmation link, they would end up here due to the
       # !@sender_user condition.
-      flash[:error] = "To send your message we need to collect the information below."
-      return redirect_to(:action => :complete_profile,
-                         :confirmation_code => @seed.confirmation_code)
+      flash[:error] = 'To send your message we need to collect the information below.'
+      return redirect_to(:action => :complete_profile, :confirmation_code => @seed.confirmation_code)
     end
 
-    # We have a user and a complete profile.
+    # At this point we should have a user and a complete profile.
     begin
       if @sender_user.user_profile.zip_four.blank?
-        # Some congress members require the zip_four but we don't include it in
-        # the profile form.
+        # Some congress members require the zip_four but we don't include it in the profile form.
         ZipInferrenceService.new(@sender_user.user_profile)
       end
       @profile.copy_to(@seed)
       cc_letter = EmailCongress.reify_for_contact_congress(@sender_user, @seed, @recipients)
       cc_letter.formageddon_threads.each do |thread|
         letter = thread.formageddon_letters.first
-        if letter
-          letter.delay.send_letter
-        end
+        if letter then letter.delay.send_letter() end
       end
       @seed.confirm!
       return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
     rescue => e
       raise unless Rails.env.production?
       Raven.capture_exception(e)
-      flash[:error] = "Your letter could not be sent due to technical difficulties. Please try again later."
+      flash[:error] = 'Your letter could not be sent due to technical difficulties. Please try again later.'
       return redirect_to(:action => :complete_profile, :confirmation_code => @seed.confirmation_code)
     end
   end

@@ -84,4 +84,4 @@ after "deploy:update_code", "deploy:jammit"
 
 # Airbrake put the following in; necessary?
 #require './config/boot'
-require 'airbrake/capistrano'
+# require 'airbrake/capistrano'

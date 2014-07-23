@@ -18,6 +18,7 @@
 require_dependency File.expand_path(
   'app/models/formageddon/formageddon_letter',
   ActiveSupport::Dependencies.plugins_loader.plugin_paths.select{|p| p =~ /formageddon(-[0-9a-f]+)?$/}.first)
+
 require_dependency 'renders_templates'
 
 class Formageddon::FormageddonLetter
@@ -26,6 +27,8 @@ class Formageddon::FormageddonLetter
   #
   include RendersTemplates
   include Faxable
+
+  validates_length_of :message, :maximum => 8000, :message => 'Please shorten the body of your message', :allow_blank => true
 
   PRINT_TEMPLATE = "contact_congress_letters/print"
 

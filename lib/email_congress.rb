@@ -379,47 +379,62 @@ module EmailCongress
     end
 
     def seed_for_postmark_object (obj)
-      if obj.is_a?(String)
-        email = Postmark::Mitt.new(JSON.load(obj))
-      elsif obj.is_a?(Hash)
-        email = Postmark::Mitt.new(JSON.dump(obj))
-      elsif obj.is_a?(Postmark::Mitt)
-        email = obj
-      else
-        raise "Unable to construct EmailCongressLetterSeed for #{obj.class.name}"
+
+      case obj
+        when obj.is_a?(String)
+          email = Postmark::Mitt.new(JSON.load(obj))
+        when obj.is_a?(Hash)
+          email = Postmark::Mitt.new(JSON.dump(obj))
+        when obj.is_a?(Postmark::Mitt)
+          email = obj
+        else
+          raise "Unable to construct EmailCongressLetterSeed for #{obj.class.name}"
       end
 
       seed = EmailCongressLetterSeed.new
       seed.raw_source = email.raw
       seed.sender_email = email.from_email
-      if email.subject.blank?
-        seed.email_subject = '(no subject)'
-      else
-        seed.email_subject = email.subject
-      end
+      seed.email_subject = email.subject.blank?() ? '(no subject)' : seed.email_subject
       seed.email_body = email.text_body
       seed.save!
       return seed
     end
 
+    ##
+    # Creates a FormageddonLetter instance, associatedd to a
+    # FormageddonThread. This method returns false if it fails to save
+    # the thread. Note the dependency Formageddon gem has models and
+    # model extensions not defined in this project.
+    #
+    # @param   thread   FormageddonThread object
+    # @param   seed     EmailCongressLetterSeed object
+    # @return  FormageddonLetter object if successful, exception if save! fails
+    #
     def reify_as_formageddon_letter (thread, seed)
       # Creates a FormageddonLetter instance, associated with the given FormageddonThread.
       letter = Formageddon::FormageddonLetter.new
-      if seed.email_subject.blank?
-        letter.subject = '(no subject)'
-      else
-        letter.subject = seed.email_subject
-      end
+      letter.subject = seed.email_subject.blank?() ? '(no subject)' : seed.email_subject
       letter.message = seed.email_body
       letter.direction = 'TO_RECIPIENT'
       letter.issue_area = nil   # This will be set if required by the contact form.
       letter.status = 'START'   # This field will capture send errors if they occur.
-      letter.fax_id = nil  # This will be set if we fall back to faxing.
+      letter.fax_id = nil       # This will be set if we fall back to faxing.
       letter.formageddon_thread = thread
       letter.save!
       return letter
     end
 
+    ##
+    # Creates a FormageddonThread instance, not yet associated to a
+    # ContactCongressFormageddonThread. This method returns false if
+    # it fails to save the thread. Note the dependency Formageddon
+    # gem has models and model extensions not defined in this project.
+    #
+    # @param   sender   User object
+    # @param   seed     EmailCongressLetterSeed object
+    # @param   rcpt     Person object
+    # @return  FormageddonThread object if successful, exception if save! fails
+    #
     def reify_as_formageddon_thread (sender, seed, rcpt)
       # Creates a FormageddonThread instance, not yet associated to a
       # ContactCongressFormageddonThread
@@ -437,7 +452,9 @@ module EmailCongress
       # Establishes ContactCongress object graph, returning the
       # ContactCongressLetter tying it all together.
 
+      # This block insures that all SQL statements occur as one atomic action and rollback on validation failure.
       ActiveRecord::Base.transaction do
+
         ccl_letter = ContactCongressLetter.new
         ccl_letter.user = sender
         ccl_letter.disposition = ''   # Leave blank for now. Do sentiment analysis in the future?

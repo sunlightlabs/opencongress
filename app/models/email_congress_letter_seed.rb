@@ -47,6 +47,13 @@ class EmailCongressLetterSeed < ActiveRecord::Base
     save!
   end
 
+  # TODO: deprecate me
+  def confirm
+    self.resolved = true
+    self.resolution = 'confirmation'
+    save!
+  end
+
   def generate_confirmation_code
     # Generate a confirmation_code, if needed
     if self.confirmation_code.blank?

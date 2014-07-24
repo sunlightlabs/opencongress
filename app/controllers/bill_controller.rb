@@ -551,7 +551,7 @@ class BillController < ApplicationController
   end
 
   def news_blogs
-    flash[:notice] = "News and blog archives have been temporarily disabled."
+    flash[:notice] = 'News and blog archives have been temporarily disabled.'
     redirect_to :action => 'show', :id => params[:id]
     return
 

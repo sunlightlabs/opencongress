@@ -106,6 +106,8 @@ class ContactCongressLettersController < ApplicationController
   def show
     @contact_congress_letter = ContactCongressLetter.find(params[:id])
 
+
+
     if @contact_congress_letter.formageddon_threads.first.privacy =~ /PRIVATE/
       if current_user == :false or current_user != @contact_congress_letter.user
         redirect_to '/', :notice => 'You do not have permission to read that letter!'

@@ -13,8 +13,6 @@
 #  street_address   :string(255)
 #  street_address_2 :string(255)
 #  city             :string(255)
-#  latitude         :string(255)
-#  longitude        :string(255)
 #  zipcode          :string(5)
 #  zip_four         :string(4)
 #  mobile_phone     :string(255)

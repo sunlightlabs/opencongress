@@ -8,15 +8,15 @@
 #  zipcode            :integer          default(1)
 #  location           :integer          default(2)
 #  profile            :integer          default(2)
-#  actions            :integer          default(1)
-#  bookmarks          :integer          default(1)
-#  friends            :integer          default(1)
+#  actions            :integer          default(2)
+#  bookmarks          :integer          default(2)
+#  friends            :integer          default(2)
 #  user_id            :integer
 #  created_at         :datetime
 #  updated_at         :datetime
 #  political_notebook :integer          default(2)
 #  watchdog           :integer          default(2)
-#  groups             :integer          default(1)
+#  groups             :integer          default(2)
 #
 
 class UserPrivacyOptions < ActiveRecord::Base

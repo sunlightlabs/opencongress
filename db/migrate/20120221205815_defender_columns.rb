@@ -1,8 +1,9 @@
 class DefenderColumns < ActiveRecord::Migration
   def self.up
-    add_column :comments, :spam, :boolean
-    add_column :comments, :defensio_sig, :string
-    add_column :comments, :spaminess, :float
+      add_column :comments, :spam, :boolean
+      add_column :comments, :defensio_sig, :string
+      add_column :comments, :spaminess, :float
+    end
   end
 
   def self.down

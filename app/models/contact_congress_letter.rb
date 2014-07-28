@@ -46,7 +46,7 @@ class ContactCongressLetter < ActiveRecord::Base
   # Returns the the letter message and stripping away any PII.
   #
   def message_no_pii
-    regexp = Regexp.new('(,| +)*' + '((' + user.full_name() + ')(' + (user.mailing_address().strip().gsub(/, /,")?(")) + ')?(,|\s)*')
+    regexp = Regexp.new('(,| +)*' + '((' + user.full_name() + ')(' + (user.mailing_address().strip().gsub(/, /,")?(")) + ')?)(,| +)*')
     return message().gsub(regexp,"")
   end
 

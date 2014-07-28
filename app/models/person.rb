@@ -446,6 +446,31 @@ class Person < ActiveRecord::Base
     (!self.contact_webform.blank? && (self.contact_webform =~ /^http:\/\//)) ? true : false
   end
 
+  ##
+  # This method retrieves the most recent reply to a congress e-mail from a representative or senator person.
+  # Currently it isn't very efficient running at O(n^2) so it may be preferable to handle this functionality
+  # differently
+  #
+  # @return {FormageddonLetter} object containing the reply
+  #
+  def get_last_message_reply
+    latest = nil
+      Formageddon::FormageddonLetter.where(formageddon_recipient_id:self.id,direction:'TO_SENDER',status:'RECEIVED').each { |letter|
+        latest = letter if (latest == nil || latest.created_at < letter.created_at)
+      }
+    return latest
+  end
+
+  ##
+  # This method retrieves the most recent reply to a congress e-mail from a representative or senator person
+  #
+  # @return {FormageddonLetter} object containing the reply
+  #
+  def get_last_message_reply_timestamp
+    latest = get_last_message_reply()
+    return latest.nil? ? nil : latest.created_at
+  end
+
   def has_wiki_link?
     if self.wiki_url.blank?
       return false

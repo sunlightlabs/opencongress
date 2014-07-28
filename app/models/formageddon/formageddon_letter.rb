@@ -28,6 +28,8 @@ class Formageddon::FormageddonLetter
   include RendersTemplates
   include Faxable
 
+  delegate :formageddon_recipient_id,:to => 'Formageddon::FormageddonThread'
+
   validates_length_of :message, :maximum => 8000, :message => 'Please shorten the body of your message', :allow_blank => true
 
   PRINT_TEMPLATE = "contact_congress_letters/print"

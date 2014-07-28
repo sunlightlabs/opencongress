@@ -381,11 +381,11 @@ module EmailCongress
     def seed_for_postmark_object (obj)
 
       case obj
-        when obj.is_a?(String)
+        when String
           email = Postmark::Mitt.new(JSON.load(obj))
-        when obj.is_a?(Hash)
+        when Hash
           email = Postmark::Mitt.new(JSON.dump(obj))
-        when obj.is_a?(Postmark::Mitt)
+        when Postmark::Mitt
           email = obj
         else
           raise "Unable to construct EmailCongressLetterSeed for #{obj.class.name}"

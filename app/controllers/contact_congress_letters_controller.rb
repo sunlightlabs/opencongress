@@ -173,8 +173,7 @@ class ContactCongressLettersController < ApplicationController
       end
     end
 
-    if @contact_congress_letter.nil?
-      # something weird happened
+    if @contact_congress_letter.nil? # something weird happened
       render_404 and return
     else
       if @contact_congress_letter.user.nil?

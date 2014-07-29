@@ -15,15 +15,23 @@
 
 require_dependency 'viewable_object'
 class ContactCongressLetter < ActiveRecord::Base
+
+  #========== INCLUDES
   include ViewableObject
 
+  #========== RELATIONS
   has_many :formageddon_threads, :through => :contact_congress_letters_formageddon_threads, :class_name => 'Formageddon::FormageddonThread'
   has_many :contact_congress_letters_formageddon_threads
+  has_many :comments, :as => :commentable
 
   belongs_to :contactable, :polymorphic => true
   belongs_to :user
 
-  has_many :comments, :as => :commentable
+  #========== CONSTANTS
+
+
+  #========== PUBLIC METHODS
+  public
 
   def ident
     "ContactCongressLetter #{id}"
@@ -43,11 +51,17 @@ class ContactCongressLetter < ActiveRecord::Base
   end
 
   ##
-  # Returns the the letter message and stripping away any PII.
+  # Returns the the letter message and stripping away any PII using a regexp.
+  # At the time of writing, 7/29/2014, this is not a good long term solution.
+  # The problem is that street_address_2 was not properly storing to the UserProfile
+  # model yet was being appended as part of the message body in congress letters.
+  # This regexp attempts to catches PII and anything that comes after until a newline
+  # appears. Unfortunately doing this may eliminate some letter text if a person
+  # chooses to throw in their full name randomly in the body of their message.
   #
   def message_no_pii
-    regexp = Regexp.new('(,| +)*' + '((' + user.full_name() + ')(' + (user.mailing_address().strip().gsub(/, /,")?(")) + ')?)(,| +)*')
-    return message().gsub(regexp,"")
+    regexp = Regexp.new('(,|\s+)*' + '((' + user.full_name() + ')|(' + (user.mailing_address().strip().gsub(/,/,")|(")) + '))(,|\s+)*.*\n$')
+    return message().gsub(regexp,'')
   end
 
   def privacy

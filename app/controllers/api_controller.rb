@@ -75,6 +75,10 @@ class ApiController < ApplicationController
     respond_with Person.find_by_most_commentary('blog', 'sen', @per_page, Settings.default_count_time)
   end
 
+  def most_recent_letter_reply
+    respond_with @person.get_last_message_reply.as_json
+  end
+
   def representatives_most_in_the_news_this_week
     respond_with Person.find_by_most_commentary('news', 'rep', @per_page, Settings.default_count_time)
   end

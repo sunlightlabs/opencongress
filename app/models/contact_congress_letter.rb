@@ -60,7 +60,7 @@ class ContactCongressLetter < ActiveRecord::Base
   # chooses to throw in their full name randomly in the body of their message.
   #
   def message_no_pii
-    regexp = Regexp.new('(,|\s+)*' + '((' + user.full_name() + ')|(' + (user.mailing_address().strip().gsub(/,/,")|(")) + '))(,|\s+)*.*\n$')
+    regexp = Regexp.new('(,|-|\s+)*' + '((' + user.full_name() + ')|(' + (user.mailing_address().strip().gsub(/,/,")|(")) + '))(,|\s+)*.*\n$')
     return message().gsub(regexp,'')
   end
 

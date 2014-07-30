@@ -96,4 +96,31 @@ class Formageddon::FormageddonLetter
     @rendered ||= render_to_string(:partial => PRINT_TEMPLATE, :locals => { :letter => self })
   end
 
+  def sender_full_name
+    return "#{formageddon_thread.sender_first_name} #{formageddon_thread.sender_last_name}"
+  end
+
+  ##
+  # Returns the the letter message and stripping away any PII using a regexp.
+  # This mmethod is necessary because the contact information for a sender may differ
+  # from the user's account information.
+  #
+  # @return {String} message without any PII
+  #
+  def message_no_pii
+    thread = self.formageddon_thread
+    regexp_str = "("
+    regexp_str += "(#{sender_full_name})|"     if (thread.sender_first_name && thread.sender_last_name)
+    regexp_str += "#{thread.sender_address1}|" if thread.sender_address1
+    regexp_str += "#{thread.sender_address2}|" if thread.sender_address2
+    regexp_str += "#{thread.sender_city}, |"   if thread.sender_city
+    regexp_str += "#{thread.sender_state}|"    if thread.sender_state
+    regexp_str += "#{thread.sender_zip5}|"     if thread.sender_zip5
+    regexp_str += "#{thread.sender_zip4}|"     if thread.sender_zip4
+    regexp_str += "#{thread.sender_phone}|"    if thread.sender_phone
+    regexp_str += "#{thread.sender_email}"     if thread.sender_email
+    regexp_str += ")"
+    return self.message.gsub(/#{regexp_str}/,'')
+  end
+
 end

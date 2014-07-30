@@ -5,4 +5,19 @@ module SearchHelper
 
     "Found <b>#{number_with_delimiter(total_hits)}</b> #{descriptor}. Displaying <b>#{bottom}-#{top}</b>."
   end
+
+  def prepare_tsearch_query(text)
+    text = text.strip
+
+    # remove non alphanumeric
+    text = text.gsub(/[^\w\.\s\-_]+/, "")
+
+    # replace multiple spaces with one space
+    text = text.gsub(/\s+/, " ")
+
+    # replace spaces with '&'
+    text = text.gsub(/ /, "&")
+
+    text
+  end
 end

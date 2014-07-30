@@ -10,14 +10,115 @@ class SearchController < ApplicationController
   end
 
   def result
-    @query = truncate(params[:q], :length => 255)
+    #@query = truncate(params[:q], :length => 255)
     # TODO: this is a quick fix to handle malformed input. The most robust solution
     # is to move validation of a query into a search model and to validate and store all the
     # search parameters
-    @page = (params[:page] && params[:page].to_i() > 0) ? params[:page].to_i() : 1
+    # @page = (params[:page] && params[:page].to_i() > 0) ? params[:page].to_i() : 1
     # @page = ((params[:page] || 1).to_i)
     @found_items = 0
-    @congresses = params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"]
+    # @congresses = params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"]
+    filters = [].push(params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"])
+    params.each {|p,v| if Search::SEARCH_FILTER_CODE_MAP.include?(p.to_sym) && v.to_i == 1 then filters.push(p) end }
+
+    @search = Search.create(:search_text => params[:q], :page => params[:page], :user => current_user == :false ? nil : current_user, :search_filters => filters)
+    if @search.valid?
+      unless session[:searched_terms] and session[:searched_terms].index(@search.search_text)
+        session[:searched_terms] = "" unless session[:searched_terms]
+        session[:searched_terms] += "#{@search.search_text} "
+      end
+
+      Search::SEARCH_FILTERS_LIST.each {|filter| instance_variable_set("@#{filter}", false) }
+      @search.search_filters[1..-1].each {|filter| instance_variable_set("@#{filter}", true) }
+
+      if @search_bills
+        # first see if we match a bill's title exactly
+        bill_titles = BillTitle.find(:all, :conditions => [ "UPPER(title)=?", @search.search_text.upcase ])
+        bills_for_title = bill_titles.collect {|bt| bt.bill }
+        bills_for_title.uniq!
+
+        # if we match only one, go right to that bill
+        if bills_for_title.size == 1
+          redirect_to bill_path(bills_for_title[0])
+          return
+        end
+
+        @bills = Bill.full_text_search(@search.search_text, { :page => @search.page, :congresses => @search.get_congresses })
+        @found_items += @bills.total_entries
+      end
+
+      if @search_people
+        if !(@search.search_text =~ /^[\d]{5}(-[\d]{4})?$/).nil?
+          # TODO: Why does this return nil, and are there implications to making it return []?
+          @people = (Person.find_current_congresspeople_by_zipcode(*@search.search_text.split('-')).flatten rescue []).paginate(:per_page => 9, :page => @search.page)
+        else
+          people_for_name = Person.find(:all,
+                                        :conditions => [ "(UPPER(firstname || ' ' || lastname)=? OR
+                                      UPPER(nickname || ' ' || lastname)=?)",
+                                                         @search.search_text.upcase, @search.search_text.upcase ])
+          redirect_to person_url(people_for_name[0]) and return if people_for_name.size == 1
+
+          opts = {:page => @search.page}
+          # restrict search if the only congress checked is the current congress
+          opts[:only_current] = true
+          opts[:only_current] = false if params.fetch(:search_congress, {}).keys != [Settings.default_congress.to_s]
+
+          @people = Person.full_text_search(@search.search_text, opts)
+        end
+        @found_items += @people.total_entries
+      end
+
+      if @search_committees
+        @committees = Committee.full_text_search(@search.search_text).select{ |c| c.active? }
+        @found_items += @committees_total = @committees.size
+        @committees = @committees.sort_by { |c| [(c.name || ""), (c.subcommittee_name || "") ] }.group_by(&:name)
+      end
+
+      if @search_issues
+        @issues = Subject.full_text_search(@search.search_text, :page => @search.page)
+        @found_items += @issues.total_entries
+      end
+
+      if @search_comments
+        @comments = Comment.full_text_search(@search.search_text, { :page => @search.page, :congresses => @search.get_congresses })
+        @found_items += @comments.total_entries
+      end
+
+      if @search_commentary || @search_news
+        @news = Commentary.full_text_search(@search.search_text, { :page => @search.page, :commentary_type => 'news' })
+        @found_items += @news.total_entries
+      end
+
+      if @search_commentary || @search_blogs
+        @blogs = Commentary.full_text_search(@search.search_text, { :page => @search.page, :commentary_type => 'blog' })
+        @found_items += @blogs.total_entries
+      end
+
+      if @search_gossip_blog
+        @articles = Article.full_text_search(@search.search_text, :page => @search.page)
+        @found_items += @articles.total_entries
+      end
+
+      if @found_items == 0
+        if (@search.get_congresses == ["#{Settings.default_congress}"])
+          flash.now[:error] = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
+        else
+          flash.now[:error] = 'Sorry, your search returned no results.'
+        end
+      end
+
+      @page = @search.page
+      @query = @search.search_text
+      return
+
+    else
+      return
+    end
+
+
+
+
+
 
     unless @query
       flash.now[:notice] = "You didn't enter anything in the search field!"
@@ -31,7 +132,15 @@ class SearchController < ApplicationController
       else
         # save the search - but only once per session
         unless session[:searched_terms] and session[:searched_terms].index(@query)
-          Search.create(:search_text => @query)
+          filters = []
+          params.each {|p,v|
+            if p.to_s == :search_congress
+              filters.push(params[:search_congress].keys)
+            elsif Search::SEARCH_FILTER_CODE_MAP.include?(p.to_sym) && v.to_i == 1
+              filters.push(p)
+            end
+          }
+          Search.create(:search_text => @query, :page => @page, :user => current_user ? current_user : nil, :search_filters => filters)
           session[:searched_terms] = "" unless session[:searched_terms]
           session[:searched_terms] += "#{@query} "
         end

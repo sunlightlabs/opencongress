@@ -146,7 +146,8 @@ class UserProfile < ActiveRecord::Base
       :street_address_2 => street_address_2,
       :city => city,
       :state => state,
-      :zipcode => zipcode
+      :zipcode => zipcode,
+      :zip_four => zip_four
     }
   end
 

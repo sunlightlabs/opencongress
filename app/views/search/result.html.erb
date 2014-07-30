@@ -1,7 +1,5 @@
 <% @page_title = 'Search Results' %>
 
-
-
 <% if @found_items > 0 %>
 
 <div id="heading">
@@ -164,7 +162,15 @@
 <% else %>
     <br />
     <div class="padding">
-    <p class="behave" style="color:red">Your search did not return any results.</p>
+    <p class="behave" style="color:red">
+    <% if @search.errors %>
+          <% for e,v in @search.errors %>
+            <%= v %> <br>
+          <% end %>
+    <% else %>
+      Your search did not return any results.
+    <% end %>
+    </p>
     <p class="behave">
       Didn't find what you were looking for? Visit our <a href="/search/tips">Search Tips</a> page for suggestions on how to optimize your search. We will be continually improving our search function to make it easier to find the Congressional information you're looking for. If you have feedback about your search experience on OpenCongress, send us an e-mail: <script type="text/javascript">m(<%= raw(Settings.contact_us_email.split(/[@\.]/).push("1").map(&:to_json).join(',')) %>);</script>.
     </p>

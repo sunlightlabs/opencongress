@@ -12,30 +12,79 @@
 
 class Search < ActiveRecord::Base
 
-  SEARCH_FILTER_CODE_MAP = {
-      :bills => 'bi',
-      :people => 'pe',
-      :committees => 'co',
-      :industries => 'in',
-      :issues => 'is',
+  #========== INCLUDES
 
-  }
+  include SearchHelper
+  include ActionView::Helpers::TextHelper
 
-  # TODO: add field to link a user search to user if one exists
-  # TODO: add list field for what to search in and sessions
+  #========== CONSTANTS
+
+  # The search filters that a user selects are stored in the database as a list of integers corresponding to
+  # the order by which they appear in this list. The first entry in this list SHOULD ALWAYS BE a list of
+  # congress number(s).
+  SEARCH_FILTERS_LIST = [
+                          :search_bills, :search_people, :search_committees, :search_industries, :search_issues,
+                          :search_news, :search_blogs, :search_commentary, :search_comments, :search_gossip_blog
+                        ]
+
+  SEARCH_FILTER_CODE_MAP = Hash[SEARCH_FILTERS_LIST.collect.with_index {|v,i| [v,i]}]
+  CODE_SEARCH_FILTER_MAP = SEARCH_FILTER_CODE_MAP.invert()
+
   #========== RELATIONS
 
   belongs_to :user
 
+  #========== CALLBACKS
+
+  before_validation :doctor_data_for_save
+  after_save :doctor_data_for_load
+  after_find :doctor_data_for_load
+
   #========== VALIDATORS
 
-  validates_numericality_of :page, greater_than: 0
+  validates :page, numericality: { greater_than: 0 }, allow_blank: true
+  validates :search_text, length: { minimum: 4, message: 'Your query must be longer than three characters!'}
+  validates :search_text, length: { maximum: 255, message: 'Your query is too long (>255 characters)!'}
+  validates :search_text, presence: {message: "You didn't enter anything meaningful into the search field!"}
 
   #========== SERIALIZERS
 
-  serialize :search_filters, # List serialization
+  serialize :search_filters, Array
 
-  #========== CALLBACKS
+  #========== PUBLIC METHODS
+  public
+
+  ##
+  # Doctors the input data before saving to the database. This is done to compress the search filters
+  # into a smaller size so we don't needlessly store extraneous information in the database
+  #
+  def doctor_data_for_save
+    self.page = 1 if (self.page.nil? || self.page < 1)
+    self.search_text = truncate(self.search_text, :length => 255)
+    self.search_text = prepare_tsearch_query(self.search_text.to_s)
+    self.search_filters.each_with_index {|v,i|
+      self.search_filters[i] = SEARCH_FILTER_CODE_MAP[v.to_sym] if v.is_a? String
+    }
+    ap(self)
+  end
+
+  ##
+  # This is the reverse operation for :doctor_data_for_save whereby we convert the database representation
+  # to the explicit symbol representation for each search filter
+  #
+  def doctor_data_for_load
+    begin
+      self.search_filters.each_with_index {|v,i|
+        self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] if v.is_a? Integer
+      }
+    rescue
+      return
+    end
+  end
+
+  def get_congresses
+    return self.search_filters.first.is_a?(Array) ? self.search_filters.first : nil
+  end
 
   def Search.top_search_terms(num = 100, since = Settings.default_count_time)
     Search.find_by_sql(["SELECT LOWER(search_text) as text, COUNT(id) as count 
@@ -43,4 +92,6 @@ class Search < ActiveRecord::Base
                          WHERE created_at > ? AND LOWER(search_text) <> 'none'
                          GROUP BY LOWER(search_text) ORDER BY count DESC LIMIT ?", since.ago, num])
   end
+
+
 end

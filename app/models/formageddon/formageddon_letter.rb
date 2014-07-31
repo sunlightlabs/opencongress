@@ -7,7 +7,7 @@
 #  direction             :string(255)
 #  status                :text
 #  issue_area            :string(255)
-#  subject               :string(255)
+#  subject               :text
 #  message               :text
 #  created_at            :datetime
 #  updated_at            :datetime

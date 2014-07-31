@@ -3,7 +3,9 @@ class ContactCongressLettersController < ApplicationController
   before_filter :page_view, :only => :show
   # before_filter :warn_geocode, :only => :new
 
+  #========== INCLUDES
   include Admin::ContactCongressLettersHelper
+  include ActionView::Helpers::TextHelper
 
   def new
     @page_title = "Contact Congress"

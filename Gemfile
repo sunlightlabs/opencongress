@@ -140,10 +140,7 @@ group :test, :development do
   gem 'awesome_print'
   gem 'rack-mini-profiler'
   gem 'redis'
-  gem 'minitest'
-  gem 'minitest-spec-rails'
-  gem 'minitest-reporters'
-  gem 'rspec-expectations'
+  gem 'rspec-rails'
   gem 'random_data'
 end
 

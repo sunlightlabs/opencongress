@@ -10,26 +10,26 @@ class SearchController < ApplicationController
   end
 
   def result
-    #@query = truncate(params[:q], :length => 255)
-    # TODO: this is a quick fix to handle malformed input. The most robust solution
-    # is to move validation of a query into a search model and to validate and store all the
-    # search parameters
-    # @page = (params[:page] && params[:page].to_i() > 0) ? params[:page].to_i() : 1
-    # @page = ((params[:page] || 1).to_i)
-    @found_items = 0
-    # @congresses = params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"]
-    filters = [].push(params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"])
-    params.each {|p,v| if Search::SEARCH_FILTER_CODE_MAP.include?(p.to_sym) && v.to_i == 1 then filters.push(p) end }
 
-    @search = Search.create(:search_text => params[:q], :page => params[:page], :user => current_user == :false ? nil : current_user, :search_filters => filters)
+    @search = Search.create(:search_text => params[:q],
+                            :page => params[:page],
+                            :user => current_user == :false ? nil : current_user,
+                            :search_filters => params.select {|p,v| Search::SEARCH_FILTER_CODE_MAP.include?(p.to_sym) && v.to_i == 1 }.keys,
+                            :search_congresses => params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"])
     if @search.valid?
+
+      # store search in session cache if it isn't there already
       unless session[:searched_terms] and session[:searched_terms].index(@search.search_text)
         session[:searched_terms] = "" unless session[:searched_terms]
         session[:searched_terms] += "#{@search.search_text} "
       end
 
+      # set search filters
       Search::SEARCH_FILTERS_LIST.each {|filter| instance_variable_set("@#{filter}", false) }
-      @search.search_filters[1..-1].each {|filter| instance_variable_set("@#{filter}", true) }
+      @search.search_filters.each {|filter| instance_variable_set("@#{filter}", true) }
+
+      # initialize found items to 0 before running through filters
+      @found_items = 0
 
       if @search_bills
         # first see if we match a bill's title exactly
@@ -37,13 +37,14 @@ class SearchController < ApplicationController
         bills_for_title = bill_titles.collect {|bt| bt.bill }
         bills_for_title.uniq!
 
-        # if we match only one, go right to that bill
+        # if we match only one then go directly to that bill
         if bills_for_title.size == 1
           redirect_to bill_path(bills_for_title[0])
           return
         end
 
-        @bills = Bill.full_text_search(@search.search_text, { :page => @search.page, :congresses => @search.get_congresses })
+        # otherwise search bills for the text
+        @bills = Bill.full_text_search(@search.search_text, { :page => @search.page, :congresses => @search.get_congresses() })
         @found_items += @bills.total_entries
       end
 
@@ -80,7 +81,7 @@ class SearchController < ApplicationController
       end
 
       if @search_comments
-        @comments = Comment.full_text_search(@search.search_text, { :page => @search.page, :congresses => @search.get_congresses })
+        @comments = Comment.full_text_search(@search.search_text, { :page => @search.page, :congresses => @search.get_congresses() })
         @found_items += @comments.total_entries
       end
 
@@ -100,22 +101,23 @@ class SearchController < ApplicationController
       end
 
       if @found_items == 0
-        if (@search.get_congresses == ["#{Settings.default_congress}"])
-          flash.now[:error] = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
+        if (@search.get_congresses() == ["#{Settings.default_congress}"])
+          msg = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
         else
-          flash.now[:error] = 'Sorry, your search returned no results.'
+          msg = 'Sorry, your search returned no results.'
         end
+        flash.now[:error] = msg
       end
 
+      # set template variables and return
       @page = @search.page
       @query = @search.search_text
+      @congresses = @search.get_congresses()
       return
 
     else
       return
     end
-
-
 
 
 

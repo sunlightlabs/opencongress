@@ -73,7 +73,6 @@ GEM
     annotate (2.6.3)
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
-    ansi (1.4.3)
     arel (2.0.10)
     awesome_nested_set (2.1.6)
       activerecord (>= 3.0.0)
@@ -237,15 +236,6 @@ GEM
     memcache-client (1.8.5)
     method_source (0.8.1)
     mime-types (1.25.1)
-    minitest (4.7.5)
-    minitest-reporters (0.14.24)
-      ansi
-      builder
-      minitest (>= 2.12, < 5.0)
-      powerbar
-    minitest-spec-rails (4.7.6)
-      minitest (~> 4.7)
-      rails (>= 3.0, < 4.1)
     mogli (0.0.44)
       hashie (>= 1.1.0)
       httmultiparty (>= 0.3.6)
@@ -296,9 +286,6 @@ GEM
     postmark-rails (0.5.1)
       actionmailer (>= 3.0.0)
       postmark (~> 1.0)
-    powerbar (1.0.11)
-      ansi (~> 1.4.0)
-      hashie (>= 1.1.0)
     pry (0.9.12.2)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -373,6 +360,14 @@ GEM
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-instafail (0.2.4)
     rspec-mocks (2.14.1)
+    rspec-rails (2.14.2)
+      actionpack (>= 3.0)
+      activemodel (>= 3.0)
+      activesupport (>= 3.0)
+      railties (>= 3.0)
+      rspec-core (~> 2.14.0)
+      rspec-expectations (~> 2.14.0)
+      rspec-mocks (~> 2.14.0)
     ruby-hmac (0.4.0)
     ruby-openid (2.2.3)
     ruby-progressbar (1.0.2)
@@ -472,9 +467,6 @@ DEPENDENCIES
   mechanize
   mediacloth
   memcache-client
-  minitest
-  minitest-reporters
-  minitest-spec-rails
   mysql
   newrelic_rpm
   nokogiri
@@ -504,7 +496,7 @@ DEPENDENCIES
   random_data
   redis
   rmagick (~> 2.13.1)
-  rspec-expectations
+  rspec-rails
   ruby-openid
   sass
   selenium-client

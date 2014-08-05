@@ -290,7 +290,6 @@ OpenCongress::Application.routes.draw do
 
   resources :contact, :only => [:index, :create]
 
-  match ':controller(/:action(/:login))'
   match ':controller(/:action(/:id))'
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 

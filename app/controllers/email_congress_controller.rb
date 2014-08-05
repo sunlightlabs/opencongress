@@ -175,7 +175,7 @@ class EmailCongressController < ApplicationController
     end
     lat, lng = MultiGeocoder.coordinates(profile.mailing_address)
     dsts = Congress.districts_locate(lat, lng).results rescue []
-    rcpts = dsts.flat_map do |dN|
+    rcpts = dsts.flat_map do |d|
       # district = District.includes(:state).where(:state => { :abbreviation => d[:state] },
       #                                            :district_number => d[:district]).first
       district = District.find_by_district_tag("#{d[:state]}-#{d[:district]}")

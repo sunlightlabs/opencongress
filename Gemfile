@@ -100,7 +100,7 @@ gem 'simple_form'
 
 # Mail
 gem 'mechanize'
-gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git'
+gem 'formageddon', :git => 'git://github.com/sunlightlabs/formageddon.git', :ref => "1b3e8ecd409367906b83ebf697df227a7ae9c2b3"
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'

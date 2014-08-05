@@ -124,7 +124,7 @@ class EmailCongressController < ApplicationController
     if logged_in?
       @prompt_for_password = !current_user.password_reset_code.nil?
       @prompt_for_email = current_user.email != @seed.sender_email
-    else
+    elsse
       @prompt_for_password = false
       @prompt_for_email = false
     end

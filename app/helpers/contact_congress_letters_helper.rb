@@ -1,4 +1,5 @@
 module ContactCongressLettersHelper
+
   def personal_share_message_for_letter(letter, url)
     if letter.contactable_type == 'Bill'
       u("Wrote my members of #Congress on @opencongress to let them know " +
@@ -48,6 +49,52 @@ module ContactCongressLettersHelper
     else
       "This letter was sent from #{letter.formageddon_thread.formageddon_sender.login} to #{letter.formageddon_thread.formageddon_recipient} on #{letter.created_at.strftime('%B %d, %Y')}."
     end
+  end
+
+  ##
+  # Eliminates PII from a congressial letter message
+  #
+  # @param thread FormageddonThread object
+  # @param message the message to strip the PII from
+  #
+  def strip_pii_from_message(thread, message)
+    regexp_str = ''
+    if thread.sender_first_name && thread.sender_last_name
+      regexp_str += "#{thread.sender_first_name} #{thread.sender_last_name}\|"
+    end
+    if thread.sender_address1 and not thread.sender_address1.blank?
+      regexp_str += "#{thread.sender_address1}\|"
+    end
+    if thread.sender_address1 and not thread.sender_address1.blank?
+      regexp_str += "#{thread.sender_address1.gsub(/(Apt) (\d+)/i,'#\2')}\|"
+    end
+    if thread.sender_address2 and not thread.sender_address2.blank?
+      regexp_str += "#{thread.sender_address2}\|"
+    end
+    if thread.sender_city and not thread.sender_city.blank?
+      regexp_str += "#{thread.sender_city.strip}\(,\)*\|"
+    end
+    if thread.sender_state and not thread.sender_state.blank?
+      regexp_str += "#{thread.sender_state}\|"
+    end
+    if thread.sender_state and not thread.sender_state.blank?
+      regexp_str += "#{State::ABBREVIATIONS_REVERSE["#{thread.sender_state}"]}\|"
+    end
+    if thread.sender_zip5 and not thread.sender_zip5.blank?
+      regexp_str += "#{thread.sender_zip5}\|"
+    end
+    if thread.sender_zip4 and not thread.sender_zip4.blank?
+      regexp_str += "#{thread.sender_zip4}\|"
+    end
+    if thread.sender_phone and not thread.sender_phone.blank?
+      regexp_str += "#{thread.sender_phone.gsub(/\(|\)/,'')}\|"
+    end
+    if thread.sender_email and not thread.sender_email.blank?
+      regexp_str += "#{thread.sender_email}"
+    end
+    regexp_str.gsub!(/[^0-9A-Za-z@|,\#\.\-\s+(\()(\))(\|)\*]/, '')
+    regexp_str = "(#{regexp_str})"
+    return message.gsub(/#{regexp_str}/i,'')
   end
 
   def privacy_button_classes (letter, button)

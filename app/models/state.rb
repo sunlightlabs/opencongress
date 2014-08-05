@@ -64,6 +64,8 @@ class State < ActiveRecord::Base
     "Wyoming" => "WY"
   }
 
+  ABBREVIATIONS_REVERSE = ABBREVIATIONS.invert()
+
   has_many :districts
 
   has_many :v_current_roles

@@ -14,10 +14,13 @@
 #
 
 require_dependency 'viewable_object'
+require 'state'
+
 class ContactCongressLetter < ActiveRecord::Base
 
   #========== INCLUDES
   include ViewableObject
+  include ContactCongressLettersHelper
 
   #========== RELATIONS
   has_many :formageddon_threads, :through => :contact_congress_letters_formageddon_threads, :class_name => 'Formageddon::FormageddonThread'
@@ -50,6 +53,14 @@ class ContactCongressLetter < ActiveRecord::Base
     formageddon_threads.first.formageddon_letters.first.message
   end
 
+  def sender_full_name
+    "#{formageddon_threads.first.sender_first_name} #{formageddon_threads.first.sender_last_name}"
+  end
+
+  def get_letter
+    formageddon_threads.first
+  end
+
   ##
   # Returns the the letter message and stripping away any PII using a regexp.
   # At the time of writing, 7/29/2014, this is not a good long term solution.
@@ -60,9 +71,7 @@ class ContactCongressLetter < ActiveRecord::Base
   # chooses to throw in their full name randomly in the body of their message.
   #
   def message_no_pii
-    addr = user.mailing_address().gsub(/[^0-9A-Za-z@,]/, '').gsub(/,/,')|(').strip()
-    regexp = Regexp.new('(,|-)*' + '((' + user.full_name() + ')|(' + addr + ')),*')
-    return message().gsub(regexp,'')
+    return strip_pii_from_message(get_letter(), message())
   end
 
   def privacy

@@ -70,11 +70,14 @@ class Search < ActiveRecord::Base
   end
 
   ##
-  # This is the reverse operation for :doctor_data_for_save whereby we convert the database representation
-  # to the explicit symbol representation for each search filter.
+  # This is the reverse operation for :doctor_data_for_save whereby
+  # we convert the database representation to the explicit symbol
+  # representation for each search filter.
   #
   def doctor_data_for_load
-      self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
+      if self.search_filters
+        self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
+      end
   end
 
   ##

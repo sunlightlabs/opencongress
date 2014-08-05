@@ -30,8 +30,6 @@ class Formageddon::FormageddonLetter
 
   delegate :formageddon_recipient_id,:to => 'Formageddon::FormageddonThread'
 
-  validates_length_of :message, :maximum => 8000, :message => 'Please shorten the body of your message', :allow_blank => true
-
   PRINT_TEMPLATE = "contact_congress_letters/print"
 
   def send_letter(options = {})
@@ -109,8 +107,8 @@ class Formageddon::FormageddonLetter
   #
   def message_no_pii
     thread = self.formageddon_thread
-    regexp_str = "("
-    regexp_str += "(#{sender_full_name})|"     if (thread.sender_first_name && thread.sender_last_name)
+    regexp_str = ''
+    regexp_str += "#{sender_full_name}|"       if (thread.sender_first_name && thread.sender_last_name)
     regexp_str += "#{thread.sender_address1}|" if thread.sender_address1
     regexp_str += "#{thread.sender_address2}|" if thread.sender_address2
     regexp_str += "#{thread.sender_city}, |"   if thread.sender_city
@@ -119,7 +117,8 @@ class Formageddon::FormageddonLetter
     regexp_str += "#{thread.sender_zip4}|"     if thread.sender_zip4
     regexp_str += "#{thread.sender_phone}|"    if thread.sender_phone
     regexp_str += "#{thread.sender_email}"     if thread.sender_email
-    regexp_str += ")"
+    regexp_str.gsub!(/[^0-9A-Za-z@|]/, '')
+    regexp_str = "(#{regexp_str})"
     return self.message.gsub(/#{regexp_str}/,'')
   end
 

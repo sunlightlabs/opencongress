@@ -61,7 +61,7 @@ class ContactCongressLetter < ActiveRecord::Base
   #
   def message_no_pii
     addr = user.mailing_address().strip().gsub(/[^0-9A-Za-z@]/, '').gsub(/,/,')|(')
-    regexp = Regexp.new('(,|-|\s+)*' + '((' + user.full_name() + ')|(' + addr + '))(,|\s+)*.*\n$')
+    regexp = Regexp.new('(,|-|\s+)*' + '((' + user.full_name() + ')|(' + addr + '))(,|\s+)*')
     return message().gsub(regexp,'')
   end
 

@@ -107,6 +107,7 @@ gem 'phaxio'
 # apt-get or brew `install xvfb wkhtmltopdf` first!
 # You'll have to build QT yourself on Ubuntu: https://code.google.com/p/wkhtmltopdf/wiki/compilation
 gem 'pdfkit'
+gem 'awesome_print'
 
 ## Production code coverage (dead code finder)
 # gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
@@ -137,7 +138,6 @@ group :test, :development do
   gem 'simplecov',            :require => false
   gem 'guard'
   gem 'guard-livereload'
-  gem 'awesome_print'
   gem 'rack-mini-profiler'
   gem 'redis'
   gem 'rspec-rails'

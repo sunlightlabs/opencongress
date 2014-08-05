@@ -111,6 +111,8 @@ gem 'pdfkit'
 ## Production code coverage (dead code finder)
 # gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
 
+gem 'awesome_print'
+
 group :deployment do
   gem 'capistrano'
   gem 'capistrano-ext'
@@ -137,7 +139,6 @@ group :test, :development do
   gem 'simplecov',            :require => false
   gem 'guard'
   gem 'guard-livereload'
-  gem 'awesome_print'
   gem 'rack-mini-profiler'
   gem 'redis'
   gem 'rspec-rails'

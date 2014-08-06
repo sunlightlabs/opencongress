@@ -87,7 +87,7 @@ module ContactCongressLettersHelper
       regexp_str += "#{thread.sender_zip4}\|"
     end
     if thread.sender_phone and not thread.sender_phone.blank?
-      regexp_str += "#{thread.sender_phone.gsub(/\(|\)/,'')}\|"
+      regexp_str += "#{thread.sender_phone.gsub(/[^0-9\s+]/,'')}\|"
     end
     if thread.sender_email and not thread.sender_email.blank?
       regexp_str += "#{thread.sender_email}"

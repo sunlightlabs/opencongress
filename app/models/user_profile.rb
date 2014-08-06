@@ -20,7 +20,6 @@
 
 require_dependency 'full-name-splitter'
 require_dependency 'location_changed_service'
-require_dependency 'conditional_validations'
 
 class UserProfile < ActiveRecord::Base
 

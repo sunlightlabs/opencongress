@@ -97,7 +97,7 @@ class User < ActiveRecord::Base
 
   #========== RELATIONS
 
-  has_one  :user_profile, :autosave => true, :dependent => :destroy
+  has_one  :user_profile
   has_one  :user_privacy_options
   has_one  :user_options
   has_one  :user_mailing_list
@@ -277,6 +277,7 @@ class User < ActiveRecord::Base
           user.suppress_activation_email = options[:suppress_activation_email]
           user.save!
           user = User.find_by_login(login)
+
 
           uprof = UserProfile.new(profile.attributes_hash.slice(:first_name, :last_name, :mobile_phone, :street_address, :street_address_2, :city, :zipcode, :zip_four))
           uprof.user = user

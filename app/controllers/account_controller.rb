@@ -252,6 +252,8 @@ class AccountController < ApplicationController
       @new_user.email = thread.sender_email
       @new_user.user_profile.zipcode = thread.sender_zip5
       @new_user.user_profile.zip_four = thread.sender_zip4
+    else
+      @new_user = nil
     end
 
     # TODO: This smells, find out how it's hit and refactor

@@ -278,10 +278,14 @@ class User < ActiveRecord::Base
           user.save!
           user = User.find_by_login(login)
 
-
-          uprof = UserProfile.new(profile.attributes_hash.slice(:first_name, :last_name, :mobile_phone, :street_address, :street_address_2, :city, :zipcode, :zip_four))
-          uprof.user = user
-          uprof.save!
+          attributes = profile.attributes_hash.slice(:first_name, :last_name, :mobile_phone, :street_address, :street_address_2, :city, :zipcode, :zip_four)
+          if user.user_profile.id.nil?
+            uprof = UserProfile.new(attributes)
+            uprof.user = user
+            uprof.save!
+          else
+            user.user_profile.update_attributes(attributes)
+          end
 
           return user
         end

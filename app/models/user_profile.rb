@@ -23,10 +23,6 @@ require_dependency 'location_changed_service'
 
 class UserProfile < ActiveRecord::Base
 
-  #========== INCLUDES
-
-  include ConditionalValidations
-
   #========== RELATIONS
 
   belongs_to :user

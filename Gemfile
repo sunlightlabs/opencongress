@@ -129,7 +129,6 @@ group :production, :staging do
 end
 
 group :test, :development do
-  #gem 'debugger'
   gem 'annotate',             '>=2.6.0'
   gem 'pry'
   gem 'pry-nav'
@@ -161,3 +160,4 @@ group :test do
   gem 'launchy'
   gem 'spork'
 end
+

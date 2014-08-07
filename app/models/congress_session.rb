@@ -11,9 +11,6 @@
 #
 
 class CongressSession < ActiveRecord::Base
-
-  # TODO: This model is all sorts of crazy. This needs a lot of TLC.
-
   def CongressSession.house_session(date=nil)
     date = Date.today if date.nil?
     find(:first, :conditions => ["date >=? AND chamber='house' AND is_in_session='t'", date])

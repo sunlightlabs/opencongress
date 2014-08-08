@@ -64,16 +64,16 @@ module ContactCongressLettersHelper
     unless (thread.sender_first_name.blank? and thread.sender_last_name.blank?)
       regexp_str += "#{thread.sender_first_name} #{thread.sender_last_name}\|"
     end
-    regexp_str += "#{thread.sender_first_name}\|"                 unless thread.sender_first_name.blank?
-    regexp_str += "#{thread.sender_last_name}\|"                  unless thread.sender_last_name.blank?
+    # regexp_str += "#{thread.sender_first_name}\|"                 unless thread.sender_first_name.blank?
+    # regexp_str += "#{thread.sender_last_name}\|"                  unless thread.sender_last_name.blank?
     unless thread.sender_address1.blank?
       regexp_str += "#{thread.sender_address1}\|"
-      regexp_str += "#{thread.sender_address1.gsub(/(Apt) (\d+)/i,'#\2')}\|"
+      regexp_str += "#{thread.sender_address1.gsub(/(Apt) (\d+)/,'#\2')}\|"
     end
     regexp_str += "#{thread.sender_address2}\|"                   unless thread.sender_address2.blank?
     regexp_str += "#{thread.sender_city.strip}\(,\)*\|"           unless thread.sender_city.blank?
     unless thread.sender_state.blank?
-      regexp_str += "#{thread.sender_state}\|"
+      regexp_str += "(\s+)#{thread.sender_state}(\s+)\|"
       regexp_str += "(\s+)#{State::ABBREVIATIONS_REVERSE["#{thread.sender_state}"]}(\s+)\|"
     end
     regexp_str += "#{thread.sender_zip5}\|"                       unless thread.sender_zip5.blank?
@@ -83,7 +83,9 @@ module ContactCongressLettersHelper
 
     regexp_str.gsub!(/[^0-9A-Za-z@|,\#\.\-\s+(\()(\))(\|)\*]/, '')
     regexp_str = "(#{regexp_str})"
-    return message.gsub(/#{regexp_str}/,'')
+
+    puts regexp_str
+    return message.gsub(/#{regexp_str}/i,'')
   end
 
   def privacy_button_classes (letter, button)

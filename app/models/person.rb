@@ -457,7 +457,7 @@ class Person < ActiveRecord::Base
     thread_ids = Formageddon::FormageddonThread.where(formageddon_recipient_id:self.id).map{|p|p.id}
 
     Formageddon::FormageddonLetter.where(formageddon_thread_id:thread_ids, direction:'TO_SENDER', status:'RECEIVED').each { |letter|
-      latest = letter if (latest == nil || lateste.created_at < letter.created_at)
+      latest = letter if (latest == nil || latest.created_at < letter.created_at)
     }
 
     if Formageddon::FormageddonThread.find(latest.formageddon_thread_id).privacy == 'PRIVATE'

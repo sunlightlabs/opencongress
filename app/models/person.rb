@@ -447,34 +447,78 @@ class Person < ActiveRecord::Base
   end
 
   ##
-  # This method retrieves the most recent reply to a congress e-mail
-  # from a representative or senator person.
+  # This method retrieves metadata of replies sent from
+  # a representative or senator person to a user.
   #
-  # @return {FormageddonLetter} object containing the reply
+  # @return {Hash} object containing metadata about replies
   #
   def get_last_message_reply
     latest = nil
     thread_ids = Formageddon::FormageddonThread.where(formageddon_recipient_id:self.id).map{|p|p.id}
+    count = 0
 
-    Formageddon::FormageddonLetter.where(formageddon_thread_id:thread_ids, direction:'TO_SENDER', status:'RECEIVED').each { |letter|
-      latest = letter if (latest == nil || latest.created_at < letter.created_at)
-    }
-
-    if Formageddon::FormageddonThread.find(latest.formageddon_thread_id).privacy == 'PRIVATE'
-      return ({'created_at' => latest.created_at} unless latest.nil?) || {}
-    else
-      return latest || {}
+    unless thread_ids.empty?
+      Formageddon::FormageddonLetter.where(formageddon_thread_id:thread_ids, direction:'TO_SENDER', status:'RECEIVED').each { |letter|
+        count += 1
+        latest = letter if (latest == nil || latest.created_at < letter.created_at)
+      }
     end
+
+    return  {
+              'id' => self.id,
+              'bioguideid' => self.bioguideid,
+              'thomas_id' => self.thomas_id,
+              'title' => self.title,
+              'firstname' => self.firstname,
+              'lastname' => self.lastname,
+              'state' => self.state,
+              'district' => self.district,
+              'party' => self.party,
+              'status' => if thread_ids.empty?
+                            'NEVER SENT A LETTER'
+                          else
+                            latest.nil? ? 'NOT REPLIED' : 'REPLIED'
+                          end,
+              'last_reply_datetime' => latest.nil? ? '' : latest.created_at,
+              'total_replies' => count
+            }
   end
 
   ##
-  # This method retrieves the most recent reply to a congress e-mail from a representative or senator person
+  # This class method creates a Hash containing data about which
+  # senators and representatives have replied to messages, never
+  # been sent a message, and have been sent messages but haven't
+  # replied to any.
   #
-  # @return {FormageddonLetter} object containing the reply
+  # @return {Hash} object containing metadata about all replies
   #
-  def get_last_message_reply_timestamp
-    latest = get_last_message_reply()
-    return latest.nil? ? nil : latest.created_at
+  def Person.get_last_message_reply(congresses=[Settings.default_congress])
+    toReturn = {
+                :count_total => 0,
+                :count_replied => 0,
+                :count_never_sent_letter => 0,
+                :count_have_not_replied => 0,
+                :list_replied => [],
+                :list_never_sent_letter => [],
+                :list_have_not_replied => []
+               }
+    Person.all().each {|person|
+      if person.congresses?(congresses)
+        toPush = person.get_last_message_reply
+        if toPush['status'] == 'REPLIED'
+          toReturn[:list_replied].push(toPush)
+          toReturn[:count_replied] += 1
+        elsif toPush['status'] == 'NEVER SENT A LETTER'
+          toReturn[:list_never_sent_letter].push(toPush)
+          toReturn[:count_never_sent_letter] += 1
+        else
+          toReturn[:list_have_not_replied].push(toPush)
+          toReturn[:count_have_not_replied] += 1
+        end
+      end
+    }
+    toReturn[:count_total] = toReturn[:count_replied] + toReturn[:count_never_sent_letter] + toReturn[:count_have_not_replied]
+    return toReturn
   end
 
   def has_wiki_link?
@@ -1334,6 +1378,11 @@ class Person < ActiveRecord::Base
 
   def congress? (congress = Settings.default_congress)
     not (roles.select { |r| r.startdate <= DateTime.parse(OpenCongress::Application::CONGRESS_START_DATES[congress]) && r.enddate >= DateTime.parse(OpenCongress::Application::CONGRESS_START_DATES[congress])  }.empty?)
+  end
+
+  def congresses? (congresses = [Settings.default_congress])
+    congresses.each {|c| if self.congress?(c) then return true end }
+    return false
   end
 
   def belongs_to_major_party?

@@ -76,7 +76,7 @@ class ApiController < ApplicationController
   end
 
   def most_recent_letter_reply
-    respond_with @person.get_last_message_reply.as_json
+    respond_with @person.get_last_message_reply().to_json
   end
 
   def representatives_most_in_the_news_this_week
@@ -326,7 +326,13 @@ class ApiController < ApplicationController
   end
 
   def lookup_person
-    @person = Person.find_by_id(params[:id])
+    if params[:id]
+      @person = Person.find_by_id(params[:id])
+    elsif params[:bioguideid]
+      @person = Person.find_by_bioguideid(params[:bioguideid])
+    else
+      render_404
+    end
   end
 
   def lookup_state

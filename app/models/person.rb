@@ -455,10 +455,10 @@ class Person < ActiveRecord::Base
   #
   def get_last_message_reply
     latest = nil
-      Formageddon::FormageddonLetter.where(formageddon_recipient_id:self.id,direction:'TO_SENDER',status:'RECEIVED').each { |letter|
+      Formageddon::FormageddonLetter.where(formageddon_recipient:self,direction:'TO_SENDER',status:'RECEIVED').each { |letter|
         latest = letter if (latest == nil || latest.created_at < letter.created_at)
       }
-    return latest
+    return latest || {}
   end
 
   ##

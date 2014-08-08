@@ -447,18 +447,24 @@ class Person < ActiveRecord::Base
   end
 
   ##
-  # This method retrieves the most recent reply to a congress e-mail from a representative or senator person.
-  # Currently it isn't very efficient running at O(n^2) so it may be preferable to handle this functionality
-  # differently
+  # This method retrieves the most recent reply to a congress e-mail
+  # from a representative or senator person.
   #
   # @return {FormageddonLetter} object containing the reply
   #
   def get_last_message_reply
     latest = nil
-      Formageddon::FormageddonLetter.where(formageddon_recipient:self,direction:'TO_SENDER',status:'RECEIVED').each { |letter|
-        latest = letter if (latest == nil || latest.created_at < letter.created_at)
-      }
-    return latest || {}
+    thread_ids = Formageddon::FormageddonThread.where(formageddon_recipient_id:self.id).map{|p|p.id}
+
+    Formageddon::FormageddonLetter.where(formageddon_thread_id:thread_ids, direction:'TO_SENDER', status:'RECEIVED').each { |letter|
+      latest = letter if (latest == nil || lateste.created_at < letter.created_at)
+    }
+
+    if Formageddon::FormageddonThread.find(latest.formageddon_thread_id).privacy == 'PRIVATE'
+      return ({'created_at' => latest.created_at} unless latest.nil?) || {}
+    else
+      return latest || {}
+    end
   end
 
   ##

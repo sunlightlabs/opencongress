@@ -67,7 +67,8 @@ class ApplicationController < ActionController::Base
   end
 
   def facebook_check
-    return unless session[:nofacebook].nil?
+
+    return if (session[:nofacebook] || session[:session_cookie].nil?)
 
     unless params[:fbcancel].nil?
       force_fb_cookie_delete
@@ -75,7 +76,7 @@ class ApplicationController < ActionController::Base
       session[:facebook_user] = nil
       session[:nofacebook] = true
 
-      flash.now[:notice] = "Facebook Connect has been cancelled."
+      flash.now[:notice] = 'Facebook Connect has been cancelled.'
       return
     end
 
@@ -112,7 +113,7 @@ class ApplicationController < ActionController::Base
           return unless current_user.facebook_uid.blank?
           oc_user = current_user
         else
-          flash[:error] = "The email addresses in your Facebook and OpenCongress accounts do not match.  Could not connect."
+          flash[:error] = 'The email addresses in your Facebook and OpenCongress accounts do not match.  Could not connect.'
           force_fb_cookie_delete
           @facebook_user = nil
           return
@@ -189,7 +190,7 @@ class ApplicationController < ActionController::Base
     if @user.nil? && logged_in? && login.blank?
       redirect_to url_for(:controller => params[:controller], :action => login, :login => current_user.login)
     else
-      render_404 and return
+      render_404
     end
   end
 
@@ -370,6 +371,7 @@ class ApplicationController < ActionController::Base
 
   def force_fb_cookie_delete
     cookies.delete fb_cookie_name
+    set_fb_cookie(nil,nil,nil,nil)
   end
 
   def last_updated

@@ -23,11 +23,8 @@
                                        link_opts.merge!({:page_text_editable_type => @user_object.class.name.capitalize, :page_text_editable_id => @user_object.id}) if @user_object %>
                                     | <%= link_to 'Manage SEO/Site Text for this Page', link_opts %>
                                 <% end %>
-                                <% if @facebook_user %>
-                                    <%= fb_logout_link("Logout", url_for(:controller => 'logout', :only_path => false)) %>
-                                <% else %>
-                                    <%= link_to "Logout", logout_path, {:class => "btn large btn-primary", :id => "logout-btn"}%>
-                                <% end %>
+                                <%# Don't use fb_logout_link because this will also log the user out of their facebook account %>
+                                <%= link_to "Logout", logout_path, {:class => "btn large btn-primary", :id => "logout-btn"}%>
                                 <a href="https://sunlightfoundation.com/donate/opencongress/" class="btn btn-info">Support OpenCongress</a>
                             </div>
                         <% else %>

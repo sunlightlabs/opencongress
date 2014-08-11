@@ -151,54 +151,15 @@ class AccountController < ApplicationController
     if request.post?
       params_user = params[:user].symbolize_keys()
       if [:street_address, :city, :state, :zipcode].any? { |key| params_user.key?(key) and not params_user[key].blank? }
-        if current_user.update_attributes(params_user) && current_user.reload() && current_user.has_state_and_district?#  current_user.state.present? && current_user.district.present?
+        if current_user.update_attributes(params_user) && current_user.reload() && current_user.has_state_and_district?
           flash[:notice] = "Your Congressional District (#{current_user.district_tag}) has been saved."
           activate_redirect(user_profile_path(:login => current_user.login))
           return
         end
       end
 
-      no_reps and return
+      no_reps
 
-
-
-
-
-
-      # if params[:address].present?
-      #  begin
-      #    result = MultiGeocoder.search("#{params[:address]}, #{params[:zipcode]}", :lookup => :smarty_streets).first
-      #    lat, lng = result.coordinates
-      #    zipcode = result.postal_code
-      #    zip_four = result.zip4 rescue nil
-      #    current_user.update_attributes(:state => result.state_code)
-      #    current_user.user_profile.update_attributes(
-      #        :zipcode => zipcode,
-      #        :zip_four => zip_four,
-      #        :street_address => result.delivery_line_1,
-      #        :street_address_2 => result.delivery_line_2,
-      #        :city => result.city,
-      #    )
-      #  rescue NoMethodError
-      #    no_reps and return
-      #  end
-      #elsif params[:zipcode].present?
-      #  result = MultiGeocoder.search(params[:zipcode]).first
-      #  current_user.update_attributes(:state => result.state_code)
-      #  current_user.user_profile.update_attributes(
-      #      :zipcode => result.zipcode,
-      #      :city => result.city
-      #  )
-      #end
-      #LocationChangedService will have been invoked but isn't reflected in current_user. Sorrrrrry I'm a bad person.
-      #current_user.reload
-      #if current_user.state.present? and current_user.district.present?
-      #  flash[:notice] = "Your Congressional District (#{current_user.district_tag}) has been saved."
-      #  activate_redirect(user_profile_path(:login => current_user.login))
-      #  return
-      #else
-      #  no_reps and return
-      #end
     end
   end
 
@@ -356,6 +317,7 @@ class AccountController < ApplicationController
     force_fb_cookie_delete
 
     reset_session
+
     if params[:wiki_return_page]
       return redirect_to("#{wiki_base_url}/#{params[:wiki_return_page]}")
     end

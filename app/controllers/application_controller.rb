@@ -68,7 +68,7 @@ class ApplicationController < ActionController::Base
 
   def facebook_check
 
-    return if (session[:nofacebook] || session[:session_cookie].nil?)
+    return if (session[:nofacebook] || (session[:session_cookie].nil? && !params[:fblogin]))
 
     unless params[:fbcancel].nil?
       force_fb_cookie_delete

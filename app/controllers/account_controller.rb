@@ -11,7 +11,7 @@ class AccountController < ApplicationController
   after_filter :check_wiki, :only => [:login, :activate]
 
   skip_before_filter :has_accepted_tos?, :only => [:accept_tos, :logout]
-  skip_before_filter :must_reaccept_tos?, :only => [:reaccept_tos, :accept_tos, :logout, :detemine_district]
+  skip_before_filter :must_reaccept_tos?, :only => [:reaccept_tos, :accept_tos, :logout, :determine_district]
   skip_before_filter :warn_reaccept_tos?, :only => [:reaccept_tos, :accept_tos, :logout]
   skip_before_filter :is_authorized?, :only => [:logout]
   skip_before_filter :has_district?, :only => [:determine_district, :logout, :accept_tos, :reaccept_tos]

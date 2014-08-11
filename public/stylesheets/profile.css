@@ -682,7 +682,8 @@ margin-bottom: 55px !important;
 
 /* change profile picture */
 #picture_detail {
-  position:relative;
+    position:relative;
+    margin-bottom:10px;
 }
 #picture_detail.loading {
   opacity: 0.5;
@@ -699,6 +700,10 @@ margin-bottom: 55px !important;
   height: 250px;
 }
 
+.side_settings {
+    margin-bottom:5px;
+}
+
 /* edit profile form */
 #picture_tmp_file { position: absolute; z-index: 2; opacity: 0; width: 128px; height: 24px; cursor: pointer; }
 
@@ -711,9 +716,9 @@ form.edit_user label { width: 100px; }
 form.edit_user label.radio { width: auto; text-align: left; }
 form.edit_user button:first-child,
 form.edit_user .form-actions { padding-left: 110px; }
-form.edit_user select { height: 24px; padding: 5px; margin: 0; }
-form.edit_user input[type=radio] { margin-right: 5px; }
-form.edit_user #site_preferences label { display: block; width: auto; text-align: left; }
+form.edit_user select { height: 26px; padding: 5px; margin: 0; }
+form.edit_user input[type=radio] { margin-right: 5px; -webkit-box-shadow: none; box-shadow: none  }
+form.edit_user #site_preferences label { display: block; width: auto; text-align: left; padding: 5px 0 5px 0 }
 form.edit_user #site_preferences label.radio { display: inline; }
 form.edit_user #site_preferences select:nth-child(2), #site_preferences label.radio:nth-child(2) { margin-left: 110px; }
 form.edit_user #privacy_settings { width: auto; float: none; }

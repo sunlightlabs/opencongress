@@ -8,15 +8,21 @@
     <div id="picture_detail">
       <%= profile_image_for(@user) %>
     </div>
-    <div id="congressional_district">
+    <div id="congressional_district" class="side_settings">
       <p><strong>Congressional District:</strong> <span class="district"><%= @user.my_district.first %></span></p>
     </div>
-    <div id="openid">
+    <div id="openid" class="side_settings">
       <% form_tag(url_for(:controller => :account, :action => :add_openid)) do %>
         <%= label_tag "identity_url", "OpenID URL:", :style => "font-weight: bold;" %><br/>
         <%= text_field_tag "identity_url", current_user.identity_url, :size => 20, :class => "field" %>
         <%= submit_tag "Set", :class => "button gray small" %>
       <% end %>
+    </div>
+    <div id="connect_facebook" class="side_settings">
+      <p><strong>Facebook</strong></p>
+      <div id="connect_facebook_button">
+        <%= profile_facebook_for(@user) %>
+      </div>
     </div>
   </div>
 

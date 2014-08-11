@@ -809,6 +809,10 @@ EOT
     vote_hash[vote]
   end
 
+  def fb_login_redirect_url
+    "#{request.url}?#{Time.now.tv_sec}&fblogin=1"
+  end
+
   def bookmarking_image
     "<link rel=\"image_src\" href=\"" + (@bookmarking_image.blank? ? image_path("fb-default.jpg") : @bookmarking_image) + "\" />".html_safe
   end

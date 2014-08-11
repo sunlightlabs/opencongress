@@ -1,8 +1,10 @@
+require 'net/http'
+
 class ProfileController < ApplicationController
   include ProfileHelper
 
   before_filter :can_view_tab, :only => [:actions, :items_tracked, :bills, :my_votes, :comments, :person, :issues, :watchdog]
-  before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
+  before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images, :disconnect_facebook_account]
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
   skip_before_filter :must_reaccept_tos?, :only => [:show, :edit, :update, :destroy, :upload_pic, :delete_images]
   skip_before_filter :has_district?, :only => [:edit, :update, :destroy, :upload_pic, :delete_images]
@@ -459,7 +461,7 @@ class ProfileController < ApplicationController
       current_user.user_profile.main_picture, current_user.user_profile.small_picture = avatar.create_sizes!
       current_user.save(:validate => false)
     rescue
-      flash.now[:warning] = "Failed to upload your picture"
+      flash.now[:warning] = 'Failed to upload your picture'
     end
     if request.xhr?
       profile_image_for(current_user)
@@ -467,6 +469,24 @@ class ProfileController < ApplicationController
       # redirect_back_or_default(user_profile_path(current_user.login))
       redirect_to :back
     end
+  end
+
+  def disconnect_facebook_account
+    if current_user.facebook_uid
+      current_user.facebook_uid = nil
+      if current_user.save()
+        @facebook_user = nil
+        return request.xhr? ? profile_facebook_for(current_user) : (redirect_to :back)
+      end
+
+      # TODO handle response in case of no javascript
+      # url = "https://graph.facebook.com/#{current_user.facebook_uid}/permissions/?access_token=" + params[:access_token]
+      # result = Net::HTTP::Delete(URI.parse(url))
+      # if result.code == '200'
+      # end
+    end
+
+    return request.xhr? ? 'false' : (redirect_to :back)
   end
 
   def delete_images

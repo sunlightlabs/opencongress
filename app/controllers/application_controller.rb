@@ -66,8 +66,15 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  ##
+  # This method allows a user to login through facebook and persist their
+  # account throughout use of OpenCongress.
+  #
   def facebook_check
 
+    # This is ninjutsu logic to allow a user to logout of OpenCongress without logging out
+    # of facebook too. The parameter "fblogin" is passed on first login through facebook
+    # which allows this method to give a "session_cookie" to the user.
     return if (session[:nofacebook] || (session[:session_cookie].nil? && !params[:fblogin]))
 
     unless params[:fbcancel].nil?

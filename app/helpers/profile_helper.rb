@@ -135,6 +135,12 @@ module ProfileHelper
     options[0]
   end
 
+  def profile_facebook_for(user=nil, options={})
+    user ||= current_user
+    editable = options[:editable].nil? ? (user == current_user) : options[:editable]
+    render :partial => 'profile/profile_facebook_connect', :locals => {:user => user, :editable => editable}
+  end
+
   def show_vote(user,bill)
     vote = user.bill_votes.find_by_bill_id(bill.id)
     if vote.nil?

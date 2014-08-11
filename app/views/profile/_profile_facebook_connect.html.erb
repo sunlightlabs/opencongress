@@ -1,0 +1,32 @@
+<% if @facebook_user and editable %>
+    <%= form_for :user, :url => { :action => 'disconnect_facebook_account' },
+                 :html=>{:multipart=>false, :style=> "display:inline;", :id => "disconnect_fb"} do |f| %>
+        <%= hidden_field_tag "fb_disconnect", 1 %>
+        <%= submit_tag "Disconnect Facebook", :class=> "button blue small" %>
+    <% end %>
+    <script>
+        (function($){
+            $('#disconnect_fb').submit(function(event)
+            {
+                event.preventDefault();
+                FB.api("/me/permissions","DELETE", function(response)
+                {
+                    if (response.hasOwnProperty('success') && response['success'] == true)
+                    {
+                        $('#disconnect_fb').ajaxSubmit({
+                            success: function(data)
+                            {
+                                if (data != 'false')
+                                {
+                                    location.reload()
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        })(jQuery);
+    </script>
+<% elsif editable %>
+    <%= fb_login_and_redirect "#{fb_login_redirect_url}", :text => 'Connect to Facebook', :scope => 'email,user_location,user_about_me' %>
+<% end %>

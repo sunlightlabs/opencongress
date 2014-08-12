@@ -77,7 +77,6 @@ class Search < ActiveRecord::Base
     if self.search_filters
       self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
     end
-    self.search_text = prepare_tsearch_query(self.search_text.to_s)
   end
 
   ##
@@ -85,6 +84,10 @@ class Search < ActiveRecord::Base
   #
   def get_congresses
     return self.search_congresses
+  end
+
+  def get_query_stripped
+    return prepare_tsearch_query(self.search_text.to_s)
   end
 
   ##

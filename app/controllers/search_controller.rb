@@ -27,13 +27,15 @@ class SearchController < ApplicationController
 
       # set search filters
       set_search_filters()
+      # get sanitized query
+      query_stripped = @search.get_query_stripped
 
       # initialize found items to 0 before running through filters
       @found_items = 0
 
       if @search_bills
         # first see if we match a bill's title exactly
-        bill_titles = BillTitle.find(:all, :conditions => [ "UPPER(title)=?", @search.search_text.upcase ])
+        bill_titles = BillTitle.find(:all, :conditions => [ "UPPER(title)=?", query_stripped.upcase ])
         bills_for_title = bill_titles.collect {|bt| bt.bill }
         bills_for_title.uniq!
 
@@ -44,19 +46,19 @@ class SearchController < ApplicationController
         end
 
         # otherwise search bills for the text
-        @bills = Bill.full_text_search(@search.search_text, { :page => @search.page, :congresses => @search.get_congresses() })
+        @bills = Bill.full_text_search(query_stripped, { :page => @search.page, :congresses => @search.get_congresses() })
         @found_items += @bills.total_entries
       end
 
       if @search_people
-        if !(@search.search_text =~ /^[\d]{5}(-[\d]{4})?$/).nil?
+        if !(query_stripped =~ /^[\d]{5}(-[\d]{4})?$/).nil?
           # TODO: Why does this return nil, and are there implications to making it return []?
-          @people = (Person.find_current_congresspeople_by_zipcode(*@search.search_text.split('-')).flatten rescue []).paginate(:per_page => 9, :page => @search.page)
+          @people = (Person.find_current_congresspeople_by_zipcode(*query_stripped.split('-')).flatten rescue []).paginate(:per_page => 9, :page => @search.page)
         else
           people_for_name = Person.find(:all,
                                         :conditions => [ "(UPPER(firstname || ' ' || lastname)=? OR
                                       UPPER(nickname || ' ' || lastname)=?)",
-                                                         @search.search_text.upcase, @search.search_text.upcase ])
+                                                         query_stripped.upcase, query_stripped.upcase ])
           redirect_to person_url(people_for_name[0]) and return if people_for_name.size == 1
 
           opts = {:page => @search.page}
@@ -64,39 +66,39 @@ class SearchController < ApplicationController
           opts[:only_current] = true
           opts[:only_current] = false if params.fetch(:search_congress, {}).keys != [Settings.default_congress.to_s]
 
-          @people = Person.full_text_search(@search.search_text, opts)
+          @people = Person.full_text_search(query_stripped, opts)
         end
         @found_items += @people.total_entries
       end
 
       if @search_committees
-        @committees = Committee.full_text_search(@search.search_text).select{ |c| c.active? }
+        @committees = Committee.full_text_search(query_stripped).select{ |c| c.active? }
         @found_items += @committees_total = @committees.size
         @committees = @committees.sort_by { |c| [(c.name || ""), (c.subcommittee_name || "") ] }.group_by(&:name)
       end
 
       if @search_issues
-        @issues = Subject.full_text_search(@search.search_text, :page => @search.page)
+        @issues = Subject.full_text_search(query_stripped, :page => @search.page)
         @found_items += @issues.total_entries
       end
 
       if @search_comments
-        @comments = Comment.full_text_search(@search.search_text, { :page => @search.page, :congresses => @search.get_congresses() })
+        @comments = Comment.full_text_search(query_stripped, { :page => @search.page, :congresses => @search.get_congresses() })
         @found_items += @comments.total_entries
       end
 
       if @search_commentary || @search_news
-        @news = Commentary.full_text_search(@search.search_text, { :page => @search.page, :commentary_type => 'news' })
+        @news = Commentary.full_text_search(query_stripped, { :page => @search.page, :commentary_type => 'news' })
         @found_items += @news.total_entries
       end
 
       if @search_commentary || @search_blogs
-        @blogs = Commentary.full_text_search(@search.search_text, { :page => @search.page, :commentary_type => 'blog' })
+        @blogs = Commentary.full_text_search(query_stripped, { :page => @search.page, :commentary_type => 'blog' })
         @found_items += @blogs.total_entries
       end
 
       if @search_gossip_blog
-        @articles = Article.full_text_search(@search.search_text, :page => @search.page)
+        @articles = Article.full_text_search(query_stripped, :page => @search.page)
         @found_items += @articles.total_entries
       end
 

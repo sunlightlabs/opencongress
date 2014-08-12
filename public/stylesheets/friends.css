@@ -128,5 +128,23 @@ border-bottom: 1px solid #ddd;
 padding: 10px 0 10px 10px;
 }
 
+#friend_search_results img {
+    width:50px;
+    display:inline-block;
+    vertical-align:middle;
+}
+
+#friend_search_results li {
+    margin-bottom:5px;
+}
+
+div.inline-block {
+    display:inline-block;
+}
+
+#friend_search_results .inline-block {
+    position:relative;
+    top:5px;
+}
 
 

@@ -52,6 +52,8 @@ class User < ActiveRecord::Base
       :login => "Username"
   }
 
+  PROFILE_IMAGE_SIZES = [:main_picture, :small_picture]
+
   #========== VALIDATORS
 
   validates_presence_of       :login, :email, :unless => :openid?
@@ -330,6 +332,16 @@ class User < ActiveRecord::Base
   def picture_path(size=:main)
     filename = send("#{size}_picture".to_sym)
     "users/#{filename}"
+  end
+
+  def profile_image_path(size)
+    path_sym = PROFILE_IMAGE_SIZES[0]
+    if size.present?
+      size_sym = size.to_sym
+      path_sym = size_sym if PROFILE_IMAGE_SIZES.include?(size_sym)
+    end
+    img_path = send(path_sym)
+    return img_path ? "/images/users/#{img_path}" : 'anonymous.gif'
   end
 
   def action_count

@@ -62,7 +62,6 @@ class Search < ActiveRecord::Base
   def doctor_data_for_save
     self.page = 1 if (self.page.nil? || self.page < 1)
     self.search_text = truncate(self.search_text, :length => 255)
-    self.search_text = prepare_tsearch_query(self.search_text.to_s)
     self.search_filters.each_with_index {|v,i|
       self.search_filters[i] = SEARCH_FILTER_CODE_MAP[v.to_sym] if v.is_a? String
     }
@@ -75,9 +74,10 @@ class Search < ActiveRecord::Base
   # representation for each search filter.
   #
   def doctor_data_for_load
-      if self.search_filters
-        self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
-      end
+    if self.search_filters
+      self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
+    end
+    self.search_text = prepare_tsearch_query(self.search_text.to_s)
   end
 
   ##

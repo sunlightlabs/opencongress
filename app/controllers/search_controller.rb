@@ -16,7 +16,8 @@ class SearchController < ApplicationController
                             :user => current_user == :false ? nil : current_user,
                             :search_filters => params.select {|p,v| Search::SEARCH_FILTER_CODE_MAP.include?(p.to_sym) && v.to_i == 1 }.keys,
                             :search_congresses => params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"])
-    if @search.valid?
+
+    if @search.valid? && @search.reload()
 
       # store search in session cache if it isn't there already
       unless session[:searched_terms] and session[:searched_terms].index(@search.search_text)
@@ -25,8 +26,7 @@ class SearchController < ApplicationController
       end
 
       # set search filters
-      Search::SEARCH_FILTERS_LIST.each {|filter| instance_variable_set("@#{filter}", false) }
-      @search.search_filters.each {|filter| instance_variable_set("@#{filter}", true) }
+      set_search_filters()
 
       # initialize found items to 0 before running through filters
       @found_items = 0
@@ -155,4 +155,12 @@ class SearchController < ApplicationController
     @title_class = "sort"
 		@page_title = "Top Search Terms"
   end
+
+  private
+
+  def set_search_filters
+    Search::SEARCH_FILTERS_LIST.each {|filter| instance_variable_set("@#{filter}", false) }
+    @search.search_filters.each {|filter| instance_variable_set("@#{filter}", true) }
+  end
+
 end

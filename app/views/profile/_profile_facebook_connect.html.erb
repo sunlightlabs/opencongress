@@ -1,4 +1,4 @@
-<% if @facebook_user and editable %>
+<% if user.facebook_connect_user? and editable %>
     <%= form_for :user, :url => { :action => 'disconnect_facebook_account' },
                  :html=>{:multipart=>false, :style=> "display:inline;", :id => "disconnect_fb"} do |f| %>
         <%= hidden_field_tag "fb_disconnect", 1 %>

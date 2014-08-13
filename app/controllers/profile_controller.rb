@@ -474,7 +474,7 @@ class ProfileController < ApplicationController
   def disconnect_facebook_account
     if current_user.facebook_uid
       current_user.facebook_uid = nil
-      if current_user.save()
+      if current_user.save() and current_user.reload()
         @facebook_user = nil
         force_fb_cookie_delete
         session.delete(:facebook_user)

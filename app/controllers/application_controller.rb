@@ -402,6 +402,7 @@ class ApplicationController < ActionController::Base
     redirect_to(destination, options)
   end
 
+
   protected
   def clear_return_to
     session.delete(:return_to) rescue nil

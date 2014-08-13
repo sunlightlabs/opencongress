@@ -11,16 +11,21 @@
                 event.preventDefault();
                 FB.api("/me/permissions","DELETE", function(response)
                 {
-                    if (response.hasOwnProperty('success') && response['success'] == true)
+                    if (response == true)
                     {
-                        $('#disconnect_fb').ajaxSubmit({
+                        jQuery('#disconnect_fb').ajaxSubmit({
                             success: function(data)
                             {
                                 if (data != 'false')
                                 {
-                                    location.reload()
+                                    window.location = window.location.pathname;
                                 }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown)
+                            {
+                                alert("Error: Unable to disconnect your facebook account. Contact us by e-mail.")
                             }
+
                         });
                     }
                 });

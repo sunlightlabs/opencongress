@@ -476,6 +476,8 @@ class ProfileController < ApplicationController
       current_user.facebook_uid = nil
       if current_user.save()
         @facebook_user = nil
+        force_fb_cookie_delete
+        session.delete(:facebook_user)
         return request.xhr? ? profile_facebook_for(current_user) : (redirect_to :back)
       end
 

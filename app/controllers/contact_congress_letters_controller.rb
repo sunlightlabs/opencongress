@@ -108,30 +108,16 @@ class ContactCongressLettersController < ApplicationController
   def show
     @contact_congress_letter = ContactCongressLetter.find(params[:id])
 
-    if @contact_congress_letter.formageddon_threads.first.privacy =~ /PRIVATE/
-      if current_user == :false or current_user != @contact_congress_letter.user
-        redirect_to '/', :notice => 'You do not have permission to read that letter!'
-        return
-      end
+    unless @contact_congress_letter.can_be_read_by(current_user)
+      redirect_to '/', :notice => 'You do not have permission to read that letter!'
+      return
     end
 
-    @additional_letters = []
-    @contact_congress_letter.formageddon_threads.each do |t|
-      if t.formageddon_letters.size > 1
-        @additional_letters << t.formageddon_letters[1..-1]
-      end
-    end
-    @additional_letters.flatten!.sort!{|a,b| a.created_at <=> b.created_at } unless @additional_letters.empty?
+    @additional_letters = @contact_congress_letter.get_additional_letters
 
     @page_title = "My Letter to Congress: #{@contact_congress_letter.formageddon_threads.first.formageddon_letters.first.subject}"
 
-    if @contact_congress_letter.contactable_type == 'Bill'
-      regarding = "#{@contact_congress_letter.contactable.typenumber} #{@contact_congress_letter.contactable.title_common}"
-    elsif @contact_congress_letter.contactable_type == 'Subject'
-      regarding = @contact_congress_letter.contactable.term
-    end
-
-    @meta_description = "This is a letter to Congress sent using OpenCongress.org by user #{@contact_congress_letter.user.login} regarding #{regarding}. OpenCongress is a free and open-source public resource website for tracking and contacting the U.S. Congress."
+    @meta_description = "This is a letter to Congress sent using OpenCongress.org by user #{@contact_congress_letter.user.login} regarding #{@contact_congress_letter.regarding}. OpenCongress is a free and open-source public resource website for tracking and contacting the U.S. Congress."
 
     if params[:print_version] == 'true'
       render :partial => 'contact_congress_letters/print',

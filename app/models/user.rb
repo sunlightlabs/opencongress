@@ -321,6 +321,10 @@ class User < ActiveRecord::Base
   #========== PUBLIC METHODS
   public
 
+  def is_admin?
+    return user_role.can_administer_users
+  end
+
   def has_state_and_district?
     state.present? and district.present?
   end

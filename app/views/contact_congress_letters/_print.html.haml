@@ -53,4 +53,4 @@
 
     .body
       -# will do more extensive markdown later
-      = letter.message.gsub(/\n/, "<br />").html_safe
+      = letter.message.gsub(/\<([^ ]+)\>/){|m| m.gsub(/\n/,'') }.gsub(/\n/,'<br />').html_safe

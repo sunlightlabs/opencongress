@@ -61,6 +61,41 @@ class ContactCongressLetter < ActiveRecord::Base
     formageddon_threads.first
   end
 
+  def regarding
+    if contactable_type == 'Bill'
+      return "#{contactable.typenumber} #{contactable.title_common}"
+    elsif contactable_type == 'Subject'
+      return contactable.term
+    end
+  end
+
+  def get_additional_letters
+    letters = []
+    formageddon_threads.each do |t|
+      if t.formageddon_letters.size > 1
+        letters << t.formageddon_letters[1..-1]
+      end
+    end
+    letters.flatten!.sort!{|a,b| a.created_at <=> b.created_at } unless letters.empty?
+    return letters
+  end
+
+  def can_be_read_by(current_user)
+    if formageddon_threads.first.privacy =~ /PRIVATE/
+      if current_user == :false
+        return false
+      elsif current_user.is_admin?
+        return true
+      elsif current_user != user
+        return false
+      else
+        return true
+      end
+    else
+      return true
+    end
+  end
+
   ##
   # Returns the the letter message and stripping away any PII using a regexp.
   # At the time of writing, 7/29/2014, this is not a good long term solution.

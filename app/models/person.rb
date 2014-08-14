@@ -452,14 +452,17 @@ class Person < ActiveRecord::Base
   #
   # @return {Hash} object containing metadata about replies
   #
-  def get_last_message_reply
+  def get_email_reply_summary
     latest = nil
+    first = nil
     thread_ids = Formageddon::FormageddonThread.where(formageddon_recipient_id:self.id).map{|p|p.id}
     count = 0
 
     unless thread_ids.empty?
-      Formageddon::FormageddonLetter.where(formageddon_thread_id:thread_ids, direction:'TO_SENDER', status:'RECEIVED').each { |letter|
+      thread_ids= ContactCongressLettersFormageddonThread.where(formageddon_thread_id:thread_ids).map{|p|p.formageddon_thread_id}
+      Formageddon::FormageddonLetter.where(formageddon_thread_id:thread_ids, direction:'TO_SENDER', status:'RECEIVED').each {|letter|
         count += 1
+        first = letter if (first == nil || letter.created_at < first.created_at)
         latest = letter if (latest == nil || latest.created_at < letter.created_at)
       }
     end
@@ -479,6 +482,7 @@ class Person < ActiveRecord::Base
                           else
                             latest.nil? ? 'NOT REPLIED' : 'REPLIED'
                           end,
+              'first_reply_datetime' => first.nil? ? '' : first.created_at,
               'last_reply_datetime' => latest.nil? ? '' : latest.created_at,
               'total_replies' => count
             }
@@ -492,7 +496,7 @@ class Person < ActiveRecord::Base
   #
   # @return {Hash} object containing metadata about all replies
   #
-  def Person.get_last_message_reply(congresses=[Settings.default_congress])
+  def Person.get_email_reply_summary(congresses=[Settings.default_congress])
     toReturn = {
                 :count_total => 0,
                 :count_replied => 0,
@@ -504,7 +508,7 @@ class Person < ActiveRecord::Base
                }
     Person.all().each {|person|
       if person.congresses?(congresses)
-        toPush = person.get_last_message_reply
+        toPush = person.get_email_reply_summary
         if toPush['status'] == 'REPLIED'
           toReturn[:list_replied].push(toPush)
           toReturn[:count_replied] += 1

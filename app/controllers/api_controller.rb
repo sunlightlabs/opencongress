@@ -76,7 +76,7 @@ class ApiController < ApplicationController
   end
 
   def most_recent_letter_reply
-    respond_with @person.get_last_message_reply().as_json()
+    respond_with @person.get_email_reply_summary().as_json()
   end
 
   def representatives_most_in_the_news_this_week

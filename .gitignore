@@ -31,3 +31,4 @@ sendhelium
 .idea
 .idea/*
 *.bak
+.env

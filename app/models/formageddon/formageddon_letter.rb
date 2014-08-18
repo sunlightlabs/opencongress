@@ -92,23 +92,18 @@ class Formageddon::FormageddonLetter
       @rendered ||= render_to_string(:partial => PRINT_TEMPLATE, :locals => { :letter => self })
     end
 
-<<<<<<< HEAD
-  def sender_full_name
-    return "#{formageddon_thread.sender_first_name} #{formageddon_thread.sender_last_name}"
-  end
+    def sender_full_name
+      return "#{formageddon_thread.sender_first_name} #{formageddon_thread.sender_last_name}"
+    end
 
-  ##
-  # Returns the the letter message and stripping away any PII using a regexp.
-  # This mmethod is necessary because the contact information for a sender may differ
-  # from the user's account information.
-  #
-  # @return {String} message without any PII
-  #
-  def message_no_pii
-    return strip_pii_from_message(self.formageddon_thread, self.message)
-  end
-
-=======
-  end
->>>>>>> Upgraded to Rails 3.2
+    ##
+    # Returns the the letter message and stripping away any PII using a regexp.
+    # This mmethod is necessary because the contact information for a sender may differ
+    # from the user's account information.
+    #
+    # @return {String} message without any PII
+    #
+    def message_no_pii
+      return strip_pii_from_message(self.formageddon_thread, self.message)
+    end
 end

@@ -10,7 +10,7 @@ gem 'mysql'
 gem "settingslogic"
 gem 'titlecase'
 gem "haml-rails"
-gem 'rabl'
+gem 'rabl', '>=0.5.4'
 gem 'oj'
 gem 'delayed_job'
 gem 'rmagick', '~> 2.13.1', :require => "RMagick"

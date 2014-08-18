@@ -529,7 +529,7 @@ DEPENDENCIES
   spork
   titlecase
   twitter_oauth
-  uglifier
+  uglifier (>= 1.0.3)
   unicode_utils
   unicorn
   validates_captcha

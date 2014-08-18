@@ -80,7 +80,7 @@ gem 'pdfkit'
 group :assets do
   gem "sass-rails", ">= 3.2"
   gem "bootstrap-sass", "~>2.1.1"
-  gem "uglifier"
+  gem "uglifier", ">=1.0.3"
   gem "closure-compiler"
   gem "jquery-rails"
   gem "jquery-migrate-rails"

@@ -74,7 +74,7 @@ class Search < ActiveRecord::Base
   # representation for each search filter.
   #
   def doctor_data_for_load
-    if self.search_filters
+    if (self.search_filters rescue false)
       self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
     end
   end

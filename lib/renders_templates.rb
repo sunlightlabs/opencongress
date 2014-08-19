@@ -15,11 +15,6 @@ module RendersTemplates
 
     helper ApplicationHelper
 
-    self.view_paths = ["#{Rails.root}/app/views"].tap do |paths|
-      ActiveSupport::Dependencies.plugins_loader.engine_paths.each do |path|
-        paths << "#{path}/app/views"
-      end
-    end
     self.assets_dir = "#{Rails.root}/public"
     self.javascripts_dir = "#{assets_dir}/javascripts"
     self.stylesheets_dir = "#{assets_dir}/stylesheets"

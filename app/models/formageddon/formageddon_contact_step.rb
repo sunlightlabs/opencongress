@@ -13,10 +13,7 @@
 
 require 'sexmachine'
 require 'full-name-splitter'
-# FIXME: This is ugly.
-require_dependency File.expand_path(
-  'app/models/formageddon/formageddon_contact_step',
-  ActiveSupport::Dependencies.plugins_loader.plugin_paths.select{|p| p =~ /formageddon(-[0-9a-f]+)?$/}.first)
+require_pluggable_dependency 'app/models/formageddon/formageddon_contact_step', :from => 'formageddon'
 
 class Formageddon::FormageddonContactStep
   ##

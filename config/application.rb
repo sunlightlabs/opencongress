@@ -7,9 +7,6 @@ require File.expand_path('../../lib/extensions.rb', __FILE__)
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
-# This must be called after bundler requires gems
-require File.expand_path('../../lib/plugins_loader', __FILE__)
-
 # Faxable includes a railtie and must be required before the env boots
 require File.expand_path('../../lib/faxable', __FILE__)
 
@@ -74,6 +71,9 @@ module OpenCongress
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password, :gpasswd]
 
+    #config.assets.enabled = true
+    #config.assets.version = '1.0'
+
     # TODO: Use wiki-internal to get wiki content on production rather
     # than going through the proxy server (twice)
 
@@ -95,7 +95,7 @@ module OpenCongress
       107 => '2001-01-01'
     }
 
-    ActiveSupport::JSON.backend = 'JSONGem'
+    #ActiveSupport::JSON.backend = 'JSONGem'
 
     require 'ostruct'
   end

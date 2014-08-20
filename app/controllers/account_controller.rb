@@ -565,7 +565,7 @@ class AccountController < ApplicationController
   protected
 
   def get_return_location
-    referrer_hash = ActionController::Routing::Routes.recognize_path(request.referrer)
+    referrer_hash = Rails.application.routes.recognize_path(request.referrer)
     if !(referrer_hash[:controller] == 'account' && %w(login signup index).include?(referrer_hash[:action])) && request.referrer =~ /^https?:\/\/#{Regexp.escape(Settings.base_url.sub(/^https?:\/\//, ''))}/
       # unless request.fullpath =~ /^\/stylesheets/ || request.fullpath =~ /^\/images/ || request.xhr?
       session[:return_to] = request.referrer

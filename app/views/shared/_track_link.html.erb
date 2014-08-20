@@ -2,12 +2,12 @@
 <span id="trackli<%=h object.id %>">
   <% if logged_in? == false or object.bookmarks.find_by_user_id(current_user.id) == nil %>
     <% if logged_in? %>
-      <%= link_to_remote "<span>Track #{object.obj_title ? object.obj_title : object.class.to_s}</span>".html_safe, :url => {:controller => 'profile', 
+      <%= link_to "<span>Track #{object.obj_title ? object.obj_title : object.class.to_s}</span>".html_safe, :url => {:controller => 'profile',
                   :action => 'track', 
                   :id => object.id,
                   :multi => "yes", 
                   :type => object.class.to_s},
-                  :html => { :class => button ? button : "track_small" } %>
+                  :html => { :class => button ? button : "track_small" }, :remote => true %>
     <% else %>
       <%= link_to "<span>Track #{object.obj_title ? object.obj_title : object.class.to_s}</span>".html_safe, {:controller => 'account', :action => 'login'}, :class => button %>
     <% end %>

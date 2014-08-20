@@ -74,13 +74,14 @@ class RollCallController < ApplicationController
     @roll_call = RollCall.find_by_id(params[:id])
     render_404 and return unless @roll_call.present? && params[:breakdown_type].present?
     radius = params[:radius] ||= 80
+
+    # get votes
     votes = @roll_call.roll_call_votes.joins(:person).where(vote:params[:breakdown_type])#.select { |rcv| rcv.vote == params[:breakdown_type] }
     democrat_votes = @roll_call.roll_call_votes.joins(:person).where('vote = ? AND people.party = ?', params[:breakdown_type], 'Democrat')#.select { |rcv| rcv.vote == params[:breakdown_type] }
     republican_votes = @roll_call.roll_call_votes.joins(:person).where('vote = ? AND people.party = ?', params[:breakdown_type], 'Republican')#where('people.party = ?', 'Republican').select { |rcv| rcv.vote == params[:breakdown_type] }
+    other_votes_size = votes.size - democrat_votes.size - republican_votes.size
 
     disclaimer_note = params[:disclaimer_off].blank? ? "**" : ""
-
-    other_votes_size = votes.size - democrat_votes.size - republican_votes.size
 
     vals = []
     colors = []

@@ -501,7 +501,7 @@ DEPENDENCIES
   mechanize
   mediacloth
   memcache-client
-  mysql
+  mysql (= 2.9.1)
   newrelic_rpm
   nokogiri
   oauth

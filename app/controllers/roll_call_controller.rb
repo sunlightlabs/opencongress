@@ -74,12 +74,12 @@ class RollCallController < ApplicationController
     @roll_call = RollCall.find_by_id(params[:id])
     render_404 and return unless @roll_call.present? && params[:breakdown_type].present?
     radius = params[:radius] ||= 80
-    votes = @roll_call.roll_call_votes.select { |rcv| rcv.vote == params[:breakdown_type] }
+    votes = @roll_call.roll_call_votes.joins(:person).where(vote:params[:breakdown_type])#.select { |rcv| rcv.vote == params[:breakdown_type] }
+    democrat_votes = @roll_call.roll_call_votes.joins(:person).where('vote = ? AND people.party = ?', params[:breakdown_type], 'Democrat')#.select { |rcv| rcv.vote == params[:breakdown_type] }
+    republican_votes = @roll_call.roll_call_votes.joins(:person).where('vote = ? AND people.party = ?', params[:breakdown_type], 'Republican')#where('people.party = ?', 'Republican').select { |rcv| rcv.vote == params[:breakdown_type] }
 
     disclaimer_note = params[:disclaimer_off].blank? ? "**" : ""
 
-    democrat_votes = votes.select { |rcv| rcv.person.party == 'Democrat' if rcv.person }
-    republican_votes = votes.select { |rcv| rcv.person.party == 'Republican' if rcv.person }
     other_votes_size = votes.size - democrat_votes.size - republican_votes.size
 
     vals = []
@@ -249,9 +249,8 @@ class RollCallController < ApplicationController
 
   def by_number
     @vote_counts = @roll_call.roll_call_votes.group(:vote).count
-    @party_vote_counts = @roll_call.roll_call_votes.includes(:person).group(:vote, :party).count
-    @titles_by_person = Hash[ Person.on_date(@roll_call.date).collect{ |p| [p.id, p.role_type] } ]
-
+    @party_vote_counts = @roll_call.roll_call_votes.joins(:person).group(:vote, :party).count
+    @titles_by_person = Person.on_date(@roll_call.date)#.collect{ |p| [p.id, p.role_type] } ]
     if params[:state] && State.for_abbrev(params[:state])
       @state_abbrev = params[:state]
       @state_name = State.for_abbrev(params[:state])

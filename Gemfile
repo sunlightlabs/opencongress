@@ -24,6 +24,7 @@ end
 
 gem 'sass-rails', '~> 3.1.5'
 gem 'jquery-rails'
+gem 'prototype-rails' #should be removed eventually
 
 # RABL for API / JSON
 gem 'rabl', "~> 0.2.8"

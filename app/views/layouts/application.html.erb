@@ -18,15 +18,16 @@
   <%= bookmarking_image.html_safe %>
 
   <% unless content_for?(:javascripts) %>
-    <%= include_javascripts :defaults, :common  %>
+    <%= javascript_include_tag "application" %>
+    <%#= include_javascripts :defaults, :common  %>
     <script>
       var $j = jQuery.noConflict();
     </script>
     <script type="text/javascript" src="//use.typekit.net/xev8qlf.js"></script>
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
-    <%= javascript_include_tag 'jquery.jcarousel' if @carousel %>
-    <%= javascript_include_tag 'swfobject' if (@roll_call || @roll_calls) %>
+    <%#= javascript_include_tag 'jquery.jcarousel' if @carousel %>
+    <%#= javascript_include_tag 'swfobject' if (@roll_call || @roll_calls) %>
     <%# javascript_include_tag 'http://metavid.org/w/js2/mwEmbed/jsScriptLoader.php?class=mv_embed' if @include_vids_styles %>
     <!--[if lt IE 7]>
     <%= javascript_include_tag 'ie8/IE8' %>

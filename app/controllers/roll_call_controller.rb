@@ -250,7 +250,8 @@ class RollCallController < ApplicationController
   def by_number
     @vote_counts = @roll_call.roll_call_votes.group(:vote).count
     @party_vote_counts = @roll_call.roll_call_votes.joins(:person).group(:vote, :party).count
-    @titles_by_person = Person.on_date(@roll_call.date)#.collect{ |p| [p.id, p.role_type] } ]
+    @titles_by_person = Person.on_date(@roll_call.date)
+
     if params[:state] && State.for_abbrev(params[:state])
       @state_abbrev = params[:state]
       @state_name = State.for_abbrev(params[:state])

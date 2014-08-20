@@ -1,0 +1,10 @@
+@import 'reset';     //Get rid of browser defaults
+@import 'variables'; //Where we define global vars
+@import 'general';
+@import 'header';
+/*
+To import more scss files, add them to 
+this directory, then add to this file 
+like so: 
+@import 'filename_without_extension' 
+*/ 

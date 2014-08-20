@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 3.1.0'
+gem 'rails', '= 3.1.3'
 gem 'rake', '~> 0.9.1'
 
 gem 'thin'
@@ -16,8 +16,14 @@ gem 'titlecase'
 # HAML support
 gem "haml", "~> 3.1.8"
 gem "haml-rails"
-gem 'sass'
-# gem "sass-rails"  #<= after upgrading past rails 3.1
+
+group :assets do
+  gem 'coffee-rails', '~> 3.1.1'
+  gem 'uglifier', '>= 1.0.3'
+end
+
+gem 'sass-rails', '~> 3.1.5'
+gem 'jquery-rails'
 
 # RABL for API / JSON
 gem 'rabl', "~> 0.2.8"
@@ -129,7 +135,7 @@ group :production, :staging do
 end
 
 group :test, :development do
-  #gem 'debugger'
+  gem 'debugger'
   gem 'annotate',             '>=2.6.0'
   gem 'pry'
   gem 'pry-nav'

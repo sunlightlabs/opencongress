@@ -71,8 +71,8 @@ module OpenCongress
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password, :gpasswd]
 
-    #config.assets.enabled = true
-    #config.assets.version = '1.0'
+    config.assets.enabled = true
+    config.assets.version = '1.0'
 
     # TODO: Use wiki-internal to get wiki content on production rather
     # than going through the proxy server (twice)

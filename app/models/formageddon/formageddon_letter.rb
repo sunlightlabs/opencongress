@@ -14,7 +14,7 @@
 #  fax_id                :integer
 #
 
-require_pluggable_dependency 'app/models/formageddon/formageddon_letter', :from => 'formageddon'
+require_pluggable_dependency('app/models/formageddon/formageddon_letter', :from => 'formageddon')
 require_dependency 'renders_templates'
 
 class Formageddon::FormageddonLetter

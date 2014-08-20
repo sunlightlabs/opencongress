@@ -13,7 +13,7 @@
 
 require 'sexmachine'
 require 'full-name-splitter'
-require_pluggable_dependency 'app/models/formageddon/formageddon_contact_step', :from => 'formageddon'
+require_pluggable_dependency('app/models/formageddon/formageddon_contact_step', :from => 'formageddon')
 
 class Formageddon::FormageddonContactStep
   ##

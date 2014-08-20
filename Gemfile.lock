@@ -255,7 +255,6 @@ GEM
     multi_json (1.3.7)
     multi_xml (0.5.4)
     multipart-post (1.2.0)
-    mysql (2.9.1)
     naught (1.0.0)
     net-http-digest_auth (1.4)
     net-http-persistent (2.9.4)
@@ -501,7 +500,6 @@ DEPENDENCIES
   mechanize
   mediacloth
   memcache-client
-  mysql (= 2.9.1)
   newrelic_rpm
   nokogiri
   oauth

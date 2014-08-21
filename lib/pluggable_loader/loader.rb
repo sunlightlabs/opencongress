@@ -8,7 +8,7 @@ module PluggableLoader
     # Returns a list of paths to loaded plugins.
     def pluggable_paths
       @plugin_paths ||= engine_paths.find_all do |path|
-        path =~ /(Regexp.quote(config.whitelist.join('|')))/
+        path =~ /(#{Regexp.quote(PluggableLoader.config.whitelist.join('|'))})/
       end
     end
 

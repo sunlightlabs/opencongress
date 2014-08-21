@@ -57,15 +57,17 @@ module ContactCongressLettersHelper
   # @param thread   FormageddonThread object
   # @param message  String to strip the PII from
   #
-  def strip_pii_from_message(thread, message)
+  def strip_pii_from_message(thread, message, paranoid=false)
     regexp_str = ''
 
     # construct regular expression string by appending together non-blank fields in the thread
     unless (thread.sender_first_name.blank? and thread.sender_last_name.blank?)
       regexp_str += "#{thread.sender_first_name} #{thread.sender_last_name}\|"
     end
-    # regexp_str += "#{thread.sender_first_name}\|"                 unless thread.sender_first_name.blank?
-    # regexp_str += "#{thread.sender_last_name}\|"                  unless thread.sender_last_name.blank?
+    if paranoid
+      regexp_str += "#{thread.sender_first_name}\|"               unless thread.sender_first_name.blank?
+      regexp_str += "#{thread.sender_last_name}\|"                unless thread.sender_last_name.blank?
+    end
     unless thread.sender_address1.blank?
       regexp_str += "#{thread.sender_address1}\|"
       regexp_str += "#{thread.sender_address1.gsub(/(Apt) (\d+)/,'#\2')}\|"

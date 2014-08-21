@@ -135,7 +135,7 @@ class BillController < ApplicationController
       format.rss {
         @hot_bills = Bill.find(:all, :conditions => ["session = ? AND hot_bill_category_id IS NOT NULL", @congress],
                            :order => 'introduced DESC')
-        render :action => 'major.rxml'
+        render :action => 'major.xml.builder'
       }
     end
   end
@@ -293,7 +293,7 @@ class BillController < ApplicationController
 
     respond_to do |format|
       format.html { return redirect_to 'http://readthebill.org' }
-      format.rss { render :action => "readthebill.rxml" }
+      format.rss { render :action => 'readthebill.xml.builder' }
     end
   end
 
@@ -306,7 +306,7 @@ class BillController < ApplicationController
     @posts = []
     expires_in 60.minutes, :public => true
 
-    render :layout => false
+    render :action => 'atom.xml.builder', :layout => false
   end
 
   def atom_news
@@ -314,7 +314,7 @@ class BillController < ApplicationController
     @commentaries = @bill.news
     @commentary_type = 'news'
 
-    render :action => 'commentary_atom', :layout => false
+    render :action => 'commentary_atom.xml.builder', :layout => false
   end
 
   def atom_blogs
@@ -322,7 +322,7 @@ class BillController < ApplicationController
     @commentary_type = 'blog'
     expires_in 60.minutes, :public => true
 
-    render :action => 'commentary_atom', :layout => false
+    render :action => 'commentary_atom.xml.builder', :layout => false
   end
 
   def atom_topnews
@@ -330,7 +330,7 @@ class BillController < ApplicationController
     @commentary_type = 'topnews'
     expires_in 60.minutes, :public => true
 
-    render :action => 'commentary_atom', :layout => false
+    render :action => 'commentary_atom.xml.builder', :layout => false
   end
 
   def atom_topblogs
@@ -338,7 +338,7 @@ class BillController < ApplicationController
     @commentary_type = 'topblog'
     expires_in 60.minutes, :public => true
 
-    render :action => 'commentary_atom', :layout => false
+    render :action => 'commentary_atom.xml.builder', :layout => false
   end
 
   def atom_list
@@ -353,7 +353,7 @@ class BillController < ApplicationController
     @bills = @bills.order("#{@sort} DESC NULLS LAST").limit(20)
     expires_in 60.minutes, :public => true
 
-    render :action => 'list_atom', :layout => false
+    render :action => 'list_atom.xml.builder', :layout => false
   end
 
   def atom_top20
@@ -363,7 +363,7 @@ class BillController < ApplicationController
     @most_type = "viewed"
     expires_in 60.minutes, :public => true
 
-    render :action => 'top20_atom', :layout => false
+    render :action => 'top20_atom.xml.builder', :layout => false
   end
 
   def atom_top_commentary
@@ -417,7 +417,7 @@ class BillController < ApplicationController
 
   def user_stats_ajax
     @bill = Bill.find_by_id(params[:id])
-    render :action => 'user_stats_ajax', :layout => false
+    render :action => 'user_stats_ajax.html.erb', :layout => false
   end
 
   def letters
@@ -547,7 +547,7 @@ class BillController < ApplicationController
   def status_text
     @bill = Bill.find_by_ident(params[:id])
 
-    render :layout => false
+    render :action => 'status_text.html.erb', :layout => false
   end
 
   def news_blogs

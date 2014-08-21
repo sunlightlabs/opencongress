@@ -1,6 +1,8 @@
 class CommitteeController < ApplicationController
   before_filter :page_view, :only => :show
 
+  respond_to :html , :xml
+
   def index
     @committees = Committee.where(:parent_id => nil)
     @house_committees = Committee.where(:chamber => 'house',
@@ -104,19 +106,18 @@ class CommitteeController < ApplicationController
     @actions = @committee.latest_major_actions(20)
     expires_in 60.minutes, :public => true
 
-    render :layout => false
+    render :action => 'atom.xml.builder', :layout => false
   end
 
   def atom_top20
     @comms = Committee.top20_viewed
     expires_in 60.minutes, :public => true
 
-    render :action => 'top20_atom', :layout => false
+    render :action => 'top20_atom.xml.builder', :layout => false
   end
 
   def nodata
-    @page_title = "Committee Data Forthcoming"
-
+    @page_title = 'Committee Data Forthcoming'
   end
 
   private

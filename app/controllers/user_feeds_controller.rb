@@ -38,7 +38,7 @@ class UserFeedsController < ApplicationController
     @items.sort! { |x,y| y.rss_date <=> x.rss_date }
     expires_in 60.minutes, :public => true
 
-    render :action => "tracked_rss.rxml", :layout => false
+    render_xml :action => 'tracked_rss.xml.builder', :layout => false
 
   end
 
@@ -52,13 +52,13 @@ class UserFeedsController < ApplicationController
      @items.flatten!
      @items.sort! { |x,y| y.rss_date <=> x.rss_date }
      expires_in 60.minutes, :public => true
-     render :action => "committees.xml.builder", :layout => false
+     render_xml :action => 'committees.xml.builder', :layout => false
   end
 
   def actions
     @items = @user.recent_actions
     expires_in 60.minutes, :public => true
-    render :action => "user_actions_rss.rxml", :layout => false
+    render_xml :action => 'user_actions_rss.xml.builder', :layout => false
   end
 
   def senators
@@ -73,7 +73,7 @@ class UserFeedsController < ApplicationController
       @items.flatten!
       @items.sort! { |x,y| y.sort_date <=> x.sort_date }
 
-      render :action => "person.rxml", :layout => false
+      render_xml :action => 'person.xml.builder', :layout => false
   end
 
   def representatives
@@ -88,7 +88,7 @@ class UserFeedsController < ApplicationController
       @items.flatten!
       @items.sort! { |x,y| y.sort_date <=> x.sort_date }
 
-      render :action => "person.rxml", :layout => false
+      render_xml :action => 'person.xml.builder', :layout => false
   end
 
   def bills
@@ -102,7 +102,7 @@ class UserFeedsController < ApplicationController
     @items.flatten!
     @items.sort! { |x,y| y.date <=> x.date }
     expires_in 60.minutes, :public => true
-    render :action => "bills.rxml", :layout => false
+    render_xml :action => 'bills.xml.builder', :layout => false
   end
 
   def votes
@@ -120,7 +120,7 @@ class UserFeedsController < ApplicationController
     @items.flatten!
     @items.sort! { |x,y| y.date <=> x.date }
     expires_in 60.minutes, :public => true
-    render :action => "bills.rxml", :layout => false
+    render_xml :action => 'bills.xml.builder', :layout => false
 
   end
 
@@ -128,7 +128,7 @@ class UserFeedsController < ApplicationController
     @page_title = "Profile of #{@user.login} - Comments"
     @comments = Comment.find(:all, :conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :limit => 20)
     expires_in 60.minutes, :public => true
-    render :action => "comments.rxml", :layout => false
+    render_xml :action => 'comments.xml.builder', :layout => false
   end
 
   def issues
@@ -143,7 +143,7 @@ class UserFeedsController < ApplicationController
     @items.sort! { |x,y| y.date <=> x.date }
     expires_in 60.minutes, :public => true
 
-    render :action => "bills.rxml", :layout => false
+    render_xml :action => 'bills.xml.builder', :layout => false
   end
 
   private

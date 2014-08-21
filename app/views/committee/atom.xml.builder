@@ -8,7 +8,6 @@ xml.feed "xmlns" => "http://www.w3.org/2005/Atom" do
   xml.updated @actions.first.datetime.strftime("%Y-%m-%dT%H:%M:%SZ") if @actions.any?
   xml.author  { xml.name "opencongress.org" }
   xml.id      @committee.atom_id_as_entry
-  
 
   @actions.each do |a|         
     bill_action_atom_entry(xml, a)

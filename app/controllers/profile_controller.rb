@@ -65,7 +65,7 @@ class ProfileController < ApplicationController
   def user_actions_rss
     @user = User.find_by_login(params[:login])
     @items = @user.recent_actions
-    render :action => "new_link.rxml", :layout => false
+    render :action => 'new_link.xml.builder', :layout => false
   end
 
   def actions
@@ -178,11 +178,10 @@ class ProfileController < ApplicationController
     @bookmarks = Bookmark.find_bookmarked_bills_by_user(@user.id)
 
     if params[:format]
-
       expires_in 60.minutes, :public => true
-      render :action => "new_link.rxml", :layout => false
+      render :action => 'new_link.xml.builder', :layout => false
     else
-      render :action => "bills.html.erb"
+      render :action => 'bills.html.erb'
     end
   end
 
@@ -210,9 +209,9 @@ class ProfileController < ApplicationController
       @items.sort! { |x,y| y.date <=> x.date }
       expires_in 60.minutes, :public => true
 
-      render :action => "new_link.rxml", :layout => false
+      render :action => 'new_link.xml.builder', :layout => false
     else
-      render :action => 'my_votes'
+      render :action => 'my_votes.html.erb'
     end
   end
 
@@ -265,10 +264,10 @@ class ProfileController < ApplicationController
     if params[:format]
       @comments = Comment.find(:all, :conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :limit => 20)
       expires_in 60.minutes, :public => true
-      render :action => "comments.rxml", :layout => false
+      render :action => 'comments.xml.builder', :layout => false
     else
       @comments = Comment.find(:all, :conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => {:size => 10, :current => params[:page]})
-      render :action => "comments.html.erb"
+      render :action => 'comments.html.erb'
     end
   end
 
@@ -299,9 +298,9 @@ class ProfileController < ApplicationController
       @items.flatten!
       @items.sort! { |x,y| y.sort_date <=> x.sort_date }
 
-      render :action => "new_link.rxml", :layout => false
+      render :action => 'new_link.xml.builder', :layout => false
     else
-      render :action => "person.html.erb"
+      render :action => 'person.html.erb'
     end
   end
 
@@ -337,7 +336,7 @@ class ProfileController < ApplicationController
     @items.sort! { |x,y| y.rss_date <=> x.rss_date }
     expires_in 60.minutes, :public => true
 
-    render :action => "new_link.rxml", :layout => false
+    render :action => 'new_link.xml.builder', :layout => false
   end
 
 
@@ -356,9 +355,9 @@ class ProfileController < ApplicationController
       @items.sort! { |x,y| y.date <=> x.date }
       expires_in 60.minutes, :public => true
 
-      render :action => "new_link.rxml", :layout => false
+      render :action => 'new_link.xml.builder', :layout => false
     else
-      render :action => 'issues'
+      render :action => 'issues.html.erb'
     end
 
   end
@@ -379,7 +378,7 @@ class ProfileController < ApplicationController
       @items.sort! { |x,y| y.date <=> x.date }
       expires_in 60.minutes, :public => true
 
-      render :action => "new_link.rxml", :layout => false
+      render :action => 'new_link.xml.builder', :layout => false
     else
       render :action => 'committees'
     end
@@ -542,9 +541,7 @@ class ProfileController < ApplicationController
     if ["Person", "Bill", "Commentary"].include?(params[:object_type])
       @object = Object.const_get(params[:object_type]).find_by_id(params[:object_id])
     end
-
-    render :layout => false
-
+    render :action => 'pn_ajax.html.erb', :layout => false
   end
 
   private

@@ -402,8 +402,17 @@ class ApplicationController < ActionController::Base
     redirect_to(destination, options)
   end
 
-
   protected
+
+  ##
+  # This renders XML templates (.xml.builder) if you don't want
+  # to provide an explicit template file argument in :action
+  #
+  def render_xml(opts={})
+    request.format = 'xml'
+    respond_to {|format| format.xml {render(opts)}}
+  end
+
   def clear_return_to
     session.delete(:return_to) rescue nil
   end

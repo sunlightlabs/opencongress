@@ -46,7 +46,7 @@ class LocationChangedService
     # Handles setting representative id and saving user.
     if @user.state && @user.district
       rep = Person.find_current_representatives_by_state_and_district(@user.state, @user.district)
-      @user.representative_id = rep ? rep.first.id : nil
+      @user.representative_id = rep ? rep.id : nil
       # TODO log failure of Person lookup by state and district?
     else
       @user.representative_id = nil

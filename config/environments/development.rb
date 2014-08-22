@@ -40,4 +40,10 @@ OpenCongress::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  # Uncomment these to precompile locally
+  #config.assets.prefix = "/dev-assets"
+  #config.assets.compress = true
+  #config.assets.js_compressor  = :uglifier
+  #config.assets.css_compressor = :scss
 end

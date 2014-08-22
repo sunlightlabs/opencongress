@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '= 3.1.3'
+gem 'rails', '= 3.2.0'
 gem 'rake', '~> 0.9.1'
 
 gem 'thin'
@@ -18,16 +18,16 @@ gem "haml", "~> 3.1.8"
 gem "haml-rails"
 
 group :assets do
-  gem 'coffee-rails', '~> 3.1.1'
+  gem 'coffee-rails', '~> 3.2.1'
   gem 'uglifier', '>= 1.0.3'
 end
 
-gem 'sass-rails', '~> 3.1.5'
+gem 'sass-rails', '~> 3.2.3'
 gem 'jquery-rails'
 gem 'prototype-rails' #should be removed eventually
 
 # RABL for API / JSON
-gem 'rabl', "~> 0.2.8"
+gem 'rabl'
 
 # Background tasks
 gem 'delayed_job', '~> 2.1'

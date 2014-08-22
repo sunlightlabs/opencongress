@@ -46,7 +46,7 @@ box-shadow: 0px 3px 10px #000, 0px 5px 165px #777;
 
 
 .simple_overlay .close {
-	background: url(../images/donate/close.png) no-repeat;
+	background: url(../assets/donate/close.png) no-repeat;
 	position:absolute;
 	right:-15px;
 	top:-15px;
@@ -57,7 +57,7 @@ box-shadow: 0px 3px 10px #000, 0px 5px 165px #777;
 
 
 .jqmClose{
-	background: url(../images/close.png) no-repeat;
+	background: url(../assets/close.png) no-repeat;
 	position:absolute;
 	right:0px;
 	top:10px;

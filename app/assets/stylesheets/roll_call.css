@@ -2,8 +2,8 @@
 
 #heading {
 min-height: 45px;
-background: url(../images/committees_heading.png);
-   _background: url(../images/committees_heading.gif);
+background: url(../assets/committees_heading.png);
+   _background: url(../assets/committees_heading.gif);
 border-bottom: 1px solid #ddc7ee;
 }
 
@@ -11,8 +11,8 @@ border-bottom: 1px solid #ddc7ee;
 .show #heading, .by_number #heading {
 min-height: 45px;
 padding-bottom: 20px;
-background: url(../images/committees_heading.png);
-   _background: url(../images/committees_heading.gif);
+background: url(../assets/committees_heading.png);
+   _background: url(../assets/committees_heading.gif);
 border-bottom: 1px solid #ddc7ee;
 float: left;
 width: 945px;
@@ -54,8 +54,8 @@ font-size: 11px !important;
 
 #the_rolls{
 height: 600px;
-background: url(../images/sen-sort.png) left top repeat-x;
-   _background: url(../images/sen-sort.gif) left top repeat-x;
+background: url(../assets/sen-sort.png) left top repeat-x;
+   _background: url(../assets/sen-sort.gif) left top repeat-x;
 }
 
 
@@ -123,7 +123,7 @@ margin-top: 2px;
 font-weight: normal;
 display:block;
 height: 20px;
-background:url(../images/star.gif) no-repeat 0 -32px
+background:url(../assets/star.gif) no-repeat 0 -32px
 }
 
 #timeframe_select.popular {
@@ -204,7 +204,7 @@ background-position: -2px 84px;
   left: 384px;
   height: 427px;
   width: 28px;
-  background: url('../images/zip_arrow.png');
+  background: url('../assets/zip_arrow.png');
 }
 .logged-in #zipcode_lookup:after { top: 126px; }
 .jcarousel-skin-tango{
@@ -248,8 +248,8 @@ width: 383px;
 }
 
 .view_examples:hover span{
-background: url(../images/map_buttons.png) left -262px no-repeat;
-   _background: url(../images/map_buttons.gif) left -262px no-repeat;
+background: url(../assets/map_buttons.png) left -262px no-repeat;
+   _background: url(../assets/map_buttons.gif) left -262px no-repeat;
 }
 
 .view_examples span{
@@ -259,8 +259,8 @@ width: 340px;
 margin: 0px 0 0 22px;
 overflow: hidden;
 padding-top: 49px;
-background: url(../images/map_buttons.png) left -210px no-repeat;
-   _background: url(../images/map_buttons.gif) left -210px no-repeat;
+background: url(../assets/map_buttons.png) left -210px no-repeat;
+   _background: url(../assets/map_buttons.gif) left -210px no-repeat;
 }
 
 
@@ -280,8 +280,8 @@ padding-left: 30px;
 }
 
 .inner{
-background: url(../images/sen-sort.png) left 83px repeat-x;
-   _background: url(../images/sen-sort.gif) left 83px repeat-x;
+background: url(../assets/sen-sort.png) left 83px repeat-x;
+   _background: url(../assets/sen-sort.gif) left 83px repeat-x;
 }
 
 #roll_call.show .inner, #roll_call.by_number .inner {
@@ -300,20 +300,20 @@ display: none;
 
 
 span.abs{
-  background: url(../images/sprites.png) 0 -242px no-repeat;
-   _background: url(../images/sprites.gif) 0 -242px no-repeat;
+  background: url(../assets/sprites.png) 0 -242px no-repeat;
+   _background: url(../assets/sprites.gif) 0 -242px no-repeat;
 padding-left: 20px !important;
 }
 
 
 span.nays{
-  background: url(../images/Failed_big.gif) 0 -3px no-repeat;
+  background: url(../assets/Failed_big.gif) 0 -3px no-repeat;
 padding-left: 20px !important;
 }
 
 span.ayes{
-  background: url(../images/passed_big.png) 0 1px no-repeat;
-   _background: url(../images/passed_big.gif) 0 1px no-repeat;
+  background: url(../assets/passed_big.png) 0 1px no-repeat;
+   _background: url(../assets/passed_big.gif) 0 1px no-repeat;
 padding-left: 20px !important;
 }
 
@@ -326,8 +326,8 @@ span.no_icon {
 display: block;
 padding-top: 0 ;
 margin: 0;
-background: url(../images/map_right.png) right 20px no-repeat;
-   _background: url(../images/map_right.gif) right 20px no-repeat;
+background: url(../assets/map_right.png) right 20px no-repeat;
+   _background: url(../assets/map_right.gif) right 20px no-repeat;
 height: 90px;
 overflow: hidden;
 margin-bottom: 24px;
@@ -335,19 +335,19 @@ border-top: 0;
 }
 
 #head_button:hover span{
-background: url(../images/map_buttons.png) 0 -470px no-repeat;
-   _background: url(../images/map_buttons.gif) 0 -470px no-repeat;
+background: url(../assets/map_buttons.png) 0 -470px no-repeat;
+   _background: url(../assets/map_buttons.gif) 0 -470px no-repeat;
 }
 
 
 #head_button:hover {
-background: url(../images/map_right.png) right 20px no-repeat;
-   _background: url(../images/map_right.gif) right 20px no-repeat;
+background: url(../assets/map_right.png) right 20px no-repeat;
+   _background: url(../assets/map_right.gif) right 20px no-repeat;
 }
 
 #head_button span {
-background: url(../images/map_buttons.png) 0 -418px no-repeat;
-   _background: url(../images/map_buttons.gif) 0 -418px no-repeat;
+background: url(../assets/map_buttons.png) 0 -418px no-repeat;
+   _background: url(../assets/map_buttons.gif) 0 -418px no-repeat;
 padding-top: 50px !important;
 height: 0;
 overflow: hidden;

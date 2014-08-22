@@ -7,6 +7,7 @@ gem 'thin'
 
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
+#gem 'mysql2'
 
 gem "settingslogic"
 

@@ -926,15 +926,6 @@ class Person < ActiveRecord::Base
     return [ sens, reps ]
   end
 
-  def Person.find_current_representative_by_state_and_district(state, district)
-    Person.find(:first,
-                :include => [:roles],
-                :conditions => ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today])
-  end
-
-
-
-
   ##
   # This returns a pair of arrays: [ [sen1, sen2], [rep1, ... repN] ]
   # Callers must check the length of the rep array in case
@@ -962,6 +953,12 @@ class Person < ActiveRecord::Base
       Person.find(:all,
                   :include => [:roles],
                   :conditions => ["people.state = ? AND roles.enddate > ? AND roles.role_type='sen'", state, Date.today])
+  end
+
+  def Person.find_current_representative_by_state_and_district(state, district)
+    Person.find(:first,
+                :include => [:roles],
+                :conditions => ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today])
   end
 
   def Person.find_current_representatives_by_state_and_district(state, district)

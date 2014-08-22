@@ -14,6 +14,7 @@ class LocationChangedService
   #
   def initialize(user)
 
+    # skip the change_location callback in this block so we don't enter infinite loop
     UserProfile.skip_callback(:save, :after, :change_location!)
 
     @user = user
@@ -45,14 +46,14 @@ class LocationChangedService
 
     # Handles setting representative id and saving user.
     if @user.state && @user.district
-      rep = Person.find_current_representatives_by_state_and_district(@user.state, @user.district)
-      @user.representative_id = rep ? rep.id : nil
+      rep = Person.find_current_representative_by_state_and_district(@user.state, @user.district)
+      @user.representative = rep ? rep : nil
       # TODO log failure of Person lookup by state and district?
     else
-      @user.representative_id = nil
+      @user.representative = nil
     end
 
-    # Save and skip the change_location callback so we don't enter infinite loop
+    # save and
     @user.save()
     join_default_groups()
     UserProfile.set_callback(:save, :after, :change_location!)

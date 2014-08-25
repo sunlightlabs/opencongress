@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: articles
+#
+#  id                  :integer          not null, primary key
+#  title               :string(255)
+#  article             :text
+#  created_at          :datetime
+#  updated_at          :datetime
+#  published_flag      :boolean
+#  frontpage           :boolean          default(FALSE)
+#  user_id             :integer
+#  render_type         :string(255)
+#  frontpage_image_url :string(255)
+#  excerpt             :text
+#  fti_names           :public.tsvector
+#
+
 articles_389: 
   published_flag: t
   article: "<img style=\"float:none;\" src=\"http://cache.daylife.com/imageserve/0fcX1vy4mFcAX/610x.jpg\" alt=\"Lloyd Blankfein, chief executive of Goldman Sachs, testifies before the Financial Crisis Inquiry Commission in Washington January 13, 2010.\">\r\n\

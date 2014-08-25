@@ -2,6 +2,7 @@ require 'authenticated_system'
 require_dependency 'email_congress'
 
 class ApplicationController < ActionController::Base
+
   protect_from_forgery :if => :logged_in?
 
   include AuthenticatedSystem
@@ -181,6 +182,16 @@ class ApplicationController < ActionController::Base
     end
     @goto_comment = comment
   end
+
+#  def render(opts)
+#    ap(__callee__)
+#    calling_controller = parse_caller(caller[0])[0].split('/')[-1].gsub('_controller.rb','')
+#    ap(calling_controller)
+#    hash = opts.is_a?(::Hash) ? opts : {}
+#    hash['stream'] = true
+#    if opts.is_a?(::String) then hash['template'] = opts end
+#    super(hash) rescue super(opts)
+#  end
 
   private
 
@@ -453,6 +464,15 @@ class ApplicationController < ActionController::Base
 
   def warn_geocode
     flash.now[:error] = "We are currently experiencing geocoding errors; Contacting your reps is unavailable."
+  end
+
+  def parse_caller(at)
+    if /^(.+?):(\d+)(?::in `(.*)')?/ =~ at
+      file   = Regexp.last_match[1]
+      line   = Regexp.last_match[2].to_i
+      method = Regexp.last_match[3]
+      [file, line, method]
+    end
   end
 
 end

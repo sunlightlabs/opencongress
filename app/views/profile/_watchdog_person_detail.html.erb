@@ -28,7 +28,7 @@
   <h3>Comments on <%= s.title_full_name %></h3>
     Mine: <%= s.comments.count(:id, :conditions => ["user_id = ?", @user.id]) %> |
     <% if @user.friends.count > 0 %>
-      My Friends: <%= s.comments.uncensored.find_all_by_user_id(@user.friends.collect{|p| p.friend_id}).length %> <%= toggler("#{s.id}-my_friends", "(show)", "(hide)") unless s.comments.uncensored.find_all_by_user_id(@user.friends.collect{|p| p.friend_id}).length == 0 %> |
+      My Friends: <%= s.comments.uncensored.where(user_id:@user.friends.collect{|p| p.friend_id}).length %> <%= toggler("#{s.id}-my_friends", "(show)", "(hide)") unless s.comments.uncensored.where(user_id:@user.friends.collect{|p| p.friend_id}).length == 0 %> |
     <% end %>
     <!-- OC Users' in <%= @my_state.abbreviation %>:  <%# s.comments_from_state_count(@my_state.abbreviation) %> | -->
     <%= toggler("#{s.id}-most_useful", "Show Most Useful", "Hide Most Useful") %>
@@ -44,7 +44,7 @@
 
     <div id="<%= s.id %>-my_friends" style="display:none;">
       My friends' comments on this Senator:
-      <% s.comments.uncensored.find_all_by_user_id(@user.friends.collect{|p| p.friend_id}).each do |fc| %>
+      <% s.comments.uncensored.where(user_id:@user.friends.collect{|p| p.friend_id}).each do |fc| %>
         <%= render :partial => "shared/comments_comment", :locals => {:comment => fc, :object => s, :myscores => @user.comment_scores} %>
       <% end %>
       <br/>

@@ -20,7 +20,7 @@ class StatesController < ApplicationController
     @representatives = @state.representatives.order("CAST(district AS INTEGER)")
     @users = @state.users
     @tracking_suggestions = @state.tracking_suggestions
-    @senators = Person.sen.find_all_by_state(@state.abbreviation).sort{|a,b| b.consecutive_years <=> a.consecutive_years }
+    @senators = Person.sen.where(state:@state.abbreviation).sort{|a,b| b.consecutive_years <=> a.consecutive_years }
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @state }

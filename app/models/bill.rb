@@ -261,9 +261,9 @@ class Bill < ActiveRecord::Base
                                        :group => "commentaries.id", :order => "avg_rating DESC")
   end
 
-  def self.find_with_most_commentary_ratings
+  def Bill.find_with_most_commentary_ratings
     ids = CommentaryRating.count(:id, :group => "commentaries.commentariable_id", :include => "commentary", :conditions => "commentaries.commentariable_type='Bill'", :order => "count_id DESC").collect {|p| p[0]}
-    find_all_by_id(ids)
+    where(id:ids)
   end
 
   def is_house_bill?

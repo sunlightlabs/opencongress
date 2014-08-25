@@ -468,11 +468,17 @@ class Subject < ActiveRecord::Base
   end
 
   def recent_blogs
-    Commentary.find_all_by_commentariable_id_and_commentariable_type_and_is_ok_and_is_news(Subject.find_by_id(5029).recently_introduced_bills.collect {|p| p.id},"Bill",true,false, :order => "created_at DESC", :limit => 10)
+    Commentary.where(commentariable_id: Subject.find_by_id(5029).recently_introduced_bills.collect {|p| p.id},
+                     commentariable_type: 'Bill',
+                     is_ok: true,
+                     is_news: false).order('created_at DESC').limit(10)
   end
 
   def recent_news
-    Commentary.find_all_by_commentariable_id_and_commentariable_type_and_is_ok_and_is_news(Subject.find_by_id(5029).recently_introduced_bills.collect {|p| p.id},"Bill",true,true, :order => "created_at DESC", :limit => 10)
+    Commentary.where(commentariable_id: Subject.find_by_id(5029).recently_introduced_bills.collect {|p| p.id},
+                     commentariable_type: 'Bill',
+                     is_ok: true,
+                     is_news: false).order('created_at DESC').limit(10)
   end
 
   private

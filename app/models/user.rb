@@ -174,7 +174,7 @@ class User < ActiveRecord::Base
   scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subjects.id" => subject.id) }
   scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committees.id" => committee.id) }
 
-  scope :mypn_spammers, includes(:political_notebook => [:notebook_items]).where("notebook_items.spam = ?", true).order("users.login ASC")
+  scope :mypn_spammers, lambda{includes(:political_notebook => [:notebook_items]).where('notebook_items.spam = ?', true).order('users.login ASC')}
 
   # These are LoD helpers that just pass on AR relations from Person
   def bookmarked_senators; bookmarked_people.sen; end
@@ -313,7 +313,7 @@ class User < ActiveRecord::Base
     end
 
     def find_by_feed_key_option(key)
-      self.includes(:user_options).where("user_options.feed_key = ?", key).first
+      self.includes(:user_options).where("user_options.feed_key = ?", key).firstPer
     end
 
   end # class << self
@@ -633,7 +633,7 @@ class User < ActiveRecord::Base
     User.find_by_sql('select login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
       puts k.login
       number = k.r1_tally.to_i
-      User.find_all_by_login(k.login, :order => "created_at desc").each do |j|
+      User.where(login: k.login).order('created_at DESC').each do |j|
         number = number - 1
         j.destroy unless number == 1
       end
@@ -642,7 +642,7 @@ class User < ActiveRecord::Base
     User.find_by_sql('select email, COUNT(*) as r1_tally FROM users GROUP BY email HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
       puts k.email
       number = k.r1_tally.to_i
-      User.find_all_by_email(k.email, :order => "created_at desc").each do |j|
+      User.where(email: k.email).order('created_at DESC').each do |j|
         number = number - 1
         j.destroy unless number == 1
       end

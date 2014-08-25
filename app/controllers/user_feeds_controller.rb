@@ -108,8 +108,8 @@ class UserFeedsController < ApplicationController
   def votes
 
     @page_title = "Profile of #{@user.login} - Bills Voted On"
-    @bills_supported = @user.bill_votes.find_all_by_support(0)
-    @bills_opposed = @user.bill_votes.find_all_by_support(1)
+    @bills_supported = @user.bill_votes.where(support:0)
+    @bills_opposed = @user.bill_votes.where(support:1)
     @bill_votes = @bills_supported.concat(@bills_opposed)
 
     @title = "Bills #{params[:login]} supports & opposes"

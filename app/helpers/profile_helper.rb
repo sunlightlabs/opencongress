@@ -155,10 +155,10 @@ module ProfileHelper
   end
 
   def show_person_vote(person,bill)
-    out = ""
-    roll_calls = RollCall.find_all_by_bill_id(bill.id)
+    out = ''
+    roll_calls = RollCall.where(bill_id:bill.id)
     unless roll_calls.empty?
-      rc_votes = RollCallVote.find_all_by_roll_call_id_and_person_id(roll_calls,person, :include => "roll_call", :order => "roll_calls.date desc", :limit => 1)
+      rc_votes = RollCallVote.eager_load(:roll_call).where(roll_call_id:roll_calls,person_id:person).order('roll_calls.date DESC').limit(1)
       logger.info rc_votes.to_yaml
       unless rc_votes.empty?
         out_ar = []

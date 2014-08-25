@@ -19,7 +19,7 @@ class Admin::CommentaryController < Admin::IndexController
   def pending
     @page_title = "Pending News and Blog Articles"
     if params[:commentary_type].blank? || params[:commentary_id].blank?
-      @commentaries = Commentary.find_all_by_status('PENDING', :limit => 30, :order => 'date DESC')
+      @commentaries = Commentary.where(status:'PENDING').order('date DESC').limit(30)
       @total_commentaries = Commentary.count_by_sql("SELECT count(*) FROM commentaries WHERE status='PENDING'")
     else
       @commentaries = Commentary.find(:all,

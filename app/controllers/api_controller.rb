@@ -239,7 +239,7 @@ class ApiController < ApplicationController
   end
 
   def bill_roll_calls
-    bills = Bill.find_all_by_id(params[:bill_id])
+    bills = Bill.where(id:params[:bill_id])
     do_render(bills,
               :collection_name => :bills,
               :except => [:current_support_pb, :support_count_1, :rolls,
@@ -273,7 +273,7 @@ class ApiController < ApplicationController
   end
 
   def bills_by_issue_id
-    issues = Subject.find_all_by_id(params[:issue_id])
+    issues = Subject.where(id:params[:issue_id])
     render :xml => issues.to_xml(:include => {:recently_introduced_bills => {:methods => :title_common}})
   end
 

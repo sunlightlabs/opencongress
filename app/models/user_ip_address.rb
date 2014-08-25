@@ -17,12 +17,12 @@ class UserIpAddress < ActiveRecord::Base
 
   def self.find_by_ip(address)
      ip = UserIpAddress.int_form(address)
-     self.find_by_addr(ip, :order => "created_at DESC")
+     self.find_by_addr(ip)
   end
 
   def self.find_all_by_ip(address)
      ip = UserIpAddress.int_form(address)
-     self.find_all_by_addr(ip, :order => "created_at DESC")
+     self.where(addr:ip).order('created_at DESC')
   end
 
   def self.int_form(address)

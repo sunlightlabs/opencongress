@@ -51,7 +51,7 @@ class Admin::CommentsController < Admin::IndexController
     end
 
     unless params[:ban_user].nil? || params[:ban_user].empty?
-      comments = Comment.find_all_by_id(params[:ban_user])
+      comments = Comment.where(id:params[:ban_user])
       ban_user_ids = comments.collect {|p| p.user_id}.compact.uniq.flatten
       ban_users = User.all :conditions => ["id in(?)", user_ids]
       Comment.update_all("censored = true", ["id in (?)", params[:ban_user]])
@@ -64,7 +64,7 @@ class Admin::CommentsController < Admin::IndexController
 
     unless params[:ok].nil? || params[:ok].empty?
       # mark the spam as false positives
-      comments = Comment.find_all_by_id(params[:ok])
+      comments = Comment.where(id:params[:ok])
       comments.each do |c|
         c.false_positive! if c.is_spam?
       end

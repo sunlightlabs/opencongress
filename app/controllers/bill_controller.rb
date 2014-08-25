@@ -13,7 +13,7 @@ class BillController < ApplicationController
   TITLE_MAX_LENGTH = 150
 
   def roll_calls
-    @roll_calls = RollCall.find_all_by_bill_id(params[:id])
+    @roll_calls = RollCall.where(bill_id:params[:id])
     render :partial => 'roll_call/roll_calls_summary', :locals => { :rolls => @rolls }
   end
 
@@ -65,7 +65,7 @@ class BillController < ApplicationController
     @bills = {}
     @bill_counts = {}
     @types_from_params.each do |bill_type|
-      @bills[bill_type] = Bill.find_all_by_bill_type_and_session(bill_type, @congress, :order => 'lastaction DESC NULLS LAST', :limit => 5)
+      @bills[bill_type] = Bill.where(bill_type:bill_type, session:@congress).order('lastaction DESC NULLS LAST').limit(5)
       @bill_counts[bill_type] = Bill.count(:conditions => ['bill_type = ? AND session = ?', bill_type, @congress])
     end
 

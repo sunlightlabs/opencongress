@@ -15,7 +15,7 @@ require 'iconv'
 
 
 # Get all senate bills for the current congress.
-bills = Bill.find_all_by_session_and_bill_type(Settings.default_congress, 's')
+bills = Bill.where(session:Settings.default_congress, bill_type: 's')
 i=0
 bills.each do |b|
   i += 1
@@ -28,8 +28,8 @@ bills.each do |b|
 end
 
 i = 0
-unless (ARGV[0] == 'senate-only')
-  commentaries = Commentary.find(:all, :conditions => "status='OK' AND contains_term IS NULL")
+unless ARGV[0] == 'senate-only'
+  commentaries = Commentary.where(status:'OK', contains_term: nil)
   commentaries.each do |c|
     i += 1
     puts "Article #{i}/#{commentaries.size}"

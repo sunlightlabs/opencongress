@@ -52,15 +52,14 @@ class Bookmark < ActiveRecord::Base
 #      find_all_by_user_id(User.find_by_login(user).id,
 #            :include => [:person => :roles],
 #            :conditions => ["bookmarkable_type = ? AND roles.role_type = ?", "Person", role])
-      with_scope(:find => {:conditions => ["bookmarkable_type = 'Person' AND user_id = ?", user]}) do
-         find(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", role])
-      end
+#      with_scope(:find => {:conditions => ["bookmarkable_type = 'Person' AND user_id = ?", user]}) do
+#       find(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", role])
+#      end
+    eager_load({:person => :roles}).where(:bookmarkable_type =>'Person',:user_id => user,'roles.role_type' => role)
   end
 
   def self.find_bookmarked_bills_by_user(user)
-      find_all_by_user_id(user,
-            :conditions => ["bookmarkable_type = ?", "Bill"])
+    where(user_id:user, bookmarkable_type: 'Bill')
   end
 
 end
-

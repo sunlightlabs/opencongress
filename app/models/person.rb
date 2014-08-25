@@ -242,7 +242,7 @@ class Person < ActiveRecord::Base
     self.to_xml(default_options.merge(options))
   end
 
-  def Person.random_commentary(person_id, type, limit = 1, since = Settings.default_count_time)
+  def self.random_commentary(person_id, type, limit = 1, since = Settings.default_count_time)
     p = Person.find_by_id(person_id)
     random_item = nil
     if p
@@ -309,7 +309,7 @@ class Person < ActiveRecord::Base
    chamber, Date.today, Date.today])
   end
 
-  def Person.rep_random_news(limit = 1, since = Settings.default_count_time)
+  def self.rep_random_news(limit = 1, since = Settings.default_count_time)
     random_item = nil
     tries = 0
     until random_item != nil || tries == 3
@@ -324,7 +324,7 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def Person.rep_random_blog(limit = 1, since = Settings.default_count_time)
+  def self.rep_random_blog(limit = 1, since = Settings.default_count_time)
     random_item = nil
     tries = 0
     until random_item != nil || tries == 3
@@ -339,7 +339,7 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def Person.sen_random_news(limit = 1, since = Settings.default_count_time)
+  def self.sen_random_news(limit = 1, since = Settings.default_count_time)
     random_item = nil
     tries = 0
     until random_item != nil || tries == 3
@@ -354,7 +354,7 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def Person.sen_random_blog(limit = 1, since = Settings.default_count_time)
+  def self.sen_random_blog(limit = 1, since = Settings.default_count_time)
     random_item = nil
     tries = 0
     until random_item != nil || tries == 3
@@ -496,7 +496,7 @@ class Person < ActiveRecord::Base
   #
   # @return {Hash} object containing metadata about all replies
   #
-  def Person.get_email_reply_summary(congresses=[Settings.default_congress])
+  def self.get_email_reply_summary(congresses=[Settings.default_congress])
     toReturn = {
                 :count_total => 0,
                 :count_replied => 0,
@@ -576,7 +576,7 @@ class Person < ActiveRecord::Base
   end
 
   # Battle Royale
-  def Person.find_all_by_most_tracked_for_range(range, options)
+  def self.find_all_by_most_tracked_for_range(range, options)
     range = 630720000 if range.nil?
 
     # this prevents sql injection
@@ -676,7 +676,7 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def Person.count_all_by_most_tracked_for_range(range, options)
+  def self.count_all_by_most_tracked_for_range(range, options)
     range = 630720000 if range.nil?
 
     # this prevents sql injection
@@ -771,7 +771,7 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def Person.calculate_and_save_party_votes
+  def self.calculate_and_save_party_votes
     update_query = ["UPDATE people
                      SET total_session_votes=votes_agg.total_votes,
                          votes_democratic_position=votes_agg.votes_democratic_position,
@@ -813,7 +813,7 @@ class Person < ActiveRecord::Base
     ActiveRecord::Base.connection.execute(sanitize_sql_array(update_query))
   end
 
-  def Person.list_by_votes_with_party_ranking(chamber = 'house', party = 'Democrat')
+  def self.list_by_votes_with_party_ranking(chamber = 'house', party = 'Democrat')
     role_type = (chamber == 'house') ? 'Rep.' : 'Sen.'
 
     # find_by_sql(["SELECT people.*,
@@ -883,50 +883,46 @@ class Person < ActiveRecord::Base
     items.group_by{|x| x[:sort_date]}.to_a.sort{|a,b| b[0]<=>a[0]}
   end
 
-  def Person.random(role, limit=3, congress=109)
+  def self.random(role, limit=3, congress=109)
     Person.find_by_sql ["SELECT * FROM (SELECT random(), people.* FROM people LEFT OUTER JOIN roles on roles.person_id=people.id WHERE roles.role_type = ? AND roles.startdate <= ? AND roles.enddate >= ? ORDER BY 1) as peeps LIMIT ?;", role, OpenCongress::Application::CONGRESS_START_DATES[congress], OpenCongress::Application::CONGRESS_START_DATES[congress], limit]
   end
 
-  def Person.find_all_by_last_name_ci_and_state(name, state)
+  def self.find_all_by_last_name_ci_and_state(name, state)
     Person.find(:all,
                 :include => :roles,
                 :conditions => ["lower(lastname) = ? AND people.state = ?", name.downcase, state])
   end
 
-  def Person.find_all_by_first_name_ci_and_last_name_ci_and_state(first, last, state)
+  def self.find_all_by_first_name_ci_and_last_name_ci_and_state(first, last, state)
     Person.find(:all,
                 :include => :roles,
                 :conditions => ["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?) AND people.state = ?", last.downcase, first.downcase, first.downcase, state])
 
   end
 
-  def Person.find_by_first_name_ci_and_last_name_ci(first,last)
+  def self.find_by_first_name_ci_and_last_name_ci(first,last)
     Person.find(:all,
                 :include => :roles,
                 :conditions => ["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?)", last.downcase, first.downcase, first.downcase])
   end
 
-  def Person.find_all_by_last_name_ci(name)
+  def self.find_all_by_last_name_ci(name)
     Person.find(:all,
                 :include => :roles,
                 :conditions => ["lower(lastname) = ?", name.downcase])
   end
 
-  def Person.find_current_senators_by_state(state)
-    Person.find_all_by_state_and_title(state, 'Sen.')
-  end
-
   ##
   # In this case address is free-form. Can be as simple as a state or
   # zipcode, though those will yield less accurate results.
-  def Person.find_current_congresspeople_by_address(address)
+  def self.find_current_congresspeople_by_address(address)
     dsts = District.from_address(address)
     reps = dsts.map(&:rep).uniq.compact
     sens = dsts.flat_map(&:sens).uniq
     return [ sens, reps ]
   end
 
-  def Person.find_current_representative_by_state_and_district(state, district)
+  def self.find_current_representative_by_state_and_district(state, district)
     Person.find(:first,
                 :include => [:roles],
                 :conditions => ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today])
@@ -939,7 +935,7 @@ class Person < ActiveRecord::Base
   # This returns a pair of arrays: [ [sen1, sen2], [rep1, ... repN] ]
   # Callers must check the length of the rep array in case
   # the zip5 was not specific enough.
-  def Person.find_current_congresspeople_by_zipcode(zip5, zip4=nil)
+  def self.find_current_congresspeople_by_zipcode(zip5, zip4=nil)
     if zip5.present? && zip4.present?
       lat, lng = MultiGeocoder.coordinates("#{zip5}-#{zip4}")
       legs = Congress.legislators_locate(lat, lng).results rescue []
@@ -958,19 +954,13 @@ class Person < ActiveRecord::Base
      legs.select{ |l| %w(Del. Rep.).include? l.title }]
   end
 
-  def Person.find_current_senators_by_state(state)
-      Person.find(:all,
-                  :include => [:roles],
-                  :conditions => ["people.state = ? AND roles.enddate > ? AND roles.role_type='sen'", state, Date.today])
+  def self.find_current_senators_by_state(state)
+    Person.on_date(Date.today).where('people.state' => state, 'roles.role_type' => 'sen')
   end
 
-  def Person.find_current_representatives_by_state_and_district(state, district)
-    Person.on_date(Date.today)
-          .where(:title => ['Rep.', 'Del.'],
-                 :state => state,
-                 :district => district.to_s)
+  def self.find_current_representatives_by_state_and_district(state, district)
+    Person.on_date(Date.today).where(:title => %w[Rep. Del.], :state => state, :district => district.to_s)
   end
-
 
   # return bill actions since last X
   def self.find_user_data_for_tracked_person(person, current_user)
@@ -1183,7 +1173,7 @@ class Person < ActiveRecord::Base
   end
 
   def consecutive_years
-    chamber_roles = self.roles.find_all_by_role_type(self.roles.first.role_type, :order => "enddate desc")
+    chamber_roles = self.roles.where(role_type:self.roles.first.role_type).order('enddate DESC')
     number_terms = chamber_roles.length
 
     if chamber_roles.first.enddate > Date.today
@@ -1249,7 +1239,7 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def Person.find_by_most_commentary(type = 'news', person_type = 'rep', num = 5, since = Settings.default_count_time)
+  def self.find_by_most_commentary(type = 'news', person_type = 'rep', num = 5, since = Settings.default_count_time)
     title = (person_type == 'rep') ? 'Rep.' : 'Sen.'
     is_news = (type == "news") ? true : false
 
@@ -1270,7 +1260,7 @@ class Person < ActiveRecord::Base
                       since.ago, is_news, title, num])
   end
 
-  def Person.top20_commentary(type = 'news', person_type = 'rep')
+  def self.top20_commentary(type = 'news', person_type = 'rep')
     people = Person.find_by_most_commentary(type, person_type, num = 20)
 
     date_method = :"entered_top_#{type}"
@@ -1292,11 +1282,11 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def Person.representatives(congress = Settings.default_congress, order_by = 'name')
+  def self.representatives(congress = Settings.default_congress, order_by = 'name')
     Person.find_by_role_type('rep', congress, order_by)
   end
 
-  def Person.voting_representatives
+  def self.voting_representatives
     Person.find(:all,
                 :include => :roles,
                 :conditions => [ "roles.role_type=? AND roles.enddate > ? AND roles.state NOT IN (?)",
@@ -1304,11 +1294,11 @@ class Person < ActiveRecord::Base
                 :order => 'people.lastname')
   end
 
-  def Person.senators(congress = Settings.default_congress, order_by = 'name')
+  def self.senators(congress = Settings.default_congress, order_by = 'name')
     Person.find_by_role_type('sen', congress, order_by)
   end
 
-  def Person.find_by_role_type(role_type, congress, order_by)
+  def self.find_by_role_type(role_type, congress, order_by)
     case order_by
     when 'state'
       order = "people.state, people.district"
@@ -1323,15 +1313,15 @@ class Person < ActiveRecord::Base
                 :order => order)
   end
 
-  def Person.all_sitting
+  def self.all_sitting
     self.senators.concat(self.representatives)
   end
 
-  def Person.all_voting
+  def self.all_voting
     self.senators.concat(self.voting_representatives)
   end
 
-  def Person.top20_viewed(person_type = nil)
+  def self.top20_viewed(person_type = nil)
     case person_type
     when 'sen'
       people = ObjectAggregate.popular('Person', Settings.default_count_time, 540).select{|p| p.title == 'Sen.'}[0..20]

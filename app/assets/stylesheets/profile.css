@@ -29,55 +29,55 @@ ul.profile_nav li a {
 	padding-right: 17px;
 	font-size:13px;
 	text-decoration: none;
-	  background: url('../images/arrow_button_cap.png') right 0 no-repeat;
-   _background: url('../images/arrow_button_cap.gif') right 0 no-repeat;
+	  background: url('../assets/arrow_button_cap.png') right 0 no-repeat;
+   _background: url('../assets/arrow_button_cap.gif') right 0 no-repeat;
 }
 
 ul.profile_nav li a.active {
 font-weight: bold;
 color: #888;
-background: url('../images/arrow_button_cap.png') right -34px no-repeat;
-   _background: url('../images/arrow_button_cap.gif') right -34px no-repeat;
+background: url('../assets/arrow_button_cap.png') right -34px no-repeat;
+   _background: url('../assets/arrow_button_cap.gif') right -34px no-repeat;
 }
 
 
 ul.profile_nav li a:active {
 color: #888;
 text-decoration: none;
-background: url('../images/arrow_button_cap.png') right -34px no-repeat;
-   _background: url('../images/arrow_button_cap.gif') right -34px no-repeat;
+background: url('../assets/arrow_button_cap.png') right -34px no-repeat;
+   _background: url('../assets/arrow_button_cap.gif') right -34px no-repeat;
 }
 
 ul.profile_nav li a:active span {
-background: url('../images/arrow_button.png') left -34px repeat-x;
-   _background: url('../images/arrow_button.gif') left -34px repeat-x;
+background: url('../assets/arrow_button.png') left -34px repeat-x;
+   _background: url('../assets/arrow_button.gif') left -34px repeat-x;
 
 }
 
 ul.profile_nav li a span {
 padding: 7px 16px 8px;
 display: block;
-background: url('../images/arrow_button.png') left 0 repeat-x;
-   _background: url('../images/arrow_button.gif') left 0 repeat-x;
+background: url('../assets/arrow_button.png') left 0 repeat-x;
+   _background: url('../assets/arrow_button.gif') left 0 repeat-x;
 
 }
 
 ul.profile_nav li a.active span {
-background: url('../images/arrow_button.png') left -34px repeat-x;
-   _background: url('../images/arrow_button.gif') left -34px repeat-x;
+background: url('../assets/arrow_button.png') left -34px repeat-x;
+   _background: url('../assets/arrow_button.gif') left -34px repeat-x;
 }
 
 
 #profile.show ul.profile_nav li#AboutMe a {
 color: #888;
 text-decoration: none;
-background: url('../images/arrow_button_cap.png') right -34px no-repeat;
-   _background: url('../images/arrow_button_cap.gif') right -34px no-repeat;
+background: url('../assets/arrow_button_cap.png') right -34px no-repeat;
+   _background: url('../assets/arrow_button_cap.gif') right -34px no-repeat;
 }
 
 #profile.show ul.profile_nav li#AboutMe a span {
-background: url('../images/arrow_button.png') left -34px repeat-x;
-   _background: url('../images/arrow_button.gif') left -34px repeat-x;
+background: url('../assets/arrow_button.png') left -34px repeat-x;
+   _background: url('../assets/arrow_button.gif') left -34px repeat-x;
 
 }
 
@@ -449,7 +449,7 @@ float:none;
   text-decoration:none;
 }
 .privacy {
-  background:url('../images/private.png') no-repeat left center;
+  background:url('../assets/private.png') no-repeat left center;
   padding-left:18px;
 }
 
@@ -489,16 +489,16 @@ clear: both;
 
 
 a.med_button.on{
-background: url('../images/med_button_cap.png') right -31px no-repeat;
-   _background: url('../images/med_button_cap.gif') right -31px no-repeat;
+background: url('../assets/med_button_cap.png') right -31px no-repeat;
+   _background: url('../assets/med_button_cap.gif') right -31px no-repeat;
 text-decoration: none;
 color: #999;
 }
 
 
 a.med_button.on span{
-background: url('../images/med_button.png') left -31px no-repeat;
-   _background: url('../images/med_button.gif') left -31px no-repeat;
+background: url('../assets/med_button.png') left -31px no-repeat;
+   _background: url('../assets/med_button.gif') left -31px no-repeat;
 }
 
 
@@ -692,7 +692,7 @@ margin-bottom: 55px !important;
   content: " ";
   display: block;
   position: absolute;
-  background: url(../images/throbber.gif) no-repeat;
+  background: url(../assets/throbber.gif) no-repeat;
   background-size: 15%;
   left: 5%;
   top: 5%;

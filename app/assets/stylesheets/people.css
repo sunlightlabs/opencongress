@@ -28,13 +28,13 @@ padding: 0 7px;
 }
 #show_rolehistory_list a{
 padding: 0 14px 0 9px;
-background: url(../images/arrows.png) right -22px no-repeat;
-   _background: url(../images/arrows.gif) right -22px no-repeat;
+background: url(../assets/arrows.png) right -22px no-repeat;
+   _background: url(../assets/arrows.gif) right -22px no-repeat;
 }
 #hide_rolehistory_list a{
 padding: 0 14px 0 9px;
-background: url(../images/arrows.png) right 3px no-repeat;
-   _background: url(../images/arrows.gif) right 3px no-repeat;
+background: url(../assets/arrows.png) right 3px no-repeat;
+   _background: url(../assets/arrows.gif) right 3px no-repeat;
 }
 #rolehistory_list li{
 text-align: right;
@@ -45,8 +45,8 @@ padding: 0;
 }
 #contain_peeps{
 height: 600px;
-background: url(../images/sen-sort.png) left top repeat-x;
-   _background: url(../images/sen-sort.gif) left top repeat-x;
+background: url(../assets/sen-sort.png) left top repeat-x;
+   _background: url(../assets/sen-sort.gif) left top repeat-x;
 }
 
 div#voting_history{
@@ -113,8 +113,8 @@ padding: 31px 0 20px 20px;
 margin: 10px 40px 20px 0px;
 float: right;
 width: 475px;
-background: url(../images/small_compare.png) right top no-repeat;
-   _background: url(../images/small_compare.gif) right top no-repeat;
+background: url(../assets/small_compare.png) right top no-repeat;
+   _background: url(../assets/small_compare.gif) right top no-repeat;
 }
 .compare_select span{
 padding-right: 15px;
@@ -203,12 +203,12 @@ hr{
 border: none;
 }
 .hot{
-background: url(../images/hot.png) center 14px no-repeat;
-   _background: url(../images/hot.gif) center 14px no-repeat;
+background: url(../assets/hot.png) center 14px no-repeat;
+   _background: url(../assets/hot.gif) center 14px no-repeat;
 }
 .cooling{
-background: url(../images/cooling.png) bottom center no-repeat;
-   _background: url(../images/cooling.gif) bottom center no-repeat;
+background: url(../assets/cooling.png) bottom center no-repeat;
+   _background: url(../assets/cooling.gif) bottom center no-repeat;
 }
 .senators #heading, .fundraisers #heading, .zipcodelookup #heading, .votes_with_party #heading {
 border-bottom: 1px solid #f3e8d6;
@@ -217,8 +217,8 @@ height: 45px;
    _background: url('/images/brown_bg.gif');
 }
 .representatives #heading{
-background: url(../images/rep_heading_orange.png);
-   _background: url(../images/rep_heading_orange.gif);
+background: url(../assets/rep_heading_orange.png);
+   _background: url(../assets/rep_heading_orange.gif);
 border-bottom: 1px solid #e7cdbc;
 height: 45px;
 }
@@ -347,8 +347,8 @@ float: left;
 .find_map{
 display: block;
 margin: 0;
-background: url(../images/map_right.png) right 20px no-repeat;
-   _background: url(../images/map_right.gif) right 20px no-repeat;
+background: url(../assets/map_right.png) right 20px no-repeat;
+   _background: url(../assets/map_right.gif) right 20px no-repeat;
 height: 65px;
 }
 .find_map span {
@@ -370,12 +370,12 @@ padding-top: 51px;
 ;
 }
 .representatives .find_map span{
-background: url(../images/map_buttons.png) 0 -314px no-repeat;
-   _background: url(../images/map_buttons.gif) 0 -314px no-repeat;
+background: url(../assets/map_buttons.png) 0 -314px no-repeat;
+   _background: url(../assets/map_buttons.gif) 0 -314px no-repeat;
 }
 .representatives .find_map span:hover{
-background: url(../images/map_buttons.png) 0 -366px no-repeat;
-   _background: url(../images/map_buttons.gif) 0 -366px no-repeat;
+background: url(../assets/map_buttons.png) 0 -366px no-repeat;
+   _background: url(../assets/map_buttons.gif) 0 -366px no-repeat;
 }
 .sidebar .find_map{
 padding: 18px 0 0 0 !important;
@@ -387,18 +387,18 @@ height: 0;
 border-top: 1px solid #ddd;
 border-right: 1px solid #ddd;
 overflow: hidden;
-background: url(../images/headtohead.png) repeat-x;
-   _background: url(../images/headtohead.gif) repeat-x;
+background: url(../assets/headtohead.png) repeat-x;
+   _background: url(../assets/headtohead.gif) repeat-x;
 }
 #head_button:hover{
-background: url(../images/headtohead.png) 0 -84px repeat-x;
-   _background: url(../images/headtohead.gif) 0 -84px repeat-x;
+background: url(../assets/headtohead.png) 0 -84px repeat-x;
+   _background: url(../assets/headtohead.gif) 0 -84px repeat-x;
 }
 #zipcode_lookup{
 float: left;
 width: 385px;
 height: 65px;
-background: url(../images/zip_lookup.jpg) -2px 0 no-repeat;
+background: url(../assets/zip_lookup.jpg) -2px 0 no-repeat;
 padding: 31px 0 0 0;
 }
 #zipcode_lookup:after{
@@ -408,7 +408,7 @@ padding: 31px 0 0 0;
   left: 384px;
   height: 427px;
   width: 28px;
-  background: url('../images/zip_arrow.png');
+  background: url('../assets/zip_arrow.png');
 }
 .logged-in #zipcode_lookup:after{ top: 126px; }
 #zipcode_lookup h3{
@@ -427,27 +427,27 @@ height: 21px;
 padding: 7px 0 0 0px;
 text-align: center;
 background: none;
-background: url(../images/forms.png) 0 0px no-repeat;
-   _background: url(../images/forms.gif) 0 0px no-repeat;
+background: url(../assets/forms.png) 0 0px no-repeat;
+   _background: url(../assets/forms.gif) 0 0px no-repeat;
 }
 .track_small{
 margin: 10px 0 0 0;
 }
 .rating{
-  background: url(../images/no-rating.png) 3px center no-repeat;
-   _background: url(../images/no-rating.gif) 3px center no-repeat;
+  background: url(../assets/no-rating.png) 3px center no-repeat;
+   _background: url(../assets/no-rating.gif) 3px center no-repeat;
 }
 .no_rating{
-  background: url(../images/no-rating.png) 3px center no-repeat;
-   _background: url(../images/no-rating.gif) 3px center no-repeat;
+  background: url(../assets/no-rating.png) 3px center no-repeat;
+   _background: url(../assets/no-rating.gif) 3px center no-repeat;
 }
 .bill_count{
-  background: url(../images/tiny_bill.png) left center no-repeat;
-   _background: url(../images/tiny_bill.gif) left center no-repeat;
+  background: url(../assets/tiny_bill.png) left center no-repeat;
+   _background: url(../assets/tiny_bill.gif) left center no-repeat;
 }
 .cronie{
-  background: url(../images/cronie.png) left center no-repeat;
-   _background: url(../images/cronie.gif) left center no-repeat;
+  background: url(../assets/cronie.png) left center no-repeat;
+   _background: url(../assets/cronie.gif) left center no-repeat;
 }
 .senators .previous{
 border: 1px solid;
@@ -471,8 +471,8 @@ padding: 35px;
 }
 .status_bar{
 clear: both;
-background: url(../images/brown_status_bar2.png);
-   _background: url(../images/brown_status_bar2.gif);
+background: url(../assets/brown_status_bar2.png);
+   _background: url(../assets/brown_status_bar2.gif);
 height: 51px;
 }
 .status_bar *{
@@ -499,8 +499,8 @@ padding: 10px 0 4px;
   float:left;
   clear:left;
   padding-left:25px;
-  background: url(../images/sprites.png) -308px -93px no-repeat;
-   _background: url(../images/sprites.gif) -308px -93px no-repeat;
+  background: url(../assets/sprites.png) -308px -93px no-repeat;
+   _background: url(../assets/sprites.gif) -308px -93px no-repeat;
 margin-bottom: 6px;
 }
 #voting-similarities {
@@ -508,13 +508,13 @@ margin-bottom: 6px;
 }
 .pie_votes{
 padding-left: 25px;
-  background: url(../images/sprites.png) 0 -219px no-repeat;
-   _background: url(../images/sprites.gif) 0 -219px no-repeat;
+  background: url(../assets/sprites.png) 0 -219px no-repeat;
+   _background: url(../assets/sprites.gif) 0 -219px no-repeat;
 }
 .abstains{
 padding-left: 25px;
-  background: url(../images/sprites.png) 0 -240px no-repeat;
-   _background: url(../images/sprites.gif) 0 -240px no-repeat;
+  background: url(../assets/sprites.png) 0 -240px no-repeat;
+   _background: url(../assets/sprites.gif) 0 -240px no-repeat;
 }
 #map{
 border: 0px solid #fff !important;
@@ -535,8 +535,8 @@ float: left;
 #people.news .inner,
 #people.blogs .inner,
 #people.money .inner {
-background: url(../images/sen_profile_bg.png) right top repeat-y;
-   _background: url(../images/sen_profile_bg.gif) right top repeat-y;
+background: url(../assets/sen_profile_bg.png) right top repeat-y;
+   _background: url(../assets/sen_profile_bg.gif) right top repeat-y;
 float: left;
 width: 100%;
 }
@@ -549,8 +549,8 @@ width: 100%;
 #people.news #topic,
 #people.blogs #topic,
 #people.money #topic {
-background: url(../images/brown_bg.png) left top repeat;
-   _background: url(../images/brown_bg.gif) left top repeat;
+background: url(../assets/brown_bg.png) left top repeat;
+   _background: url(../assets/brown_bg.gif) left top repeat;
 }
 #people.show #content-main,
 #people.bills #content-main,
@@ -721,7 +721,7 @@ float: right !important;
 color: #999;
 font-size: 11px;
 margin: 20px 10px 0 0;
-/*background: url(../images/big_default_compare.png) center;*/
+/*background: url(../assets/big_default_compare.png) center;*/
 clear: right;
 vertical-align: top;
 }
@@ -816,7 +816,7 @@ float: right;
 
 .explains{
 width: 240px;
-background: url(../images/comparez.png) right 0 no-repeat;
+background: url(../assets/comparez.png) right 0 no-repeat;
 padding-right: 140px;
 float: left;
 }
@@ -852,21 +852,21 @@ margin-right: 5px;
 }
 .ctabs a{
 	padding-right: 5px;
-	background: url(../images/large_buttons.png) right -880px;
+	background: url(../assets/large_buttons.png) right -880px;
 }
 
 .ctabs a span{
 	padding-left: 14px;
-	background: url(../images/large_buttons.png) left -880px;
+	background: url(../assets/large_buttons.png) left -880px;
 }
 
 .ctabs a:hover{
 	cursor: pointer;
-	background: url(../images/large_buttons.png) right -844px;
+	background: url(../assets/large_buttons.png) right -844px;
 }
 
 .ctabs a:hover span{
-	background: url(../images/large_buttons.png) left -844px;
+	background: url(../assets/large_buttons.png) left -844px;
 	color: #666 !important;
 }
 
@@ -876,21 +876,21 @@ overflow: hidden;
 }
 
 #csens.reps_tab a, #creps.sens_tab a{
-	background: url(../images/large_buttons.png) right -844px;
+	background: url(../assets/large_buttons.png) right -844px;
 }
 
 #csens.reps_tab a span, #creps.sens_tab a span{
 	color: #aaa;
-	background: url(../images/large_buttons.png) left -844px;
+	background: url(../assets/large_buttons.png) left -844px;
 }
 
 #creps.reps_tab a:hover, #csens.sens_tab a:hover{
-	background: url(../images/large_buttons.png) right -880px;
+	background: url(../assets/large_buttons.png) right -880px;
 	cursor: default;
 }
 
 #creps.reps_tab a:hover span, #csens.sens_tab a:hover span{
-	background: url(../images/large_buttons.png) left -880px;
+	background: url(../assets/large_buttons.png) left -880px;
 	cursor: default;
 }
 
@@ -915,7 +915,7 @@ padding: 20px 0 25px 166px;
 .cbox.second form{
 padding: 10px 0 25px 146px;
 border-bottom: 1px solid #ddd;
-background: #efefef url(../images/sen-sort.png) repeat-x;
+background: #efefef url(../assets/sen-sort.png) repeat-x;
 }
 
 .call{
@@ -1111,16 +1111,16 @@ padding-left: 370px;
 clear: both;
 }
 .cbox{/*
-background: url(../images/find_rep.png) 0px 0px no-repeat;
-   _background: url(../images/find_rep.gif) 0px 0px no-repeat;
+background: url(../assets/find_rep.png) 0px 0px no-repeat;
+   _background: url(../assets/find_rep.gif) 0px 0px no-repeat;
 */}
 .compare .padding{
 padding: 29px;
 }
 .rep_info{
 padding: 10px;
-background: url(../images/address.png) no-repeat center center;
-   _background: url(../images/address.gif) no-repeat center center;
+background: url(../assets/address.png) no-repeat center center;
+   _background: url(../assets/address.gif) no-repeat center center;
 margin: 20px 0;
 margin-left: 32px;
 }

@@ -9,7 +9,6 @@ OpenCongress::Application.configure do
 
   config.assets.compress = true
   config.assets.js_compressor  = :uglifier
-  config.assets.css_compressor = :scss
   config.assets.digest = true
 
   # Enable serving of images, stylesheets, and javascripts from an asset server

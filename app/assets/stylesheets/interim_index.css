@@ -20,7 +20,7 @@ a.more:active{
 
 #hero {
     height: 435px;
-    background: #c4d9df url('../images/oc-banner-bg.jpg');
+    background: #c4d9df url('../assets/oc-banner-bg.jpg');
     color: #fff;
 }
 
@@ -61,7 +61,7 @@ a.more:active{
     border-top: 0;
     border-bottom: 0;
     background: none;
-    background-image: url('../images/icon-search.png');
+    background-image: url('../assets/icon-search.png');
     -webkit-box-shadow: none;
     box-shadow: none;
     outline: 0;
@@ -96,7 +96,7 @@ a.more:active{
 h4.inset {
     width: 220px;
     margin: -10px auto 10px;
-    background: #c4d9df url('../images/oc-banner-bg.jpg') center 100px;
+    background: #c4d9df url('../assets/oc-banner-bg.jpg') center 100px;
     font-weight: 300;
     text-transform: uppercase;
     font-size: 16px;
@@ -133,7 +133,7 @@ ul.status-lights li.off:before { background: #d05b5b; }
 #belt {
     position: relative;
     background: #72919d;
-    background: url('../images/cta-bg.png') right center no-repeat, url('../images/pattern-teal.png');
+    background: url('../assets/cta-bg.png') right center no-repeat, url('../assets/pattern-teal.png');
 }
 
 #belt h2 {
@@ -271,7 +271,7 @@ ul.status-lights li.off:before { background: #d05b5b; }
 #superlatives {
     padding: 20px 0 50px;
     background: #f8f8f8;
-    background: url('../images/light-grunge-top.png') center top no-repeat, url('../images/light-grunge-bottom.png') center bottom no-repeat, url('../images/pattern-white-texture.png');
+    background: url('../assets/light-grunge-top.png') center top no-repeat, url('../assets/light-grunge-bottom.png') center bottom no-repeat, url('../assets/pattern-white-texture.png');
     opacity: 1;
 }
 
@@ -357,7 +357,7 @@ ul.status-lights li.off:before { background: #d05b5b; }
     right: 0;
     width: 30px;
     height: 32px;
-    background: #d6effe url('../images/icon-dropdown.png') 8px 13px no-repeat;
+    background: #d6effe url('../assets/icon-dropdown.png') 8px 13px no-repeat;
     border-radius: 3px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -398,13 +398,13 @@ ul.status-lights li.off:before { background: #d05b5b; }
 }
 
 #superlatives .superlative.vote.passed {
-    background-image: url('../images/icon-checkmark.png');
+    background-image: url('../assets/icon-checkmark.png');
     background-repeat: no-repeat;
     background-position: 22px center;
 }
 
 #superlatives .superlative.vote.failed {
-    background-image: url('../images/icon-x.png');
+    background-image: url('../assets/icon-x.png');
     background-repeat: no-repeat;
     background-position: 22px center;
 }
@@ -478,7 +478,7 @@ ul.status-lights li.off:before { background: #d05b5b; }
     left: 0;
     height: 8px;
     margin: 0 -20px;
-    background: url('../images/zigzag.png');
+    background: url('../assets/zigzag.png');
 }
 
 #content_footer h2 {

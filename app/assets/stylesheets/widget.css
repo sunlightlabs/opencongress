@@ -42,7 +42,7 @@ p{
   -khtml-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid rgba(101, 101, 101, 0.2);
-  background: url(../images/logo-badge.png) -50px -30px no-repeat;
+  background: url(../assets/logo-badge.png) -50px -30px no-repeat;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-weight: normal;
   margin: 0;

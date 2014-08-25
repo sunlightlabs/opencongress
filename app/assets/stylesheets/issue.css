@@ -33,8 +33,8 @@ padding: 7px 33px;
 }
 
 .sidebar{
-background: url(../images/map_right.png) right 20px no-repeat;
-   _background: url(../images/map_right.gif) right 20px no-repeat;
+background: url(../assets/map_right.png) right 20px no-repeat;
+   _background: url(../assets/map_right.gif) right 20px no-repeat;
 }
 
 .bills_list{
@@ -50,8 +50,8 @@ background: #fdfdfd;
 #issue.show .inner{
 float: left;
 width: 1002px;
-background: url(../images/issue_bg.png) right 0px repeat-y;
-   _background: url(../images/issue_bg.gif) right 0px repeat-y;
+background: url(../assets/issue_bg.png) right 0px repeat-y;
+   _background: url(../assets/issue_bg.gif) right 0px repeat-y;
 }
 
 #issue.alphabetical .inner, #issue.by_most_viewed .inner, #issue.by_bill_count .inner {
@@ -72,8 +72,8 @@ float: right;
 
 
 .issue_widget_link{
-background: url(../images/map_buttons.png) 0 -103px no-repeat;
-   _background: url(../images/map_buttons.gif) 0 -103px no-repeat;
+background: url(../assets/map_buttons.png) 0 -103px no-repeat;
+   _background: url(../assets/map_buttons.gif) 0 -103px no-repeat;
 display: block;
 padding-top: 52px;
 overflow: hidden;
@@ -82,15 +82,15 @@ margin: 15px 20px 15px;
 }
 
 .issue_widget_link:hover{
-background: url(../images/map_buttons.png) 0 -155px no-repeat;
-   _background: url(../images/map_buttons.gif) 0 -155px no-repeat;
+background: url(../assets/map_buttons.png) 0 -155px no-repeat;
+   _background: url(../assets/map_buttons.gif) 0 -155px no-repeat;
 }
 
 #heading{
 height: 45px;
 border-bottom: 1px solid #cfebed;
-background: url(../images/issues_heading.png);
-   _background: url(../images/issues_heading.gif);
+background: url(../assets/issues_heading.png);
+   _background: url(../assets/issues_heading.gif);
 }
 
 #zipcode_lookup #q{
@@ -102,8 +102,8 @@ height: 21px;
 padding: 7px 0 0 0px;
 text-align: center;
 background: none;
-background: url(../images/forms.png) 0 0px no-repeat;
-   _background: url(../images/forms.gif) 0 0px no-repeat;
+background: url(../assets/forms.png) 0 0px no-repeat;
+   _background: url(../assets/forms.gif) 0 0px no-repeat;
 }
 
 #zip_sort{
@@ -202,7 +202,7 @@ margin-top: 2px;
 font-weight: normal;
 display:block;
 height: 20px;
-background:url(../images/star.gif) no-repeat 0 -32px
+background:url(../assets/star.gif) no-repeat 0 -32px
 }
 
 table.money {

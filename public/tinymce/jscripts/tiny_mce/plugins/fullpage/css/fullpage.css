@@ -63,24 +63,24 @@
 }
 
 .addbutton {
-	background-image: url('../images/add.gif');
+	background-image: url('../assets/add.gif');
 	float: left;
 	margin-right: 3px;
 }
 
 .removebutton {
-	background-image: url('../images/remove.gif');
+	background-image: url('../assets/remove.gif');
 	float: left;
 }
 
 .moveupbutton {
-	background-image: url('../images/move_up.gif');
+	background-image: url('../assets/move_up.gif');
 	float: left;
 	margin-right: 3px;
 }
 
 .movedownbutton {
-	background-image: url('../images/move_down.gif');
+	background-image: url('../assets/move_down.gif');
 	float: left;
 }
 

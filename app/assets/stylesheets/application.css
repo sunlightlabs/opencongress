@@ -5,5 +5,20 @@ are mostly in beta.scss, so we can take advantage
 of SCSS stuff.
 ***/
 /* ...
+*= require_self
+*= require master
+*= 960.css
+*= require classes.css
+*= require modal.css
+*= require reset.css
+*= require typo.css
+*= require master.css
+*= require home.css
+*= require jqModal.css
+*= require jquery.jcarousel.css
+*= require search.css
+*= require bootstrap-custom.min.css
+*= require interim_index.css
+*= require kludge.css
 *= require beta
 */

@@ -1,3 +1,3 @@
-$(document).ready(function() {
-  console.log("This loads!")
+$j(document).ready(function() {
+  console.log('This ran!')
 });

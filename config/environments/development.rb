@@ -48,9 +48,7 @@ OpenCongress::Application.configure do
 # with SQLite, MySQL, and PostgreSQL)
   config.active_record.auto_explain_threshold_in_seconds = 0.5
 
-  # Uncomment these to precompile locally
   #config.assets.prefix = "/dev-assets"
   #config.assets.compress = true
   #config.assets.js_compressor  = :uglifier
-  #config.assets.css_compressor = :scss
 end

@@ -69,6 +69,8 @@ GEM
       multi_json (~> 1.0)
     acts-as-taggable-on (2.3.3)
       rails (~> 3.0)
+    acts_as_tree (2.0.0)
+      activerecord (>= 3.0.0)
     addressable (2.3.5)
     annotate (2.6.3)
       activerecord (>= 2.3.0)
@@ -459,6 +461,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth
   acts-as-taggable-on (~> 2.3.3)
+  acts_as_tree
   annotate (>= 2.6.0)
   awesome_nested_set (>= 2.0)
   awesome_print

@@ -41,6 +41,7 @@ gem 'carrierwave'
 gem 'fog'
 
 gem "awesome_nested_set", ">= 2.0"
+gem "acts_as_tree"
 
 gem 'curb'
 

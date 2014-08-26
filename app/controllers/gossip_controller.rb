@@ -1,5 +1,5 @@
 class GossipController < ApplicationController
-  verify :method => :post, :only => %w(update tip)
+  verify :method => :post, :only => %w(update tip), :redirect_to => {:controller => :gossip, :action => :index}
   before_filter :login_required, :only => [:admin]
   before_filter :can_gossip, :only => [:admin]
   before_filter :dead_end, :except => [:admin]

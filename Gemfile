@@ -74,6 +74,7 @@ gem 'sexmachine'
 # OpenID
 gem 'ruby-openid'
 gem 'rack-openid'
+gem "open_id_authentication"
 
 # JSONP middleware
 gem 'rack-contrib'
@@ -103,7 +104,6 @@ gem 'facebooker2'
 gem 'will_paginate', '~> 3.0.pre2'
 
 gem "validates_captcha"
-gem "okkez-open_id_authentication"
 
 gem 'acts-as-taggable-on', '~> 2.3.3'
 

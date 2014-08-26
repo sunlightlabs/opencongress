@@ -41,7 +41,10 @@ gem 'carrierwave'
 gem 'fog'
 
 gem "awesome_nested_set", ">= 2.0"
+
+#Rails transition gems
 gem "acts_as_tree"
+gem 'prototype_legacy_helper', '0.0.0', :git => 'git://github.com/rails/prototype_legacy_helper.git'
 
 gem 'curb'
 

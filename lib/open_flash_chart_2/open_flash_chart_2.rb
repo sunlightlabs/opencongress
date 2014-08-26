@@ -83,7 +83,7 @@ module OFC2
   #  +base+ uri for graph, default '/'
   #  +id+ id for div with graph, default Time.now.usec
   #  +swf_base+ uri for swf file, default '/'
-  def ofc2(width, height, url, base='/', id =Time.now.usec, swf_base='/')
+  def ofc2(width, height, url, base='/', id =Time.now.usec, swf_base='/assets/')
     url = CGI::escape(url)
     div_name = "flashcontent_#{id}"
     <<-EOF

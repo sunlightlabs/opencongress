@@ -1,8 +1,5 @@
 class TwitterController < ApplicationController
 
-#  require 'oauth'
-  require 'twitter_oauth'
-
   before_filter :login_required, :except => :index
   
   def callback

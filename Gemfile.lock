@@ -90,6 +90,9 @@ GEM
       debug_inspector (>= 0.0.1)
     bluecloth (2.2.0)
     builder (3.0.4)
+    byebug (2.7.0)
+      columnize (~> 0.3)
+      debugger-linecache (~> 1.2)
     capistrano (2.15.5)
       highline
       net-scp (>= 1.0.0)
@@ -122,7 +125,7 @@ GEM
       execjs
     coffee-script-source (1.7.1)
     colored (1.2)
-    columnize (0.3.6)
+    columnize (0.8.9)
     crack (0.4.0)
       safe_yaml (~> 0.9.0)
     cssmin (1.0.3)
@@ -140,12 +143,7 @@ GEM
     daemons (1.1.9)
     database_cleaner (1.0.1)
     debug_inspector (0.0.2)
-    debugger (1.6.5)
-      columnize (>= 0.3.1)
-      debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.3.1)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.3.1)
     delayed_job (2.1.4)
       activesupport (~> 3.0)
       daemons
@@ -309,9 +307,9 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
-    pry-debugger (0.2.2)
-      debugger (~> 1.3)
-      pry (~> 0.9.10)
+    pry-byebug (1.3.2)
+      byebug (~> 2.7)
+      pry (~> 0.9.12)
     pry-nav (0.2.3)
       pry (~> 0.9.10)
     pry-rescue (1.1.1)
@@ -473,6 +471,7 @@ DEPENDENCIES
   awesome_print
   beanstalk-client
   bluecloth
+  byebug
   capistrano
   capistrano-ext
   capybara
@@ -484,7 +483,6 @@ DEPENDENCIES
   cucumber-rails
   curb
   database_cleaner
-  debugger
   delayed_job (~> 2.1)
   facebooker2
   fog
@@ -522,7 +520,7 @@ DEPENDENCIES
   prototype-rails
   prototype_legacy_helper (= 0.0.0)!
   pry
-  pry-debugger
+  pry-byebug
   pry-nav
   pry-rescue
   pry-stack_explorer

@@ -140,13 +140,13 @@ group :production, :staging do
 end
 
 group :test, :development do
-  gem 'debugger'
+  gem 'byebug'
   gem 'annotate',             '>=2.6.0'
   gem 'pry'
   gem 'pry-nav'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
-  gem 'pry-debugger'
+  gem 'pry-byebug'
   gem 'rails_best_practices'
   gem 'simplecov',            :require => false
   gem 'guard'

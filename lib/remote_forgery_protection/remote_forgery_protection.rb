@@ -1,3 +1,5 @@
+require 'remote_forgery_protection/remote_forgery_protection/view_helpers'
+
 module RemoteForgeryProtection
   JS_FILE_NAME = "remote_forgery_protection.js"
   JS_FILE_PATH = "public/javascripts/#{JS_FILE_NAME}"

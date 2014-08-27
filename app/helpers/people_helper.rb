@@ -129,8 +129,8 @@ module PeopleHelper
   end
 
   def sponsored_bill_stats
-    high_sponsor_rank = (@person.title == "Sen.") ? Person.sen.includes(:person_stats).maximum("person_stats.sponsored_bills_rank") : Person.rep.includes(:person_stats).maximum("person_stats.sponsored_bills_rank")
-    high_cosponsor_rank = (@person.title == "Sen.") ? Person.sen.includes(:person_stats).maximum("person_stats.cosponsored_bills_rank") : Person.rep.includes(:person_stats).maximum("person_stats.cosponsored_bills_rank")
+    high_sponsor_rank = (@person.title == "Sen.") ? Person.sen.eager_load(:person_stats).maximum("person_stats.sponsored_bills_rank") : Person.rep.eager_load(:person_stats).maximum("person_stats.sponsored_bills_rank")
+    high_cosponsor_rank = (@person.title == "Sen.") ? Person.sen.eager_load(:person_stats).maximum("person_stats.cosponsored_bills_rank") : Person.rep.eager_load(:person_stats).maximum("person_stats.cosponsored_bills_rank")
 
     output = ""
     unless @person.person_stats.sponsored_bills.nil?

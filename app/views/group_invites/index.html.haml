@@ -10,7 +10,7 @@
     %tr
       %td= link_to 'Show', group_invite
       %td= link_to 'Edit', edit_group_invite_path(group_invite)
-      %td= link_to 'Destroy', group_invite, :confirm => 'Are you sure?', :method => :delete
+      %td= link_to 'Destroy', group_invite, :data => { :confirm => 'Are you sure?' }, :method => :delete
 
 %br
 

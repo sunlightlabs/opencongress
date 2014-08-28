@@ -8,7 +8,7 @@
   <tr>
     <td><%= link_to 'Show', sidebar_box %></td>
     <td><%= link_to 'Edit', edit_sidebar_box_path(sidebar_box) %></td>
-    <td><%= link_to 'Destroy', sidebar_box, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Destroy', sidebar_box, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
   </tr>
 <% end %>
 </table>

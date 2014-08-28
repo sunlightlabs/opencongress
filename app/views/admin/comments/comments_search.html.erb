@@ -20,6 +20,6 @@
 	<% form_tag do %>
 	  <%= hidden_field_tag :delete_comms, params[:q] %>
 	  <%= hidden_field_tag :q, params[:q] %>
-	  <%= submit_tag "Delete all comments from this query", :disable_with => "Please wait...", :confirm => "Are you sure?" %>
+	  <%= submit_tag "Delete all comments from this query", :disable_with => "Please wait...", :data => { :confirm => 'Are you sure?' } %>
 	<% end %>
 <% end %>

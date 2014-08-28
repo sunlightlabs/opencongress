@@ -13,7 +13,7 @@
 
     <td><%= link_to 'Show', :action => 'show', :id => featured_person %></td>
     <td><%= link_to 'Edit', :action => 'edit', :id => featured_person %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => featured_person }, :confirm => 'Are you sure?', :method => "post" %></td>
+    <td><%= link_to 'Destroy', { :action => 'destroy', :id => featured_person }, :data => { :confirm => 'Are you sure?' }, :method => "post" %></td>
   </tr>
 <% end %>
 </table>

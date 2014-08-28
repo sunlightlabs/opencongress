@@ -11,7 +11,7 @@
       %tr
         %td= talking_point.talking_point
         %td= link_to 'Edit', edit_admin_talking_point_path(talking_point)
-        %td= link_to 'Destroy', admin_talking_point_path(talking_point), :confirm => 'Are you sure?', :method => :delete
+        %td= link_to 'Destroy', admin_talking_point_path(talking_point), :data => { :confirm => 'Are you sure?' }, :method => :delete
 
   %br
 

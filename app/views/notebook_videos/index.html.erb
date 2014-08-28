@@ -18,7 +18,7 @@
     <td><%=h notebook_video.description %></td>
     <td><%= link_to 'Show', notebook_video %></td>
     <td><%= link_to 'Edit', edit_notebook_video_path(notebook_video) %></td>
-    <td><%= link_to 'Destroy', notebook_video, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Destroy', notebook_video, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
   </tr>
 <% end %>
 </table>

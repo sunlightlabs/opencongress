@@ -13,7 +13,7 @@
   <% @pvs_category_mappings.each do |pvs_category_mapping| %>
     <tr>
       <td><%= pvs_category_mapping.to_s %></td>
-      <td><%= link_to 'Destroy', admin_pvs_category_mapping_path(pvs_category_mapping), :confirm => 'Are you sure?', :method => :delete, :class => 'button silver small' %></td>
+      <td><%= link_to 'Destroy', admin_pvs_category_mapping_path(pvs_category_mapping), :data => { :confirm => 'Are you sure?' }, :method => :delete, :class => 'button silver small' %></td>
     </tr>
   <% end %>
   </table>

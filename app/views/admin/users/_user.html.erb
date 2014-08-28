@@ -11,7 +11,7 @@
 	<div class="user_buttons">
 		<%= link_to 'Show', :action => 'show', :id => user %> | 
 		<%= link_to 'Edit', :action => 'edit', :id => user %> | 
-		<%= link_to 'Destroy', { :action => 'destroy', :id => user }, :confirm => 'Are you sure?', :method => "post" %><br/>
+		<%= link_to 'Destroy', { :action => 'destroy', :id => user }, :data => { :confirm => 'Are you sure?' }, :method => "post" %><br/>
 	</div>
 </div>
 

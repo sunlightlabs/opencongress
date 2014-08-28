@@ -4,7 +4,9 @@
     <%= button_to "Delete Picture", delete_profile_images_path(user.login),
                                     :method => :delete, :remote => true,
                                     :id => "delete_picture", :class => "button yellow small",
-                                    :confirm => "Are you sure you want to delete your profile image?" %>
+                                    :data => {
+                                      :confirm => "Are you sure you want to delete your profile image?" 
+                                    } %>
     <script>
       // FIXME: Really need to switch over to jquery-rails and jquery ujs
       Event.observe(Element.up($('delete_picture'), 'form'), 'ajax:start', function(event){

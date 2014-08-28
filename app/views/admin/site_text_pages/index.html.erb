@@ -8,7 +8,7 @@
   <tr>
     <td><%= link_to 'Show', site_text_page %></td>
     <td><%= link_to 'Edit', edit_site_text_page_path(site_text_page) %></td>
-    <td><%= link_to 'Destroy', site_text_page, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Destroy', site_text_page, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
   </tr>
 <% end %>
 </table>

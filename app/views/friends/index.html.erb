@@ -47,8 +47,8 @@
               </div>
 
               <div class="grid_3 alpha">
-                <%= button_to('Decline', friends_add_deny_path(friend.friend.login,friend.user), :confirm => 'Are you sure?') unless @user != current_user %>
-                <%= button_to('Accept', friends_add_confirm_path(friend.friend.login,friend.user), :confirm => 'Are you sure?') unless @user != current_user %>
+                <%= button_to('Decline', friends_add_deny_path(friend.friend.login,friend.user), :data => { :confirm => 'Are you sure?' }) unless @user != current_user %>
+                <%= button_to('Accept', friends_add_confirm_path(friend.friend.login,friend.user), :data => { :confirm => 'Are you sure?' }) unless @user != current_user %>
 
                   <div id="coms_friend_<%= friend.id %>" style="display:none;"></div>
                   <div id="votes_friend_<%= friend.id %>" style="display:none;"></div>

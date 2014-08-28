@@ -40,7 +40,7 @@
   <p class="small">
     <%= link_to "Edit", :controller => 'admin/commentary', :action => 'edit', :id => commentary %> |
     <%= link_to "Delete", { :controller => 'admin/commentary', :action => 'destroy', :id => commentary },
-                :confirm => 'Are you sure?', :method => "post" %> | 
+                :data => { :confirm => 'Are you sure?' }, :method => "post" %> | 
     Mass delete: <%= check_box_tag "mass_delete_ids[]", commentary.id %>
     <%= submit_tag 'Execute mass delete' %>
   </p>

@@ -14,7 +14,7 @@
     <td><%=h mailing_list_item.user_mailing_list_id %></td>
     <td><%= link_to 'Show', mailing_list_item %></td>
     <td><%= link_to 'Edit', edit_mailing_list_item_path(mailing_list_item) %></td>
-    <td><%= link_to 'Destroy', mailing_list_item, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Destroy', mailing_list_item, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
   </tr>
 <% end %>
 </table>

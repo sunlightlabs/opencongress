@@ -14,7 +14,7 @@
     <td><%=h watch_dog.is_active %></td>
     <td><%= link_to 'Show', watch_dog %></td>
     <td><%= link_to 'Edit', edit_watch_dog_path(watch_dog) %></td>
-    <td><%= link_to 'Destroy', watch_dog, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Destroy', watch_dog, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
   </tr>
 <% end %>
 </table>

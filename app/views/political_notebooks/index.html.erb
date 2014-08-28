@@ -10,7 +10,7 @@
     <td><%=h political_notebook.user_id %></td>
     <td><%= link_to 'Show', political_notebook %></td>
     <td><%= link_to 'Edit', edit_political_notebook_path(political_notebook) %></td>
-    <td><%= link_to 'Destroy', political_notebook, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Destroy', political_notebook, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
   </tr>
 <% end %>
 </table>

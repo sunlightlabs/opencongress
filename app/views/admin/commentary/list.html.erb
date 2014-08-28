@@ -14,7 +14,7 @@
   <% end %>
     <td><%= link_to 'Show', :action => 'show', :id => commentary %></td>
     <td><%= link_to 'Edit', :action => 'edit', :id => commentary %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => commentary }, :confirm => 'Are you sure?', :method => "post" %></td>
+    <td><%= link_to 'Destroy', { :action => 'destroy', :id => commentary }, :data => { :confirm => 'Are you sure?' }, :method => "post" %></td>
   </tr>
 <% end %>
 </table>

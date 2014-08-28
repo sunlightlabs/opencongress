@@ -16,7 +16,7 @@
     <td><%=h wiki_link.oc_link %></td>
     <td><%= link_to 'Show', wiki_link %></td>
     <td><%= link_to 'Edit', edit_wiki_link_path(wiki_link) %></td>
-    <td><%= link_to 'Destroy', wiki_link, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= link_to 'Destroy', wiki_link, :data => { :confirm => 'Are you sure?' }, :method => :delete %></td>
   </tr>
 <% end %>
 </table>

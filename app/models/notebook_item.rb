@@ -33,13 +33,15 @@
 #  ip_address            :string(255)
 #  spam                  :boolean
 #  censored              :boolean
+#  data                  :text
 #
 
 require_dependency 'spammable'
 
 class NotebookItem < ActiveRecord::Base
   include Spammable
-
+  serialize :data, Hash
+  
   acts_as_taggable_on :tags
 #  alias tag_list= tag_with
 
@@ -76,6 +78,24 @@ class NotebookItem < ActiveRecord::Base
 
   def type_in_words
     type.to_s.gsub('Notebook', '')
+  end
+
+  def url=(value)
+    if value.length > 255
+      long_url_hash = {:long_url => value}
+      self.data = self.data.nil? ? long_url_hash : self.data.merge(long_url_hash)
+      write_attribute(:url, nil)
+    else
+      write_attribute(:url, value)
+    end
+  end
+
+  def url
+    unless read_attribute(:url).nil?
+      return read_attribute(:url)
+    else
+      return read_attribute(:data)[:long_url] rescue nil
+    end
   end
 
   protected

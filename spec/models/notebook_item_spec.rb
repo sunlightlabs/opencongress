@@ -36,11 +36,33 @@
 #  data                  :text
 #
 
-class NotebookNote < NotebookItem
-  
-  
-  validates_presence_of :description
-  
-  # because the table uses STI a regular polymorphic association doesn't work
-  has_many :comments, :foreign_key => 'commentable_id', :conditions => "commentable_type='NotebookNote'"
+require 'spec_helper'
+
+describe NotebookItem do
+  before :each do
+    @item = notebook_items(:notebook_item_1)
+    @item.data = {:key => "value"}
+  end
+  describe "serialized data column" do
+    it "should accept and store a hash" do
+      @item.data[:key].should == "value"
+    end
+  end
+  describe "url attribute" do
+    before :each do 
+      @long_url = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+                  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+                  "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" #256 characters
+      @item.url = @long_url
+    end
+    it "should store 255+ char long values in data column" do
+      expect { @item.save! }.not_to raise_error
+      @item.data[:long_url].should == @long_url
+    end
+    it "should return data[:long_url] if url attr value is nil" do
+      @item.save
+      @item.reload.attributes["url"].should == nil
+      @item.url.should == @item.data[:long_url]
+    end
+  end
 end

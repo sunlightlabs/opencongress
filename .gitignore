@@ -32,3 +32,5 @@ sendhelium
 .idea/*
 *.bak
 .env
+*.sublime-workspace
+*.sublime-project

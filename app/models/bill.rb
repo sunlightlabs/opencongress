@@ -198,7 +198,7 @@ class Bill < ActiveRecord::Base
       return @@GOVTRACK_TYPE_LOOKUP[typename]
     end
 
-    def available_sessions(relation = Bill.scoped)
+    def available_sessions(relation = Bill.all)
       relation.select("DISTINCT session").map(&:session).uniq.sort
     end
 

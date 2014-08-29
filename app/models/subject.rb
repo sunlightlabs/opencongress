@@ -12,38 +12,62 @@
 
 require_dependency 'viewable_object'
 class Subject < ActiveRecord::Base
+
+  #========== INCLUDES
+
   include ViewableObject
+
+  #========== VALIDATORS
 
   validates_uniqueness_of :term, :case_sensitive => false
 
-  has_many :child_subjects, :class_name => 'Subject', :foreign_key => :parent_id
-  belongs_to :parent, :class_name => 'Subject'
-
-  has_many :bill_subjects
-  has_many :bills, :through => :bill_subjects, :order => "bills.introduced DESC"
-
-  has_many :users, :through => :bookmarks, :order => "bookmarks.created_at DESC"
-
-  has_many :recently_introduced_bills, :class_name => "Bill", :through => :bill_subjects, :source => "bill", :order => "bills.introduced DESC", :limit => 20
-
-  has_many :comments, :as => :commentable
-  has_many :talking_points, :as => :talking_pointable
-
-  has_many :groups
-  has_one :issue_stats
-  has_one :wiki_link
-
-  has_many :pvs_category_mappings, :as => :pvs_category_mappable
-  has_many :pvs_categories, :through => :pvs_category_mappings
+  #========== CALLBACKS
 
   before_save :count_bills
   after_save :create_default_group, :if => :is_category?
 
+  #========== RELATIONS
+
+  #----- HAS_ONE
+
+  has_one :issue_stats
+  has_one :wiki_link
+
+  #----- HAS_MANY
+
+  has_many :child_subjects,
+           :class_name => 'Subject', :foreign_key => :parent_id
+  has_many :bill_subjects
+  has_many :bills, -> { order('bills.introduced DESC') },
+           :through => :bill_subjects
+  has_many :users, -> { order('bookmarks.created_at DESC') },
+           :through => :bookmarks
+  has_many :recently_introduced_bills, -> { order('bills.introduced DESC').limit(20) },
+           :class_name => "Bill", :through => :bill_subjects, :source => "bill"
+  has_many :comments,
+           :as => :commentable
+  has_many :talking_points,
+           :as => :talking_pointable
+  has_many :groups
+  has_many :pvs_category_mappings,
+           :as => :pvs_category_mappable
+  has_many :pvs_categories,
+           :through => :pvs_category_mappings
+
+  #----- BELONGS_TO
+
+  belongs_to :parent,
+             :class_name => 'Subject'
+
   acts_as_bookmarkable
 
-  scope :active, includes(:bills).where("bills.session" => Bill.available_sessions.last)
+  #========== SCOPES
+
+  scope :active, -> { includes(:bills).where("bills.session" => Bill.available_sessions.last) }
   scope :with_major_bills, includes(:bills).where(:bills => { :is_major => true })
   scope :top_level, lambda { where(:parent_id => Subject.root_category.id) }
+
+  #========== INSTANCE METHODS
 
   def is_category?
     is_child_of(Subject.root_category)

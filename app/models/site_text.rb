@@ -10,8 +10,7 @@
 
 class SiteText < ActiveRecord::Base
   def self.find_by_type(text_type)
-    st = self.find(:first, :conditions => [ "text_type = ?", text_type])
-    
+    st = self.where('text_type = ?',text_type).first
     st ? st.text : nil
   end
   

@@ -261,7 +261,7 @@ class User < ActiveRecord::Base
     define_method(meth.to_sym){ send(:"_#{meth}") || send(:"build_#{meth}")}
   end
 
-  #========== STATIC METHODS
+  #========== CLASS METHODS
 
   class << self
 
@@ -350,7 +350,7 @@ class User < ActiveRecord::Base
 
   end # class << self
 
-  #========== PUBLIC METHODS
+  #========== INSTANCE METHODS
   public
 
   def is_admin?
@@ -705,7 +705,6 @@ class User < ActiveRecord::Base
     !facebook_connect_user? && !suppress_activation_email
   end
 
-  #========== PRIVATE METHODS
   private
 
   def destroy_comments!

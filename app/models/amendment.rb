@@ -21,7 +21,7 @@
 class Amendment < ActiveRecord::Base
   belongs_to :bill
   has_many :actions, :class_name => 'AmendmentAction'
-  has_many :roll_calls, :order => 'date'
+  has_many :roll_calls, -> { order('date') }
   belongs_to :key_vote_category, :class_name => "PvsCategory", :foreign_key => :key_vote_category_id
 
   def display_number

@@ -51,9 +51,34 @@ require_dependency 'multi_geocoder'
 require_dependency 'wiki_connection'
 
 class Person < ActiveRecord::Base
+
+  #========== INCLUDES
+
   include ViewableObject
 
+  #========== CALLBACKS
+
+  before_update :set_party
+  before_save :set_unaccented_name
+
+  #========== CLASS VARIABLES
+
+  @@DISPLAY_OBJECT_NAME = 'Person'
+
+  @@NONVOTING_TERRITORIES = [ 'AS', 'DC', 'GU', 'PR', 'VI']
+
+  #========== CONSTANTS
+
+  SERIALIZATION_OPS = {:methods =>
+                           [:oc_user_comments, :oc_users_tracking],
+                       :include => [:recent_news, :recent_blogs]}.freeze
+
   #========== RELATIONS
+
+  #----- HAS_ONE
+
+  has_one :person_stats, :dependent => :destroy
+  has_one :wiki_link, :as => "wikiable"
 
   #----- HAS_MANY
 
@@ -67,6 +92,30 @@ class Person < ActiveRecord::Base
            :class_name => 'Bill', :through => :bill_cosponsors, :source => :bill
   has_many :roles, -> { order('roles.startdate DESC') }
   has_many :roll_call_votes, -> { includes(:roll_call).order('roll_calls.date DESC') }
+  has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC, commentaries.id DESC') },
+           :as => :commentariable, :class_name => 'Commentary'
+  has_many :blogs, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='f'").order('commentaries.date DESC, commentaries.id DESC') },
+           :as => :commentariable, :class_name => 'Commentary'
+  has_many :idsorted_news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.id DESC') },
+           :as => :commentariable, :class_name => 'Commentary'
+  has_many :idsorted_blogs, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='f'").order('commentaries.id DESC') },
+           :as => :commentariable, :class_name => 'Commentary'
+  has_many :recent_news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC, commentaries.id DESC').limit(10) },
+           :as => :commentariable, :class_name => 'Commentary'
+  has_many :recent_blogs, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='f'").order('commentaries.date DESC, commentaries.id DESC').limit(10) },
+           :as => :commentariable, :class_name => 'Commentary'
+  has_many :cycle_contributions, -> { order('people_cycle_contributions.cycle DESC') },
+           :class_name => 'PersonCycleContribution'
+  has_many :person_sectors
+  has_many :sectors, -> { select('sectors.*, people_sectors.total, people_sectors.cycle').order('people_sectors.total DESC') },
+           :through => :person_sectors
+  has_many :committee_reports
+  has_many :featured_people, -> { order('created_at DESC')}
+  has_many :comments, :as => :commentable
+  has_many :bookmarks, :as => :bookmarkable
+  has_many :videos, -> { order('videos.video_date DESC, videos.id') }
+  has_many :person_approvals
+  has_many :fundraisers, -> { order('fundraisers.start_time DESC') }
 
   with_options :class_name => "RollCall", :through => :roll_call_votes, :source => :roll_call do |rc|
     rc.has_many :unabstained_roll_calls, -> { includes(:bill).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
@@ -74,7 +123,9 @@ class Person < ActiveRecord::Base
     rc.has_many :party_votes, -> { includes(:bill).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}") }
   end
 
-  has_many :person_approvals
+  acts_as_formageddon_recipient # contains has_many relationships
+
+  #========== SCOPES
 
   scope :republican, :conditions => {:party => "Republican"}
   scope :democrat, :conditions => {:party => "Democrat"}
@@ -92,47 +143,745 @@ class Person < ActiveRecord::Base
     }
   }
 
-  has_many :news, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC', :conditions => proc { "commentaries.is_ok = 't' AND commentaries.is_news='t'" }
-  has_many :blogs, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC', :conditions => proc { "commentaries.is_ok = 't' AND commentaries.is_news='f'" }
-
-  has_many :idsorted_news, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.id DESC', :conditions => "commentaries.is_ok = 't' AND commentaries.is_news='t'"
-  has_many :idsorted_blogs, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.id DESC', :conditions => "commentaries.is_ok = 't' AND commentaries.is_news='f'"
-
-  has_many :recent_news, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC', :conditions => proc { "commentaries.is_ok = 't' AND commentaries.is_news='t'" }, :limit => 10
-  has_many :recent_blogs, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC', :conditions => proc { "commentaries.is_ok = 't' AND commentaries.is_news='f'" }, :limit => 10
-
-  has_many :cycle_contributions, :class_name => 'PersonCycleContribution', :order => 'people_cycle_contributions.cycle DESC'
-
-  has_many :person_sectors
-  has_many :sectors, :through => :person_sectors, :select => 'sectors.*, people_sectors.total, people_sectors.cycle', :order => 'people_sectors.total DESC'
-  has_many :committee_reports
-  has_many :featured_people, :order => 'created_at DESC'
-
-  has_many :comments, :as => :commentable
-  has_many :bookmarks, :as => :bookmarkable
-
-  has_many :videos, :order => "videos.video_date DESC, videos.id"
-
-#  acts_as_bookmarkable
-
-  acts_as_formageddon_recipient
-
-  has_one :person_stats, :dependent => :destroy
-
-  has_one :wiki_link, :as => "wikiable"
-
-  has_many :fundraisers, :order => 'fundraisers.start_time DESC'
-
-  before_update :set_party
-  before_save :set_unaccented_name
-
-  set_primary_key :id #From Benjamin: Why would we need this?
+  #========== ALIASES
 
   alias :blog :blogs
 
-  @@DISPLAY_OBJECT_NAME = 'Person'
+  #========== CLASS METHODS
 
-  @@NONVOTING_TERRITORIES = [ 'AS', 'DC', 'GU', 'PR', 'VI']
+  def self.custom_index_rebuild
+    ['rep','sen'].each{|title|
+      Person.rebuild_solr_index(30) do |person, options|
+        person.find(:all, options.merge({:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='#{title}' AND roles.enddate > ?", Date.today]}))
+      end
+    }
+  end
+
+  def self.random_commentary(person_id, type, limit = 1, since = Settings.default_count_time)
+    p = Person.find_by_id(person_id)
+    random_item = nil
+    if p then random_item = type == 'news' ? p.idsorted_news.find(:first) : p.idsorted_blogs.find(:first) end
+    return random_item ? [p,random_item] : [nil,nil]
+  end
+
+  def self.list_chamber(chamber, congress, order, limit = nil)
+    def_count_days = Settings.default_count_time.to_i / 24 / 60 / 60
+    lim = limit.nil? ? '' : "LIMIT #{limit}"
+
+    Person.find_by_sql(["SELECT people.*,
+       COALESCE(person_approvals.person_approval_avg, 0) as person_approval_average,
+       COALESCE(bills_sponsored.sponsored_bills_count, 0) as sponsored_bills_count,
+       COALESCE(people.total_session_votes, 0) as total_roll_call_votes,
+       CASE WHEN people.party = 'Democrat' THEN COALESCE(people.votes_democratic_position, 0)
+            WHEN people.party = 'Republican' THEN COALESCE(people.votes_republican_position, 0)
+            ELSE 0
+       END as party_roll_call_votes,
+       COALESCE(aggregates.view_count, 0) as view_count,
+       COALESCE(aggregates.blog_count, 0) as blog_count,
+       COALESCE(aggregates.news_count, 0) as news_count
+    FROM people
+    LEFT OUTER JOIN roles on roles.person_id=people.id
+    LEFT OUTER JOIN (select person_approvals.person_id as person_approval_id,
+                     count(person_approvals.id) as person_approval_count,
+                     avg(person_approvals.rating) as person_approval_avg
+                    FROM person_approvals
+                    GROUP BY person_approval_id) person_approvals
+      ON person_approval_id = people.id
+
+    LEFT OUTER JOIN (select sponsor_id, count(id) as sponsored_bills_count
+                    FROM bills
+                    WHERE bills.session = #{congress}
+                    GROUP BY sponsor_id) bills_sponsored
+      ON bills_sponsored.sponsor_id = people.id
+     LEFT OUTER JOIN (SELECT object_aggregates.aggregatable_id,
+                                    sum(object_aggregates.page_views_count) as view_count,
+                                    sum(object_aggregates.blog_articles_count) as blog_count,
+                                    sum(object_aggregates.news_articles_count) as news_count
+                             FROM object_aggregates
+                             WHERE object_aggregates.date >= current_timestamp - interval '#{def_count_days} days' AND
+                                   object_aggregates.aggregatable_type = 'Person'
+                             GROUP BY object_aggregates.aggregatable_id
+                             ORDER BY view_count DESC) aggregates
+                            ON people.id=aggregates.aggregatable_id
+    WHERE roles.role_type = ?
+      AND (roles.startdate <= ?
+            AND roles.enddate >= ?)
+ ORDER BY #{order} #{lim};",
+                        chamber, Date.today, Date.today])
+  end
+
+  def self.rep_random_blog(limit = 1, since = Settings.default_count_time)
+    random_item = nil
+    tries = 0
+    until random_item != nil || tries == 3
+      p = Person.rep.find(:first, :order => "random()")
+      random_item = p.recent_blogs.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
+      tries = tries + 1
+    end
+    if random_item
+      return [p,random_item]
+    else
+      return []
+    end
+  end
+
+  def self.sen_random_news(limit = 1, since = Settings.default_count_time)
+    random_item = nil
+    tries = 0
+    until random_item != nil || tries == 3
+      p = Person.sen.find(:first, :order => "random()")
+      random_item = p.recent_news.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
+      tries = tries + 1
+    end
+    if random_item
+      return [p,random_item]
+    else
+      return []
+    end
+  end
+
+  def self.sen_random_blog(limit = 1, since = Settings.default_count_time)
+    random_item = nil
+    tries = 0
+    until random_item != nil || tries == 3
+      p = Person.sen.find(:first, :order => "random()")
+      random_item = p.recent_blogs.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
+      tries = tries + 1
+    end
+    if random_item
+      return [p,random_item]
+    else
+      return []
+    end
+  end
+
+  ##
+  # This class method creates a Hash containing data about which
+  # senators and representatives have replied to messages, never
+  # been sent a message, and have been sent messages but haven't
+  # replied to any.
+  #
+  # @return {Hash} object containing metadata about all replies
+  #
+  def self.get_email_reply_summary(congresses=[Settings.default_congress])
+    toReturn = {
+        :count_total => 0,
+        :count_replied => 0,
+        :count_never_sent_letter => 0,
+        :count_have_not_replied => 0,
+        :list_replied => [],
+        :list_never_sent_letter => [],
+        :list_have_not_replied => []
+    }
+    Person.all().each {|person|
+      if person.congresses?(congresses)
+        toPush = person.get_email_reply_summary
+        if toPush['status'] == 'REPLIED'
+          toReturn[:list_replied].push(toPush)
+          toReturn[:count_replied] += 1
+        elsif toPush['status'] == 'NEVER SENT A LETTER'
+          toReturn[:list_never_sent_letter].push(toPush)
+          toReturn[:count_never_sent_letter] += 1
+        else
+          toReturn[:list_have_not_replied].push(toPush)
+          toReturn[:count_have_not_replied] += 1
+        end
+      end
+    }
+    toReturn[:count_total] = toReturn[:count_replied] + toReturn[:count_never_sent_letter] + toReturn[:count_have_not_replied]
+    return toReturn
+  end
+
+  # Battle Royale
+  def self.find_all_by_most_tracked_for_range(range, options)
+    range = 630720000 if range.nil?
+
+    # this prevents sql injection
+    possible_orders = ["bookmark_count_1 desc", "bookmark_count_1 asc",
+                       "p_approval_avg desc", "p_approval_avg asc", "p_approval_count desc",
+                       "p_approval_count asc", "total_comments asc", "total_comments desc"]
+    order = options[:order] ||= "bookmark_count_1 desc"
+    search = options[:search]
+
+    if possible_orders.include?(order)
+      limit = options[:limit] ||= 20
+      offset = options[:offset] ||= 0
+      person_type = options[:person_type] ||= "Sen."
+      not_null_check = order.split(' ').first
+
+      if search
+        find_by_sql(["select people.*, rank(fti_names, ?, 1) as tsearch_rank, current_period.bookmark_count_1 as bookmark_count_1,
+                       comments_total.total_comments as total_comments, papps.p_approval_count as p_approval_count,
+                       papps.p_approval_avg as p_approval_avg,
+                       previous_period.bookmark_count_2 as bookmark_count_2
+                       FROM people
+                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
+                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
+                                   FROM bookmarks
+                                       WHERE created_at > ? AND
+                                             created_at <= ?
+                                   GROUP BY people_id_1) current_period
+                       ON people.id=current_period.people_id_1
+                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
+                                        count(comments.*) as total_comments
+                                    FROM comments
+                                        WHERE created_at > ? AND
+                                        comments.commentable_type = 'Person'
+                                    GROUP BY comments.commentable_id) comments_total
+                       ON people.id=comments_total.people_id_5
+                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
+                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
+                                        FROM bookmarks
+                                             WHERE created_at > ? AND
+                                                   created_at <= ?
+                                        GROUP BY people_id_2) previous_period
+                       ON people.id=previous_period.people_id_2
+                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
+                                        count(person_approvals.id) as p_approval_count,
+                                        avg(person_approvals.rating) as p_approval_avg
+                                       FROM person_approvals
+                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
+                                       GROUP BY p_approval_id) papps
+                       ON p_approval_id = people.id
+                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
+                       AND  people.fti_names @@ to_tsquery('english', ?)
+                       ORDER BY #{order} LIMIT #{limit} OFFSET #{offset}",
+                     search, range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, search])
+
+
+
+      else
+        find_by_sql(["select people.*, current_period.bookmark_count_1 as bookmark_count_1,
+                       comments_total.total_comments as total_comments, papps.p_approval_count as p_approval_count,
+                       papps.p_approval_avg as p_approval_avg,
+                       previous_period.bookmark_count_2 as bookmark_count_2
+                       FROM people
+                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
+                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
+                                   FROM bookmarks
+                                       WHERE created_at > ? AND
+                                             created_at <= ?
+                                   GROUP BY people_id_1) current_period
+                       ON people.id=current_period.people_id_1
+                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
+                                        count(comments.*) as total_comments
+                                    FROM comments
+                                        WHERE created_at > ? AND
+                                        comments.commentable_type = 'Person'
+                                    GROUP BY comments.commentable_id) comments_total
+                       ON people.id=comments_total.people_id_5
+                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
+                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
+                                        FROM bookmarks
+                                             WHERE created_at > ? AND
+                                                   created_at <= ?
+                                        GROUP BY people_id_2) previous_period
+                       ON people.id=previous_period.people_id_2
+                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
+                                        count(person_approvals.id) as p_approval_count,
+                                        avg(person_approvals.rating) as p_approval_avg
+                                       FROM person_approvals
+                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
+                                       GROUP BY p_approval_id) papps
+                       ON p_approval_id = people.id
+                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
+                       ORDER BY #{order} LIMIT #{limit} OFFSET #{offset}",
+                     range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago])
+      end
+    else
+      return []
+    end
+  end
+
+  def self.count_all_by_most_tracked_for_range(range, options)
+    range = 630720000 if range.nil?
+
+    # this prevents sql injection
+    possible_orders = ["bookmark_count_1 desc", "bookmark_count_1 asc",
+                       "p_approval_avg desc", "p_approval_avg asc", "p_approval_count desc",
+                       "p_approval_count asc", "total_comments asc", "total_comments desc"]
+    logger.info options.to_yaml
+    order = options[:order] ||= "bookmark_count_1 desc"
+    search = options[:search]
+
+    if possible_orders.include?(order)
+      limit = options[:limit] ||= 20
+      offset = options[:offset] ||= 0
+      person_type = options[:person_type] ||= "Sen."
+      not_null_check = order.split(' ').first
+
+      if search
+        count_by_sql(["select count(people.*)
+                       FROM people
+                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
+                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
+                                   FROM bookmarks
+                                       WHERE created_at > ? AND
+                                             created_at <= ?
+                                   GROUP BY people_id_1) current_period
+                       ON people.id=current_period.people_id_1
+                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
+                                        count(comments.*) as total_comments
+                                    FROM comments
+                                        WHERE created_at > ? AND
+                                        comments.commentable_type = 'Person'
+                                    GROUP BY comments.commentable_id) comments_total
+                       ON people.id=comments_total.people_id_5
+                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
+                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
+                                        FROM bookmarks
+                                             WHERE created_at > ? AND
+                                                   created_at <= ?
+                                        GROUP BY people_id_2) previous_period
+                       ON people.id=previous_period.people_id_2
+                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
+                                        count(person_approvals.id) as p_approval_count,
+                                        avg(person_approvals.rating) as p_approval_avg
+                                       FROM person_approvals
+                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
+                                       GROUP BY p_approval_id) papps
+                       ON p_approval_id = people.id
+                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
+                       AND  people.fti_names @@ to_tsquery('english', ?)
+                       LIMIT #{limit} OFFSET #{offset}",
+                      range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, search])
+
+
+
+      else
+        count_by_sql(["select count(people.*)
+                       FROM people
+                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
+                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
+                                   FROM bookmarks
+                                       WHERE created_at > ? AND
+                                             created_at <= ?
+                                   GROUP BY people_id_1) current_period
+                       ON people.id=current_period.people_id_1
+                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
+                                        count(comments.*) as total_comments
+                                    FROM comments
+                                        WHERE created_at > ? AND
+                                        comments.commentable_type = 'Person'
+                                    GROUP BY comments.commentable_id) comments_total
+                       ON people.id=comments_total.people_id_5
+                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
+                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
+                                        FROM bookmarks
+                                             WHERE created_at > ? AND
+                                                   created_at <= ?
+                                        GROUP BY people_id_2) previous_period
+                       ON people.id=previous_period.people_id_2
+                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
+                                        count(person_approvals.id) as p_approval_count,
+                                        avg(person_approvals.rating) as p_approval_avg
+                                       FROM person_approvals
+                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
+                                       GROUP BY p_approval_id) papps
+                       ON p_approval_id = people.id
+                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
+                       LIMIT #{limit} OFFSET #{offset}",
+                      range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago])
+      end
+    else
+      return []
+    end
+  end
+
+  def self.calculate_and_save_party_votes
+    update_query = ["UPDATE people
+                     SET total_session_votes=votes_agg.total_votes,
+                         votes_democratic_position=votes_agg.votes_democratic_position,
+                         votes_republican_position=votes_agg.votes_republican_position
+                     FROM
+                  (SELECT people.id as person_id,
+                           total_votes.total_votes AS total_votes,
+                           dem_position.votes_democratic_position as votes_democratic_position,
+                           rep_position.votes_republican_position as votes_republican_position
+    FROM people
+    LEFT OUTER JOIN roles on roles.person_id=people.id
+    LEFT OUTER JOIN
+      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS total_votes
+      FROM roll_calls
+      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
+      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
+      WHERE roll_call_votes.vote != '0' AND bills.session = ?
+      GROUP BY roll_call_votes.person_id) total_votes ON total_votes.p_id=people.id
+    LEFT OUTER JOIN
+      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS votes_democratic_position
+      FROM roll_calls
+      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
+      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
+      WHERE ((roll_calls.democratic_position = true AND vote = '+') OR (roll_calls.democratic_position = false AND vote = '-'))
+      AND bills.session = ?
+      GROUP BY roll_call_votes.person_id) dem_position ON dem_position.p_id=people.id
+    LEFT OUTER JOIN
+      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS votes_republican_position
+      FROM roll_calls
+      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
+      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
+      WHERE ((roll_calls.republican_position = true AND vote = '+') OR (roll_calls.republican_position = false AND vote = '-'))
+      AND bills.session = ?
+      GROUP BY roll_call_votes.person_id) rep_position ON rep_position.p_id=people.id
+    WHERE roles.startdate <= ? AND roles.enddate >= ?) votes_agg
+    WHERE people.id=votes_agg.person_id", Settings.default_congress, Settings.default_congress, Settings.default_congress, Date.today, Date.today]
+
+
+    ActiveRecord::Base.connection.execute(sanitize_sql_array(update_query))
+  end
+
+  def self.list_by_votes_with_party_ranking(chamber = 'house', party = 'Democrat')
+    role_type = (chamber == 'house') ? 'Rep.' : 'Sen.'
+
+    # find_by_sql(["SELECT people.*,
+    #                       CASE WHEN people.party = 'Democrat' THEN (people.votes_democratic_position::real/people.total_session_votes::real)::real
+    #                            WHEN people.party = 'Republican' THEN (people.votes_republican_position::real/people.total_session_votes::real)::real
+    #                            ELSE 0
+    #                       END as votes_with_party_percentage::real  FROM people
+    #                    LEFT OUTER JOIN roles on roles.person_id=people.id
+    #                    WHERE people.party = ? AND roles.startdate <= ? AND roles.enddate >= ?
+    #                      AND people.title = ?
+    #                   ORDER BY votes_with_party_percentage DESC", party, Date.today, Date.today, role_type])
+
+    peeps = find_by_sql(["SELECT people.*, 0.0 as votes_with_party_percentage FROM people
+                       LEFT OUTER JOIN roles on roles.person_id=people.id
+                       WHERE people.party = ? AND roles.startdate <= ? AND roles.enddate >= ?
+                         AND people.title = ?
+                      ORDER BY votes_with_party_percentage DESC", party, Date.today, Date.today, role_type])
+
+    if party == 'Democrat'
+      peeps.collect! {|p|
+        p.votes_with_party_percentage = p.total_session_votes ? (p.votes_democratic_position.to_f/p.total_session_votes.to_f) * 100 : 0
+        p
+      }
+    else # TODO this assumes all non-dems are republicans
+      peeps.collect! {|p|
+        p.votes_with_party_percentage = p.total_session_votes ? (p.votes_republican_position.to_f/p.total_session_votes.to_f) * 100 : 0
+        p
+      }
+    end
+
+    peeps.sort {|a,b| b.votes_with_party_percentage <=> a.votes_with_party_percentage}
+  end
+
+  def self.random(role, limit=3, congress=109)
+    Person.find_by_sql ["SELECT * FROM (SELECT random(), people.* FROM people LEFT OUTER JOIN roles on roles.person_id=people.id WHERE roles.role_type = ? AND roles.startdate <= ? AND roles.enddate >= ? ORDER BY 1) as peeps LIMIT ?;", role, OpenCongress::Application::CONGRESS_START_DATES[congress], OpenCongress::Application::CONGRESS_START_DATES[congress], limit]
+  end
+
+  def self.find_all_by_last_name_ci_and_state(name, state)
+    Person.find(:all,
+                :include => :roles,
+                :conditions => ["lower(lastname) = ? AND people.state = ?", name.downcase, state])
+  end
+
+  def self.find_all_by_first_name_ci_and_last_name_ci_and_state(first, last, state)
+    Person.find(:all,
+                :include => :roles,
+                :conditions => ["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?) AND people.state = ?", last.downcase, first.downcase, first.downcase, state])
+
+  end
+
+  def self.find_by_first_name_ci_and_last_name_ci(first,last)
+    Person.find(:all,
+                :include => :roles,
+                :conditions => ["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?)", last.downcase, first.downcase, first.downcase])
+  end
+
+  def self.find_all_by_last_name_ci(name)
+    Person.find(:all,
+                :include => :roles,
+                :conditions => ["lower(lastname) = ?", name.downcase])
+  end
+
+  ##
+  # In this case address is free-form. Can be as simple as a state or
+  # zipcode, though those will yield less accurate results.
+  def self.find_current_congresspeople_by_address(address)
+    dsts = District.from_address(address)
+    reps = dsts.map(&:rep).uniq.compact
+    sens = dsts.flat_map(&:sens).uniq
+    return [ sens, reps ]
+  end
+
+  def self.find_current_representative_by_state_and_district(state, district)
+    Person.find(:first,
+                :include => [:roles],
+                :conditions => ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today])
+  end
+
+
+
+
+  ##
+  # This returns a pair of arrays: [ [sen1, sen2], [rep1, ... repN] ]
+  # Callers must check the length of the rep array in case
+  # the zip5 was not specific enough.
+  def self.find_current_congresspeople_by_zipcode(zip5, zip4=nil)
+    if zip5.present? && zip4.present?
+      lat, lng = MultiGeocoder.coordinates("#{zip5}-#{zip4}")
+      legs = Congress.legislators_locate(lat, lng).results rescue []
+    elsif zip5.present?
+      legs = Congress.legislators_locate(zip5).results rescue []
+    else
+      legs = []
+    end
+
+    #ap(legs)
+
+    return nil if legs.empty?
+
+    legs = Person.where(:id => legs.map{ |l| l.govtrack_id })
+    [legs.select{ |l| l.title == 'Sen.' },
+     legs.select{ |l| %w(Del. Rep.).include? l.title }]
+  end
+
+  def self.find_current_senators_by_state(state)
+    Person.on_date(Date.today).where('people.state' => state, 'roles.role_type' => 'sen')
+  end
+
+  def self.find_current_representatives_by_state_and_district(state, district)
+    Person.on_date(Date.today).where(:title => %w[Rep. Del.], :state => state, :district => district.to_s)
+  end
+
+  # return bill actions since last X
+  def self.find_user_data_for_tracked_person(person, current_user)
+    time_since = current_user.previous_login_date || 20.days.ago
+    time_since = 200.days.ago if Rails.env.development?
+    find_by_id(person.id,
+               :select => "people.*,
+                                (select count(roll_call_votes.id) FROM roll_call_votes
+                                     INNER JOIN (select roll_calls.id, roll_calls.date FROM roll_calls WHERE roll_calls.date > '#{time_since.to_s(:db)}') rcs
+                                         ON rcs.id = roll_call_votes.roll_call_id
+                                     WHERE person_id = #{person.id} ) as votes_count,
+                                (select count(commentaries.id) FROM commentaries
+                                     WHERE commentaries.commentariable_id = #{person.id},
+                                       AND commentariable_type = 'Person'
+                                       AND commentaries.is_ok = 't'
+                                       AND commentaries.is_news='f'
+                                       AND commentaries.date > '#{time_since.to_s(:db)}'  ) as blog_count,
+                                (select count(commentaries.id) FROM commentaries
+                                    WHERE commentaries.commentariable_id = #{person.id},
+                                      AND commentariable_type = 'Person'
+                                      AND commentaries.is_ok = 't'
+                                      AND commentaries.is_news='t'
+                                      AND commentaries.date > '#{time_since.to_s(:db)}' ) as newss_count,
+                                (select count(comments.id) FROM comments
+                                     WHERE comments.created_at > '#{time_since.to_s(:db)}'
+                                       AND comments.commentable_type='Person'
+                                       AND comments.commentable_id = #{person.id}) as comment_count")
+  end
+
+  # return bill actions since last X
+  def self.find_changes_since_for_senators_tracked(current_user)
+    time_since = current_user.previous_login_date || 20.days.ago
+    time_since = 200.days.ago if Rails.env.development?
+    ids = current_user.senator_bookmarks.collect{|p| p.bookmarkable_id}
+    return [] if ids.empty?
+    find_by_sql("select people.*, total_actions.action_count as votes_count,
+                                total_blogs.blog_count as blogss_count, total_news.news_count as newss_count,
+                                total_comments.comments_count as commentss_count from people
+                                LEFT OUTER JOIN (select count(roll_call_votes.id) as action_count,
+                                    roll_call_votes.person_id as person_id_1 FROM roll_call_votes
+                                    INNER JOIN ( select roll_calls.id, roll_calls.date FROM roll_calls WHERE roll_calls.date > '#{time_since.to_s(:db)}') rcs
+                                    ON rcs.id = roll_call_votes.roll_call_id
+                                    WHERE roll_call_votes.person_id in (#{ids.join(",")})
+                                    group by person_id_1) total_actions ON
+                                    total_actions.person_id_1 = people.id
+                                LEFT OUTER JOIN (select count(commentaries.id) as blog_count,
+                                    commentaries.commentariable_id as person_id_2 FROM commentaries WHERE
+                                    commentaries.commentariable_id IN (#{ids.join(",")}) AND
+                                    commentaries.commentariable_type='Person' AND
+                                    commentaries.is_ok = 't' AND commentaries.is_news='f' AND
+                                    commentaries.date > '#{time_since.to_s(:db)}'
+                                    group by commentaries.commentariable_id)
+                                    total_blogs ON total_blogs.person_id_2 = people.id
+                                LEFT OUTER JOIN (select count(commentaries.id) as news_count,
+                                    commentaries.commentariable_id as person_id_3 FROM commentaries WHERE
+                                    commentaries.commentariable_id IN (#{ids.join(",")}) AND
+                                    commentaries.commentariable_type='Person' AND
+                                    commentaries.is_ok = 't' AND commentaries.is_news='t' AND
+                                    commentaries.date > '#{time_since.to_s(:db)}'
+                                    group by commentaries.commentariable_id)
+                                    total_news ON total_news.person_id_3 = people.id
+                                LEFT OUTER JOIN (select count(comments.id) as comments_count,
+                                    comments.commentable_id as person_id_4 FROM comments WHERE
+                                    comments.created_at > '#{time_since.to_s(:db)}' AND
+                                    comments.commentable_id in (#{ids.join(",")}) AND
+                                    comments.commentable_type = 'Bill' GROUP BY comments.commentable_id)
+                                    total_comments ON total_comments.person_id_4 = people.id where people.id IN (#{ids.join(",")})")
+  end
+
+  # return bill actions since last X
+  def self.find_changes_since_for_representatives_tracked(current_user)
+    time_since = current_user.previous_login_date || 20.days.ago
+    time_since = 200.days.ago if Rails.env.development?
+    ids = current_user.representative_bookmarks.collect{|p| p.bookmarkable_id}
+    return [] if ids.empty?
+    find_by_sql("select people.*, total_actions.action_count as votes_count,
+                                total_blogs.blog_count as blogss_count, total_news.news_count as newss_count,
+                                total_comments.comments_count as commentss_count from people
+                                LEFT OUTER JOIN (select count(roll_call_votes.id) as action_count,
+                                    roll_call_votes.person_id as person_id_1 FROM roll_call_votes
+                                    INNER JOIN ( select roll_calls.id, roll_calls.date FROM roll_calls WHERE roll_calls.date > '#{time_since.to_s(:db)}') rcs
+                                    ON rcs.id = roll_call_votes.roll_call_id
+                                    WHERE roll_call_votes.person_id in (#{ids.join(",")})
+                                    group by person_id_1) total_actions ON
+                                    total_actions.person_id_1 = people.id
+                                LEFT OUTER JOIN (select count(commentaries.id) as blog_count,
+                                    commentaries.commentariable_id as person_id_2 FROM commentaries WHERE
+                                    commentaries.commentariable_id IN (#{ids.join(",")}) AND
+                                    commentaries.commentariable_type='Person' AND
+                                    commentaries.is_ok = 't' AND commentaries.is_news='f'  AND
+                                    commentaries.date > '#{time_since.to_s(:db)}'
+                                    group by commentaries.commentariable_id)
+                                    total_blogs ON total_blogs.person_id_2 = people.id
+                                LEFT OUTER JOIN (select count(commentaries.id) as news_count,
+                                    commentaries.commentariable_id as person_id_3 FROM commentaries WHERE
+                                    commentaries.commentariable_id IN (#{ids.join(",")}) AND
+                                    commentaries.commentariable_type='Person' AND
+                                    commentaries.is_ok = 't' AND commentaries.is_news='t'  AND
+                                    commentaries.date > '#{time_since.to_s(:db)}'
+                                    group by commentaries.commentariable_id)
+                                    total_news ON total_news.person_id_3 = people.id
+                                LEFT OUTER JOIN (select count(comments.id) as comments_count,
+                                    comments.commentable_id as person_id_4 FROM comments WHERE
+                                    comments.created_at > '#{time_since.to_s(:db)}' AND
+                                    comments.commentable_id in (#{ids.join(",")}) AND
+                                    comments.commentable_type = 'Bill' GROUP BY comments.commentable_id)
+                                    total_comments ON total_comments.person_id_4 = people.id where people.id IN (#{ids.join(",")})")
+  end
+
+  def self.find_by_most_commentary(type = 'news', person_type = 'rep', num = 5, since = Settings.default_count_time)
+    title = (person_type == 'rep') ? 'Rep.' : 'Sen.'
+    is_news = (type == "news") ? true : false
+
+    Person.find_by_sql(["SELECT people.*, top_people.article_count AS article_count FROM people
+                       INNER JOIN
+                       (SELECT commentaries.commentariable_id, count(commentaries.commentariable_id) AS article_count
+                        FROM commentaries
+                        WHERE commentaries.commentariable_type='Person' AND
+                              commentaries.date > ? AND
+                              commentaries.is_news=? AND
+                              commentaries.is_ok='t'
+                        GROUP BY commentaries.commentariable_id
+                        ORDER BY article_count DESC) top_people
+                       ON people.id=top_people.commentariable_id
+                       WHERE people.title = ?
+                       ORDER BY article_count DESC
+                       LIMIT ?",
+                        since.ago, is_news, title, num])
+  end
+
+  def self.top20_commentary(type = 'news', person_type = 'rep')
+    people = Person.find_by_most_commentary(type, person_type, num = 20)
+
+    date_method = :"entered_top_#{type}"
+    (people.select {|p| p.stats.send(date_method).nil? }).each do |pv|
+      pv.stats.send("#{date_method}=", Time.now)
+      pv.save
+    end
+
+    (people.sort { |p1, p2| p2.stats.send(date_method) <=> p1.stats.send(date_method) })
+  end
+
+  def self.representatives(congress = Settings.default_congress, order_by = 'name')
+    Person.find_by_role_type('rep', congress, order_by)
+  end
+
+  def self.voting_representatives
+    Person.find(:all,
+                :include => :roles,
+                :conditions => [ "roles.role_type=? AND roles.enddate > ? AND roles.state NOT IN (?)",
+                                 'rep',  Date.today, @@NONVOTING_TERRITORIES ],
+                :order => 'people.lastname')
+  end
+
+  def self.senators(congress = Settings.default_congress, order_by = 'name')
+    Person.find_by_role_type('sen', congress, order_by)
+  end
+
+  def self.find_by_role_type(role_type, congress, order_by)
+    case order_by
+      when 'state'
+        order = "people.state, people.district"
+      else
+        order = "people.lastname"
+    end
+
+    Person.find(:all,
+                :include => :roles,
+                :conditions => [ "roles.role_type=? AND roles.enddate > ? ",
+                                 role_type,  Date.today ],
+                :order => order)
+  end
+
+  def self.all_sitting
+    self.senators.concat(self.representatives)
+  end
+
+  def self.all_voting
+    self.senators.concat(self.voting_representatives)
+  end
+
+  def self.top20_viewed(person_type = nil)
+    case person_type
+      when 'sen'
+        people = ObjectAggregate.popular('Person', Settings.default_count_time, 540).select{|p| p.title == 'Sen.'}[0..20]
+      when 'rep'
+        people = ObjectAggregate.popular('Person', Settings.default_count_time, 540).select{|p| p.title == 'Rep.'}[0..20]
+      else
+        people = ObjectAggregate.popular('Person')
+    end
+
+    (people.select {|p| p.stats.entered_top_viewed.nil? }).each do |pv|
+      pv.stats.entered_top_viewed = Time.now
+      pv.save
+    end
+
+    if person_type
+      case person_type
+        when 'sen'
+          people = people.select { |p| p.senator? }
+        when 'rep'
+          people = people.select { |p| p.representative? }
+      end
+    end
+
+    (people.sort { |p1, p2| p2.stats.entered_top_viewed <=> p1.stats.entered_top_viewed })
+  end
+
+  # Return an array of people with an email address, and an
+  # array of those without
+  def self.email_lists(people)
+    people.partition {|p| p.email }
+  end
+
+  def self.full_text_search(q, options = {})
+    current = options[:only_current] ? " AND (people.title='Rep.' OR people.title='Sen.' OR people.title='Del.')" : ""
+
+    people = Person.paginate_by_sql(["SELECT people.*, rank(fti_names, ?, 1) as tsearch_rank FROM people WHERE people.fti_names @@ to_tsquery('english', ?) #{current} ORDER BY people.lastname", q, q], :per_page => Settings.default_search_page_size, :page => options[:page])
+    people
+  end
+
+  # the following isn't called on an instance but rather, static-ly (sp?)
+  def self.expire_meta_commentary_fragments
+    person_types = ['sen', 'rep']
+    commentary_types = ['news', 'blog']
+    fragments = []
+
+    person_types.each do |pt|
+      commentary_types.each do |ct|
+        [7, 14, 30].each do |d|
+          fragments << "person_meta_#{pt}_most_#{ct}_#{d.days}"
+        end
+      end
+    end
+
+    FragmentCacheSweeper::expire_fragments(fragments)
+  end
+
+  #========== INSTANCE METHODS
+  public
 
   def congresses_active
     current_congress = UnitedStates::Congress.congress_for_year(Date.today.year)
@@ -229,15 +978,6 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def self.custom_index_rebuild
-    Person.rebuild_solr_index(30) do |person, options|
-       person.find(:all, options.merge({:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='sen' AND roles.enddate > ?", Date.today]}))
-    end
-    Person.rebuild_solr_index(30) do |person, options|
-       person.find(:all, options.merge({:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='rep' AND roles.enddate > ?", Date.today]}))
-    end
-  end
-
   def to_light_xml(options = {})
     default_options = {:methods => [:oc_user_comments, :oc_users_tracking], :except => [:fti_names]}
     self.to_xml(default_options.merge(options))
@@ -248,131 +988,8 @@ class Person < ActiveRecord::Base
     self.to_xml(default_options.merge(options))
   end
 
-  def self.random_commentary(person_id, type, limit = 1, since = Settings.default_count_time)
-    p = Person.find_by_id(person_id)
-    random_item = nil
-    if p
-      if type == "news"
-        random_item = p.idsorted_news.find(:first)
-      else
-        random_item = p.idsorted_blogs.find(:first)
-      end
-    end
-    if random_item
-      return [p,random_item]
-    else
-      return [nil,nil]
-    end
-  end
-
   def latest_role
     roles.order(:startdate).first
-  end
-
-  def self.list_chamber(chamber, congress, order, limit = nil)
-    def_count_days = Settings.default_count_time.to_i / 24 / 60 / 60
-    lim = limit.nil? ? "" : "LIMIT #{limit}"
-
-    Person.find_by_sql(["SELECT people.*,
-       COALESCE(person_approvals.person_approval_avg, 0) as person_approval_average,
-       COALESCE(bills_sponsored.sponsored_bills_count, 0) as sponsored_bills_count,
-       COALESCE(people.total_session_votes, 0) as total_roll_call_votes,
-       CASE WHEN people.party = 'Democrat' THEN COALESCE(people.votes_democratic_position, 0)
-            WHEN people.party = 'Republican' THEN COALESCE(people.votes_republican_position, 0)
-            ELSE 0
-       END as party_roll_call_votes,
-       COALESCE(aggregates.view_count, 0) as view_count,
-       COALESCE(aggregates.blog_count, 0) as blog_count,
-       COALESCE(aggregates.news_count, 0) as news_count
-    FROM people
-    LEFT OUTER JOIN roles on roles.person_id=people.id
-    LEFT OUTER JOIN (select person_approvals.person_id as person_approval_id,
-                     count(person_approvals.id) as person_approval_count,
-                     avg(person_approvals.rating) as person_approval_avg
-                    FROM person_approvals
-                    GROUP BY person_approval_id) person_approvals
-      ON person_approval_id = people.id
-
-    LEFT OUTER JOIN (select sponsor_id, count(id) as sponsored_bills_count
-                    FROM bills
-                    WHERE bills.session = #{congress}
-                    GROUP BY sponsor_id) bills_sponsored
-      ON bills_sponsored.sponsor_id = people.id
-     LEFT OUTER JOIN (SELECT object_aggregates.aggregatable_id,
-                                    sum(object_aggregates.page_views_count) as view_count,
-                                    sum(object_aggregates.blog_articles_count) as blog_count,
-                                    sum(object_aggregates.news_articles_count) as news_count
-                             FROM object_aggregates
-                             WHERE object_aggregates.date >= current_timestamp - interval '#{def_count_days} days' AND
-                                   object_aggregates.aggregatable_type = 'Person'
-                             GROUP BY object_aggregates.aggregatable_id
-                             ORDER BY view_count DESC) aggregates
-                            ON people.id=aggregates.aggregatable_id
-    WHERE roles.role_type = ?
-      AND (roles.startdate <= ?
-            AND roles.enddate >= ?)
- ORDER BY #{order} #{lim};",
-   chamber, Date.today, Date.today])
-  end
-
-  def self.rep_random_news(limit = 1, since = Settings.default_count_time)
-    random_item = nil
-    tries = 0
-    until random_item != nil || tries == 3
-      p = Person.rep.find(:first, :order => "random()")
-      random_item = p.recent_news.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
-      tries = tries + 1
-    end
-    if random_item
-      return [p,random_item]
-    else
-      return []
-    end
-  end
-
-  def self.rep_random_blog(limit = 1, since = Settings.default_count_time)
-    random_item = nil
-    tries = 0
-    until random_item != nil || tries == 3
-      p = Person.rep.find(:first, :order => "random()")
-      random_item = p.recent_blogs.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
-      tries = tries + 1
-    end
-    if random_item
-      return [p,random_item]
-    else
-      return []
-    end
-  end
-
-  def self.sen_random_news(limit = 1, since = Settings.default_count_time)
-    random_item = nil
-    tries = 0
-    until random_item != nil || tries == 3
-      p = Person.sen.find(:first, :order => "random()")
-      random_item = p.recent_news.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
-      tries = tries + 1
-    end
-    if random_item
-      return [p,random_item]
-    else
-      return []
-    end
-  end
-
-  def self.sen_random_blog(limit = 1, since = Settings.default_count_time)
-    random_item = nil
-    tries = 0
-    until random_item != nil || tries == 3
-      p = Person.sen.find(:first, :order => "random()")
-      random_item = p.recent_blogs.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
-      tries = tries + 1
-    end
-    if random_item
-      return [p,random_item]
-    else
-      return []
-    end
   end
 
   def sponsored_bills_rank
@@ -494,43 +1111,6 @@ class Person < ActiveRecord::Base
             }
   end
 
-  ##
-  # This class method creates a Hash containing data about which
-  # senators and representatives have replied to messages, never
-  # been sent a message, and have been sent messages but haven't
-  # replied to any.
-  #
-  # @return {Hash} object containing metadata about all replies
-  #
-  def self.get_email_reply_summary(congresses=[Settings.default_congress])
-    toReturn = {
-                :count_total => 0,
-                :count_replied => 0,
-                :count_never_sent_letter => 0,
-                :count_have_not_replied => 0,
-                :list_replied => [],
-                :list_never_sent_letter => [],
-                :list_have_not_replied => []
-               }
-    Person.all().each {|person|
-      if person.congresses?(congresses)
-        toPush = person.get_email_reply_summary
-        if toPush['status'] == 'REPLIED'
-          toReturn[:list_replied].push(toPush)
-          toReturn[:count_replied] += 1
-        elsif toPush['status'] == 'NEVER SENT A LETTER'
-          toReturn[:list_never_sent_letter].push(toPush)
-          toReturn[:count_never_sent_letter] += 1
-        else
-          toReturn[:list_have_not_replied].push(toPush)
-          toReturn[:count_have_not_replied] += 1
-        end
-      end
-    }
-    toReturn[:count_total] = toReturn[:count_replied] + toReturn[:count_never_sent_letter] + toReturn[:count_have_not_replied]
-    return toReturn
-  end
-
   def has_wiki_link?
     if self.wiki_url.blank?
       return false
@@ -581,278 +1161,6 @@ class Person < ActiveRecord::Base
     summary
   end
 
-  # Battle Royale
-  def self.find_all_by_most_tracked_for_range(range, options)
-    range = 630720000 if range.nil?
-
-    # this prevents sql injection
-    possible_orders = ["bookmark_count_1 desc", "bookmark_count_1 asc",
-                       "p_approval_avg desc", "p_approval_avg asc", "p_approval_count desc",
-                       "p_approval_count asc", "total_comments asc", "total_comments desc"]
-    order = options[:order] ||= "bookmark_count_1 desc"
-    search = options[:search]
-
-    if possible_orders.include?(order)
-      limit = options[:limit] ||= 20
-      offset = options[:offset] ||= 0
-      person_type = options[:person_type] ||= "Sen."
-      not_null_check = order.split(' ').first
-
-      if search
-           find_by_sql(["select people.*, rank(fti_names, ?, 1) as tsearch_rank, current_period.bookmark_count_1 as bookmark_count_1,
-                       comments_total.total_comments as total_comments, papps.p_approval_count as p_approval_count,
-                       papps.p_approval_avg as p_approval_avg,
-                       previous_period.bookmark_count_2 as bookmark_count_2
-                       FROM people
-                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
-                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
-                                   FROM bookmarks
-                                       WHERE created_at > ? AND
-                                             created_at <= ?
-                                   GROUP BY people_id_1) current_period
-                       ON people.id=current_period.people_id_1
-                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
-                                        count(comments.*) as total_comments
-                                    FROM comments
-                                        WHERE created_at > ? AND
-                                        comments.commentable_type = 'Person'
-                                    GROUP BY comments.commentable_id) comments_total
-                       ON people.id=comments_total.people_id_5
-                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
-                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
-                                        FROM bookmarks
-                                             WHERE created_at > ? AND
-                                                   created_at <= ?
-                                        GROUP BY people_id_2) previous_period
-                       ON people.id=previous_period.people_id_2
-                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
-                                        count(person_approvals.id) as p_approval_count,
-                                        avg(person_approvals.rating) as p_approval_avg
-                                       FROM person_approvals
-                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
-                                       GROUP BY p_approval_id) papps
-                       ON p_approval_id = people.id
-                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
-                       AND  people.fti_names @@ to_tsquery('english', ?)
-                       ORDER BY #{order} LIMIT #{limit} OFFSET #{offset}",
-                       search, range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, search])
-
-
-
-       else
-           find_by_sql(["select people.*, current_period.bookmark_count_1 as bookmark_count_1,
-                       comments_total.total_comments as total_comments, papps.p_approval_count as p_approval_count,
-                       papps.p_approval_avg as p_approval_avg,
-                       previous_period.bookmark_count_2 as bookmark_count_2
-                       FROM people
-                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
-                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
-                                   FROM bookmarks
-                                       WHERE created_at > ? AND
-                                             created_at <= ?
-                                   GROUP BY people_id_1) current_period
-                       ON people.id=current_period.people_id_1
-                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
-                                        count(comments.*) as total_comments
-                                    FROM comments
-                                        WHERE created_at > ? AND
-                                        comments.commentable_type = 'Person'
-                                    GROUP BY comments.commentable_id) comments_total
-                       ON people.id=comments_total.people_id_5
-                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
-                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
-                                        FROM bookmarks
-                                             WHERE created_at > ? AND
-                                                   created_at <= ?
-                                        GROUP BY people_id_2) previous_period
-                       ON people.id=previous_period.people_id_2
-                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
-                                        count(person_approvals.id) as p_approval_count,
-                                        avg(person_approvals.rating) as p_approval_avg
-                                       FROM person_approvals
-                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
-                                       GROUP BY p_approval_id) papps
-                       ON p_approval_id = people.id
-                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
-                       ORDER BY #{order} LIMIT #{limit} OFFSET #{offset}",
-                       range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago])
-        end
-    else
-      return []
-    end
-  end
-
-  def self.count_all_by_most_tracked_for_range(range, options)
-    range = 630720000 if range.nil?
-
-    # this prevents sql injection
-    possible_orders = ["bookmark_count_1 desc", "bookmark_count_1 asc",
-                       "p_approval_avg desc", "p_approval_avg asc", "p_approval_count desc",
-                       "p_approval_count asc", "total_comments asc", "total_comments desc"]
-    logger.info options.to_yaml
-    order = options[:order] ||= "bookmark_count_1 desc"
-    search = options[:search]
-
-    if possible_orders.include?(order)
-      limit = options[:limit] ||= 20
-      offset = options[:offset] ||= 0
-      person_type = options[:person_type] ||= "Sen."
-      not_null_check = order.split(' ').first
-
-      if search
-           count_by_sql(["select count(people.*)
-                       FROM people
-                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
-                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
-                                   FROM bookmarks
-                                       WHERE created_at > ? AND
-                                             created_at <= ?
-                                   GROUP BY people_id_1) current_period
-                       ON people.id=current_period.people_id_1
-                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
-                                        count(comments.*) as total_comments
-                                    FROM comments
-                                        WHERE created_at > ? AND
-                                        comments.commentable_type = 'Person'
-                                    GROUP BY comments.commentable_id) comments_total
-                       ON people.id=comments_total.people_id_5
-                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
-                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
-                                        FROM bookmarks
-                                             WHERE created_at > ? AND
-                                                   created_at <= ?
-                                        GROUP BY people_id_2) previous_period
-                       ON people.id=previous_period.people_id_2
-                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
-                                        count(person_approvals.id) as p_approval_count,
-                                        avg(person_approvals.rating) as p_approval_avg
-                                       FROM person_approvals
-                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
-                                       GROUP BY p_approval_id) papps
-                       ON p_approval_id = people.id
-                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
-                       AND  people.fti_names @@ to_tsquery('english', ?)
-                       LIMIT #{limit} OFFSET #{offset}",
-                       range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, search])
-
-
-
-       else
-           count_by_sql(["select count(people.*)
-                       FROM people
-                       INNER JOIN (select bookmarks.bookmarkable_id  as people_id_1,
-                                   count(bookmarks.bookmarkable_id) as bookmark_count_1
-                                   FROM bookmarks
-                                       WHERE created_at > ? AND
-                                             created_at <= ?
-                                   GROUP BY people_id_1) current_period
-                       ON people.id=current_period.people_id_1
-                       LEFT OUTER JOIN (select comments.commentable_id as people_id_5,
-                                        count(comments.*) as total_comments
-                                    FROM comments
-                                        WHERE created_at > ? AND
-                                        comments.commentable_type = 'Person'
-                                    GROUP BY comments.commentable_id) comments_total
-                       ON people.id=comments_total.people_id_5
-                       LEFT OUTER JOIN (select bookmarks.bookmarkable_id as people_id_2,
-                                        count(bookmarks.bookmarkable_id) as bookmark_count_2
-                                        FROM bookmarks
-                                             WHERE created_at > ? AND
-                                                   created_at <= ?
-                                        GROUP BY people_id_2) previous_period
-                       ON people.id=previous_period.people_id_2
-                       LEFT OUTER JOIN (select person_approvals.person_id as p_approval_id,
-                                        count(person_approvals.id) as p_approval_count,
-                                        avg(person_approvals.rating) as p_approval_avg
-                                       FROM person_approvals
-                                           WHERE person_approvals.created_at > '#{range.seconds.ago.to_s(:db)}'
-                                       GROUP BY p_approval_id) papps
-                       ON p_approval_id = people.id
-                       WHERE #{not_null_check} is not null AND people.title = '#{person_type}'
-                       LIMIT #{limit} OFFSET #{offset}",
-                       range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago, range.seconds.ago])
-        end
-    else
-      return []
-    end
-  end
-
-  def self.calculate_and_save_party_votes
-    update_query = ["UPDATE people
-                     SET total_session_votes=votes_agg.total_votes,
-                         votes_democratic_position=votes_agg.votes_democratic_position,
-                         votes_republican_position=votes_agg.votes_republican_position
-                     FROM
-                  (SELECT people.id as person_id,
-                           total_votes.total_votes AS total_votes,
-                           dem_position.votes_democratic_position as votes_democratic_position,
-                           rep_position.votes_republican_position as votes_republican_position
-    FROM people
-    LEFT OUTER JOIN roles on roles.person_id=people.id
-    LEFT OUTER JOIN
-      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS total_votes
-      FROM roll_calls
-      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
-      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
-      WHERE roll_call_votes.vote != '0' AND bills.session = ?
-      GROUP BY roll_call_votes.person_id) total_votes ON total_votes.p_id=people.id
-    LEFT OUTER JOIN
-      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS votes_democratic_position
-      FROM roll_calls
-      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
-      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
-      WHERE ((roll_calls.democratic_position = true AND vote = '+') OR (roll_calls.democratic_position = false AND vote = '-'))
-      AND bills.session = ?
-      GROUP BY roll_call_votes.person_id) dem_position ON dem_position.p_id=people.id
-    LEFT OUTER JOIN
-      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS votes_republican_position
-      FROM roll_calls
-      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
-      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
-      WHERE ((roll_calls.republican_position = true AND vote = '+') OR (roll_calls.republican_position = false AND vote = '-'))
-      AND bills.session = ?
-      GROUP BY roll_call_votes.person_id) rep_position ON rep_position.p_id=people.id
-    WHERE roles.startdate <= ? AND roles.enddate >= ?) votes_agg
-    WHERE people.id=votes_agg.person_id", Settings.default_congress, Settings.default_congress, Settings.default_congress, Date.today, Date.today]
-
-
-    ActiveRecord::Base.connection.execute(sanitize_sql_array(update_query))
-  end
-
-  def self.list_by_votes_with_party_ranking(chamber = 'house', party = 'Democrat')
-    role_type = (chamber == 'house') ? 'Rep.' : 'Sen.'
-
-    # find_by_sql(["SELECT people.*,
-    #                       CASE WHEN people.party = 'Democrat' THEN (people.votes_democratic_position::real/people.total_session_votes::real)::real
-    #                            WHEN people.party = 'Republican' THEN (people.votes_republican_position::real/people.total_session_votes::real)::real
-    #                            ELSE 0
-    #                       END as votes_with_party_percentage::real  FROM people
-    #                    LEFT OUTER JOIN roles on roles.person_id=people.id
-    #                    WHERE people.party = ? AND roles.startdate <= ? AND roles.enddate >= ?
-    #                      AND people.title = ?
-    #                   ORDER BY votes_with_party_percentage DESC", party, Date.today, Date.today, role_type])
-
-    peeps = find_by_sql(["SELECT people.*, 0.0 as votes_with_party_percentage FROM people
-                       LEFT OUTER JOIN roles on roles.person_id=people.id
-                       WHERE people.party = ? AND roles.startdate <= ? AND roles.enddate >= ?
-                         AND people.title = ?
-                      ORDER BY votes_with_party_percentage DESC", party, Date.today, Date.today, role_type])
-
-    if party == 'Democrat'
-      peeps.collect! {|p|
-        p.votes_with_party_percentage = p.total_session_votes ? (p.votes_democratic_position.to_f/p.total_session_votes.to_f) * 100 : 0
-        p
-      }
-    else # TODO this assumes all non-dems are republicans
-      peeps.collect! {|p|
-        p.votes_with_party_percentage = p.total_session_votes ? (p.votes_republican_position.to_f/p.total_session_votes.to_f) * 100 : 0
-        p
-      }
-    end
-
-    peeps.sort {|a,b| b.votes_with_party_percentage <=> a.votes_with_party_percentage}
-  end
-
 
   def last_x_bills(limit = 2)
      self.bills.find(:all, :limit => limit)
@@ -889,192 +1197,7 @@ class Person < ActiveRecord::Base
     items.group_by{|x| x[:sort_date]}.to_a.sort{|a,b| b[0]<=>a[0]}
   end
 
-  def self.random(role, limit=3, congress=109)
-    Person.find_by_sql ["SELECT * FROM (SELECT random(), people.* FROM people LEFT OUTER JOIN roles on roles.person_id=people.id WHERE roles.role_type = ? AND roles.startdate <= ? AND roles.enddate >= ? ORDER BY 1) as peeps LIMIT ?;", role, OpenCongress::Application::CONGRESS_START_DATES[congress], OpenCongress::Application::CONGRESS_START_DATES[congress], limit]
-  end
 
-  def self.find_all_by_last_name_ci_and_state(name, state)
-    Person.find(:all,
-                :include => :roles,
-                :conditions => ["lower(lastname) = ? AND people.state = ?", name.downcase, state])
-  end
-
-  def self.find_all_by_first_name_ci_and_last_name_ci_and_state(first, last, state)
-    Person.find(:all,
-                :include => :roles,
-                :conditions => ["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?) AND people.state = ?", last.downcase, first.downcase, first.downcase, state])
-
-  end
-
-  def self.find_by_first_name_ci_and_last_name_ci(first,last)
-    Person.find(:all,
-                :include => :roles,
-                :conditions => ["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?)", last.downcase, first.downcase, first.downcase])
-  end
-
-  def self.find_all_by_last_name_ci(name)
-    Person.find(:all,
-                :include => :roles,
-                :conditions => ["lower(lastname) = ?", name.downcase])
-  end
-
-  ##
-  # In this case address is free-form. Can be as simple as a state or
-  # zipcode, though those will yield less accurate results.
-  def self.find_current_congresspeople_by_address(address)
-    dsts = District.from_address(address)
-    reps = dsts.map(&:rep).uniq.compact
-    sens = dsts.flat_map(&:sens).uniq
-    return [ sens, reps ]
-  end
-
-  def self.find_current_representative_by_state_and_district(state, district)
-    Person.find(:first,
-                :include => [:roles],
-                :conditions => ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today])
-  end
-
-
-
-
-  ##
-  # This returns a pair of arrays: [ [sen1, sen2], [rep1, ... repN] ]
-  # Callers must check the length of the rep array in case
-  # the zip5 was not specific enough.
-  def self.find_current_congresspeople_by_zipcode(zip5, zip4=nil)
-    if zip5.present? && zip4.present?
-      lat, lng = MultiGeocoder.coordinates("#{zip5}-#{zip4}")
-      legs = Congress.legislators_locate(lat, lng).results rescue []
-    elsif zip5.present?
-      legs = Congress.legislators_locate(zip5).results rescue []
-    else
-      legs = []
-    end
-
-    #ap(legs)
-
-    return nil if legs.empty?
-
-    legs = Person.where(:id => legs.map{ |l| l.govtrack_id })
-    [legs.select{ |l| l.title == 'Sen.' },
-     legs.select{ |l| %w(Del. Rep.).include? l.title }]
-  end
-
-  def self.find_current_senators_by_state(state)
-    Person.on_date(Date.today).where('people.state' => state, 'roles.role_type' => 'sen')
-  end
-
-  def self.find_current_representatives_by_state_and_district(state, district)
-    Person.on_date(Date.today).where(:title => %w[Rep. Del.], :state => state, :district => district.to_s)
-  end
-
-  # return bill actions since last X
-  def self.find_user_data_for_tracked_person(person, current_user)
-     time_since = current_user.previous_login_date || 20.days.ago
-     time_since = 200.days.ago if Rails.env.development?
-     find_by_id(person.id,
-                    :select => "people.*,
-                                (select count(roll_call_votes.id) FROM roll_call_votes
-                                     INNER JOIN (select roll_calls.id, roll_calls.date FROM roll_calls WHERE roll_calls.date > '#{time_since.to_s(:db)}') rcs
-                                         ON rcs.id = roll_call_votes.roll_call_id
-                                     WHERE person_id = #{person.id} ) as votes_count,
-                                (select count(commentaries.id) FROM commentaries
-                                     WHERE commentaries.commentariable_id = #{person.id},
-                                       AND commentariable_type = 'Person'
-                                       AND commentaries.is_ok = 't'
-                                       AND commentaries.is_news='f'
-                                       AND commentaries.date > '#{time_since.to_s(:db)}'  ) as blog_count,
-                                (select count(commentaries.id) FROM commentaries
-                                    WHERE commentaries.commentariable_id = #{person.id},
-                                      AND commentariable_type = 'Person'
-                                      AND commentaries.is_ok = 't'
-                                      AND commentaries.is_news='t'
-                                      AND commentaries.date > '#{time_since.to_s(:db)}' ) as newss_count,
-                                (select count(comments.id) FROM comments
-                                     WHERE comments.created_at > '#{time_since.to_s(:db)}'
-                                       AND comments.commentable_type='Person'
-                                       AND comments.commentable_id = #{person.id}) as comment_count")
-  end
-
-  # return bill actions since last X
-  def self.find_changes_since_for_senators_tracked(current_user)
-     time_since = current_user.previous_login_date || 20.days.ago
-     time_since = 200.days.ago if Rails.env.development?
-     ids = current_user.senator_bookmarks.collect{|p| p.bookmarkable_id}
-     return [] if ids.empty?
-     find_by_sql("select people.*, total_actions.action_count as votes_count,
-                                total_blogs.blog_count as blogss_count, total_news.news_count as newss_count,
-                                total_comments.comments_count as commentss_count from people
-                                LEFT OUTER JOIN (select count(roll_call_votes.id) as action_count,
-                                    roll_call_votes.person_id as person_id_1 FROM roll_call_votes
-                                    INNER JOIN ( select roll_calls.id, roll_calls.date FROM roll_calls WHERE roll_calls.date > '#{time_since.to_s(:db)}') rcs
-                                    ON rcs.id = roll_call_votes.roll_call_id
-                                    WHERE roll_call_votes.person_id in (#{ids.join(",")})
-                                    group by person_id_1) total_actions ON
-                                    total_actions.person_id_1 = people.id
-                                LEFT OUTER JOIN (select count(commentaries.id) as blog_count,
-                                    commentaries.commentariable_id as person_id_2 FROM commentaries WHERE
-                                    commentaries.commentariable_id IN (#{ids.join(",")}) AND
-                                    commentaries.commentariable_type='Person' AND
-                                    commentaries.is_ok = 't' AND commentaries.is_news='f' AND
-                                    commentaries.date > '#{time_since.to_s(:db)}'
-                                    group by commentaries.commentariable_id)
-                                    total_blogs ON total_blogs.person_id_2 = people.id
-                                LEFT OUTER JOIN (select count(commentaries.id) as news_count,
-                                    commentaries.commentariable_id as person_id_3 FROM commentaries WHERE
-                                    commentaries.commentariable_id IN (#{ids.join(",")}) AND
-                                    commentaries.commentariable_type='Person' AND
-                                    commentaries.is_ok = 't' AND commentaries.is_news='t' AND
-                                    commentaries.date > '#{time_since.to_s(:db)}'
-                                    group by commentaries.commentariable_id)
-                                    total_news ON total_news.person_id_3 = people.id
-                                LEFT OUTER JOIN (select count(comments.id) as comments_count,
-                                    comments.commentable_id as person_id_4 FROM comments WHERE
-                                    comments.created_at > '#{time_since.to_s(:db)}' AND
-                                    comments.commentable_id in (#{ids.join(",")}) AND
-                                    comments.commentable_type = 'Bill' GROUP BY comments.commentable_id)
-                                    total_comments ON total_comments.person_id_4 = people.id where people.id IN (#{ids.join(",")})")
-  end
-
-  # return bill actions since last X
-  def self.find_changes_since_for_representatives_tracked(current_user)
-     time_since = current_user.previous_login_date || 20.days.ago
-     time_since = 200.days.ago if Rails.env.development?
-     ids = current_user.representative_bookmarks.collect{|p| p.bookmarkable_id}
-     return [] if ids.empty?
-     find_by_sql("select people.*, total_actions.action_count as votes_count,
-                                total_blogs.blog_count as blogss_count, total_news.news_count as newss_count,
-                                total_comments.comments_count as commentss_count from people
-                                LEFT OUTER JOIN (select count(roll_call_votes.id) as action_count,
-                                    roll_call_votes.person_id as person_id_1 FROM roll_call_votes
-                                    INNER JOIN ( select roll_calls.id, roll_calls.date FROM roll_calls WHERE roll_calls.date > '#{time_since.to_s(:db)}') rcs
-                                    ON rcs.id = roll_call_votes.roll_call_id
-                                    WHERE roll_call_votes.person_id in (#{ids.join(",")})
-                                    group by person_id_1) total_actions ON
-                                    total_actions.person_id_1 = people.id
-                                LEFT OUTER JOIN (select count(commentaries.id) as blog_count,
-                                    commentaries.commentariable_id as person_id_2 FROM commentaries WHERE
-                                    commentaries.commentariable_id IN (#{ids.join(",")}) AND
-                                    commentaries.commentariable_type='Person' AND
-                                    commentaries.is_ok = 't' AND commentaries.is_news='f'  AND
-                                    commentaries.date > '#{time_since.to_s(:db)}'
-                                    group by commentaries.commentariable_id)
-                                    total_blogs ON total_blogs.person_id_2 = people.id
-                                LEFT OUTER JOIN (select count(commentaries.id) as news_count,
-                                    commentaries.commentariable_id as person_id_3 FROM commentaries WHERE
-                                    commentaries.commentariable_id IN (#{ids.join(",")}) AND
-                                    commentaries.commentariable_type='Person' AND
-                                    commentaries.is_ok = 't' AND commentaries.is_news='t'  AND
-                                    commentaries.date > '#{time_since.to_s(:db)}'
-                                    group by commentaries.commentariable_id)
-                                    total_news ON total_news.person_id_3 = people.id
-                                LEFT OUTER JOIN (select count(comments.id) as comments_count,
-                                    comments.commentable_id as person_id_4 FROM comments WHERE
-                                    comments.created_at > '#{time_since.to_s(:db)}' AND
-                                    comments.commentable_id in (#{ids.join(",")}) AND
-                                    comments.commentable_type = 'Bill' GROUP BY comments.commentable_id)
-                                    total_comments ON total_comments.person_id_4 = people.id where people.id IN (#{ids.join(",")})")
-  end
 
   # Returns the number of people tracking this bill, as well as suggestions of what other people
   # tracking this bill are also tracking.
@@ -1245,39 +1368,6 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def self.find_by_most_commentary(type = 'news', person_type = 'rep', num = 5, since = Settings.default_count_time)
-    title = (person_type == 'rep') ? 'Rep.' : 'Sen.'
-    is_news = (type == "news") ? true : false
-
-    Person.find_by_sql(["SELECT people.*, top_people.article_count AS article_count FROM people
-                       INNER JOIN
-                       (SELECT commentaries.commentariable_id, count(commentaries.commentariable_id) AS article_count
-                        FROM commentaries
-                        WHERE commentaries.commentariable_type='Person' AND
-                              commentaries.date > ? AND
-                              commentaries.is_news=? AND
-                              commentaries.is_ok='t'
-                        GROUP BY commentaries.commentariable_id
-                        ORDER BY article_count DESC) top_people
-                       ON people.id=top_people.commentariable_id
-                       WHERE people.title = ?
-                       ORDER BY article_count DESC
-                       LIMIT ?",
-                      since.ago, is_news, title, num])
-  end
-
-  def self.top20_commentary(type = 'news', person_type = 'rep')
-    people = Person.find_by_most_commentary(type, person_type, num = 20)
-
-    date_method = :"entered_top_#{type}"
-    (people.select {|p| p.stats.send(date_method).nil? }).each do |pv|
-      pv.stats.send("#{date_method}=", Time.now)
-      pv.save
-    end
-
-    (people.sort { |p1, p2| p2.stats.send(date_method) <=> p1.stats.send(date_method) })
-  end
-
   def commentary_count(type = 'news', since = Settings.default_count_time)
     return @attributes['article_count'] if @attributes['article_count']
 
@@ -1288,71 +1378,7 @@ class Person < ActiveRecord::Base
     end
   end
 
-  def self.representatives(congress = Settings.default_congress, order_by = 'name')
-    Person.find_by_role_type('rep', congress, order_by)
-  end
 
-  def self.voting_representatives
-    Person.find(:all,
-                :include => :roles,
-                :conditions => [ "roles.role_type=? AND roles.enddate > ? AND roles.state NOT IN (?)",
-                                 'rep',  Date.today, @@NONVOTING_TERRITORIES ],
-                :order => 'people.lastname')
-  end
-
-  def self.senators(congress = Settings.default_congress, order_by = 'name')
-    Person.find_by_role_type('sen', congress, order_by)
-  end
-
-  def self.find_by_role_type(role_type, congress, order_by)
-    case order_by
-    when 'state'
-      order = "people.state, people.district"
-    else
-      order = "people.lastname"
-    end
-
-    Person.find(:all,
-                :include => :roles,
-                :conditions => [ "roles.role_type=? AND roles.enddate > ? ",
-                                 role_type,  Date.today ],
-                :order => order)
-  end
-
-  def self.all_sitting
-    self.senators.concat(self.representatives)
-  end
-
-  def self.all_voting
-    self.senators.concat(self.voting_representatives)
-  end
-
-  def self.top20_viewed(person_type = nil)
-    case person_type
-    when 'sen'
-      people = ObjectAggregate.popular('Person', Settings.default_count_time, 540).select{|p| p.title == 'Sen.'}[0..20]
-    when 'rep'
-      people = ObjectAggregate.popular('Person', Settings.default_count_time, 540).select{|p| p.title == 'Rep.'}[0..20]
-    else
-      people = ObjectAggregate.popular('Person')
-    end
-
-    (people.select {|p| p.stats.entered_top_viewed.nil? }).each do |pv|
-      pv.stats.entered_top_viewed = Time.now
-      pv.save
-    end
-
-    if person_type
-      case person_type
-      when 'sen'
-        people = people.select { |p| p.senator? }
-      when 'rep'
-        people = people.select { |p| p.representative? }
-      end
-    end
-
-    (people.sort { |p1, p2| p2.stats.entered_top_viewed <=> p1.stats.entered_top_viewed })
-  end
 
   def representative_for_congress?(congress = Settings.default_congress )
     #may be able to simplify this as >= 400000
@@ -1530,19 +1556,6 @@ class Person < ActiveRecord::Base
     sectors.select { |s| s.cycle == cycle }
   end
 
-  # Return an array of people with an email address, and an
-  # array of those without
-  def self.email_lists(people)
-    people.partition {|p| p.email }
-  end
-
-  def self.full_text_search(q, options = {})
-    current = options[:only_current] ? " AND (people.title='Rep.' OR people.title='Sen.' OR people.title='Del.')" : ""
-
-    people = Person.paginate_by_sql(["SELECT people.*, rank(fti_names, ?, 1) as tsearch_rank FROM people WHERE people.fti_names @@ to_tsquery('english', ?) #{current} ORDER BY people.lastname", q, q], :per_page => Settings.default_search_page_size, :page => options[:page])
-    people
-  end
-
   def users_tracking_from_state_count(state)
     return 0;
     User.count_by_solr("my_state:\"#{state}\"", :facets => {:browse => ["public_tracking:true", "my_state_f:\"#{state}\"", "my_people_tracked:#{self.id}"]})
@@ -1666,15 +1679,15 @@ class Person < ActiveRecord::Base
   # sunlight api test, dont use
   def contact_link
     begin
-    require 'open-uri'
-    require 'hpricot'
-    api_url = "http://www.api.sunlightlabs.com/people.getDataCondition.php?BioGuide_ID=#{bioguideid}&output=xml"
-    response = Hpricot.XML(open(api_url))
-    entry = (response/:entity_id).first.inner_html
-    api_person_url = "http://api.sunlightlabs.com/people.getDataItem.php?id=#{entry}&code=webform&output=xml"
-    person_response = Hpricot.XML(open(api_person_url))
-    webform = (person_response/:webform).first.inner_html
-    return webform
+      require 'open-uri'
+      require 'hpricot'
+      api_url = "http://www.api.sunlightlabs.com/people.getDataCondition.php?BioGuide_ID=#{bioguideid}&output=xml"
+      response = Hpricot.XML(open(api_url))
+      entry = (response/:entity_id).first.inner_html
+      api_person_url = "http://api.sunlightlabs.com/people.getDataItem.php?id=#{entry}&code=webform&output=xml"
+      person_response = Hpricot.XML(open(api_person_url))
+      webform = (person_response/:webform).first.inner_html
+      return webform
     catch Exception
       return false
     end
@@ -1705,22 +1718,6 @@ class Person < ActiveRecord::Base
     FragmentCacheSweeper::expire_commentary_fragments(self, type)
   end
 
-  # the following isn't called on an instance but rather, static-ly (sp?)
-  def self.expire_meta_commentary_fragments
-    person_types = ['sen', 'rep']
-    commentary_types = ['news', 'blog']
-    fragments = []
-
-    person_types.each do |pt|
-      commentary_types.each do |ct|
-        [7, 14, 30].each do |d|
-          fragments << "person_meta_#{pt}_most_#{ct}_#{d.days}"
-        end
-      end
-    end
-
-    FragmentCacheSweeper::expire_fragments(fragments)
-  end
 
   def set_party
      self.party = self.roles.first.party unless self.roles.empty?
@@ -1755,8 +1752,6 @@ class Person < ActiveRecord::Base
     addr += "#{congress_office}\n" unless congress_office.blank?
     addr += "Washington, DC #{office_zip}\n"
   end
-
-  SERIALIZATION_OPS = {:methods => [:oc_user_comments, :oc_users_tracking], :include => [:recent_news, :recent_blogs]}.freeze
 
   def as_json(ops = {})
     super(SERIALIZATION_OPS.merge(ops))

@@ -123,7 +123,7 @@ gem 'simple_form'
 
 # Mail
 gem 'mechanize'
-gem 'formageddon', '~> 0.0.2', :git => 'git://github.com/sunlightlabs/formageddon.git'
+gem 'formageddon', '~> 0.0.2', :git => 'git://github.com/sunlightlabs/formageddon.git', :branch => "beta"
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'

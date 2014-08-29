@@ -45,7 +45,8 @@ class NotebookItem < ActiveRecord::Base
 
   belongs_to :political_notebook
   belongs_to :notebookable, :polymorphic => true
-  belongs_to :bill, :foreign_key => "notebookable_id", :conditions => ["notebookable_type = ?", "Bill"]
+  belongs_to :bill, -> { where("notebookable_type = ?", "Bill") },
+             :foreign_key => "notebookable_id"
   belongs_to :hot_bill_category
   belongs_to :group_user, :class_name => "User"
 

@@ -40,9 +40,11 @@ class Group < ActiveRecord::Base
   belongs_to :subject
 
   has_many :group_members, :dependent => :destroy
-  has_many :users, :through => :group_members, :order => "users.login ASC"
+  has_many :users, -> { order("users.login ASC") },
+           :through => :group_members
 
-  has_many :group_bill_positions, :order => 'group_bill_positions.created_at desc', :dependent => :destroy
+  has_many :group_bill_positions, -> { order('group_bill_positions.created_at desc') }, 
+           :dependent => :destroy
   has_many :bills, :through => :group_bill_positions
 
   has_many :comments, :as => :commentable, :dependent => :destroy

@@ -33,8 +33,8 @@ class RollCall < ActiveRecord::Base
   belongs_to :bill
   belongs_to :amendment
   has_one :action
-  has_many :roll_call_votes, :include => :person
-
+  has_many :roll_call_votes, -> { includes(:person) }
+  
   # TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
   scope :for_ident, lambda { |ident|
     where(["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?",

@@ -11,7 +11,7 @@ class Wiki < ActiveRecord::Base
     logger.warn "WARNING: oc_wiki configuration is not specified in database.yml"
   end
 
-  set_table_name 'text'
+  self.table_name = 'text'
 
   def self.summary_text_for(article_name)
     begin

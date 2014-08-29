@@ -53,19 +53,25 @@ require_dependency 'wiki_connection'
 class Person < ActiveRecord::Base
   include ViewableObject
 
-  has_many :committees, :through => :committee_people
-  has_many :committee_people, :conditions => proc { [ "committees_people.session = ?", Settings.default_congress ] }
-  has_many :bills, :foreign_key => :sponsor_id, :conditions => proc { [ "bills.session = ?", Settings.default_congress ] }, :include => [ :bill_titles, :actions ], :order => 'bills.introduced DESC'
-  has_many :bill_cosponsors
-  has_many :bills_cosponsored, :class_name => 'Bill', :through => :bill_cosponsors, :source => :bill, :conditions => proc { [ "bills.session = ?", Settings.default_congress ] }, :order => 'bills.introduced DESC'
-  has_many :roles, :order => 'roles.startdate DESC'
-  has_many :roll_call_votes, :include => :roll_call, :order => 'roll_calls.date DESC'
+  #========== RELATIONS
 
-  with_options :class_name => "RollCall", :through => :roll_call_votes,
-               :source => :roll_call, :include => :bill do |rc|
-    rc.has_many :unabstained_roll_calls, :conditions => proc { ["roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress] }
-    rc.has_many :abstained_roll_calls, :conditions => proc { ["vote IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress] }
-    rc.has_many :party_votes, :conditions => proc { "((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}" }
+  #----- HAS_MANY
+
+  has_many :committees,
+           :through => :committee_people
+  has_many :committee_people, -> { where("committees_people.session = ?", Settings.default_congress ) }
+  has_many :bills, -> { includes([ :bill_titles, :actions ]).where("bills.session = ?", Settings.default_congress).order('bills.introduced DESC') },
+           :foreign_key => :sponsor_id
+  has_many :bill_cosponsors
+  has_many :bills_cosponsored, -> { where('bills.session = ?', Settings.default_congress).order('bills.introduced DESC') },
+           :class_name => 'Bill', :through => :bill_cosponsors, :source => :bill
+  has_many :roles, -> { order('roles.startdate DESC') }
+  has_many :roll_call_votes, -> { includes(:roll_call).order('roll_calls.date DESC') }
+
+  with_options :class_name => "RollCall", :through => :roll_call_votes, :source => :roll_call do |rc|
+    rc.has_many :unabstained_roll_calls, -> { includes(:bill).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
+    rc.has_many :abstained_roll_calls,  -> { includes(:bill).where("vote IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
+    rc.has_many :party_votes, -> { includes(:bill).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}") }
   end
 
   has_many :person_approvals

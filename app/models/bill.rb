@@ -45,94 +45,127 @@ class Bill < ActiveRecord::Base
   # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
   #              :facets => [:bill_type, :session], :auto_commit => false
 
-  belongs_to :sponsor, :class_name => "Person", :foreign_key => :sponsor_id
-  has_many :bill_titles
-  has_many :bill_cosponsors
-  has_many :co_sponsors, :through => :bill_cosponsors, :source => :person, :order => 'lastname'
-  has_many :actions, :order => 'ordinal_position DESC', :class_name => 'BillAction'
-  has_many :bill_committees
-  has_many :committees, :through => :bill_committees
-  has_many :bill_relations
-  has_many :related_bills, :through => :bill_relations, :source => :related_bill
-  has_one  :related_bill_session, :through => :bill_relations, :source => :related_bill, :conditions => "bills_relations.relation='session'"
-  has_many :bill_subjects
-  has_many :subjects, :through => :bill_subjects
-  belongs_to :top_subject, :class_name => 'Subject', :foreign_key => :top_subject_id
-  has_many :amendments, :order => ["offered_datetime DESC", "number DESC"], :include => :roll_calls
-  has_many :roll_calls, :order => 'date DESC'
-  has_many :comments, :as => :commentable
-  has_many :object_aggregates, :as => :aggregatable
-  has_many :bill_referrers
-  has_many :bill_votes
-  has_one  :last_action, :class_name => "Action", :order => "actions.date DESC"
-  has_many :most_recent_actions, :class_name => "Action", :order => "actions.date DESC", :limit => 5
-  has_many :talking_points, :as => :talking_pointable
+  #========== CALLBACKS
 
-  has_many :bill_text_versions
+  after_save -> { @bill_text = nil }
 
-  with_options :class_name => 'Commentary', :order => 'commentaries.date DESC, commentaries.id DESC' do |c|
-    c.has_many :news, :as => :commentariable, :conditions => "commentaries.is_ok = 't' AND commentaries.is_news='t'"
-    c.has_many :blogs, :as => :commentariable, :conditions => "commentaries.is_ok = 't' AND commentaries.is_news='f'"
-  end
+  #========== RELATIONS
 
-  has_many :videos, :order => "videos.video_date DESC, videos.id"
-
-  has_many :bookmarks, :as => :bookmarkable
-  has_many :notebook_links, :as => :notebookable
+  #----- HAS_ONE
 
   has_one :sidebar_box, :as => :sidebarable
-
-  has_many :committee_meetings_bills
-  has_many :committee_meetings, :through => :committee_meetings_bills
-
-  has_many :committee_reports
-
   has_one :bill_stats
   has_one :bill_fulltext
-
-  has_many :friend_emails,
-        :as => :emailable,
-        :order => 'created_at'
-
-  belongs_to :hot_bill_category, :class_name => "PvsCategory", :foreign_key => :hot_bill_category_id
-  belongs_to :key_vote_category, :class_name => "PvsCategory", :foreign_key => :key_vote_category_id
-
-  has_many :bill_interest_groups,
-        :include => :crp_interest_group,
-        :order => 'crp_interest_groups.order',
-        :dependent => :destroy
-  has_many :bill_position_organizations, :dependent => :destroy
-
   has_one :wiki_link, :as => "wikiable"
+  has_one  :last_action, -> { order('actions.date DESC') },
+           :class_name => "Action"
+  has_one  :related_bill_session, -> { order("bills_relations.relation='session'") },
+           :through => :bill_relations, :source => :related_bill
 
-  has_many :contact_congress_letters, :as => :contactable
+  #----- HAS_MANY
+
+  has_many :bill_titles
+  has_many :bill_cosponsors
+  has_many :co_sponsors, -> { order('lastname') },
+           :through => :bill_cosponsors, :source => :person
+  has_many :actions, -> { order('ordinal_position DESC') },
+           :class_name => 'BillAction'
+  has_many :bill_committees
+  has_many :committees,
+           :through => :bill_committees
+  has_many :bill_relations
+  has_many :related_bills,
+           :through => :bill_relations, :source => :related_bill
+  has_many :bill_subjects
+  has_many :subjects,
+           :through => :bill_subjects
+  has_many :amendments, -> { includes(:roll_calls).order(["offered_datetime DESC", "number DESC"]) }
+  has_many :roll_calls, -> { order('date DESC') }
+  has_many :comments,
+           :as => :commentable
+  has_many :object_aggregates,
+           :as => :aggregatable
+  has_many :bill_referrers
+  has_many :bill_votes
+  has_many :most_recent_actions, -> { order('actions.date DESC').limit(5) },
+           :class_name => "Action"
+  has_many :talking_points,
+           :as => :talking_pointable
+  has_many :bill_text_versions
+  has_many :videos, -> { order("videos.video_date DESC, videos.id") }
+  has_many :bookmarks,
+           :as => :bookmarkable
+  has_many :notebook_links,
+           :as => :notebookable
+  has_many :committee_meetings_bills
+  has_many :committee_meetings,
+           :through => :committee_meetings_bills
+  has_many :committee_reports
+  has_many :friend_emails, -> { order('created_at') },
+           :as => :emailable
+  has_many :bill_interest_groups, -> { includes(:crp_interest_group).order('crp_interest_groups.order') },
+           :dependent => :destroy
+  has_many :bill_position_organizations,
+           :dependent => :destroy
+  has_many :contact_congress_letters,
+           :as => :contactable
+
+  with_options :class_name => 'Commentary' do |c|
+    c.has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC, commentaries.id DESC') },
+               :as => :commentariable
+    c.has_many :blogs,-> { where("commentaries.is_ok = 't' AND commentaries.is_news='f'").order('commentaries.date DESC, commentaries.id DESC') },
+               :as => :commentariable
+  end
+
+  #----- BELONGS_TO
+
+  belongs_to :sponsor,
+             :class_name => 'Person', :foreign_key => :sponsor_id
+  belongs_to :top_subject,
+             :class_name => 'Subject', :foreign_key => :top_subject_id
+  belongs_to :hot_bill_category,
+             :class_name => "PvsCategory", :foreign_key => :hot_bill_category_id
+  belongs_to :key_vote_category,
+             :class_name => "PvsCategory", :foreign_key => :key_vote_category_id
+
+  #========== ALIASES
 
   alias :blog :blogs
 
+  #========== ACCESSORS
+
   attr_accessor :search_relevancy
   attr_accessor :tmp_search_desc
-
   attr_accessor :wiki_summary_holder
 
-  after_save do
-    @bill_text = nil
-  end
+  #========== CLASS VARIABLES
 
   @@DISPLAY_OBJECT_NAME = 'Bill'
 
-  #Added these back in to make govtrack bill import work to get the bill text that is marked up with the right paragraph ids
-  @@TYPES = {"h" => "H.R.", "s" => "S.", "hj" => "H.J.Res.", "sj" => "S.J.Res.", "hc" => "H.Con.Res.", "sc" => "S.Con.Res.", "hr" => "H.Res.", "sr" => "S.Res."}
-  @@TYPES_ORDERED = [ "s", "sj",  "sc",  "sr", "h", "hj", "hc", "hr" ]
+  # Added these back in to make govtrack bill import work
+  # to get the bill text that is marked up with the right paragraph ids
+  @@TYPES = {
+    'h' => 'H.R.',
+    's' => 'S.',
+    'hj' => 'H.J.Res.',
+    'sj' => 'S.J.Res.',
+    'hc' => 'H.Con.Res.',
+    'sc' => 'S.Con.Res.',
+    'hr' => 'H.Res.',
+    'sr' => 'S.Res.'
+  }
+
+  @@TYPES_ORDERED = [ 's', 'sj',  'sc',  'sr', 'h', 'hj', 'hc', 'hr' ]
 
   @@GOVTRACK_TYPE_LOOKUP = {
-    "hconres" => "hc",
-    "hjres" => "hj",
-    "hr" => "h",
-    "hres" => "hr",
-    "s" => "s",
-    "sconres" => "sc",
-    "sjres" => "sj",
-    "sres" => "sr"
+    'hconres' => 'hc',
+    'hjres' => 'hj',
+    'hr' => 'h',
+    'hres' => 'hr',
+    's' => 's',
+    'sconres' => 'sc',
+    'sjres' => 'sj',
+    'sres' => 'sr'
   }
 
   scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}

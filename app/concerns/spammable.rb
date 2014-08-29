@@ -26,28 +26,26 @@ module Spammable
     scope :censored, where("censored=TRUE AND (spam is NULL or spam=FALSE)")
   end
 
-  module InstanceMethods
-    def check_for_spam
-      self.spam = self.censored = spam?
-      nil  # returning false here will interrupt save
-    end
+  def check_for_spam
+    self.spam = self.censored = spam?
+    nil  # returning false here will interrupt save
+  end
 
-    def censor!(as=nil)
-      if as == :spam
-        self.spam = self.censored = spam!
-      else
-        self.censored = true
-      end
-      save
+  def censor!(as=nil)
+    if as == :spam
+      self.spam = self.censored = spam!
+    else
+      self.censored = true
     end
+    save
+  end
 
-    def uncensor!(as=nil)
-      if as == :ham
-        self.spam = self.censored = ham!
-      else
-        self.censored = false
-      end
-      save
+  def uncensor!(as=nil)
+    if as == :ham
+      self.spam = self.censored = ham!
+    else
+      self.censored = false
     end
+    save
   end
 end

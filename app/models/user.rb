@@ -64,26 +64,27 @@ class User < ActiveRecord::Base
   validates_confirmation_of   :password,                   :if => :password_required?
   validates_length_of         :login,    :within => 3..40, :unless => :openid?
   validates_length_of         :email,    :within => 3..100, :unless => :openid?
-  validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i, :message => "is invalid"
-  validates_format_of         :login, :with => /^\w+$/, :message => "can only contain letters and numbers (no spaces)."
+  validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, :message => "is invalid"
+  validates_format_of         :login, :with => /\A\w+\z/, :message => "can only contain letters and numbers (no spaces)."
   validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
 
-  # This filter merges the validation errors in user_profile with user so that input forms using attributes
-  # from user_profile spit have the validation messages as they appear in user_profile. Otherwise, the message
-  # is prepended by the words User profile.
-  after_validation do
+  # This filter merges the validation errors in user_profile with user
+  # so that input forms using attributes from user_profile spit have
+  # the validation messages as they appear in user_profile.
+  # Otherwise, the message is prepended by the words User profile.
+  after_validation -> {
     user_profile.errors.each  { |name, value| errors.add(name.to_sym(), value) }
     errors.to_hash.delete_if { |name, value| name.to_s().include? 'user_profile' }
     # user_profile.errors.clear() - may need this later for some reason
-  end
+  }
 
-    #========== CALLBACKS
+  #========== CALLBACKS
 
   update_email_subscription_when_changed :self, [:email]
   # on ban or delete, clean up this user's associations with various parts of the site
-  after_save Proc.new {
+  after_save -> {
     privatize!
     destroy_comments!
     destroy_friendships!
@@ -95,62 +96,93 @@ class User < ActiveRecord::Base
     destroy_notebook_items!
     destroy_political_notebook!
     destroy_twitter_config!
-  }, :if => Proc.new { (is_banned? || is_deactivated?) && status_changed? }
+  }, :if => -> { (is_banned? || is_deactivated?) && status_changed? }
 
   #========== RELATIONS
+
+  #----- HAS_ONE
 
   has_one  :user_profile
   has_one  :user_privacy_options
   has_one  :user_options
   has_one  :user_mailing_list
   has_one  :twitter_config
-  has_one  :latest_ip_address, :class_name => "UserIpAddress", :order => "created_at DESC"
+  has_one  :latest_ip_address,
+           :class_name => 'UserIpAddress', :order => 'created_at DESC'
+  has_one  :watch_dog
+  has_one  :political_notebook,
+           :dependent => :destroy
 
-  has_many :owned_groups, :class_name => 'Group'
+  #----- HAS_MANY
+
+  has_many :owned_groups,
+           :class_name => 'Group'
   has_many :group_members
-  has_many :groups, :through => :group_members
+  has_many :groups,
+           :through => :group_members
   has_many :group_invites
   has_many :api_hits
-  has_many :comments, :dependent => :destroy
+  has_many :comments,
+           :dependent => :destroy
   has_many :commentary_ratings
   has_many :comment_scores
   has_many :user_ip_addresses
   has_many :friends
-  has_many :friend_invites, :foreign_key => "inviter_id"
-  has_many :fans, :class_name => "Friend", :foreign_key => "friend_id", :conditions => ["confirmed = ?", false]
+  has_many :friend_invites,
+           :foreign_key => 'inviter_id'
+  has_many :fans, -> { where(confirmed: false) },
+           :class_name => 'Friend', :foreign_key => 'friend_id'
   has_many :person_approvals
   has_many :bookmarks
-  has_many :senator_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person => :roles], :conditions => proc { ["roles.role_type = ? and roles.startdate < ? and roles.enddate > ?", "sen", Time.now, Time.now] }
-  has_many :representative_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person => :roles], :conditions => proc { ["roles.role_type = ? and roles.startdate < ? and roles.enddate > ?", "rep", Time.now, Time.now] }
-  has_many :legislator_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :include => [:person => :roles], :conditions => proc { ["roles.role_type in(?) and roles.startdate < ? and roles.enddate > ?", ["sen", "rep"], Time.now, Time.now] }
-  has_many :bill_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Bill'"
-  has_many :issue_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Subject'"
-  has_many :committee_bookmarks, :class_name => "Bookmark", :foreign_key => "user_id", :conditions => "bookmarks.bookmarkable_type = 'Committee'"
-  has_many :watched_districts, :class_name => "WatchDog"
+  has_many :senator_bookmarks, -> { includes([:person => :roles]).where('roles.role_type = ? and roles.startdate < ? and roles.enddate > ?', 'sen', Time.now, Time.now) },
+           :class_name => 'Bookmark', :foreign_key => 'user_id'
+  has_many :representative_bookmarks, -> { includes([:person => :roles]).where('roles.role_type = ? and roles.startdate < ? and roles.enddate > ?', 'rep', Time.now, Time.now )},
+           :class_name => 'Bookmark', :foreign_key => 'user_id'
+  has_many :legislator_bookmarks, -> { includes([:person => :roles]).where('roles.role_type in(?) and roles.startdate < ? and roles.enddate > ?', ["sen", "rep"], Time.now, Time.now)},
+           :class_name => 'Bookmark', :foreign_key => 'user_id'
+  has_many :bill_bookmarks, -> { where('bookmarks.bookmarkable_type = ?', 'Bill') },
+           :class_name => 'Bookmark', :foreign_key => 'user_id'
+  has_many :issue_bookmarks, -> {  where('bookmarks.bookmarkable_type = ?', 'Subject') },
+           :class_name => 'Bookmark', :foreign_key => 'user_id'
+  has_many :committee_bookmarks, -> { where('bookmarks.bookmarkable_type = ?', 'Committee') },
+           :class_name => 'Bookmark', :foreign_key => 'user_id'
+  has_many :watched_districts,
+           :class_name => "WatchDog"
   has_many :bill_votes
   # TODO: The original implementation included the number of people who have bookmarked the bill, which should be done differently
-  has_many :bookmarked_bills, :class_name => "Bill", :through => :bookmarks, :source => :bill, :order => "bookmarks.created_at DESC"
-  has_many :bills_voted_on, :class_name => "Bill", :through => :bill_votes, :source => :bill, :order => "bill_votes.created_at DESC"
+  has_many :bookmarked_bills, -> { order('bookmarks.created_at DESC') },
+           :class_name => 'Bill', :through => :bookmarks, :source => :bill
+  has_many :bills_voted_on, -> { order('bill_votes.created_at DESC') },
+           :class_name => 'Bill', :through => :bill_votes, :source => :bill
   # Support = 0 for support, 1 for oppose. Not even kidding.
-  has_many :bills_supported, :class_name => "Bill", :through => :bill_votes, :source => :bill, :conditions => ["bill_votes.support = 0"], :order => "bill_votes.created_at DESC"
-  has_many :bills_opposed, :class_name => "Bill", :through => :bill_votes, :source => :bill, :conditions => ["bill_votes.support = 1"], :order => "bill_votes.created_at DESC"
-  has_many :bookmarked_people, :class_name => "Person", :through => :bookmarks, :source => :person, :conditions => ["bookmarks.bookmarkable_type = 'Person'"], :order => "bookmarks.created_at DESC"
-  has_many :bookmarked_issues, :class_name => "Subject", :through => :bookmarks, :source => :subject, :conditions => ["bookmarks.bookmarkable_type = 'Subject'"], :order => "bookmarks.created_at DESC"
-  has_many :bookmarked_committees, :class_name => "Committee", :through => :bookmarks, :source => :committee, :conditions => ["bookmarks.bookmarkable_type = 'Committee'"], :order => "bookmarks.created_at DESC"
+  has_many :bills_supported, -> { where('bill_votes.support = ?','0').order('bill_votes.created_at DESC') },
+           :class_name => 'Bill', :through => :bill_votes, :source => :bill
+  has_many :bills_opposed, -> { where('bill_votes.support = ?','1').order('bill_votes.created_at DESC') },
+           :class_name => 'Bill', :through => :bill_votes, :source => :bill
+  has_many :bookmarked_people, -> { where('bookmarks.bookmarkable_type = ?','Person').order('bookmarks.created_at DESC') },
+           :class_name => 'Person', :through => :bookmarks, :source => :person
+  has_many :bookmarked_issues, -> { where('bookmarks.bookmarkable_type = ?','Subject').order('bookmarks.created_at DESC') },
+           :class_name => 'Subject', :through => :bookmarks, :source => :subject
+  has_many :bookmarked_committees, -> { where('bookmarks.bookmarkable_type = ?','Committee').order('bookmarks.created_at DESC') },
+           :class_name => 'Committee', :through => :bookmarks, :source => :committee
+  has_many :user_warnings
+  has_many :notebook_items,
+           :through => :political_notebook
+  has_many :contact_congress_letters
 
-  belongs_to :representative, :class_name => "Person", :foreign_key => "representative_id"
+  #----- BELONGS_TO
+
+  belongs_to :representative,
+             :class_name => 'Person', :foreign_key => 'representative_id'
   belongs_to :user_role
-  has_one    :watch_dog
-  has_many   :user_warnings
-
-  has_one    :political_notebook, :dependent => :destroy
-  has_many   :notebook_items, :through => :political_notebook
-
-  has_many   :contact_congress_letters
 
   #========== ALIASES
 
+  #----- ATTRIBUTES
+
   alias_attribute :username, :login
+
+  #----- METHODS
 
   # These are just here for some consistency in naming patterns
   alias_method :voted_bills, :bills_voted_on
@@ -173,7 +205,6 @@ class User < ActiveRecord::Base
   scope :tracking_person, lambda {|person| includes(:bookmarked_people).where("people.id" => person.id) }
   scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subjects.id" => subject.id) }
   scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committees.id" => committee.id) }
-
   scope :mypn_spammers, lambda{includes(:political_notebook => [:notebook_items]).where('notebook_items.spam = ?', true).order('users.login ASC')}
 
   # These are LoD helpers that just pass on AR relations from Person
@@ -205,9 +236,9 @@ class User < ActiveRecord::Base
   delegate :street_address_2=, :to => :user_profile
   delegate :city=, :to => :user_profile
 
-  %w(zipcode zip_four street_address street_address_2 small_picture main_picture
-     first_name last_name full_name website about city coordinates location address mobile_phone).each do |prop|
-    delegate prop.to_sym, :to => :user_profile
+  %w( zipcode zip_four street_address street_address_2 small_picture main_picture
+     first_name last_name full_name website about city coordinates location address mobile_phone ).each do |prop|
+    delegate prop.to_sym, to: :user_profile
   end
 
   %w(comment_threshold opencongress_mail partner_mail sms_notifications email_notifications feed_key).each do |prop|
@@ -231,6 +262,7 @@ class User < ActiveRecord::Base
   end
 
   #========== STATIC METHODS
+
   class << self
 
     def random_password
@@ -313,7 +345,7 @@ class User < ActiveRecord::Base
     end
 
     def find_by_feed_key_option(key)
-      self.includes(:user_options).where("user_options.feed_key = ?", key).firstPer
+      self.includes(:user_options).where("user_options.feed_key = ?", key).first
     end
 
   end # class << self
@@ -642,7 +674,8 @@ class User < ActiveRecord::Base
     User.find_by_sql('select email, COUNT(*) as r1_tally FROM users GROUP BY email HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
       puts k.email
       number = k.r1_tally.to_i
-      User.where(email: k.email).order('created_at DESC').each do |j|
+      User.where(email: k.email).order('created_at DESC')
+      User.find_all_by_email(k.email, :order => "created_at desc").each do |j|
         number = number - 1
         j.destroy unless number == 1
       end

@@ -56,7 +56,7 @@ class UserProfile < ActiveRecord::Base
   # to spit back ID fields to the model object. If it can't, child models that depend on the ID will fail to save
   # properly. Tim discovers that pg_dump wasn't preserving the the indexes (such as primary keys) so when the
   # local database wasn't being built fully. Never forget this struggle to discovery.
-  after_save  :change_location!
+  after_save :change_location!
 
 
   #========== PUBLIC METHODS

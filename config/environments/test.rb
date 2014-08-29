@@ -35,9 +35,11 @@ OpenCongress::Application.configure do
   config.active_support.deprecation = :stderr
 
   # Raise exception on mass assignment protection for Active Record models
-  config.active_record.mass_assignment_sanitizer = :strict
+  # config.active_record.mass_assignment_sanitizer = :strict
 
   config.faxable.deliver_faxes = false
+
+  config.eager_load = false
 
   # Configure static asset server for tests with Cache-Control for performance
   config.serve_static_assets = true

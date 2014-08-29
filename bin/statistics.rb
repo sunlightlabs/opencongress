@@ -127,3 +127,133 @@ def committee_bill_association
   Committee.all.each{|c| committee[c.id] = BillCommittee.where(committee_id:c.id).count if c.active }
   return committee
 end
+
+def hearing_bill_association(startyear=2012,startmonth=1,startday=1,enddate=DateTime.now(),delta=7)
+
+  deltadate = DateTime.new(startyear,startmonth,startday)
+
+  # get all the data from Congress API
+  page = 1
+  hearing_dates = []
+  while true
+    data = Congress.hearings('occurs_at__gte' => deltadate.to_s.gsub('+00:00','Z'),'page' => page)
+    if data['results'].empty? then break
+    else
+      hearing_dates += data['results']
+      page += 1
+    end
+  end
+
+  buckets = {}
+  hearing_dates.each {|item|
+    unless buckets.has_key?(item['occurs_at'].split('T')[0])
+      buckets[item['occurs_at'].split('T')[0]] = []
+    end
+    buckets[item['occurs_at'].split('T')[0]].push({'bills' => item['bill_ids'], 'committee' => item['committee_id']})
+  }
+
+  buckets.each{|key,val|
+    buckets[key].each {|item1|
+      buckets[key].each {|item2|
+        if item1 != item2
+          intersect = item1['bills'] & item2['bills']
+          if item1['committee'] != item2['committee'] and not intersect.empty?
+            puts "On #{key} both #{item1['committee']} and #{item2['committee']} considered #{intersect}."
+          elsif item1['committee'] == item2['committee'] and not intersect.empty?
+            puts "On #{key} #{item1['committee']} considered #{intersect} in more than one hearing."
+          end
+        end
+      }
+    }
+  }
+
+  puts "==============================="
+  puts "==============================="
+  puts "==============================="
+
+  buckets = {}
+  while deltadate < enddate
+
+    unless buckets.has_key?(deltadate)
+      buckets[deltadate] = []
+    end
+
+    hearing_dates.each {|item|
+      dt = item['occurs_at'].to_datetime
+      if dt > deltadate and dt <= (deltadate + delta)
+        buckets[deltadate].push({'bills' => item['bill_ids'], 'committee' => item['committee_id']})
+      end
+
+    }
+    deltadate+=delta
+  end
+
+  buckets.each{|key,val|
+    buckets[key].each {|item1|
+      buckets[key].each {|item2|
+        if item1 != item2
+          intersect = item1['bills'] & item2['bills']
+          if item1['committee'] != item2['committee'] and not intersect.empty?
+            puts "On week of #{key} both #{item1['committee']} and #{item2['committee']} considered #{intersect}."
+          elsif item1['committee'] == item2['committee'] and not intersect.empty?
+            puts "On week of #{key} #{item1['committee']} considered #{intersect} in more than one hearing."
+          end
+        end
+      }
+    }
+  }
+
+  puts "==============================="
+  puts "==============================="
+  puts "==============================="
+
+  buckets = {}
+  hearing_dates.each{|item|
+    item['bill_ids'].each{|b|
+      buckets[b] = {'count' => 0, 'data' => []} unless buckets.has_key?(b)
+      buckets[b]['data'].push([item['committee_id'], item['occurs_at'].to_datetime])
+      buckets[b]['count'] += 1
+    }
+  }
+
+  ap(buckets)
+
+end
+
+
+def subject_frequency(threshold=5, limit=12)
+
+  def powerset
+    if empty?
+      [[]]
+    else
+      ps = self[1..-1].powerset
+      ps.map{|i| self[0,1] + i} + ps
+    end
+  end
+
+  buckets = {}
+  Bill.all.each{|bill|
+    bs = BillSubject.where(bill_id:bill.id)
+    if not bs.empty? and not bs.count > limit
+      terms = []
+      bs.each{|i|
+        s = Subject.find(i.subject_id) rescue nil
+        terms.push(s.term) unless s.nil?
+      }
+
+      ps = terms.powerset
+
+      ps.each{|item|
+        buckets[item] = 0  unless buckets.has_key? (item)
+        buckets[item] += 1
+      }
+
+    end
+  }
+
+  buckets.each{|k,v| buckets.delete(k) if v < threshold}
+
+  return buckets
+
+end

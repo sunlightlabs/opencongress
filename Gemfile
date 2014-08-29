@@ -1,9 +1,15 @@
 source 'http://rubygems.org'
 
-gem 'rails', '= 3.2.19'
+gem 'activemodel', '~> 4.1.0'
+
+gem 'rails', '~> 4.1.0'
 gem 'rake', '~> 0.9.1'
 
+gem 'railties'
 gem 'thin'
+gem 'dalli'
+gem 'protected_attributes'
+gem 'rails-observers'
 
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
@@ -14,23 +20,28 @@ gem "settingslogic"
 gem 'titlecase'
 
 # HAML support
-gem "haml", "~> 3.1.8"
-gem "haml-rails"
+# gem "haml", "~> 3.1.8"
+# gem "haml-rails"
 
-group :assets do
-  gem 'coffee-rails', '~> 3.2.1'
-  gem 'uglifier', '>= 1.0.3'
-end
+gem 'coffee-rails', '>= 4.0.0'
+gem 'uglifier', '>= 1.3.0'
+gem 'sass-rails', '>= 4.0.0'
 
-gem 'sass-rails', '~> 3.2.3'
+gem 'actionpack-page_caching'
+
+#group :assets do
+#  gem 'coffee-rails'
+#  gem 'uglifier', '>= 1.0.3'
+#end
+
 gem 'jquery-rails'
-gem 'prototype-rails' #should be removed eventually
+# gem 'prototype-rails' #should be removed eventually
 
 # RABL for API / JSON
 gem 'rabl'
 
 # Background tasks
-gem 'delayed_job', '~> 2.1'
+gem 'delayed_job'#, '~> 3.1'
 
 # RMagick
 gem 'rmagick', '~> 2.13.1', :require => "RMagick"
@@ -40,10 +51,11 @@ gem "galetahub-simple_captcha", '0.1.3', :require => "simple_captcha"
 gem 'carrierwave'
 gem 'fog'
 
+gem 'delayed_job_active_record'
 gem "awesome_nested_set", ">= 2.0"
 
 #Rails transition gems
-gem "acts_as_tree"
+gem "acts_as_tree", "~>2.0.0"
 gem 'prototype_legacy_helper', '0.0.0', :git => 'git://github.com/rails/prototype_legacy_helper.git'
 
 gem 'curb'
@@ -54,11 +66,11 @@ gem 'postmark-mitt'
 gem "congress", :git => "git://github.com/drinks/congress.git" , :branch => "allow-string-zipcodes"  #">= 0.2.0"
 
 # jammit support
-gem "jammit"
+# gem "jammit"
 gem "closure-compiler"
 
 # paperclip -- for attaching files to requests
-gem 'paperclip'
+gem "paperclip", "~> 4.1"
 
 # Deal with unicode strings
 gem 'unicode_utils'
@@ -105,7 +117,7 @@ gem 'will_paginate', '~> 3.0.pre2'
 
 gem "validates_captcha"
 
-gem 'acts-as-taggable-on', '~> 2.3.3'
+gem 'acts-as-taggable-on'
 
 gem 'simple_form'
 
@@ -164,7 +176,7 @@ group :test do
   gem 'fuubar'
   gem 'poltergeist'  # Requires PhantomJS >= 1.8.1
   gem 'cucumber'
-  gem 'cucumber-rails',       :require => false
+  #gem 'cucumber-rails', '~>1.x',   :require => false
   gem 'fuubar-cucumber',      :git => 'git://github.com/martinciu/fuubar-cucumber.git'
   gem 'webmock',              '~> 1.9.0'
   gem 'selenium-client'

@@ -1,14 +1,17 @@
 OpenCongress::Application.routes.draw do
+
   # API
   constraints :subdomain => 'api' do
-    match '/' => redirect(Settings.base_url + 'api')
-    match '/bill/text_summary/:id' => 'bill#status_text'
-    match '/roll_call/text_summary/:id' => 'roll_call#summary_text'
-    with_options :format => [:json, :xml] do |f|
+    with_options :via => [:get] do |f|
+      f.match '/' => redirect(Settings.base_url + 'api')
+      f.match '/bill/text_summary/:id' => 'bill#status_text'
+      f.match '/roll_call/text_summary/:id' => 'roll_call#summary_text'
+      f.match '/:action(/:id)', :controller => 'api'
+    end
+    with_options :format => [:json, :xml], :via => [:get] do |f|
       f.match '/groups(.:format)' => 'groups#index'
       f.match '/groups(/:id(.:format))' => 'groups#show'
     end
-    match '/:action(/:id)', :controller => 'api'
   end
 
   resources :mailing_list_items
@@ -39,12 +42,22 @@ OpenCongress::Application.routes.draw do
   resources :simple_captcha, :only => :show
 
   scope 'email_congress', :controller => :email_congress do
-    match 'postmark/inbound', :action => :message_to_members
-    post 'discard/:confirmation_code', :action => :discard
-    match 'complete_profile/:confirmation_code', :action => :complete_profile
-    match 'confirmed/:confirmation_code', :action => :confirmed
-    match 'confirm/:confirmation_code', :action => :confirm
-    match 'confirm', :action => :confirm
+
+    with_options :via => [:get] do |f|
+      f.match 'postmark/inbound', :action => :message_to_members
+      f.match 'confirmed/:confirmation_code', :action => :confirmed
+      f.match 'confirm/:confirmation_code', :action => :confirm
+      f.match 'confirm', :action => :confirm
+    end
+
+    with_options :via => [:post] do |f|
+      f.match 'discard/:confirmation_code', :action => :discard
+    end
+
+    with_options :via => [:get,:post] do |f|
+      f.match 'complete_profile/:confirmation_code', :action => :complete_profile
+    end
+
   end
 
   # Allow downloading Web Service WSDL as a file with an extension
@@ -53,125 +66,126 @@ OpenCongress::Application.routes.draw do
 
   # Handle bill routing. The action determines what information about the bill will
   # be displayed.
-  match 'bill/:id/users_tracking' => 'friends#tracking_bill', :as => :users_tracking_bill
-  match 'bill/:id/users_tracking/:state' => 'friends#tracking_bill', :state => /\w{2}/, :as => :users_tracking_bill_by_state
+  with_options :via => [:get] do |f|
+    f.match 'bill/:id/users_tracking' => 'friends#tracking_bill', :as => :users_tracking_bill
+    f.match 'bill/:id/users_tracking/:state' => 'friends#tracking_bill', :state => /\w{2}/, :as => :users_tracking_bill_by_state
+  end
 
   scope 'bill', :controller => 'bill' do
-    for action in %w{ all pending popular major hot readthebill compare compare_by_issues atom_top20 }
-      match action, :action => action, :as => 'bill_' + action
+    with_options :via => [:get, :post] do |f|
+
+      for action in %w{ all pending popular major hot readthebill compare compare_by_issues atom_top20 }
+        f.match action, :action => action, :as => 'bill_' + action
+      end
+
+      f.match 'most/:type', :action => 'most_commentary', :as => :bill_most_commentary
+      f.match 'most/viewed', :action => 'popular'
+      f.match 'atom/most/viewed', :action => 'atom_top20'
+      f.match 'atom/most/:type', :action => 'atom_top_commentary'
+      f.match 'atom/list/:chamber', :action => 'atom_list'
+      f.match 'type/:bill_type(/:page)', :action => 'list_bill_type'
+      f.match 'text/status/:id', :action => 'status_text'
+      f.match 'upcoming/:id', :action => 'upcoming'
+      f.match 'bill_vote/:bill/:id', :action => 'bill_vote'
+
+      scope ':id' do
+        f.match 'blogs(/:page)', :action => 'blogs', :as => :blogs_bill
+        f.match 'blogs/search(/:page)', :action => 'commentary_search', :commentary_type => 'blog'
+        f.match 'news(/:page)', :action => 'news', :as => :news_bill
+        f.match 'news/search(/:page)', :action => 'commentary_search', :commentary_type => 'news'
+        f.match 'text', :action => 'text', :as => :bill_text
+        f.match 'comments', :action => 'comments', :as => :bill_comments
+        f.match 'show', :action => 'show', :as => :bill
+        f.match ':action'
+      end
+
+      f.match ':id' => 'bill#show'
     end
-
-    match 'most/:type', :action => 'most_commentary', :as => :bill_most_commentary
-    match 'most/viewed', :action => 'popular'
-    match 'atom/most/viewed', :action => 'atom_top20'
-    match 'atom/most/:type', :action => 'atom_top_commentary'
-    match 'atom/list/:chamber', :action => 'atom_list'
-    match 'type/:bill_type(/:page)', :action => 'list_bill_type'
-    match 'text/status/:id', :action => 'status_text'
-    match 'upcoming/:id', :action => 'upcoming'
-    match 'bill_vote/:bill/:id', :action => 'bill_vote'
-
-    scope ':id' do
-      match 'blogs(/:page)', :action => 'blogs', :as => :blogs_bill
-      match 'blogs/search(/:page)', :action => 'commentary_search', :commentary_type => 'blog'
-      match 'news(/:page)', :action => 'news', :as => :news_bill
-      match 'news/search(/:page)', :action => 'commentary_search', :commentary_type => 'news'
-      match 'text', :action => 'text', :as => :bill_text
-      match 'comments', :action => 'comments', :as => :bill_comments
-      match 'show', :action => 'show', :as => :bill
-      match ':action'
-    end
-
-    match ':id' => 'bill#show'
-
   end
-  match 'bill' => redirect('/bill/all')
+
+  match 'bill' => redirect('/bill/all'), :via => [:get]
 
   scope 'people', :controller => 'people' do
-    match 'senators', :action => 'people_list', :person_type => 'senators'
-    match 'representatives', :action => 'people_list', :person_type => 'representatives'
-    match ':person_type/most/:type', :action => 'most_commentary'
-    match ':person_type/atom/most/:type', :action => 'atom_top_commentary'
-    match 'atom/featured', :action => 'atom_featured'
-    match 'wiki/:id', :action => 'wiki'
-    match 'comments/:id', :action => 'comments'
-    match 'news/:id(/:page)', :action => 'news', :as => :news_person
-    match 'blogs/:id(/:page)', :action => 'blogs', :as => :blogs_person
-    match 'votes_with_party/:chamber/:party', :action => 'votes_with_party'
-    match 'voting_history/:id/:page', :action => 'voting_history', :constraints => { :page => /\d+/ }
-    match 'compare.:format', :action => 'compare'
-    match 'show/:id', :action => 'show', :as => 'person'
-    match 'bills/:id', :action => 'bills', :constraints => { :page => /^\d+/ }
+    with_options :via => [:get, :post] do |f|
+      f.match 'senators', :action => 'people_list', :person_type => 'senators'
+      f.match 'representatives', :action => 'people_list', :person_type => 'representatives'
+      f.match ':person_type/most/:type', :action => 'most_commentary'
+      f.match ':person_type/atom/most/:type', :action => 'atom_top_commentary'
+      f.match 'atom/featured', :action => 'atom_featured'
+      f.match 'wiki/:id', :action => 'wiki'
+      f.match 'comments/:id', :action => 'comments'
+      f.match 'news/:id(/:page)', :action => 'news', :as => :news_person
+      f.match 'blogs/:id(/:page)', :action => 'blogs', :as => :blogs_person
+      f.match 'votes_with_party/:chamber/:party', :action => 'votes_with_party'
+      f.match 'voting_history/:id/:page', :action => 'voting_history', :constraints => { :page => /\d+/ }
+      f.match 'compare.:format', :action => 'compare'
+      f.match 'show/:id', :action => 'show', :as => 'person'
+      f.match 'bills/:id', :action => 'bills', :constraints => { :page => /^\d+/ }
+    end
   end
 
-  match 'person/*path' => redirect("/people/%{path}")
+  match 'person/*path' => redirect("/people/%{path}"), :via => [:get]
 
   namespace :admin do
-     resources :wiki_links, :pvs_category_mappings, :talking_points
-     resources :articles do
-       collection do
-         get :list
-         get :edit_blogroll
-       end
-       resources :article_images
-     end
+    resources :wiki_links, :pvs_category_mappings, :talking_points
+    resources :articles do
+      collection do
+        get :list
+        get :edit_blogroll
+      end
+      resources :article_images
+    end
 
-     match '/' => 'index#index', :as => 'admin'
+    with_options :via => [:get, :post] do |f|
 
-     scope 'stats', :controller => 'stats' do
-       match 'bills.:format', :action => 'bills'
-       match 'partner_email.:format', :action => 'partner_email'
-     end
+      f.match '/' => 'index#index', :as => 'admin'
 
-     match 'contact_congress' => 'contact_congress#index'
-     match 'contact_congress/letters' => 'contact_congress#letters'
-  end
-  match 'contact_congress/status/:id' => 'contact_congress_letters#last'
+      scope 'stats', :controller => 'stats' do
+        f.match 'bills.:format', :action => 'bills'
+        f.match 'partner_email.:format', :action => 'partner_email'
+      end
 
-  match '/:controller(/:action(/:id))', :controller => /admin\/[^\/]+/
+      f.match 'contact_congress' => 'contact_congress#index'
+      f.match 'contact_congress/letters' => 'contact_congress#letters'
 
-  match 'battle_royale' => 'battle_royale#index'
-  match 'battle_royale/:action', :controller => 'battle_royale'
-
-  match 'blog(/:tag)' => 'articles#list', :as => :blogs
-
-  scope 'articles', :controller => 'articles' do
-    match 'view/:id', :action => 'view', :as => :article
-    match ':id/atom', :action => 'article_atom'
-  end
-  # Temporary redirect for DRM's announcement post
-  match 'about/ppf-askthem' => redirect('/articles/view/2537-Big-News')
-
-  match 'issues/most_viewed' => 'issue#most_viewed', :as => :most_viewed_issues
-  match 'issues/all/(:id)' => 'issue#all', :as => :all_issues
-  match 'issues' => 'issue#index', :as => :issues
-
-  match 'roll_call', :controller => :roll_call, :action => :index
-  match 'committee', :controller => :committee, :action => :index
-
-  scope 'issues', :controller => 'issue' do
-    match 'show/:id', :action => 'show', :as => :issue
-    match ':action/:id'
+    end
   end
 
+  with_options :via => [:get, :post] do |f|
+    f.match 'contact_congress/status/:id' => 'contact_congress_letters#last'
 
-  #######TEMP REMOVE
-  # scope :module => 'formageddon', :as => 'formageddon' do
-  #   resources :formageddon_threads, :controller => 'threads', :path => '/formageddon/threads'
-  #   resources :formageddon_contact_steps, :controller => 'contact_steps', :path => '/formageddon/contact_steps'
-  # end
-  #
-  #
-  #
-  #
-  #
-  # # Install the default route as the lowest priority.
-  # map.connect ':controller/:action/:id'
+    f.match '/:controller(/:action(/:id))', :controller => /admin\/[^\/]+/
 
+    f.match 'battle_royale' => 'battle_royale#index'
+    f.match 'battle_royale/:action', :controller => 'battle_royale'
+
+    f.match 'blog(/:tag)' => 'articles#list', :as => :blogs
+
+    scope 'articles', :controller => 'articles' do
+      f.match 'view/:id', :action => 'view', :as => :article
+      f.match ':id/atom', :action => 'article_atom'
+    end
+
+    # Temporary redirect for DRM's announcement post
+    f.match 'about/ppf-askthem' => redirect('/articles/view/2537-Big-News')
+
+    f.match 'issues/most_viewed' => 'issue#most_viewed', :as => :most_viewed_issues
+    f.match 'issues/all/(:id)' => 'issue#all', :as => :all_issues
+    f.match 'issues' => 'issue#index', :as => :issues
+
+    f.match 'roll_call', :controller => :roll_call, :action => :index
+    f.match 'committee', :controller => :committee, :action => :index
+
+    scope 'issues', :controller => 'issue' do
+      f.match 'show/:id', :action => 'show', :as => :issue
+      f.match ':action/:id'
+    end
+  end
 
   scope 'contact_congress_letters', :controller => 'contact_congress_letters' do
     post ':id', :action => :update
   end
+
   resources :contact_congress_letters, :only => [:index, :show, :new, :update] do
     get 'create_from_formageddon', :on => :collection # create uses POST and we'll be redirecting to create
     get 'get_recipients', :on => :collection
@@ -180,17 +194,23 @@ OpenCongress::Application.routes.draw do
   end
 
   scope :controller => 'account' do
-    for action in %w{ login why logout signup welcome contact_congress determine_district }
-      match action, :action => action
-    end
+    with_options :via => [:get, :post] do |f|
 
-    match 'register', :action => 'signup'
-    match 'account/confirm/:login', :action => 'confirm'
+      for action in %w{ login why logout signup welcome contact_congress determine_district }
+        f.match action, :action => action
+      end
+
+      f.match 'register', :action => 'signup'
+      f.match 'account/confirm/:login', :action => 'confirm'
+
+    end
   end
 
   scope :controller => 'comments' do
-    match 'comments/all_comments/:object/:id', :action => 'all_comments'
-    match 'comments/atom/:object/:id', :action => 'atom_comments'
+    with_options :via => [:get, :post] do |f|
+      f.match 'comments/all_comments/:object/:id', :action => 'all_comments'
+      f.match 'comments/atom/:object/:id', :action => 'atom_comments'
+    end
   end
 
   # /users/:login
@@ -222,76 +242,89 @@ OpenCongress::Application.routes.draw do
       # /users/:login/profile/friends/:action
       resources :friends
       scope 'friends', :controller => 'friends' do
-        for action in %w{ import_contacts like_voters invite_contacts near_me invite invite_form add search }
-          match action, :action => action, :as => 'friends_' + action
-        end
+        with_options :via => [:get, :post] do |f|
 
-        for action in %w{ confirm deny } do
-          match action + '/:id', :action => action, :as => 'friends_add_' + action
+          for action in %w{ import_contacts like_voters invite_contacts near_me invite invite_form add search }
+            f.match action, :action => action, :as => 'friends_' + action
+          end
+
+          for action in %w{ confirm deny } do
+            f.match action + '/:id', :action => action, :as => 'friends_add_' + action
+          end
+
         end
       end
 
       # /users/:login/profile/:action
       scope :controller => 'profile' do
-        for action in %w{ actions items_tracked watchdog edit_profile bills_supported tracked_rss user_actions_rss bills_opposed my_votes bills comments issues committees groups upload_pic
-                          disconnect_facebook_account } do
-          match action, :action => action, :as => 'user_' + action
+        with_options :via => [:get, :post] do |f|
+
+          for action in %w{ actions items_tracked watchdog edit_profile bills_supported tracked_rss user_actions_rss bills_opposed my_votes bills comments issues committees groups upload_pic
+                            disconnect_facebook_account } do
+            f.match action, :action => action, :as => 'user_' + action
+          end
+
+          f.match ':person_type', :action => 'person'
+
         end
-        match ':person_type', :action => 'person'
       end
 
     end # scope 'profile'
 
-    match 'feeds/:action(/:key)', :controller => 'user_feeds'
+    match 'feeds/:action(/:key)', :controller => 'user_feeds', :via => [:get,:post]
 
   end # scope 'users/:login'
 
   get 'users/:login' => redirect {|params, request| Rails.application.routes.url_helpers.user_profile_path(params[:login]) }
 
-  match 'video/rss' => 'video#all', :format => 'atom'
+  match 'video/rss' => 'video#all', :format => 'atom', :via => [:get,:post]
 
-  scope :controller => 'roll_call' do
-    match 'roll_call/text/summary/:id', :action => 'summary_text'
-    match 'vote/:year/:chamber/:number(/:state)', :action => 'by_number', :year => /\d{4}/, :chamber => /[hs]/, :number => /\d+/, :state => /\w{2}/, :as => :roll_call
-  end
+  with_options :via => [:get, :post] do |f|
+    scope :controller => 'roll_call' do
+      f.match 'roll_call/text/summary/:id', :action => 'summary_text'
+      f.match 'vote/:year/:chamber/:number(/:state)', :action => 'by_number', :year => /\d{4}/, :chamber => /[hs]/, :number => /\d+/, :state => /\w{2}/#, :as => :roll_call
+    end
 
-  scope :controller => 'committee' do
-    match '/committee/by_chamber/:chamber', :action => 'by_chamber'
+    scope :controller => 'committee' do
+      f.match '/committee/by_chamber/:chamber', :action => 'by_chamber'
+    end
   end
 
   post '/subscribe.:format' => 'email_subscriptions#adhoc'
 
-  match 'tools(/:action(/:id))', :controller => 'resources', :as => 'tools'
+  with_options :via => [:get, :post] do |f|
+    f.match 'tools(/:action(/:id))', :controller => 'resources', :as => 'tools'
 
-  match '/widgets' => 'widgets#index', :as => 'widgets'
-  match '/widgets/deprecated' => 'widgets#deprecated', :as => 'deprecated_widgets'
-  match '/widgets/bill' => 'widgets#bill', :as => 'bill_widget'
-  match '/widgets/bills' => 'widgets#bills', :as => 'bills_widget'
-  match '/widgets/people' => 'widgets#people', :as => 'people_widget'
-  match '/widgets/group' => 'widgets#group', :as => 'group_widget'
+    f.match '/widgets' => 'widgets#index', :as => 'widgets'
+    f.match '/widgets/deprecated' => 'widgets#deprecated', :as => 'deprecated_widgets'
+    f.match '/widgets/bill' => 'widgets#bill', :as => 'bill_widget'
+    f.match '/widgets/bills' => 'widgets#bills', :as => 'bills_widget'
+    f.match '/widgets/people' => 'widgets#people', :as => 'people_widget'
+    f.match '/widgets/group' => 'widgets#group', :as => 'group_widget'
 
-  match 'api' => 'api#index'
-  match 'api/bill/text_summary/:id' => 'bill#status_text'
-  match 'api/roll_call/text_summary/:id' => 'roll_call#summary_text'
-  match 'api(/:action(/:id)(.:format))', :controller => 'api'
+    f.match 'api' => 'api#index'
+    f.match 'api/bill/text_summary/:id' => 'bill#status_text'
+    f.match 'api/roll_call/text_summary/:id' => 'roll_call#summary_text'
+    f.match 'api(/:action(/:id)(.:format))', :controller => 'api'
 
-  # Temporary routes for health care legislation
-  match 'baucus_bill_health_care.html' => 'index#s1796_redirect'
-  match 'presidents_health_care_proposal' => 'index#presidents_health_care_proposal'
-  match 'senate_health_care_bill' => 'bill#text', :id => '111-h3590', :version => 'ocas'
-  match 'house_reconciliation' => 'index#house_reconciliation'
-  match 'pipa' => 'index#pipa'
+    # Temporary routes for health care legislation
+    f.match 'baucus_bill_health_care.html' => 'index#s1796_redirect'
+    f.match 'presidents_health_care_proposal' => 'index#presidents_health_care_proposal'
+    f.match 'senate_health_care_bill' => 'bill#text', :id => '111-h3590', :version => 'ocas'
+    f.match 'house_reconciliation' => 'index#house_reconciliation'
+    f.match 'pipa' => 'index#pipa'
 
-  match '/donate' => redirect('http://sunlightfoundation.com/about/funding/')
-  match '/about/privacy_policy' => redirect("/terms")
-  match '/about/terms_of_service' => redirect("/terms")
-  match 'terms' => 'about#terms'
-  match 'howtouse' => 'about#howtouse'
-  match '/userguide' => redirect("/howtouse")
+    f.match '/donate' => redirect('http://sunlightfoundation.com/about/funding/')
+    f.match '/about/privacy_policy' => redirect("/terms")
+    f.match '/about/terms_of_service' => redirect("/terms")
+    f.match 'terms' => 'about#terms'
+    f.match 'howtouse' => 'about#howtouse'
+    f.match '/userguide' => redirect("/howtouse")
+  end
 
   resources :contact, :only => [:index, :create]
 
-  match ':controller(/:action(/:id))'
+  match ':controller(/:action(/:id))', :via => [:get,:post,:put,:delete]
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
   # root :to => 'index#index', :as => :home

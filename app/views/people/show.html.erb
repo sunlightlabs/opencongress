@@ -55,7 +55,7 @@
     <form id="person_vote_compare_select" action="/people/compare" method="get">
       <span>Compare votes to</span>
       <input type="hidden" name="person1" value="<%= @person.id %>">
-      <% compare_people = @person.senator? ? Person.senators : Person.voting_representatives %>
+      <% compare_people = @person.senator? ? Person.senators.to_a : Person.voting_representatives.to_a %>
       <% compare_people.delete @person %>
       <%= select_tag "person2", options_from_collection_for_select(compare_people, "id", "select_list_name") %>
       <% if @person.representative? %><input type="hidden" name="representatives" value="true"><% end %>
@@ -67,7 +67,7 @@
 <% unless @person.videos.empty? %>
   <div id="person_video" class="cols-box clearfix">
     <h2 class="darkline clear">Videos of <%= @person.popular_name %></h2>
-    <%= render :partial => 'shared/videos', :object => @person.videos.find(:all, :limit => 2),
+    <%= render :partial => 'shared/videos', :object => @person.recent_videos(2),
                :locals => { :more_url => (@person.videos.size > 2) ? link_to("See more videos (#{@person.videos.size} total)", { :controller => 'people', :action => 'videos', :id => @person }, :class => "arrow") : nil } %>
   </div>
 <% end %>

@@ -132,10 +132,10 @@ class Person < ActiveRecord::Base
   scope :independent, :conditions => ["party != 'Republican' AND party != 'Democrat'"]
   scope :in_state, lambda { |state| {:conditions => {:state => state.upcase}}}
 
-  scope :sen,        lambda { {:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='sen' AND roles.enddate > ?", Date.today]} }
-  scope :rep,        lambda { {:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='rep' AND roles.enddate > ?", Date.today]} }
-  scope :legislator, lambda { {:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND (roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]} }
-
+  scope :sen, -> { includes(:roles).where(["roles.role_type='sen' AND roles.enddate > ?", Date.today]).references(:roles) }
+  scope :rep, -> { includes(:roles).where(["roles.role_type='rep' AND roles.enddate > ?", Date.today]).references(:roles) }
+  scope :legislator, -> { includes(:roles).where(["(roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]) }
+  
   scope :on_date, proc { |date|
     { :conditions => ['roles.startdate <= ? and roles.enddate >= ?', date.to_s, date.to_s],
       :joins => 'LEFT OUTER JOIN roles ON roles.person_id = people.id',
@@ -789,11 +789,9 @@ class Person < ActiveRecord::Base
   end
 
   def self.voting_representatives
-    Person.find(:all,
-                :include => :roles,
-                :conditions => [ "roles.role_type=? AND roles.enddate > ? AND roles.state NOT IN (?)",
-                                 'rep',  Date.today, @@NONVOTING_TERRITORIES ],
-                :order => 'people.lastname')
+    Person.includes(:roles).where(
+      [ "roles.role_type=? AND roles.enddate > ? AND roles.state NOT IN (?)",
+        'rep',  Date.today, @@NONVOTING_TERRITORIES ]).references(:roles).order("people.lastname")
   end
 
   def self.senators(congress = Settings.default_congress, order_by = 'name')
@@ -808,11 +806,9 @@ class Person < ActiveRecord::Base
         order = "people.lastname"
     end
 
-    Person.find(:all,
-                :include => :roles,
-                :conditions => [ "roles.role_type=? AND roles.enddate > ? ",
-                                 role_type,  Date.today ],
-                :order => order)
+    Person.includes(:roles).where(
+      [ "roles.role_type=? AND roles.enddate > ? ",
+        role_type,  Date.today ]).references(:roles).order(order)
   end
 
   def self.all_sitting
@@ -904,6 +900,10 @@ class Person < ActiveRecord::Base
     else
       return "missing-#{style}.png"
     end
+  end
+
+  def recent_videos(count)
+    self.videos.limit(2)
   end
 
   def display_object_name
@@ -1529,7 +1529,7 @@ class Person < ActiveRecord::Base
 
   def votes(num = -1)
     if num > 0
-      roll_call_votes.find(:all, :limit => num)
+      roll_call_votes.limit(num)
     else
       roll_call_votes
     end

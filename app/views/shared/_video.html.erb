@@ -7,6 +7,6 @@
       (<%= link_to 'View All Videos', :controller => 'people', :action => 'videos', :id => video.person %>)</li>
     <% end %>
     <li><br /><%= video.video_date.strftime("%B %d, %Y") %></li>
-    <li><%= distance_of_time_in_words(0, video.length, true) %></li>
+    <li><%= distance_of_time_in_words(0, video.length) %></li>
   </ul>
 </div>

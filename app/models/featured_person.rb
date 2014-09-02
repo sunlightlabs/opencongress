@@ -10,7 +10,7 @@
 #
 
 class FeaturedPerson < ActiveRecord::Base
-  set_table_name :featured_people
+  self.table_name = 'featured_people'
   
   belongs_to :person
   

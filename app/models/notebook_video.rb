@@ -40,7 +40,9 @@ class NotebookVideo < NotebookItem
   require 'open-uri'
   
   # because the table uses STI a regular polymorphic association doesn't work
-  has_many :comments, :foreign_key => 'commentable_id', :conditions => "commentable_type='NotebookVideo'"
+  has_many :comments, -> { where("commentable_type='NotebookVideo'") },
+           :foreign_key => 'commentable_id',
+           :dependent => :destroy
   
   validates_presence_of :embed, :title
   before_save :set_xy, :make_embed_transparent

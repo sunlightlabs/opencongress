@@ -18,7 +18,7 @@ class Bookmark < ActiveRecord::Base
   scope :subjects, includes(:subject).where(:bookmarkable_type => "Subject")
 
   with_options :foreign_key => "bookmarkable_id" do |b|
-    b.belongs_to :person, :include => :roles
+    b.belongs_to :person, -> { includes :roles}
     b.belongs_to :bill
     b.belongs_to :subject
     b.belongs_to :committee

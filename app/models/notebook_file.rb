@@ -41,7 +41,9 @@ class NotebookFile < NotebookItem
                     :url => "#{Settings.notebook_files_url}/:id/:style/:filename"
 
   # because the table uses STI a regular polymorphic association doesn't work
-  has_many :comments, :foreign_key => 'commentable_id', :conditions => "commentable_type='NotebookFile'"
+  has_many :comments, -> { where("commentable_type='NotebookFile'") },
+           :foreign_key => 'commentable_id',
+           :dependent => :destroy
 
   # has_attachment :content_type => ['application/pdf', :image,'application/msword', 'text/plain'],
   #   :storage => :file_system,

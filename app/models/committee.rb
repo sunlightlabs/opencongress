@@ -23,7 +23,8 @@ class Committee < ActiveRecord::Base
   alias :members :people #for convenience, seems to make more sense
 
   has_many :bill_committees
-  has_many :bills, :through => :bill_committees, :order => "bills.lastaction DESC"
+  has_many :bills, -> { order("bills.lastaction DESC") },
+           :through => :bill_committees
 
   has_many :meetings, :class_name => 'CommitteeMeeting'
 

@@ -531,8 +531,9 @@ class BillController < ApplicationController
       require 'mediacloth'
       require 'open-uri'
       wiki_url = "http://#{WIKI_HOST}/w/api.php?action=query&prop=revisions&titles=Economic_Stimulus_Bill_of_2008&rvprop=timestamp|content&format=xml"
-      bill_type, number, session = Bill.ident params[:id]
-      if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
+      bill_type, number, session = Bill.ident(params[:id])
+      @bill = bill_from_type_number_session(:bill_titles,params[:id]) # Bill.includes(:bill_titles).where(session:session,bill_type:bill_type,number:number).first
+      if @bill
          #unwise = %w({ } | \ ^ [ ] `)
          badchar = '|'
          escaped_uri = URI.escape(wiki_url)
@@ -546,7 +547,6 @@ class BillController < ApplicationController
 
   def status_text
     @bill = Bill.find_by_ident(params[:id])
-
     render :action => 'status_text.html.erb', :layout => false
   end
 
@@ -612,11 +612,6 @@ class BillController < ApplicationController
 
   def topblogs
     redirect_to :controller => 'bill', :action => 'blogs', :id => @bill.ident, :sort => 'toprated'
-  end
-
-  def bill_positions
-    bill_type, number, session = Bill.ident params[:id]
-    @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number)
   end
 
   def news
@@ -715,9 +710,15 @@ private
     end
   end
 
+  def bill_from_type_number_session(include, param_id)
+    bill_type, number, session = Bill.ident(param_id)
+    Bill.includes(include).where(session:session,bill_type:bill_type,number:number).first
+  end
+
   def bill_profile_shared
     bill_type, number, session = Bill.ident params[:id]
-    if @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => [ :bill_titles ]})
+    @bill = bill_from_type_number_session(:bill_titles,params[:id])
+    if @bill
       @page_title_prefix = "U.S. Congress"
       @page_title = @bill.typenumber
       @head_title = @bill.title_common
@@ -726,7 +727,7 @@ private
       else
         @meta_description = @bill.plain_language_summary
       end
-      @meta_keywords = "Congress, #{@bill.sponsor.popular_name unless @bill.sponsor.nil?}, " + @bill.subjects.find(:all, :order => 'bill_count DESC', :limit => 5).collect{|s| s.term}.join(", ")
+      @meta_keywords = "Congress, #{@bill.sponsor.popular_name unless @bill.sponsor.nil?}, " + @bill.subjects.all().order('bill_count DESC').limit(5).collect{|s| s.term}.join(", ")
       @sidebar_stats_object = @user_object = @comments = @topic = @bill
       @page = params[:page] || 1
 
@@ -743,8 +744,8 @@ private
       @tabs << ["News <span>(#{news_blog_count(@bill.news_article_count)})</span> & Blogs <span>(#{news_blog_count(@bill.blog_article_count)})</span>".html_safe,{:action => 'news_blogs', :id => @bill.ident}]
       @tabs << ["Videos".html_safe,{:action => 'videos', :id => @bill.ident}] unless @bill.videos.empty?
       @tabs << ["Comments <span>(#{number_with_delimiter(@comments.comments.size)})</span>".html_safe,{:action => 'comments', :id => @bill.ident}]
-
-      @top_comments = @bill.comments.find(:all,:include => [:user], :order => "comments.plus_score_count - comments.minus_score_count DESC", :limit => 2)
+      @top_comments = @bill.comments.all().includes(:user).order('comments.plus_score_count - comments.minus_score_count DESC').limit(2)
+      #@top_comments = @bill.comments.find(:all,:include => [:user], :order => "comments.plus_score_count - comments.minus_score_count DESC", :limit => 2)
       @bookmarking_image = "/images/fb-bill.jpg"
       @atom = {'link' => url_for(:only_path => false, :controller => 'bill', :id => @bill.ident, :action => 'atom'), 'title' => "#{@bill.typenumber} activity"}
     else
@@ -761,7 +762,10 @@ private
 
   def page_view
     bill_type, number, session = Bill.ident params[:id]
-    @bill = Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => :actions })
+    @bill = bill_from_type_number_session(:actions,params[:id])
+        #Bill.includes(:actions).where(session:session,bill_type:bill_type,number:number).first
+
+       # find_by_session_and_bill_type_and_number(session, bill_type, number, { :include => :actions })
 
     if @bill.nil?
       render_404 and return

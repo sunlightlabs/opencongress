@@ -15,7 +15,8 @@
 
 class BillTextVersion < ActiveRecord::Base
   belongs_to :bill
-  has_many :bill_text_nodes, :dependent => :destroy, :order => 'nid'
+  has_many :bill_text_nodes, -> { order('nid') },
+           :dependent => :destroy
   
   @@VERSION_NAMES = {
     'ih' => 'Introduced in House',

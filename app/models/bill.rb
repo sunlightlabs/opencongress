@@ -258,15 +258,15 @@ class Bill < ActiveRecord::Base
   end
 
   def current_bill_text_version
-    versions = bill_text_versions.find(:all, :conditions => "bill_text_versions.previous_version IS NULL")
+    versions = bill_text_versions.where('bill_text_versions.previous_version IS NULL')#(find(:all, :conditions => "bill_text_versions.previous_version IS NULL")
     if versions.empty?
       return nil
     end
 
-    v = bill_text_versions.find(:first, :conditions => ["bill_text_versions.previous_version=?", versions.first.version])
+    v = bill_text_versions.where('bill_text_versions.previous_version=?', versions.first.version).first()#find(:first, :conditions => ["bill_text_versions.previous_version=?", versions.first.version])
     until v.nil?
       versions << v
-      v = bill_text_versions.find(:first, :conditions => ["bill_text_versions.previous_version=?", v.version])
+      v = bill_text_versions.where('bill_text_versions.previous_version=?', v.version).first()
     end
 
     versions.last
@@ -793,7 +793,7 @@ class Bill < ActiveRecord::Base
 
   def log_referrer(referrer)
     unless (referrer.blank? || BillReferrer.no_follow?(referrer))
-      self.bill_referrers.find_or_create_by_url(referrer[0..253])
+      self.bill_referrers.find_or_create_by(url:referrer[0..253])
     end
   end
 

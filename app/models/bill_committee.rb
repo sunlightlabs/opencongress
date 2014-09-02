@@ -9,7 +9,8 @@
 #
 
 class BillCommittee < ActiveRecord::Base
-  set_table_name 'bills_committees'
+
+  self.table_name = 'bills_committees'
   validates_uniqueness_of :bill_id, :scope => :committee_id
 
   belongs_to :bill

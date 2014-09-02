@@ -19,7 +19,7 @@ class District < ActiveRecord::Base
 
   belongs_to :state
   has_many :watch_dogs
-  has_one :current_watch_dog, :class_name => "WatchDog", :conditions => ["is_active = ?", true], :order => "created_at desc"
+  has_one :current_watch_dog, -> { where is_active: true }, class_name: "WatchDog", order: "created_at desc"
   has_one :group
   after_create :create_default_group
 

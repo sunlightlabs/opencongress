@@ -275,8 +275,8 @@ class RollCallController < ApplicationController
                      else params[:chamber]
                      end
       @roll_call = RollCall.in_year(params[:year].to_i)
-                           .where(:where => chamber_name,
-                                  :number => params[:number].to_i).first
+                           .where(where: chamber_name,
+                                  number: params[:number].to_i).first
       if @roll_call.nil?
         render_404 and return
       end

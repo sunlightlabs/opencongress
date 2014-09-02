@@ -158,7 +158,7 @@ class Person < ActiveRecord::Base
   end
 
   def self.random_commentary(person_id, type, limit = 1, since = Settings.default_count_time)
-    p = Person.find_by_id(person_id)
+    p = Person.find(person_id)
     random_item = nil
     if p then random_item = type == 'news' ? p.idsorted_news.find(:first) : p.idsorted_blogs.find(:first) end
     return random_item ? [p,random_item] : [nil,nil]
@@ -208,51 +208,6 @@ class Person < ActiveRecord::Base
             AND roles.enddate >= ?)
  ORDER BY #{order} #{lim};",
                         chamber, Date.today, Date.today])
-  end
-
-  def self.rep_random_blog(limit = 1, since = Settings.default_count_time)
-    random_item = nil
-    tries = 0
-    until random_item != nil || tries == 3
-      p = Person.rep.find(:first, :order => "random()")
-      random_item = p.recent_blogs.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
-      tries = tries + 1
-    end
-    if random_item
-      return [p,random_item]
-    else
-      return []
-    end
-  end
-
-  def self.sen_random_news(limit = 1, since = Settings.default_count_time)
-    random_item = nil
-    tries = 0
-    until random_item != nil || tries == 3
-      p = Person.sen.find(:first, :order => "random()")
-      random_item = p.recent_news.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
-      tries = tries + 1
-    end
-    if random_item
-      return [p,random_item]
-    else
-      return []
-    end
-  end
-
-  def self.sen_random_blog(limit = 1, since = Settings.default_count_time)
-    random_item = nil
-    tries = 0
-    until random_item != nil || tries == 3
-      p = Person.sen.find(:first, :order => "random()")
-      random_item = p.recent_blogs.find(:first, :conditions => ["commentaries.created_at > ?", Time.now - since], :order => "random()", :limit => limit) if p
-      tries = tries + 1
-    end
-    if random_item
-      return [p,random_item]
-    else
-      return []
-    end
   end
 
   ##
@@ -569,28 +524,19 @@ class Person < ActiveRecord::Base
   end
 
   def self.find_all_by_last_name_ci_and_state(name, state)
-    Person.find(:all,
-                :include => :roles,
-                :conditions => ["lower(lastname) = ? AND people.state = ?", name.downcase, state])
+    Person.includes(:roles).where(["lower(lastname) = ? AND people.state = ?", name.downcase, state])
   end
 
   def self.find_all_by_first_name_ci_and_last_name_ci_and_state(first, last, state)
-    Person.find(:all,
-                :include => :roles,
-                :conditions => ["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?) AND people.state = ?", last.downcase, first.downcase, first.downcase, state])
-
+    Person.includes(:roles).where(["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?) AND people.state = ?", last.downcase, first.downcase, first.downcase, state])
   end
 
   def self.find_by_first_name_ci_and_last_name_ci(first,last)
-    Person.find(:all,
-                :include => :roles,
-                :conditions => ["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?)", last.downcase, first.downcase, first.downcase])
+    Person.includes(:roles).where(["lower(lastname) = ? AND (lower(firstname) = ? OR lower(nickname) = ?)", last.downcase, first.downcase, first.downcase])
   end
 
   def self.find_all_by_last_name_ci(name)
-    Person.find(:all,
-                :include => :roles,
-                :conditions => ["lower(lastname) = ?", name.downcase])
+    Person.includes(:roles).where(["lower(lastname) = ?", name.downcase])
   end
 
   ##
@@ -604,9 +550,9 @@ class Person < ActiveRecord::Base
   end
 
   def self.find_current_representative_by_state_and_district(state, district)
-    Person.find(:first,
-                :include => [:roles],
-                :conditions => ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today])
+    Person.includes(:roles).where(
+      ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today]
+    ).references(:roles).first
   end
 
 
@@ -1372,9 +1318,9 @@ class Person < ActiveRecord::Base
     return @attributes['article_count'] if @attributes['article_count']
 
     if type == 'news'
-      news.find(:all, :conditions => [ "commentaries.date > ?", since.ago]).size
+      news.where([ "commentaries.date > ?", since.ago]).size
     else
-      blogs.find(:all, :conditions => [ "commentaries.date > ?", since.ago]).size
+      blogs.where([ "commentaries.date > ?", since.ago]).size
     end
   end
 
@@ -1536,8 +1482,7 @@ class Person < ActiveRecord::Base
   end
 
   def roll_call_votes_for_congress(congress = Settings.default_congress)
-    self.roll_call_votes.find(:all, :conditions => [ "roll_calls.date > ?", OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]],
-                              :include => { :roll_call => { :roll_call_votes => :person }})
+    self.roll_call_votes.includes(:person).where([ "roll_calls.date > ?", OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]])
   end
 
   def most_and_least_voting_similarities
@@ -1652,28 +1597,6 @@ class Person < ActiveRecord::Base
     ids = User.find_id_by_solr("my_state:\"#{state}\"", :facets => {:browse => ["my_state_f:\"#{state}\"", "my_people_tracked:#{self.id}"]}, :limit => 5000)
     comments_count = Comment.count(:id, :conditions => ["commentable_type = ? AND commentable_id = ? AND user_id in (?)", 'Person', self.id, ids.results])
     return comments_count
-  end
-
-  def actions_timeline
-    rolls = roll_call_votes.find(:all, :include => [{:roll_call => :bill}],
-                                       :conditions => ["bills.session = ?", Settings.default_congress - 1]
-                                ).group_by{|a| a.roll_call.date.to_date}.reverse
-    start_date = Time.parse("January 1st, #{RollCall.find(:first, :include =>
-                                              [:bill],
-                                              :conditions => ["bills.session = ?", Settings.default_congress - 1],
-                                              :order => ["roll_calls.date asc"]).date.year}")
-    end_date = start_date + 2.years
-    puts end_date.to_s
-    days = (end_date - start_date) / 60 / 60 / 24
-    puts days
-#      t = 0
-    dates_arr = []
-    (0..days - 1).each do |d|
-      this_date = start_date + d.days
-      these_rolls = rolls.select {|p| p[0] == this_date.to_date}.collect {|g| g[1].flatten}.flatten
-      dates_arr[d] = {:date => this_date, :rolls => these_rolls}
-    end
-    return dates_arr
   end
 
   # sunlight api test, dont use

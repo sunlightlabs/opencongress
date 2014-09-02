@@ -291,7 +291,7 @@ class PeopleController < ApplicationController
 
  def money
    @igs = @person.top_interest_groups(25)
-   @fundraisers = @person.fundraisers.find(:all)
+   @fundraisers = @person.fundraisers
    respond_to do |format|
      format.html { render }
    end

@@ -24,6 +24,8 @@ Vagrantfile
 .bundle
 .vagrant
 .*.swp
+*.sublime-project
+*.sublime-workspace
 TAGS
 .*\~
 *.sqlite3

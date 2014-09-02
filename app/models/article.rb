@@ -22,7 +22,7 @@ class Article < ActiveRecord::Base
   has_many :comments, :as => :commentable
   has_many :article_images
   belongs_to :user
-  default_scope :order => 'created_at DESC'
+  default_scope { order('created_at DESC') }
 
   def self.per_page
     8

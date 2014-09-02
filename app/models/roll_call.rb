@@ -28,6 +28,7 @@
 
 require_dependency 'united_states'
 require_dependency 'viewable_object'
+
 class RollCall < ActiveRecord::Base
   include ViewableObject
   belongs_to :bill
@@ -40,7 +41,9 @@ class RollCall < ActiveRecord::Base
     where(["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?",
            *RollCall.ident(ident)])
   }
-  scope :in_year, lambda { |y| { :conditions => ["date_part('year', roll_calls.date) = :y", :y => y] } }
+
+  scope :in_year, lambda { |y|  where(["date_part('year', roll_calls.date) = :y", :y => y]) }
+  
   scope :in_congress, lambda { |cong|
     where(['date >= ? and date <= ?',
            UnitedStates::Congress.start_datetime(cong),

@@ -111,11 +111,11 @@ class Committee < ActiveRecord::Base
     "tag:opencongress.org,#{OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]}:/committee/#{id}"
   end
 
-  def Committee.random(limit)
+  def self.random(limit)
     Committee.find_by_sql ["SELECT * FROM (SELECT random(), committees.* FROM committees ORDER BY 1) as bs LIMIT ?;", limit]
   end
 
-  def Committee.find_by_query(committee, subcommittee)
+  def self.find_by_query(committee, subcommittee)
     terms = committee.split.concat(subcommittee.split).uniq.map { |c| c.match(/\W*(\w+)\W*/).captures[0].downcase }
     sub_terms = subcommittee.split.uniq.map { |c| c.match(/\W*(\w+)\W*/).captures[0].downcase }
     query = terms.reject { |t| @@STOP_WORDS.include? t }.join " & "
@@ -128,7 +128,7 @@ class Committee < ActiveRecord::Base
   end
 
 
-  def Committee.by_chamber(chamber)
+  def self.by_chamber(chamber)
     if chamber == 'both'
       Committee.find(:all, :conditions => ['active = ?', true])
     else
@@ -157,19 +157,19 @@ class Committee < ActiveRecord::Base
     membership and membership.person
   end
   
-  def Committee.major_committees
+  def self.major_committees
     Committee.find(:all, :conditions => ["subcommittee_name IS NULL"], :order => 'name')
   end
 
-  def Committee.find_by_people_name_ci(name)
+  def self.find_by_people_name_ci(name)
     Committee.find(:first, :conditions => ["lower(people_name) = ?", name.downcase])
   end
 
-  def Committee.find_by_name_ci(name)
+  def self.find_by_name_ci(name)
     Committee.find(:first, :conditions => ["lower(name) = ?", name.downcase])
   end
 
-  def Committee.find_by_bill_name_ci(name)
+  def self.find_by_bill_name_ci(name)
     Committee.find(:first, :conditions => ["lower(bill_name) = ?", name.downcase])
   end
 
@@ -275,7 +275,7 @@ class Committee < ActiveRecord::Base
     self.meetings.select { |m| m.meeting_at > Time.now }
   end
   
-  def Committee.top20_viewed
+  def self.top20_viewed
     comms = ObjectAggregate.popular('Committee')
       
     (comms.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|

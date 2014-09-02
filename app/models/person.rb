@@ -127,20 +127,20 @@ class Person < ActiveRecord::Base
 
   #========== SCOPES
 
-  scope :republican, :conditions => {:party => "Republican"}
-  scope :democrat, :conditions => {:party => "Democrat"}
-  scope :independent, :conditions => ["party != 'Republican' AND party != 'Democrat'"]
-  scope :in_state, lambda { |state| {:conditions => {:state => state.upcase}}}
+  scope :republican, -> { where(party: "Republican") }
+  scope :democrat, -> { where(party: "Democrat") }
+  scope :independent, -> { where("party != 'Republican' AND party != 'Democrat'") }
+  scope :in_state, ->(state) { where(state: state.upcase) }
 
   scope :sen, -> { includes(:roles).where(["roles.role_type='sen' AND roles.enddate > ?", Date.today]).references(:roles) }
   scope :rep, -> { includes(:roles).where(["roles.role_type='rep' AND roles.enddate > ?", Date.today]).references(:roles) }
   scope :legislator, -> { includes(:roles).where(["(roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]) }
   
-  scope :on_date, proc { |date|
-    { :conditions => ['roles.startdate <= ? and roles.enddate >= ?', date.to_s, date.to_s],
-      :joins => 'LEFT OUTER JOIN roles ON roles.person_id = people.id',
-      :select => 'people.*, roles.role_type'
-    }
+  scope :on_date, ->(date) {
+    includes(:roles).where(
+      ['roles.startdate <= ? and roles.enddate >= ?', 
+      date.to_s, date.to_s]
+    ).references(:roles)
   }
 
   #========== ALIASES

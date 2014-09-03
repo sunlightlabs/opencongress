@@ -106,9 +106,6 @@ class Person < ActiveRecord::Base
            :as => :commentariable, :class_name => 'Commentary'
   has_many :cycle_contributions, -> { order('people_cycle_contributions.cycle DESC') },
            :class_name => 'PersonCycleContribution'
-  has_many :person_sectors
-  has_many :sectors, -> { select('sectors.*, people_sectors.total, people_sectors.cycle').order('people_sectors.total DESC') },
-           :through => :person_sectors
   has_many :committee_reports
   has_many :featured_people, -> { order('created_at DESC')}
   has_many :comments, :as => :commentable
@@ -1495,10 +1492,6 @@ class Person < ActiveRecord::Base
     end
 
     person_stats
-  end
-
-  def sectors_for_cycle(cycle = Settings.current_opensecrets_cycle)
-    sectors.select { |s| s.cycle == cycle }
   end
 
   def users_tracking_from_state_count(state)

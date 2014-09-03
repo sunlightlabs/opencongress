@@ -45,7 +45,6 @@ class Comment < ActiveRecord::Base
     c.belongs_to :bill
     c.belongs_to :person
     c.belongs_to :article
-    c.belongs_to :sector
     c.belongs_to :committee
     c.belongs_to :subject
     c.belongs_to :upcoming_bill

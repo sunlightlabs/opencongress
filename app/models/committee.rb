@@ -192,10 +192,9 @@ class Committee < ActiveRecord::Base
   #end
   
   def bills_sponsored(limit)
-    ids = Bill.find(:all, :select => "bills.id", :include => :bill_committees, :limit => limit, :order => "lastaction desc", :conditions => ["bills_committees.committee_id = ? AND session = ?", id, Settings.default_congress]).map { |b| b.id } 
-    bills = (ids.size > 0) ? (Bill.find ids, :include => :bill_titles, :order => 'bills.lastaction DESC') : []
-    bills = [bills] if bills.class == Bill
-    bills
+    ids = Bill.joins(:bill_committees).select('bills.id').where('bills_committees.committee_id = ? AND session = ?', id, Settings.default_congress).order('lastaction DESC').limit(limit).collect {|b| b.id }
+    bills = (ids.size > 0) ? Bill.includes(:bill_titles).where(id:ids).order('bills.lastaction DESC') : []
+    return bills
   end
   
   def latest_major_actions(num)

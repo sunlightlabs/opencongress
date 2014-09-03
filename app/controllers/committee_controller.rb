@@ -123,7 +123,7 @@ class CommitteeController < ApplicationController
   private
 
   def page_view
-    @committee = Committee.find(params[:id], :include => :reports)
+    @committee = Committee.includes(:reports).find(params[:id])
 
     if @committee
       key = "page_view_ip:Committee:#{@committee.id}:#{request.remote_ip}"

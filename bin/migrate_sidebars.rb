@@ -8,7 +8,7 @@ end
 
 # make a holder class for site text from the dev database
 class DevSidebar < ActiveRecord::Base
-  set_table_name  "sidebars"
+  self.table_name = "sidebars"
 
   has_many :sidebar_items, :class_name => 'DevSidebarItem', :foreign_key => 'sidebar_id'
   
@@ -16,7 +16,7 @@ class DevSidebar < ActiveRecord::Base
 end
 
 class DevSidebarItem < ActiveRecord::Base
-  set_table_name  "sidebar_items"
+  self.table_name = "sidebar_items"
 
   establish_connection "development"
 end

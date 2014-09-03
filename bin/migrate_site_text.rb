@@ -8,7 +8,7 @@ end
 
 # make a holder class for site text from the dev database
 class DevSiteText < ActiveRecord::Base
-  set_table_name  "site_texts"
+  self.table_name = "site_texts"
 
   establish_connection "development"
 end

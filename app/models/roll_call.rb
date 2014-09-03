@@ -38,20 +38,12 @@ class RollCall < ActiveRecord::Base
   
   # TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
   scope :for_ident, lambda { |ident|
-    where(["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?",
-           *RollCall.ident(ident)])
+    where(["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?", *RollCall.ident(ident)])
   }
 
-  scope :in_year, lambda { |y|  where(["date_part('year', roll_calls.date) = :y", :y => y]) }
-  
-  scope :in_congress, lambda { |cong|
-    where(['date >= ? and date <= ?',
-           UnitedStates::Congress.start_datetime(cong),
-           UnitedStates::Congress.end_datetime(cong)])
-  }
-  scope :on_major_bills_for, lambda { |cong|
-    includes(:bill).where(:bills => { :session => cong, :is_major => true })
-  }
+  scope :in_year, lambda {|y|  where(["date_part('year', roll_calls.date) = :y", :y => y]) }
+  scope :in_congress, lambda {|cong| where(['date >= ? and date <= ?', UnitedStates::Congress.start_datetime(cong),UnitedStates::Congress.end_datetime(cong)]) }
+  scope :on_major_bills_for, lambda {|cong| includes(:bill).where(:bills => { :session => cong, :is_major => true }) }
   scope :on_passage, lambda { where("question ILIKE 'On Passage%' OR question ILIKE 'On Motion to Concur in Senate%' OR question ILIKE 'On Concurring%'") }
 
   # All combinations of aye_votes, democrat_votes, democrat_aye_votes, etc.

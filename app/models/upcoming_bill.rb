@@ -12,14 +12,17 @@
 
 class UpcomingBill < ActiveRecord::Base
   
-  has_many :news, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC', :conditions => "commentaries.is_ok = 't' AND commentaries.is_news='t'"
-  has_many :blogs, :as => :commentariable, :class_name => 'Commentary', :order => 'commentaries.date DESC', :conditions => "commentaries.is_ok = 't' AND commentaries.is_news='f'"
-  
-  has_many :comments, :as => :commentable
-  has_many :friend_emails, :as => :emailable, :order => 'created_at'
+  has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC') },
+           :as => :commentariable, :class_name => 'Commentary'
+  has_many :blogs, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='f'").order('commentaries.date DESC') },
+           :as => :commentariable, :class_name => 'Commentary'
+  has_many :comments,
+           :as => :commentable
+  has_many :friend_emails, -> { order('created_at') },
+           :as => :emailable
   
   def display_object_name
-    "upcoming bill"
+    'upcoming bill'
   end 
   
   def to_param

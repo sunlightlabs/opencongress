@@ -167,6 +167,7 @@ group :test, :development do
   gem 'redis'
   gem 'rspec-rails'
   gem 'random_data'
+  gem 'factory_girl_rails'
 end
 
 group :test do

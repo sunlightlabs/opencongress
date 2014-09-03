@@ -167,6 +167,11 @@ GEM
     facebooker2 (0.0.17)
       mogli (>= 0.0.33)
       ruby-hmac
+    factory_girl (4.4.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.4.1)
+      factory_girl (~> 4.4.0)
+      railties (>= 3.0.0)
     faraday (0.8.9)
       multipart-post (~> 1.2.0)
     faraday_middleware (0.9.1)
@@ -514,6 +519,7 @@ DEPENDENCIES
   delayed_job
   delayed_job_active_record
   facebooker2
+  factory_girl_rails
   fog
   formageddon (~> 0.0.2)!
   full-name-splitter

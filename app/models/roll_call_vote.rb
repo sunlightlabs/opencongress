@@ -9,34 +9,52 @@
 #
 
 require 'united_states'
+
 class RollCallVote < ActiveRecord::Base
+
+  #========== CLASS VARIABLES
+
   @@VOTE_FOR_SYMBOL = {
-    "+" => "Aye",
-    "-" => "Nay",
-    "0" => "Abstain",
-    "P" => "Present"
+      '+' => 'Aye',
+      '-' => 'Nay',
+      '0' => 'Abstain',
+      'P' => 'Present'
   }
+
+  #========== CONSTANTS
+
   AFFIRMATIVE_VALUES = %W(Aye Yea +)
   NEGATIVE_VALUES = %W(Nay No -)
   PRESENT_VALUES = %W(Present P)
-  ABSTAIN_VALUES = ["Not Voting", "0"]
+  ABSTAIN_VALUES = ['Not Voting', '0']
+
+  #========== CALLBACKS
+
+  after_create :recount_party_lines
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :roll_call
   belongs_to :person
 
-  after_create :recount_party_lines
+  #========== SCOPES
 
   scope :for_state, lambda { |abbrev| {:include => :person, :conditions => {:people => {:state => abbrev} } } }
   scope :on_passage, lambda { includes(:roll_call).where("roll_calls.question ILIKE 'On Passage%' OR roll_calls.question ILIKE 'On Motion to Concur in Senate%' OR roll_calls.question ILIKE 'On Concurring%'") }
   scope :in_congress, lambda { |cong| includes(:roll_call).where(['date >= ? and date <= ?', UnitedStates::Congress.start_datetime(cong), UnitedStates::Congress.end_datetime(cong)]) }
 
-  scope :democrats, includes(:person).order("people.lastname ASC").where("people.party = 'Democrat'")
-  scope :republicans, includes(:person).order("people.lastname ASC").where("people.party = 'Republican'")
-  scope :independents, includes(:person).order("people.lastname ASC").where("people.party NOT IN (?)", %W(Democrat Republican))
+  scope :democrats, -> { includes(:person).order('people.lastname ASC').where('people.party = ?','Democrat') }
+  scope :republicans, -> { includes(:person).order('people.lastname ASC').where('people.party = ?','Republican') }
+  scope :independents, -> { includes(:person).order('people.lastname ASC').where('people.party NOT IN (?)', %W(Democrat Republican)) }
 
-  scope :ayes, where("vote IN(?)", AFFIRMATIVE_VALUES)
-  scope :nays, where("vote IN(?)", NEGATIVE_VALUES)
-  scope :presents, where("vote IN(?)", PRESENT_VALUES)
-  scope :abstains, where("vote IN(?)", ABSTAIN_VALUES)
+  scope :ayes, -> { where('vote IN(?)', AFFIRMATIVE_VALUES) }
+  scope :nays, -> { where('vote IN(?)', NEGATIVE_VALUES) }
+  scope :presents, -> { where('vote IN(?)', PRESENT_VALUES) }
+  scope :abstains, -> { where('vote IN(?)', ABSTAIN_VALUES) }
+
+  #========== CLASS METHODS
 
   def self.for_duo (p1, p2)
     includes(:roll_call)
@@ -58,6 +76,21 @@ class RollCallVote < ActiveRecord::Base
     .select{|pair| pair.count == 2}
     .each{|pair| pair.sort_by!(&:person_id)}
   end
+
+  def self.abstain_count
+    cache_key = "roll_call_vote_abstain_by_person_table"
+    Rails.cache.fetch(cache_key) do
+      RollCallVote.includes(:roll_call => :bill)
+      .where('bills.session' => 113, 'roll_call_votes.vote' => '0')
+      .group(:person_id)
+      .count
+      .to_a
+      .sort_by(&:second)
+      .reverse
+    end
+  end
+
+  #========== INSTANCE METHODS
 
   def atom_id
     "tag:opencongress.org,#{roll_call.date.strftime("%Y-%m-%d")}:/roll_call_vote/#{id}"
@@ -88,19 +121,6 @@ class RollCallVote < ActiveRecord::Base
 
   def recount_party_lines
     self.roll_call.set_party_lines
-  end
-
-  def self.abstain_count
-    cache_key = "roll_call_vote_abstain_by_person_table"
-    Rails.cache.fetch(cache_key) do
-      RollCallVote.includes(:roll_call => :bill)
-                  .where('bills.session' => 113, 'roll_call_votes.vote' => '0')
-                  .group(:person_id)
-                  .count
-                  .to_a
-                  .sort_by(&:second)
-                  .reverse
-    end
   end
 
   def with_party?
@@ -137,4 +157,5 @@ class RollCallVote < ActiveRecord::Base
   def is_non_vote?
     return ABSTAIN_VALUES.include?(vote)
   end
+
 end

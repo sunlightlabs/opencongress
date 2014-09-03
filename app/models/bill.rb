@@ -40,10 +40,59 @@ require_dependency 'united_states'
 require_dependency 'wiki_connection'
 
 class Bill < ActiveRecord::Base
-  include ViewableObject
 
   # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
   #              :facets => [:bill_type, :session], :auto_commit => false
+
+  #========== INCLUDES
+
+  include ViewableObject
+
+  #========== CALLBACKS
+
+  before_save :update_bill_fulltext_search_table
+
+  #========== CLASS VARIABLES
+
+  @@DISPLAY_OBJECT_NAME = 'Bill'
+
+  # Added these back in to make govtrack bill import work
+  # to get the bill text that is marked up with the right paragraph ids
+  @@TYPES = {
+      'h' => 'H.R.',
+      's' => 'S.',
+      'hj' => 'H.J.Res.',
+      'sj' => 'S.J.Res.',
+      'hc' => 'H.Con.Res.',
+      'sc' => 'S.Con.Res.',
+      'hr' => 'H.Res.',
+      'sr' => 'S.Res.'
+  }
+
+  @@TYPES_ORDERED = [ 's', 'sj',  'sc',  'sr', 'h', 'hj', 'hc', 'hr' ]
+
+  @@GOVTRACK_TYPE_LOOKUP = {
+      'hconres' => 'hc',
+      'hjres' => 'hj',
+      'hr' => 'h',
+      'hres' => 'hr',
+      's' => 's',
+      'sconres' => 'sc',
+      'sjres' => 'sj',
+      'sres' => 'sr'
+  }
+
+  #========== CONSTANTS
+
+  # different ways we may want to serialize json...
+  SERIALIZATION_STYLES = {:simple => {:except => [:rolls, :hot_bill_category_id]},
+                          :full => {:except => [:rolls, :hot_bill_category_id],
+                                    :methods => [:title_full_common, :status],
+                                    :include => {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]},
+                                                 :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]},
+                                                 :bill_titles => {},
+                                                 :most_recent_actions => {}
+                                    }}}
 
   #========== CALLBACKS
 
@@ -138,35 +187,7 @@ class Bill < ActiveRecord::Base
   attr_accessor :tmp_search_desc
   attr_accessor :wiki_summary_holder
 
-  #========== CLASS VARIABLES
-
-  @@DISPLAY_OBJECT_NAME = 'Bill'
-
-  # Added these back in to make govtrack bill import work
-  # to get the bill text that is marked up with the right paragraph ids
-  @@TYPES = {
-    'h' => 'H.R.',
-    's' => 'S.',
-    'hj' => 'H.J.Res.',
-    'sj' => 'S.J.Res.',
-    'hc' => 'H.Con.Res.',
-    'sc' => 'S.Con.Res.',
-    'hr' => 'H.Res.',
-    'sr' => 'S.Res.'
-  }
-
-  @@TYPES_ORDERED = [ 's', 'sj',  'sc',  'sr', 'h', 'hj', 'hc', 'hr' ]
-
-  @@GOVTRACK_TYPE_LOOKUP = {
-    'hconres' => 'hc',
-    'hjres' => 'hj',
-    'hr' => 'h',
-    'hres' => 'hr',
-    's' => 's',
-    'sconres' => 'sc',
-    'sjres' => 'sj',
-    'sres' => 'sr'
-  }
+  #========== SCOPES
 
   scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
   scope :major, where(:is_major => true)
@@ -175,16 +196,20 @@ class Bill < ActiveRecord::Base
   scope :senate_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 's'}))
   scope :house_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'}))
 
+  #========== INSTANCE METHODS
+
   def reverse_abbrev_lookup
     return @@GOVTRACK_TYPE_LOOKUP[self.bill_type]
   end
 
-#This can also be removed when we completely get rid of GovTrack
-  def Bill.get_types_ordered
+  #========== CLASS METHODS
+
+  # This can also be removed when we completely get rid of GovTrack
+  def self.get_types_ordered
     return @@TYPES_ORDERED
   end
 
-  def Bill.get_types_ordered_new
+  def self.get_types_ordered_new
     return UnitedStates::Bills::ABBREVIATIONS
   end
 
@@ -225,8 +250,6 @@ class Bill < ActiveRecord::Base
   def bill_id
     "#{bill_type}#{number}-#{session}"
   end
-
-  before_save :update_bill_fulltext_search_table
 
   def update_bill_fulltext_search_table
     if self.id
@@ -1368,20 +1391,9 @@ class Bill < ActiveRecord::Base
 
   private
 
-  # different ways we may want to serialize json...
-  SERIALIZATION_STYLES = {:simple => {:except => [:rolls, :hot_bill_category_id]},
-    :full => {:except => [:rolls, :hot_bill_category_id],
-                              :methods => [:title_full_common, :status],
-                              :include => {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]},
-                                           :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]},
-                                           :bill_titles => {},
-                                           :most_recent_actions => {}
-                                           }}}
-
   def stylize_serialization(ops)
    ops ||= {}
    style = ops.delete(:style) || :simple
-
    SERIALIZATION_STYLES[style].merge(ops)
   end
 
@@ -1414,4 +1426,5 @@ class Bill < ActiveRecord::Base
     end
     return chain
   end
+
 end

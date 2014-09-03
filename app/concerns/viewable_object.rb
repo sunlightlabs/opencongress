@@ -10,7 +10,7 @@ module ViewableObject
   end
 
   def page_view
-    self.object_aggregates.find_or_create_by_date(Date.today).increment!(:page_views_count)
+    self.object_aggregates.find_or_create_by(date: Date.today).increment!(:page_views_count)
   end
 
   def views(seconds = 0)

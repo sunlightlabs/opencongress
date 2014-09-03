@@ -20,8 +20,8 @@ gem "settingslogic"
 gem 'titlecase'
 
 # HAML support
-# gem "haml", "~> 3.1.8"
-# gem "haml-rails"
+gem "haml"
+gem "haml-rails"
 
 gem 'coffee-rails', '>= 4.0.0'
 gem 'uglifier', '>= 1.3.0'

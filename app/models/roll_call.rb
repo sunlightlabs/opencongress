@@ -34,7 +34,7 @@ class RollCall < ActiveRecord::Base
   belongs_to :bill
   belongs_to :amendment
   has_one :action
-  has_many :roll_call_votes, -> { includes(:person) }
+  has_many :roll_call_votes, -> { joins(:person) }
   
   # TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
   scope :for_ident, lambda { |ident|
@@ -177,16 +177,14 @@ class RollCall < ActiveRecord::Base
       subject_bill = bill
     end
 
-    return "" if subject_bill.nil?
+    return '' if subject_bill.nil?
 
     root_category = Subject.root_category
-    subjects = subject_bill.subjects.where(:parent_id => root_category.id)
+    subjects = subject_bill.subjects.where(:parent_id => root_category.id).to_a
 
-    return "" if subjects.count == 0
-
+    return '' if subjects.count == 0
     first_subject = subjects.shift.term
     return first_subject if subjects.count == 0
-
     "#{first_subject} and #{subjects.count} others"
   end
 

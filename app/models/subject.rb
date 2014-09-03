@@ -382,27 +382,28 @@ class Subject < ActiveRecord::Base
   end
 
   def latest_bills(num, page = 1, congress = [ Settings.default_congress ])
-    bills.find(:all, :conditions => ['bills.session IN (?)', congress],
-               :order => 'bills.lastaction DESC').paginate(:per_page => num, :page => page)
+    bills.where('bills.session IN (?)', congress).order('bills.lastaction DESC').paginate(:per_page => num, :page => page)
   end
 
   def passed_bills(num, page = 1, congress = [ Settings.default_congress ])
-    bills.find(:all, :include => :actions, :conditions => ["bills.session IN (?) AND actions.action_type='enacted'", congress],
-               :order => 'actions.datetime DESC').paginate(:per_page => num, :page => page)
+    bills.includes(:actions)
+         .where("bills.session IN (?) AND actions.action_type='enacted'", congress)
+         .order('actions.datetime DESC')
+         .paginate(:per_page => num, :page => page)
   end
 
   def newest_bills(num, congress = Settings.default_congress)
-    bills.find(:all, :conditions => ['bills.session = ?', congress], :order => 'bills.introduced DESC', :limit => num);
+    bills.where('bills.session = ?', congress).order('bills.introduced DESC').limit(num)
   end
 
   def new_bills_since(current_user, congress = Settings.default_congress)
     time_since = current_user.previous_login_date
     time_since = 200.days.ago if Rails.env.development?
 
-    bills.find(:all, :include => [:actions],
-                     :conditions => ['bills.session = ? AND actions.datetime > ? AND actions.action_type = ?', congress, time_since, 'introduced'],
-                     :order => 'bills.introduced DESC',
-                     :limit => 20);
+    bills.includes(:actions)
+         .where('bills.session = ? AND actions.datetime > ? AND actions.action_type = ?', congress, time_since, 'introduced')
+         .order('bills.introduced DESC')
+         .limit(20)
   end
 
   def comments_since(current_user)

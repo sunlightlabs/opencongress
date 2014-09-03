@@ -41,7 +41,7 @@ class RollCallVote < ActiveRecord::Base
 
   #========== SCOPES
 
-  scope :for_state, lambda { |abbrev| {:include => :person, :conditions => {:people => {:state => abbrev} } } }
+  scope :for_state, lambda {|abbrev| includes(:person).where(:person => {:state => abbrev}) }  # {:include => :person, :conditions => {:people => {:state => abbrev} } } }
   scope :on_passage, lambda { includes(:roll_call).where("roll_calls.question ILIKE 'On Passage%' OR roll_calls.question ILIKE 'On Motion to Concur in Senate%' OR roll_calls.question ILIKE 'On Concurring%'") }
   scope :in_congress, lambda { |cong| includes(:roll_call).where(['date >= ? and date <= ?', UnitedStates::Congress.start_datetime(cong), UnitedStates::Congress.end_datetime(cong)]) }
 

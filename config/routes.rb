@@ -233,8 +233,8 @@ OpenCongress::Application.routes.draw do
 
       # /users/:login/profile/:action
       scope :controller => 'profile' do
-        for action in %w{ actions items_tracked watchdog edit_profile bills_supported tracked_rss user_actions_rss bills_opposed my_votes bills comments issues committees groups upload_pic
-                          disconnect_facebook_account } do
+        for action in %w{ actions items_tracked tracked_bill_status tracked_votes watchdog edit_profile bills_supported tracked_rss user_actions_rss bills_opposed my_votes bills comments issues committees groups upload_pic
+                          disconnect_facebook_account remove_bill_bookmark tracked_commentary_news tracked_commentary_blogs } do
           match action, :action => action, :as => 'user_' + action
         end
         match ':person_type', :action => 'person'

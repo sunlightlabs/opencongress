@@ -9,6 +9,6 @@
 #  invite_key    :string(255)
 #
 
-class FriendInvite < ActiveRecord::Base
+class FriendInvite < OpenCongressModel
   belongs_to :inviter, :class_name => "User", :foreign_key => :inviter_id
 end

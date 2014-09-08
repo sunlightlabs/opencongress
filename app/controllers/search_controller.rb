@@ -35,7 +35,7 @@ class SearchController < ApplicationController
 
       if @search_bills
         # first see if we match a bill's title exactly
-        bill_titles = BillTitle.find(:all, :conditions => [ "UPPER(title)=?", query_stripped.upcase ])
+        bill_titles = BillTitle.where('UPPER(title)=?',query_stripped.upcase)
         bills_for_title = bill_titles.collect {|bt| bt.bill }
         bills_for_title.uniq!
 
@@ -55,10 +55,8 @@ class SearchController < ApplicationController
           # TODO: Why does this return nil, and are there implications to making it return []?
           @people = (Person.find_current_congresspeople_by_zipcode(*query_stripped.split('-')).flatten rescue []).paginate(:per_page => 9, :page => @search.page)
         else
-          people_for_name = Person.find(:all,
-                                        :conditions => [ "(UPPER(firstname || ' ' || lastname)=? OR
-                                      UPPER(nickname || ' ' || lastname)=?)",
-                                                         query_stripped.upcase, query_stripped.upcase ])
+          people_for_name = Person.where("(UPPER(firstname || ' ' || lastname)=? OR UPPER(nickname || ' ' || lastname)=?)",
+                                         query_stripped.upcase, query_stripped.upcase)
           redirect_to person_url(people_for_name[0]) and return if people_for_name.size == 1
 
           opts = {:page => @search.page}
@@ -74,7 +72,7 @@ class SearchController < ApplicationController
       if @search_committees
         @committees = Committee.full_text_search(query_stripped).select{ |c| c.active? }
         @found_items += @committees_total = @committees.size
-        @committees = @committees.sort_by { |c| [(c.name || ""), (c.subcommittee_name || "") ] }.group_by(&:name)
+        @committees = @committees.sort_by { |c| [(c.name || ''), (c.subcommittee_name || '') ] }.group_by(&:name)
       end
 
       if @search_issues
@@ -103,11 +101,9 @@ class SearchController < ApplicationController
       end
 
       if @found_items == 0
-        if (@search.get_congresses() == ["#{Settings.default_congress}"])
-          msg = "Sorry, your search returned no results in the current #{Settings.default_congress}th Congress."
-        else
-          msg = 'Sorry, your search returned no results.'
-        end
+        msg = 'Sorry, your search returned no results'
+        msg += @search.get_congresses() == ["#{Settings.default_congress}"] ?
+               " in the current #{Settings.default_congress}th Congress." : '.'
         flash.now[:error] = msg
       end
 
@@ -132,7 +128,8 @@ class SearchController < ApplicationController
   # TODO: This is so terrible guys.
   def autocomplete
     if params[:value].present?
-      names = Person.find(:all, :conditions => "title='Rep.' OR title='Sen.'").collect{ |p| [p.popular_name, p.name, p] }
+      names = Person.where(title:%w{'Rep.','Sen.'}).collect{ |p| [p.popular_name, p.name, p] }
+      #names = Person.find(:all, :conditions => "title='Rep.' OR title='Sen.'").collect{ |p| [p.popular_name, p.name, p] }
 
       bill_titles = []
       bills = Bill.major
@@ -151,11 +148,11 @@ class SearchController < ApplicationController
 
   def popular
     @page = params[:page]
-    @page = "1" unless @page
+    @page = '1' unless @page
 		@days = days_from_params(params[:days])
  		@searches = Search.top_search_terms(100,@days).paginate :page => @page
-    @title_class = "sort"
-		@page_title = "Top Search Terms"
+    @title_class = 'sort'
+		@page_title = 'Top Search Terms'
   end
 
   private

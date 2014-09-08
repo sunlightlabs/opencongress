@@ -1,2 +1,2 @@
-class Meta < ActiveRecord::Base
+class Meta < OpenCongressModel
 end

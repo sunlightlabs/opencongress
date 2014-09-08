@@ -12,7 +12,7 @@
 #  updated_at           :datetime
 #
 
-class GroupMember < ActiveRecord::Base
+class GroupMember < OpenCongressModel
   belongs_to :group
   belongs_to :user
 end

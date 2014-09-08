@@ -11,7 +11,7 @@
 #  updated_at             :datetime
 #
 
-class PersonCycleContribution < ActiveRecord::Base
+class PersonCycleContribution < OpenCongressModel
   self.table_name = :people_cycle_contributions
   
   belongs_to :person

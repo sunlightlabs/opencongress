@@ -6,7 +6,7 @@
 #  entered_top_viewed :datetime
 #
 
-class CommitteeStats < ActiveRecord::Base
+class CommitteeStats < OpenCongressModel
   set_primary_key :committee_id
   
   belongs_to :committee

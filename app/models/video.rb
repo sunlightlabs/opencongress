@@ -16,7 +16,7 @@
 #  length      :integer
 #
 
-class Video < ActiveRecord::Base 
+class Video < OpenCongressModel 
   belongs_to :person
   belongs_to :bill
   

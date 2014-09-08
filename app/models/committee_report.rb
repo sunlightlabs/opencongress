@@ -17,7 +17,7 @@
 #  chamber      :string(255)
 #
 
-class CommitteeReport < ActiveRecord::Base
+class CommitteeReport < OpenCongressModel
   validates_uniqueness_of :number,   :scope => [:kind, :congress]
   validates_uniqueness_of :kind,     :scope => [:congress, :number]
   validates_uniqueness_of :congress, :scope => [:number, :kind]

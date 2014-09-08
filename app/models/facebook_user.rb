@@ -9,7 +9,7 @@
 #  created_at           :datetime
 #
 
-class FacebookUser < ActiveRecord::Base  
+class FacebookUser < OpenCongressModel  
   has_many :facebook_user_bills
   
   #def FacebookUser.find_or_create_by_facebook_session(fbs)

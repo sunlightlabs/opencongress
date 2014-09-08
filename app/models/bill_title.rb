@@ -11,6 +11,6 @@
 #  is_default :boolean          default(FALSE)
 #
 
-class BillTitle < ActiveRecord::Base
+class BillTitle < OpenCongressModel
   belongs_to :bill
 end

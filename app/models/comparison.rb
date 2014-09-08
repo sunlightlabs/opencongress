@@ -11,7 +11,7 @@
 #  updated_at    :datetime
 #
 
-class Comparison < ActiveRecord::Base
+class Comparison < OpenCongressModel
   has_many :comparison_data_points, :order => "id ASC"
   
   def self.latest(chamber)

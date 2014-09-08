@@ -23,7 +23,7 @@
 #  subject_id               :integer
 #
 
-class Group < ActiveRecord::Base
+class Group < OpenCongressModel
   has_attached_file :group_image, :styles => { :medium => "300x300>", :thumb => "100x100>" },
                                   :path => "#{Settings.group_images_path}/:id/:style/:filename",
                                   :url => "#{Settings.group_images_url}/:id/:style/:filename"

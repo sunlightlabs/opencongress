@@ -28,7 +28,7 @@
 
 require_dependency 'email_congress'
 
-class EmailCongressLetterSeed < ActiveRecord::Base
+class EmailCongressLetterSeed < OpenCongressModel
   belongs_to :contact_congress_letter
 
   before_validation :generate_confirmation_code

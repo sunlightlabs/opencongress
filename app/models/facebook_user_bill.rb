@@ -11,7 +11,7 @@
 #  created_at       :datetime
 #
 
-class FacebookUserBill < ActiveRecord::Base
+class FacebookUserBill < OpenCongressModel
   belongs_to :facebook_user
   belongs_to :bill
   

@@ -9,7 +9,7 @@
 #  created_at :datetime
 #
 
-class FeaturedPerson < ActiveRecord::Base
+class FeaturedPerson < OpenCongressModel
   self.table_name = 'featured_people'
   
   belongs_to :person

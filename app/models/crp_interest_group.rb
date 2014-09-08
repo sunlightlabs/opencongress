@@ -9,7 +9,7 @@
 #  order           :string(255)
 #
 
-class CrpInterestGroup < ActiveRecord::Base
+class CrpInterestGroup < OpenCongressModel
   belongs_to :crp_industry
   
   def top_recipients(chamber = 'house', num = 10, cycle = Settings.current_opensecrets_cycle)

@@ -10,7 +10,7 @@
 #  updated_at      :datetime
 #
 
-class UserWarning < ActiveRecord::Base
+class UserWarning < OpenCongressModel
 
   belongs_to :user
   belongs_to :admin, :class_name => "User", :foreign_key => :warned_by  

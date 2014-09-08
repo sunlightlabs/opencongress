@@ -18,7 +18,7 @@
 #  congress             :integer
 #
 
-class Amendment < ActiveRecord::Base
+class Amendment < OpenCongressModel
   belongs_to :bill
   has_many :actions, :class_name => 'AmendmentAction'
   has_many :roll_calls, -> { order('date') }

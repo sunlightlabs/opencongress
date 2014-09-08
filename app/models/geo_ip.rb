@@ -13,5 +13,5 @@
 #  updated_at :datetime
 #
 
-class GeoIp < ActiveRecord::Base
+class GeoIp < OpenCongressModel
 end

@@ -9,7 +9,7 @@
 #  user_id           :integer          default(0), not null
 #
 
-class Bookmark < ActiveRecord::Base
+class Bookmark < OpenCongressModel
   belongs_to :bookmarkable, :polymorphic => true
 
   scope :bills, includes(:bill).where(:bookmarkable_type => "Bill")

@@ -1,4 +1,4 @@
-class ListSenator < ActiveRecord::Base
+class ListSenator < OpenCongressModel
 
   def to_param
     unless unaccented_name.nil?

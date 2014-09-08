@@ -15,7 +15,7 @@
 #  updated_at         :datetime
 #
 
-class TwitterConfig < ActiveRecord::Base
+class TwitterConfig < OpenCongressModel
   belongs_to :user
   
   

@@ -10,6 +10,6 @@
 #  citation                 :text
 #
 
-class BillPositionOrganization < ActiveRecord::Base
+class BillPositionOrganization < OpenCongressModel
   belongs_to :bill
 end

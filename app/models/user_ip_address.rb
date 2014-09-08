@@ -9,7 +9,7 @@
 #  updated_at :datetime
 #
 
-class UserIpAddress < ActiveRecord::Base
+class UserIpAddress < OpenCongressModel
 
   belongs_to :user
 

@@ -10,6 +10,6 @@
 #  updated_at    :datetime
 #
 
-class ComparisonDataPoint < ActiveRecord::Base
+class ComparisonDataPoint < OpenCongressModel
   belongs_to :comparison
 end

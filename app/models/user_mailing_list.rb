@@ -10,7 +10,7 @@
 #  updated_at     :datetime
 #
 
-class UserMailingList < ActiveRecord::Base
+class UserMailingList < OpenCongressModel
 
   has_many :mailing_list_items
   belongs_to :user

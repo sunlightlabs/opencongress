@@ -9,7 +9,7 @@
 #  where        :string(255)
 #
 
-class CommitteeMeeting < ActiveRecord::Base
+class CommitteeMeeting < OpenCongressModel
   # TODO Since committee meeting times are all the same (a bug)
   # this was preventing any committee from having more than one meeting.
   # Once committee meeting times have been fixed, this should be re-enabled.

@@ -16,7 +16,7 @@
 #  email     :string(255)
 #
 
-class Role < ActiveRecord::Base
+class Role < OpenCongressModel
   belongs_to :person
   
   @@TYPES = {

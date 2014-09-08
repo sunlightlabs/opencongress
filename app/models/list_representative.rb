@@ -1,4 +1,4 @@
-class ListRepresentative < ActiveRecord::Base
+class ListRepresentative < OpenCongressModel
 
   def to_param
     unless unaccented_name.nil?

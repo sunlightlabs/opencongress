@@ -12,7 +12,7 @@
 #  updated_at :datetime
 #
 
-class GroupBillPosition < ActiveRecord::Base
+class GroupBillPosition < OpenCongressModel
   belongs_to :group
   belongs_to :bill
   

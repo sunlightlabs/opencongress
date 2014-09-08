@@ -11,6 +11,6 @@
 #  include_in_message_body :boolean          default(FALSE)
 #
 
-class TalkingPoint < ActiveRecord::Base
+class TalkingPoint < OpenCongressModel
   belongs_to :talking_pointable, :polymorphic => true
 end

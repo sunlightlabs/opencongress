@@ -13,7 +13,7 @@
 #  file_timestamp        :datetime
 #
 
-class BillTextVersion < ActiveRecord::Base
+class BillTextVersion < OpenCongressModel
   belongs_to :bill
   has_many :bill_text_nodes, -> { order('nid') },
            :dependent => :destroy

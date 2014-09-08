@@ -12,6 +12,6 @@
 #  page_text_editable_id   :integer
 #
 
-class SiteTextPage < ActiveRecord::Base
+class SiteTextPage < OpenCongressModel
   belongs_to :page_text_editable, :polymorphic => true
 end

@@ -1,4 +1,4 @@
-class View < ActiveRecord::Base
+class View < OpenCongressModel
   self.abstract_class = true
 
   def readonly?

@@ -12,7 +12,7 @@
 #  submitted_form      :text
 #
 
-class ContactCongressTest < ActiveRecord::Base
+class ContactCongressTest < OpenCongressModel
   scope :latest, -> { select("distinct on (bioguideid) *").order("bioguideid, created_at DESC") }
   scope :passed, -> { where("status like ?", "SENT") }
   scope :failed, -> { where("status like ? or status like ?", "%ERROR%", "%SENT_AS_FAX%") }

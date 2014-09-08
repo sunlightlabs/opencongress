@@ -25,7 +25,7 @@
 #  abstains_percentage_rank                :integer
 #
 
-class PersonStats < ActiveRecord::Base
+class PersonStats < OpenCongressModel
   self.primary_key = 'person_id'
   
   belongs_to :person

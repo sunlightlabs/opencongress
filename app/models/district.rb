@@ -14,7 +14,7 @@
 
 require_dependency 'multi_geocoder'
 
-class District < ActiveRecord::Base
+class District < OpenCongressModel
   # district_number 0 is reserved for at-large districts
 
   belongs_to :state

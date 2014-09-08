@@ -10,7 +10,7 @@
 #  updated_at    :datetime
 #
 
-class CongressSession < ActiveRecord::Base
+class CongressSession < OpenCongressModel
 
   # TODO: This model is all sorts of crazy. This needs a lot of TLC.
 

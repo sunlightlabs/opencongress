@@ -8,7 +8,7 @@
 #  action_id :integer
 #
 
-class Refer < ActiveRecord::Base
+class Refer < OpenCongressModel
   validates_uniqueness_of :ref
   belongs_to :action
 

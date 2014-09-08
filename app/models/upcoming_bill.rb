@@ -10,7 +10,7 @@
 #  fti_names  :public.tsvector
 #
 
-class UpcomingBill < ActiveRecord::Base
+class UpcomingBill < OpenCongressModel
   
   has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC') },
            :as => :commentariable, :class_name => 'Commentary'

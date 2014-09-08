@@ -35,7 +35,7 @@
 
 require_dependency 'spammable'
 
-class Comment < ActiveRecord::Base
+class Comment < OpenCongressModel
   include Spammable
 
   belongs_to :user

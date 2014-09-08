@@ -6,7 +6,7 @@
 #  entered_top_viewed :datetime
 #
 
-class IssueStats < ActiveRecord::Base
+class IssueStats < OpenCongressModel
   set_primary_key :subject_id
   
   belongs_to :subject

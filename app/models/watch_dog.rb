@@ -10,7 +10,7 @@
 #  updated_at  :datetime
 #
 
-class WatchDog < ActiveRecord::Base
+class WatchDog < OpenCongressModel
 
   belongs_to :district
   belongs_to :user

@@ -10,7 +10,7 @@
 #  updated_at           :datetime
 #
 
-class MailingListItem < ActiveRecord::Base
+class MailingListItem < OpenCongressModel
   belongs_to :user_mailing_list
   belongs_to :mailable, :polymorphic => true
   

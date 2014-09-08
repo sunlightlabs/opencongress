@@ -8,7 +8,7 @@
 #  updated_at :datetime
 #
 
-class SiteText < ActiveRecord::Base
+class SiteText < OpenCongressModel
   def self.find_by_type(text_type)
     st = self.where('text_type = ?',text_type).first
     st ? st.text : nil

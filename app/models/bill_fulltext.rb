@@ -7,7 +7,7 @@
 #  fti_names :public.tsvector
 #
 
-class BillFulltext < ActiveRecord::Base
+class BillFulltext < OpenCongressModel
 
   self.primary_key = :bill_id
   self.table_name = :bill_fulltext

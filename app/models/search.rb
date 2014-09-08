@@ -11,7 +11,7 @@
 #  search_congresses :text
 #
 
-class Search < ActiveRecord::Base
+class Search < OpenCongressModel
 
   #========== INCLUDES
 

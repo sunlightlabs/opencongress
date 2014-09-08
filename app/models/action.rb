@@ -23,7 +23,7 @@
 #  ordinal_position :integer
 #
 
-class Action < ActiveRecord::Base
+class Action < OpenCongressModel
   include Comparable
  
   validates_presence_of :type

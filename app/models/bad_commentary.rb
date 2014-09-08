@@ -9,5 +9,5 @@
 #  id                  :integer          not null
 #
 
-class BadCommentary < ActiveRecord::Base
+class BadCommentary < OpenCongressModel
 end

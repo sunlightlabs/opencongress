@@ -15,7 +15,7 @@
 #  votes_oppose        :integer          default(0)
 #
 
-class ObjectAggregate < ActiveRecord::Base
+class ObjectAggregate < OpenCongressModel
   belongs_to :aggregatable, :polymorphic => true
 
   def self.popular(viewable_type, seconds = Settings.default_count_time, limit = 20, congress = Settings.default_congress, frontpage_hot = false)

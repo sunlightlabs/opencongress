@@ -8,7 +8,7 @@
 #  entered_top_blog   :datetime
 #
 
-class BillStats < ActiveRecord::Base
+class BillStats < OpenCongressModel
   set_primary_key :bill_id
   
   belongs_to :bill

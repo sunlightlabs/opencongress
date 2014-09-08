@@ -8,7 +8,7 @@
 #  created_at :datetime
 #
 
-class BillReferrer < ActiveRecord::Base
+class BillReferrer < OpenCongressModel
   belongs_to :bill
   
   @@NO_FOLLOW = [

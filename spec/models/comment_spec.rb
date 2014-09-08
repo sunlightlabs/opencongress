@@ -51,7 +51,6 @@ describe Comment do
         comment.ip_address = '216.55.6.122'
 
         comment.save
-
         comment.spam.should == false
         comment.akismet_response.should == "false"
       end

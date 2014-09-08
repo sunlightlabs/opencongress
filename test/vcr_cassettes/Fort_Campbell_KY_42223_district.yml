@@ -1,0 +1,80 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://geocoder.ca/?callback=test&geoit=xml&jsonp=1&locate=Fort%20Campbell,%20KY%2042223%20USA&showpostal=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 08 Sep 2014 03:46:26 GMT
+      Server:
+      - Apache
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '126'
+      Cache-Control:
+      - max-age=1
+      Expires:
+      - Mon, 08 Sep 2014 03:46:27 GMT
+      Access-Control-Allow-Origin:
+      - "*"
+      Connection:
+      - close
+    body:
+      encoding: UTF-8
+      string: test({"longt":"0.000000","error":{"description":"Your request did not
+        produce any results.","code":"008"},"latt":"0.000000"});
+    http_version: 
+  recorded_at: Mon, 08 Sep 2014 03:44:43 GMT
+- request:
+    method: get
+    uri: https://congress.api.sunlightfoundation.com/districts/locate
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.8.9
+      X-Apikey:
+      - "<SUNLIGHT_KEY>"
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      Server:
+      - nginx/1.1.19
+      Date:
+      - Mon, 08 Sep 2014 03:44:43 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '74'
+      Connection:
+      - keep-alive
+      Status:
+      - 400 Bad Request
+    body:
+      encoding: UTF-8
+      string: '{"error":"Provide a ''zip'', or a ''latitude'' and ''longitude''.","status":400}'
+    http_version: 
+  recorded_at: Mon, 08 Sep 2014 03:44:43 GMT
+recorded_with: VCR 2.9.2

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe IndexController do
+describe IndexController, type: :controller do
   render_views
   describe 'index' do
     it 'should load' do

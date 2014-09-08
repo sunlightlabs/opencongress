@@ -81,8 +81,8 @@ FactoryGirl.define do
 
   factory :user_3, class: User do
     status 1
-    login 'dan'
-    email 'dan@example.com'
+    login 'JoeCool'
+    email 'joe_cool@example.com'
     crypted_password 'abcdefg'
     state 'VA'
     district 8

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe GossipController do
+describe GossipController, type: :controller do
   describe ':update' do
     it 'should redirect when made with GET request' do
       get :update

@@ -5,7 +5,7 @@ RSpec.configure do |c|
   c.include EmailCongressHelper
 end
 
-describe EmailCongressController do
+describe EmailCongressController, type: :controller do
   describe 'Known user' do
     before(:each) do
       @user = users(:jdoe)

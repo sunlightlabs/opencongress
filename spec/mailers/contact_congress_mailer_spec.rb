@@ -10,19 +10,19 @@ describe ContactCongressMailer do
 
   describe 'reply_received_email' do
     it "sends an email" do
-      contact_congress_letter.stub(:to_param).and_return('1')
-      contact_congress_letter.stub(:user) { FactoryGirl.build(:jdoe) }
-      contact_congress_letter.stub(:subject).and_return('letter subject')
-      contact_congress_letter.stub(:to_param).and_return('1')
+      allow(contact_congress_letter).to receive_messages(to_param: 1)
+      allow(contact_congress_letter).to receive_messages(user: FactoryGirl.build(:jdoe))
+      allow(contact_congress_letter).to receive_messages(subject: 'letter subject')
+      # contact_congress_letter.stub(:to_param).and_return('1')
       
 
       thread = double('thread')
-      thread.stub_chain(:formageddon_recipient, :title).and_return('Mr.')
-      thread.stub_chain(:formageddon_recipient, :lastname).and_return('Smith')
+      allow(thread).to receive_message_chain(:formageddon_recipient, :title).and_return('Mr.')
+      allow(thread).to receive_message_chain(:formageddon_recipient, :lastname).and_return('Smith')
       
       ContactCongressMailer.reply_received_email(contact_congress_letter, thread).deliver
-      @emails.first.subject.should include('Mr. Smith')
-      @emails.first.to.should include('jdoe@example.com')
+      expect(@emails.first.subject).to include('Mr. Smith')
+      expect(@emails.first.to).to include('jdoe@example.com')
     end
   end
 end

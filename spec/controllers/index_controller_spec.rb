@@ -6,7 +6,7 @@ describe IndexController, type: :controller do
   describe 'index' do
     it 'should load' do
       get :index
-      response.should be_success
+      expect(response).to be_success
     end
   end
 end

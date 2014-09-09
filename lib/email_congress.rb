@@ -454,7 +454,6 @@ module EmailCongress
 
       # This block insures that all SQL statements occur as one atomic action and rollback on validation failure.
       ActiveRecord::Base.transaction do
-
         ccl_letter = ContactCongressLetter.new
         ccl_letter.user = sender
         ccl_letter.disposition = ''   # Leave blank for now. Do sentiment analysis in the future?
@@ -472,6 +471,7 @@ module EmailCongress
           ccl_thread.save!
 
           ccl_thread
+
         end
 
         seed.contact_congress_letter = ccl_letter

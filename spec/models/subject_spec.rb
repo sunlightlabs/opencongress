@@ -19,7 +19,7 @@ describe Subject do
       subject = Subject.new
       bookmark = Bookmark.new(:user => user)
       subject.bookmarks << bookmark
-      subject.bookmarks.should include(bookmark)
+      expect(subject.bookmarks).to include(bookmark)
     end
   end
 end

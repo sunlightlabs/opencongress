@@ -3,12 +3,12 @@ require 'spec_helper'
 describe ApplicationHelper do
   describe 'position_clause' do
     it "expands the position string" do
-      helper.position_clause('support').should == 'in support of'
-      helper.position_clause('oppose').should == 'in opposition to'
+      expect(position_clause('support')).to  eq('in support of')
+      expect(position_clause('oppose')).to eq('in opposition to')
     end
 
     it 'defaults to tracking' do
-      helper.position_clause('').should == 'tracking'
+      expect(position_clause('')).to eq('tracking')
     end
   end
 

@@ -51,28 +51,28 @@ describe Bill do
     end
 
     it "finds related articles" do
-      bill.stub(:subject_terms).and_return("foo")
-      bill.related_articles.should == [@article]
+      allow(bill).to receive_messages(subject_terms: "foo")
+      expect(bill.related_articles).to eq [@article]
     end
 
     it "can match on multiple tags" do
-      bill.stub(:subject_terms).and_return("foo,bar")
-      bill.related_articles.should == [@article]
+      allow(bill).to receive_messages(subject_terms: "foo,bar")
+      expect(bill.related_articles).to eq [@article]
     end
 
     it "can match any of a bill's subjects" do
-      bill.stub(:subject_terms).and_return("foo,bar,other,another,yet another")
-      bill.related_articles.should == [@article]
+      allow(bill).to receive_messages(subject_terms: "foo,bar,other,another,yet another")
+      expect(bill.related_articles).to eq [@article]
     end
 
     it "won't match if there are no matching tags" do
-      bill.stub(:subject_terms).and_return("other")
-      bill.related_articles.should be_empty
+      allow(bill).to receive_messages(subject_terms: "other")
+      expect(bill.related_articles).to be_empty
     end
 
     it "won't match if there are no tags" do
-      bill.stub(:subject_terms).and_return("")
-      bill.related_articles.should be_empty
+      allow(bill).to receive_messages(subject_terms: "")
+      expect(bill.related_articles).to be_empty
     end
   end
 end

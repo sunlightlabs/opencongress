@@ -27,7 +27,7 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: 84aca71839a570184840a3096f57a58248889b0d
+  revision: d69b67686cbd09d3a61640675f9abac158567d7b
   branch: beta
   specs:
     formageddon (0.0.2)

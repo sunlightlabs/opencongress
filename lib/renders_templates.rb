@@ -4,7 +4,7 @@ require 'active_support/dependencies'
 module RendersTemplates
   class DummyController < AbstractController::Base
     include AbstractController::Rendering
-    include AbstractController::Layouts
+    include ActionView::Layouts
     include AbstractController::Helpers
     include AbstractController::Translation
     include AbstractController::ViewPaths

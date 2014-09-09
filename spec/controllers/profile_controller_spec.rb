@@ -18,8 +18,8 @@ describe ProfileController, type: :controller do
            session
       )
       user = User.find(current_user.id)
-      user.main_picture.should == 'dan_m.jpg'
-      user.small_picture.should == 'dan_s.jpg'
+      expect(user.main_picture).to eq('dan_m.jpg')
+      expect(user.small_picture).to eq('dan_s.jpg')
     end
   end
 
@@ -30,13 +30,13 @@ describe ProfileController, type: :controller do
            session
       )
       user = User.find(current_user.id)
-      user.user_profile.main_picture.should == 'dan_m.jpg'
-      user.user_profile.small_picture.should == 'dan_s.jpg'
+      expect(user.user_profile.main_picture).to eq('dan_m.jpg')
+      expect(user.user_profile.small_picture).to eq('dan_s.jpg')
 
       post(:delete_images, {}, session)
       user = User.find(current_user.id)
-      user.user_profile.main_picture.should be_nil
-      user.user_profile.small_picture.should be_nil
+      expect(user.user_profile.main_picture).to be_nil
+      expect(user.user_profile.small_picture).to be_nil
     end
   end
 end

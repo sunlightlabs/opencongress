@@ -107,7 +107,7 @@ class EmailCongressController < ApplicationController
       cc_letter = EmailCongress.reify_for_contact_congress(@sender_user, @seed, @recipients)
       cc_letter.formageddon_threads.each do |thread|
         letter = thread.formageddon_letters.first
-        if letter then letter.delay.send_letter() end
+        letter.delay.send_letter if letter 
       end
       @seed.confirm!
       return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)

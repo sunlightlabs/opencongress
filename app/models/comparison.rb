@@ -12,10 +12,10 @@
 #
 
 class Comparison < OpenCongressModel
-  has_many :comparison_data_points, :order => "id ASC"
+  has_many :comparison_data_points, -> { order('id ASC') }
   
   def self.latest(chamber)
-    self.find_by_chamber(chamber, :order => "created_at DESC")
+    self.find_by_chamber(chamber).order('created_at DESC')
   end
   
   def graph_link(placemark = nil)

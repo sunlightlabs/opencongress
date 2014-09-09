@@ -50,7 +50,7 @@ require_dependency 'viewable_object'
 require_dependency 'multi_geocoder'
 require_dependency 'wiki_connection'
 
-class Person < OpenCongressModel
+class Person < Bookmarkable
 
   #========== INCLUDES
 
@@ -78,7 +78,7 @@ class Person < OpenCongressModel
   #----- HAS_ONE
 
   has_one :person_stats, :dependent => :destroy
-  has_one :wiki_link, :as => "wikiable"
+  has_one :wiki_link, :as => 'wikiable'
 
   #----- HAS_MANY
 
@@ -109,7 +109,6 @@ class Person < OpenCongressModel
   has_many :committee_reports
   has_many :featured_people, -> { order('created_at DESC')}
   has_many :comments, :as => :commentable
-  has_many :bookmarks, :as => :bookmarkable
   has_many :videos, -> { order('videos.video_date DESC, videos.id') }
   has_many :person_approvals
   has_many :fundraisers, -> { order('fundraisers.start_time DESC') }

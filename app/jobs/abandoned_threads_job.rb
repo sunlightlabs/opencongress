@@ -1,4 +1,3 @@
-require 'authable'
 require 'o_c_logger'
 
 ##

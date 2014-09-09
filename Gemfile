@@ -13,7 +13,10 @@ gem 'rails-observers'
 
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
-#gem 'mysql2'
+# gem 'mysql2'
+
+# documentation generation tool
+gem 'yard'
 
 gem "settingslogic"
 

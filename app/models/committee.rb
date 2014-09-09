@@ -15,7 +15,7 @@
 #
 
 require_dependency 'viewable_object'
-class Committee < OpenCongressModel
+class Committee < Bookmarkable
   include ViewableObject
   
   has_many :committee_people
@@ -34,8 +34,6 @@ class Committee < OpenCongressModel
   has_one :committee_stats
 
   has_many :comments, :as => :commentable
-
-  has_many :bookmarks, :as => :bookmarkable
   
   has_one :wiki_link, :as => "wikiable"
 

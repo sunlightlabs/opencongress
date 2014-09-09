@@ -11,7 +11,7 @@ class ProfileController < ApplicationController
   skip_before_filter :pending_email_seed_prompt, :only => [:actions]
 
   def show
-    @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill]}])
+    @user = User.includes(:bookmarks).find_by_login(params[:login])
     return render_404 if @user.nil?
     @page_title = "#{@user.login.possessive} Profile"
     @title_class = "tab-nav"

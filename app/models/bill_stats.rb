@@ -9,7 +9,7 @@
 #
 
 class BillStats < OpenCongressModel
-  set_primary_key :bill_id
+  self.primary_key = :bill_id
   
   belongs_to :bill
 end

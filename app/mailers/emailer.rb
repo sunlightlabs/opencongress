@@ -9,7 +9,7 @@ class Emailer < ActionMailer::Base
     @headers    = {}
   end
 
-  def send_person(to, from, subject, text, sent_at = Time.now)
+  def send_person(to, from, subject, texet, sent_at = Time.now)
     @subject    = subject
     @body       = {:content => text}
     @recipients = to

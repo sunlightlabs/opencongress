@@ -39,7 +39,7 @@ require_dependency 'viewable_object'
 require_dependency 'united_states'
 require_dependency 'wiki_connection'
 
-class Bill < OpenCongressModel
+class Bill < Bookmarkable
 
   # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
   #              :facets => [:bill_type, :session], :auto_commit => false
@@ -142,8 +142,6 @@ class Bill < OpenCongressModel
            :as => :talking_pointable
   has_many :bill_text_versions
   has_many :videos, -> { order("videos.video_date DESC, videos.id") }
-  has_many :bookmarks,
-           :as => :bookmarkable
   has_many :notebook_links,
            :as => :notebookable
   has_many :committee_meetings_bills

@@ -8,7 +8,7 @@
 #
 
 class CrpIndustry < OpenCongressModel
-  has_many :crp_interest_groups, :order => '"order"'
+  has_many :crp_interest_groups, -> { order('"order"') }
   belongs_to :crp_sector
   
   has_many :pvs_category_mappings, :as => :pvs_category_mappable

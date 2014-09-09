@@ -27,7 +27,7 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: d69b67686cbd09d3a61640675f9abac158567d7b
+  revision: dff78d10196b7c374e0db6843ab010a4434565ef
   branch: beta
   specs:
     formageddon (0.0.2)
@@ -148,14 +148,14 @@ GEM
     database_cleaner (1.3.0)
     debug_inspector (0.0.2)
     debugger-linecache (1.2.0)
-    delayed_job (4.0.2)
+    delayed_job (4.0.3)
       activesupport (>= 3.0, < 4.2)
     delayed_job_active_record (4.0.2)
       activerecord (>= 3.0, < 4.2)
       delayed_job (>= 3.0, < 4.1)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    domain_name (0.5.20)
+    domain_name (0.5.21)
       unf (>= 0.0.5, < 1.0.0)
     em-websocket (0.5.1)
       eventmachine (>= 0.12.9)
@@ -275,7 +275,7 @@ GEM
     mime-types (1.25.1)
     mimemagic (0.2.1)
     mini_portile (0.6.0)
-    minitest (5.4.0)
+    minitest (5.4.1)
     mogli (0.0.46)
       hashie (>= 1.1.0)
       httmultiparty (>= 0.3.6)
@@ -494,6 +494,7 @@ GEM
     will_paginate (3.0.7)
     xpath (2.0.0)
       nokogiri (~> 1.3)
+    yard (0.8.7.4)
 
 PLATFORMS
   ruby
@@ -597,3 +598,4 @@ DEPENDENCIES
   vcr
   webmock (~> 1.9.0)
   will_paginate (~> 3.0.pre2)
+  yard

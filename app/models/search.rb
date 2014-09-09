@@ -21,7 +21,7 @@ class Search < OpenCongressModel
   #========== CONSTANTS
 
   # The search filters that a user selects are stored in the database as a list of integers corresponding to
-  # the order by which they appear in this list. This is done to limit extraneous space usage.
+  # the order by which they appear in this list. This is done to limit unnecessary space usage.
   SEARCH_FILTERS_LIST = [
                           :search_bills, :search_people, :search_committees, :search_industries, :search_issues,
                           :search_news, :search_blogs, :search_commentary, :search_comments, :search_gossip_blog
@@ -74,17 +74,18 @@ class Search < OpenCongressModel
   # representation for each search filter.
   #
   def doctor_data_for_load
-    if (self.search_filters rescue false)
+    if self.search_filters
       self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
     end
   end
 
-  ##
-  # Convience method to get congresses from the search filters
+  # Convenience method to get congresses from the search filters.
   #
+  # @return [Array<String>] the congresses numbers as strings
   def get_congresses
     return self.search_congresses
   end
+
 
   def get_query_stripped
     return prepare_tsearch_query(self.search_text.to_s)

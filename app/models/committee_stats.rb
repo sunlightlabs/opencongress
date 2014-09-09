@@ -7,7 +7,7 @@
 #
 
 class CommitteeStats < OpenCongressModel
-  set_primary_key :committee_id
+  self.primary_key = :committee_id
   
   belongs_to :committee
 end

@@ -10,54 +10,78 @@
 #
 
 class Bookmark < OpenCongressModel
+
   belongs_to :bookmarkable, :polymorphic => true
 
-  scope :bills, includes(:bill).where(:bookmarkable_type => "Bill")
-  scope :committees, includes(:committee).where(:bookmarkable_type => "Committee")
-  scope :people, includes(:person).where(:bookmarkable_type => "Person")
-  scope :subjects, includes(:subject).where(:bookmarkable_type => "Subject")
+  # This block of code is dynamically generating scopes and relationships
+  # for Bookmark using the hierarchy defined in Bookmarkable. For example,
+  # the code below is equivalent to the following at the time of this comment.
+  #
+  # scope :bills, includes(:bill).where(:bookmarkable_type => 'Bill')
+  # scope :committees, includes(:committee).where(:bookmarkable_type => 'Committee')
+  # scope :people, includes(:person).where(:bookmarkable_type => 'Person')
+  # scope :subjects, includes(:subject).where(:bookmarkable_type => 'Subject')
 
-  with_options :foreign_key => "bookmarkable_id" do |b|
-    b.belongs_to :person, -> { includes :roles}
-    b.belongs_to :bill
-    b.belongs_to :subject
-    b.belongs_to :committee
+  # with_options :foreign_key => 'bookmarkable_id' do |b|
+  #  b.belongs_to :person, -> { includes :roles}
+  #  b.belongs_to :bill
+  #  b.belongs_to :subject
+  #  b.belongs_to :committee
+  # end
+  begin
+    # insure all models have been touched so Bookmarkable has all descendants
+    Dir[Rails.root.join('app/models/*.rb').to_s].each{|path|
+      File.basename(path, '.rb').camelize.constantize
+    }
+    # applies dynamic methods and relationships to Bookmark
+    Bookmarkable.descendants.each{|model|
+      model_str = model.name.downcase
+      scope model_str.pluralize.to_sym, -> { includes(model_str.to_sym).where(:bookmarkable_type => model_str.capitalize) }
+      with_options :foreign_key => 'bookmarkable_id' do |b|
+        if model_str.to_sym == :person then scope = -> { includes :roles } end
+        b.belongs_to(model_str.to_sym, scope || nil)
+      end
+    }
   end
 
   validates_uniqueness_of :bookmarkable_id, :scope => [:user_id, :bookmarkable_type]
 
-  # NOTE: install the acts_as_taggable plugin if you
-  # want bookmarks to be tagged.
+  # NOTE: install the acts_as_taggable plugin if you want bookmarks to be tagged.
   acts_as_taggable
 
   # NOTE: Comments belong to a user
   belongs_to :user
 
-  # Helper class method to lookup all comments assigned
-  # to all commentable types for a given user.
+  # Find all bookmarks for a given user
+  #
+  # @param user [Record<User>] the user model to find all bookmarks for
+  # @return [Relation<Bookmark>] the bookmarks associated with the user
   def self.find_bookmarks_by_user(user)
-    find(:all,
-      :conditions => ["user_id = ?", user.id],
-      :order => "created_at DESC"
-    )
+    where('user_id = ?', user.id).order('created_at DESC')
   end
 
-  # Helper class method to look up a commentable object
-  # given the commentable class name and id
+  # Find a bookmarkable record by the type and id
+  #
+  # @param commentable_str [String] the class name as string to look up
+  # @param commentable_id [Integer] the id of the commentable record
+  # @return [Record<Commentable>]
   def self.find_bookmarkable(commentable_str, commentable_id)
     commentable_str.constantize.find(commentable_id)
   end
 
+  # Find all bookmarks for a given user and person role
+  #
+  # @param user [Record<User>] the user model to find all bookmarks for
+  # @param role [String] 'sen' or 'rep'
+  # @return [Record<Bookmark>]
   def self.find_bookmarks_by_user_and_person_role(user,role)
-#      find_all_by_user_id(User.find_by_login(user).id,
-#            :include => [:person => :roles],
-#            :conditions => ["bookmarkable_type = ? AND roles.role_type = ?", "Person", role])
-#      with_scope(:find => {:conditions => ["bookmarkable_type = 'Person' AND user_id = ?", user]}) do
-#       find(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", role])
-#      end
     eager_load({:person => :roles}).where(:bookmarkable_type =>'Person',:user_id => user,'roles.role_type' => role)
   end
 
+  # Find all bill bookmarks for a given user
+  #
+  # @param user [Record<User>] the user model to find all bill bookmarks for
+  # @return [Relation<Bill>]
   def self.find_bookmarked_bills_by_user(user)
     where(user_id:user, bookmarkable_type: 'Bill')
   end

@@ -11,7 +11,7 @@
 #
 
 require_dependency 'viewable_object'
-class Subject < OpenCongressModel
+class Subject < Bookmarkable
 
   #========== INCLUDES
 
@@ -43,7 +43,7 @@ class Subject < OpenCongressModel
   has_many :users, -> { order('bookmarks.created_at DESC') },
            :through => :bookmarks
   has_many :recently_introduced_bills, -> { order('bills.introduced DESC').limit(20) },
-           :class_name => "Bill", :through => :bill_subjects, :source => "bill"
+           :class_name => 'Bil', :through => :bill_subjects, :source => 'bill'
   has_many :comments,
            :as => :commentable
   has_many :talking_points,
@@ -59,7 +59,7 @@ class Subject < OpenCongressModel
   belongs_to :parent,
              :class_name => 'Subject'
 
-  acts_as_bookmarkable
+  # acts_as_bookmarkable
 
   #========== SCOPES
 

@@ -7,7 +7,8 @@
 #
 
 class IssueStats < OpenCongressModel
-  set_primary_key :subject_id
+
+  self.primary_key = :subject_id
   
   belongs_to :subject
 end

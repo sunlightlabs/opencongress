@@ -11,7 +11,7 @@
 #  updated_at :datetime
 #
 
-class GroupInvite < ActiveRecord::Base
+class GroupInvite < OpenCongressModel
   belongs_to :group
   belongs_to :user
   

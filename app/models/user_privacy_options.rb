@@ -19,7 +19,7 @@
 #  groups             :integer          default(2)
 #
 
-class UserPrivacyOptions < ActiveRecord::Base
+class UserPrivacyOptions < OpenCongressModel
   belongs_to :user
 
   ACCESSIBLE_ATTRS = %w(name email zipcode location profile actions friends bookmarks

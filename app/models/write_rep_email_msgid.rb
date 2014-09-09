@@ -11,7 +11,7 @@
 #  updated_at         :datetime
 #
 
-class WriteRepEmailMsgid < ActiveRecord::Base
+class WriteRepEmailMsgid < OpenCongressModel
   belongs_to :write_rep_email
   belongs_to :person
 end

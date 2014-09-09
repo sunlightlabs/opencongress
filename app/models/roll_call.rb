@@ -29,7 +29,7 @@
 require_dependency 'united_states'
 require_dependency 'viewable_object'
 
-class RollCall < ActiveRecord::Base
+class RollCall < OpenCongressModel
   include ViewableObject
   belongs_to :bill
   belongs_to :amendment

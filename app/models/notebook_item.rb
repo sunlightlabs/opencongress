@@ -37,7 +37,7 @@
 
 require_dependency 'spammable'
 
-class NotebookItem < ActiveRecord::Base
+class NotebookItem < OpenCongressModel
   include Spammable
 
   acts_as_taggable_on :tags

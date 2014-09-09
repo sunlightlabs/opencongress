@@ -10,7 +10,7 @@
 #  updated_at   :datetime
 #
 
-class CommitteeName < ActiveRecord::Base
+class CommitteeName < OpenCongressModel
   attr_accessible :name, :session
 
   belongs_to :committee

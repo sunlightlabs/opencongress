@@ -7,7 +7,7 @@
 #  nid                  :string(255)
 #
 
-class BillTextNode < ActiveRecord::Base
+class BillTextNode < OpenCongressModel
   belongs_to :bill_text_version
 
   has_many :comments, :as => :commentable

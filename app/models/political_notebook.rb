@@ -9,7 +9,7 @@
 #  group_id   :integer
 #
 
-class PoliticalNotebook < ActiveRecord::Base
+class PoliticalNotebook < OpenCongressModel
   belongs_to :user
   belongs_to :group
 

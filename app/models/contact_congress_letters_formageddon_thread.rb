@@ -6,7 +6,7 @@
 #  formageddon_thread_id      :integer
 #
 
-class ContactCongressLettersFormageddonThread < ActiveRecord::Base  
+class ContactCongressLettersFormageddonThread < OpenCongressModel  
   belongs_to :formageddon_thread, :class_name => 'Formageddon::FormageddonThread'
   belongs_to :contact_congress_letter
 end

@@ -15,7 +15,7 @@
 #
 
 require_dependency 'viewable_object'
-class Committee < ActiveRecord::Base
+class Committee < OpenCongressModel
   include ViewableObject
   
   has_many :committee_people

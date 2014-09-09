@@ -8,7 +8,7 @@
 #  disposition           :string(255)
 #
 
-class BillInterestGroup < ActiveRecord::Base  
+class BillInterestGroup < OpenCongressModel  
   belongs_to :bill
   belongs_to :crp_interest_group
 end

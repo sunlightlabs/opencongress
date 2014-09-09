@@ -26,6 +26,6 @@
 #  committee_id           :string(255)
 #
 
-class Fundraiser < ActiveRecord::Base
+class Fundraiser < OpenCongressModel
   belongs_to :person
 end

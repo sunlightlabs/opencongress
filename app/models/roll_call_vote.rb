@@ -10,7 +10,7 @@
 
 require 'united_states'
 
-class RollCallVote < ActiveRecord::Base
+class RollCallVote < OpenCongressModel
 
   #========== CLASS VARIABLES
 

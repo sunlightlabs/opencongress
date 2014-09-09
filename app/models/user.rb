@@ -37,7 +37,7 @@ require_dependency 'multi_geocoder'
 require_dependency 'visible_by_privacy_option_query'
 
 # this model expects a certain database layout and its based on the name/login pattern.
-class User < ActiveRecord::Base
+class User < OpenCongressModel
 
   #========== INCLUDES
 

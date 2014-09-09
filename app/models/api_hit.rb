@@ -10,6 +10,6 @@
 #  ip         :string(50)
 #
 
-class ApiHit < ActiveRecord::Base
+class ApiHit < OpenCongressModel
   belongs_to :user  
 end

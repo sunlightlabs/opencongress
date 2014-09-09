@@ -14,7 +14,7 @@
 #  updated_at :datetime
 #
 
-class Gossip < ActiveRecord::Base
+class Gossip < OpenCongressModel
   validates_presence_of :email, :name, :tip
   self.table_name = 'gossip'
 

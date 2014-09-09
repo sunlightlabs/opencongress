@@ -7,7 +7,7 @@
 #  image      :string(255)
 #
 
-class ArticleImage < ActiveRecord::Base
+class ArticleImage < OpenCongressModel
   belongs_to :article
 
   mount_uploader :image, ArticleImageUploader

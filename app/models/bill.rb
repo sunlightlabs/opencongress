@@ -39,7 +39,7 @@ require_dependency 'viewable_object'
 require_dependency 'united_states'
 require_dependency 'wiki_connection'
 
-class Bill < ActiveRecord::Base
+class Bill < OpenCongressModel
 
   # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
   #              :facets => [:bill_type, :session], :auto_commit => false

@@ -9,7 +9,7 @@
 #  updated_at   :datetime
 #
 
-class State < ActiveRecord::Base
+class State < OpenCongressModel
   ABBREVIATIONS = {
     "Alabama" => "AL",
     "Alaska" => "AK",

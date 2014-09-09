@@ -8,7 +8,7 @@
 #  relation_count     :integer
 #
 
-class SubjectRelation < ActiveRecord::Base
+class SubjectRelation < OpenCongressModel
   belongs_to :subject
   belongs_to :related_subject, :class_name => 'Subject', :foreign_key => :related_subject_id
   

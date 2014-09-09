@@ -22,7 +22,7 @@
 #  commentariable_type :string(255)
 #
 
-class Commentary < ActiveRecord::Base                              
+class Commentary < OpenCongressModel                              
 require 'htmlentities'
   belongs_to :commentariable, :polymorphic => true
   

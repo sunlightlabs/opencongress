@@ -8,6 +8,6 @@
 #  ref       :string(255)
 #
 
-class ActionReference < ActiveRecord::Base
+class ActionReference < OpenCongressModel
   belongs_to :action
 end

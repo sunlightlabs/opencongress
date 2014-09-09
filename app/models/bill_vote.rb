@@ -10,7 +10,7 @@
 #  updated_at :datetime
 #
 
-class BillVote < ActiveRecord::Base
+class BillVote < OpenCongressModel
   # 1 = opposed, 0 = supported
   belongs_to :user
   belongs_to :bill

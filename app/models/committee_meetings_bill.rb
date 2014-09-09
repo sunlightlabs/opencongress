@@ -7,7 +7,7 @@
 #  bill_id              :integer
 #
 
-class CommitteeMeetingsBill < ActiveRecord::Base
+class CommitteeMeetingsBill < OpenCongressModel
   belongs_to :committee_meeting
   belongs_to :bill
 end

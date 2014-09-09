@@ -7,7 +7,7 @@
 #  crp_sector_id :integer
 #
 
-class CrpIndustry < ActiveRecord::Base
+class CrpIndustry < OpenCongressModel
   has_many :crp_interest_groups, :order => '"order"'
   belongs_to :crp_sector
   

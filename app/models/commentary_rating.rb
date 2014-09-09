@@ -10,7 +10,7 @@
 #  updated_at    :datetime
 #
 
-class CommentaryRating < ActiveRecord::Base
+class CommentaryRating < OpenCongressModel
 
   belongs_to :commentary
   belongs_to :user

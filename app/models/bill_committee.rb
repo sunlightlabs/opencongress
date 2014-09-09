@@ -8,7 +8,7 @@
 #  activity     :string(255)
 #
 
-class BillCommittee < ActiveRecord::Base
+class BillCommittee < OpenCongressModel
 
   self.table_name = 'bills_committees'
   validates_uniqueness_of :bill_id, :scope => :committee_id

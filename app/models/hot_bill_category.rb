@@ -6,7 +6,7 @@
 #  name :string(255)
 #
 
-class HotBillCategory < ActiveRecord::Base  
+class HotBillCategory < OpenCongressModel  
   has_many :bills
   has_many :notebook_items
 end

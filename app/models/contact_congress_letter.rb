@@ -16,7 +16,7 @@
 require_dependency 'viewable_object'
 require 'state'
 
-class ContactCongressLetter < ActiveRecord::Base
+class ContactCongressLetter < OpenCongressModel
 
   #========== INCLUDES
   include ViewableObject

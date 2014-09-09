@@ -11,7 +11,7 @@
 #  updated_at    :datetime
 #
 
-class WikiLink < ActiveRecord::Base
+class WikiLink < OpenCongressModel
   belongs_to :wikiable, :polymorphic => true
   before_validation :clean_up
 

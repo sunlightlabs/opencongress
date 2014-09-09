@@ -50,7 +50,7 @@ require_dependency 'viewable_object'
 require_dependency 'multi_geocoder'
 require_dependency 'wiki_connection'
 
-class Person < ActiveRecord::Base
+class Person < OpenCongressModel
 
   #========== INCLUDES
 

@@ -13,7 +13,7 @@
 #
 # Model for end-user approval ratings of congresspeople
 #
-class PersonApproval < ActiveRecord::Base
+class PersonApproval < OpenCongressModel
 
   belongs_to :person
   belongs_to :user

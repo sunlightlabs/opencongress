@@ -9,6 +9,6 @@
 #  ip_address     :string(255)
 #
 
-class FriendEmail < ActiveRecord::Base
+class FriendEmail < OpenCongressModel
   belongs_to :emailable, :polymorphic => true
 end

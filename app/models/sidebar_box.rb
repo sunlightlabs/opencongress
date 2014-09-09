@@ -9,7 +9,7 @@
 #  sidebarable_type :string(255)
 #
 
-class SidebarBox < ActiveRecord::Base
+class SidebarBox < OpenCongressModel
   belongs_to :sidebarable, :polymorphic => true
   
 end

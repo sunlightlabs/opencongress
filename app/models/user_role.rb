@@ -12,7 +12,7 @@
 #  can_edit_blog_tags    :boolean          default(FALSE)
 #
 
-class UserRole < ActiveRecord::Base
+class UserRole < OpenCongressModel
   has_many :users
   validates_uniqueness_of :name
   

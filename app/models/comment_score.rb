@@ -10,7 +10,7 @@
 #  ip_address :string(255)
 #
 
-class CommentScore < ActiveRecord::Base
+class CommentScore < OpenCongressModel
   belongs_to :user
   belongs_to :comment
 end

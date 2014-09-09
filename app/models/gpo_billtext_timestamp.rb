@@ -10,5 +10,5 @@
 #  created_at :datetime
 #
 
-class GpoBilltextTimestamp < ActiveRecord::Base 
+class GpoBilltextTimestamp < OpenCongressModel 
 end

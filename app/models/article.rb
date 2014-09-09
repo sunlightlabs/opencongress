@@ -16,7 +16,7 @@
 #  fti_names           :public.tsvector
 #
 
-class Article < ActiveRecord::Base
+class Article < OpenCongressModel
   acts_as_taggable
 
   has_many :comments, :as => :commentable

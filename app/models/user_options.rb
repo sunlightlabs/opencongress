@@ -14,7 +14,7 @@
 
 require_dependency 'email_listable'
 
-class UserOptions < ActiveRecord::Base
+class UserOptions < OpenCongressModel
   include EmailListable
 
   HUMANIZED_ATTRIBUTES = {

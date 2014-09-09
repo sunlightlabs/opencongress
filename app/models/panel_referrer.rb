@@ -9,5 +9,5 @@
 #  updated_at   :datetime
 #
 
-class PanelReferrer < ActiveRecord::Base
+class PanelReferrer < OpenCongressModel
 end

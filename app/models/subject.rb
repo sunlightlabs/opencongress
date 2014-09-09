@@ -11,7 +11,7 @@
 #
 
 require_dependency 'viewable_object'
-class Subject < ActiveRecord::Base
+class Subject < OpenCongressModel
 
   #========== INCLUDES
 

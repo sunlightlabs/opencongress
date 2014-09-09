@@ -35,7 +35,7 @@
 #  censored              :boolean
 #
 
-#class NotebookLink < ActiveRecord::Base
+#class NotebookLink < OpenCongressModel
 class NotebookLink < NotebookItem
   require 'hpricot'
   require 'open-uri'

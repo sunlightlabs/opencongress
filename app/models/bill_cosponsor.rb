@@ -9,7 +9,7 @@
 #  date_withdrawn :date
 #
 
-class BillCosponsor < ActiveRecord::Base
+class BillCosponsor < OpenCongressModel
 
   self.table_name = :bills_cosponsors
 

@@ -8,7 +8,7 @@
 #  pvs_category_mappable_type :string(255)
 #
 
-class PvsCategoryMapping < ActiveRecord::Base  
+class PvsCategoryMapping < OpenCongressModel  
   belongs_to :pvs_category
   belongs_to :pvs_category_mappable, :polymorphic => true
   

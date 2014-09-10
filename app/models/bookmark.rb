@@ -54,7 +54,7 @@ class Bookmark < OpenCongressModel
 
   # Find all bookmarks for a given user
   #
-  # @param user [Record<User>] the user model to find all bookmarks for
+  # @param user [User] the user model to find all bookmarks for
   # @return [Relation<Bookmark>] the bookmarks associated with the user
   def self.find_bookmarks_by_user(user)
     where('user_id = ?', user.id).order('created_at DESC')
@@ -64,23 +64,23 @@ class Bookmark < OpenCongressModel
   #
   # @param commentable_str [String] the class name as string to look up
   # @param commentable_id [Integer] the id of the commentable record
-  # @return [Record<Commentable>]
+  # @return [Commentable]
   def self.find_bookmarkable(commentable_str, commentable_id)
     commentable_str.constantize.find(commentable_id)
   end
 
   # Find all bookmarks for a given user and person role
   #
-  # @param user [Record<User>] the user model to find all bookmarks for
+  # @param user [User] the user model to find all bookmarks for
   # @param role [String] 'sen' or 'rep'
-  # @return [Record<Bookmark>]
+  # @return [Bookmark]
   def self.find_bookmarks_by_user_and_person_role(user,role)
     eager_load({:person => :roles}).where(:bookmarkable_type =>'Person',:user_id => user,'roles.role_type' => role)
   end
 
   # Find all bill bookmarks for a given user
   #
-  # @param user [Record<User>] the user model to find all bill bookmarks for
+  # @param user [User] the user model to find all bill bookmarks for
   # @return [Relation<Bill>]
   def self.find_bookmarked_bills_by_user(user)
     where(user_id:user, bookmarkable_type: 'Bill')

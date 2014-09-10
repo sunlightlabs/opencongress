@@ -74,8 +74,10 @@ class Search < OpenCongressModel
   # representation for each search filter.
   #
   def doctor_data_for_load
-    if self.search_filters
-      self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
+    begin
+        self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
+    rescue
+      false
     end
   end
 

@@ -518,13 +518,13 @@ EOT
       (params[:controller] == "bill" and params[:action] == 'hot_bill_vote')
       if logged_in?
         "" +
-          link_to_remote("Aye",
-                         { :url => {:controller => 'bill', :action => 'hot_bill_vote', :bill => bill.ident, :id => :support}},
+          link_to("Aye",
+                         { :remote => true, :url => {:controller => 'bill', :action => 'hot_bill_vote', :bill => bill.ident, :id => :support}},
                          :class => "aye #{yah}") +
           "" +
 
-          link_to_remote("Nay",
-                         {:url => {:controller => 'bill', :action => 'hot_bill_vote', :bill => bill.ident, :id => :oppose}},
+          link_to("Nay",
+                         { :remote => true, :url => {:controller => 'bill', :action => 'hot_bill_vote', :bill => bill.ident, :id => :oppose}},
                          :class => "nay #{nah}") +
           ""
       else
@@ -539,14 +539,14 @@ EOT
     else
       if logged_in?
         "<div class='voting_buttons'>" +
-          link_to_remote(image_tag('yes.png') + "<span>I Support this Bill</span>".html_safe,
-                         {:url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :support}},
+          link_to(image_tag('yes.png') + "<span>I Support this Bill</span>".html_safe,
+                         {:remote => true, :url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :support}},
                          :class => "yes #{yah}") +
           "
 
         " +
-          link_to_remote(image_tag('no.png') + "<span>I Oppose this Bill</span>".html_safe,
-                         {:url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :oppose}},
+          link_to(image_tag('no.png') + "<span>I Oppose this Bill</span>".html_safe,
+                         {:remote => true, :url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :oppose}},
                          :class => "no #{nah}") +
           %Q{
         </div>

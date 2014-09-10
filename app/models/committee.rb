@@ -20,7 +20,7 @@ class Committee < Bookmarkable
   
   has_many :committee_people
   has_many :people, :through => :committee_people
-  alias :members :people #for convenience, seems to make more sense
+  alias :members :people # for convenience, seems to make more sense
 
   has_many :bill_committees
   has_many :bills, -> { order("bills.lastaction DESC") },

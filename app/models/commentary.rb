@@ -23,7 +23,7 @@
 #
 
 class Commentary < OpenCongressModel                              
-require 'htmlentities'
+  require 'htmlentities'
   belongs_to :commentariable, :polymorphic => true
   
   has_many :commentary_ratings

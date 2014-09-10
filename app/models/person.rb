@@ -65,7 +65,7 @@ class Person < Bookmarkable
 
   @@DISPLAY_OBJECT_NAME = 'Person'
 
-  @@NONVOTING_TERRITORIES = [ 'AS', 'DC', 'GU', 'PR', 'VI']
+  @@NONVOTING_TERRITORIES = [ 'AS', 'DC', 'GU', 'PR', 'VI' ]
 
   #========== CONSTANTS
 

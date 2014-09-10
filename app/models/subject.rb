@@ -59,8 +59,6 @@ class Subject < Bookmarkable
   belongs_to :parent,
              :class_name => 'Subject'
 
-  # acts_as_bookmarkable
-
   #========== SCOPES
 
   scope :active, -> { includes(:bills).where("bills.session" => Bill.available_sessions.last) }

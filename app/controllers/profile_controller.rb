@@ -97,13 +97,13 @@ class ProfileController < ApplicationController
   def items_tracked
     @atom = {'link' => url_for(:controller => 'user_feeds', :login => @user.login, :action => 'tracked_items', :key => logged_in? ? current_user.feed_key : nil)}
     @hide_atom = true
-    @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
+    @user = User.includes(:bookmarks).find_by_login(params[:login])
     @page_title = "#{@user.login.possessive} Profile"
     @profile_nav = @user
     @title_class = "tab-nav"
 
     if logged_in? && current_user.id == @user.id
-      mailing_list = UserMailingList.find_or_create_by_user_id(@user.id)
+      mailing_list = UserMailingList.where(user_id:@user.id).first_or_create
       @show_email_alerts = true
     else
       @show_email_alerts = false

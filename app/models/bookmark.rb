@@ -25,14 +25,12 @@ class Bookmark < OpenCongressModel
   # with_options :foreign_key => 'bookmarkable_id' do |b|
   #  b.belongs_to :person, -> { includes :roles}
   #  b.belongs_to :bill
-  #  b.belongs_to :subject
+  #  b.belongs_ito :subject
   #  b.belongs_to :committee
   # end
   begin
     # insure all models have been touched so Bookmarkable has all descendants
-    Dir[Rails.root.join('app/models/*.rb').to_s].each{|path|
-      File.basename(path, '.rb').camelize.constantize
-    }
+    Dir[Rails.root.join('app/models/*.rb').to_s].each{|path| File.basename(path, '.rb').camelize.constantize }
     # applies dynamic methods and relationships to Bookmark
     Bookmarkable.descendants.each{|model|
       model_str = model.name.downcase

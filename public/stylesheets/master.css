@@ -95,6 +95,12 @@ h3{ font-size: 13px; }
   margin: 0;
   }
 
+.admin-bar {
+  width: 100%;
+  background-color: black;
+  color: white;
+  font-family: courier;
+}
 
 #login{
   position: absolute;

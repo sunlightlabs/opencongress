@@ -28,6 +28,7 @@ TAGS
 *.sqlite3
 helium.json
 sendhelium
+.revision
 .idea
 .idea/*
 *.bak

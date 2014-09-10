@@ -948,6 +948,6 @@ EOT
   end
 
   def git_revision
-    File.exist?("revision") ? File.read("revision").strip : "no revision tag found" 
+    File.exist?(".revision") ? File.read(".revision").strip : "no revision tag found" 
   end
 end

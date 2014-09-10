@@ -60,19 +60,19 @@ describe EmailCongressController, type: :controller do
     end
 
     it "successful_confirmation" do
-	    # seed = incoming_seed({
-	    #   "From" => @user.email,
-	    #   "FromFull" => { "Name" => "", "Email" => @user.email },
-	    #   "To" => at_email_congress('myreps'),
-	    #   "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
-	    # })
+	    seed = incoming_seed({
+	      "From" => @user.email,
+	      "FromFull" => { "Name" => "", "Email" => @user.email },
+	      "To" => at_email_congress('myreps'),
+	      "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ]
+	    })
       
-	    # VCR.use_cassette('successful confirmation') do
-	    # 	get(:confirm, {'confirmation_code' => seed.confirmation_code})
-	    # end
-	    # assert_equal nil, flash[:error]
-	    # assert_redirected_to @controller.url_for(:action => :confirmed,
-	    #                                          :confirmation_code => seed.confirmation_code)
+	    VCR.use_cassette('successful confirmation') do
+	    	get(:confirm, {'confirmation_code' => seed.confirmation_code})
+	    end
+	    assert_equal nil, flash[:error]
+	    assert_redirected_to @controller.url_for(:action => :confirmed,
+	                                             :confirmation_code => seed.confirmation_code)
     end
   end
   describe 'New users' do

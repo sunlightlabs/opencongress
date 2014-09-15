@@ -206,30 +206,34 @@ class AccountController < ApplicationController
       return
     end
 
-    # first see if we recognize the email address
-    @existing_user = User.where(["UPPER(email)=?", thread.sender_email.upcase]).first
-    unless @existing_user
-      @new_user = User.new
-      @new_user.email = thread.sender_email
-      @new_user.user_profile.zipcode = thread.sender_zip5
-      @new_user.user_profile.zip_four = thread.sender_zip4
-    else
-      @new_user = nil
-    end
-
-    # TODO: This smells, find out how it's hit and refactor
-    if request.post? && @new_user.present?
-      # TODO: Replace this with assign_attributes once upgraded to Rails 3.2
-      [:password, :accept_tos, :login].each do |attr|
-        @new_user.send("#{attr.to_s}=", params[:user][attr])
+    session[:save_mutex].synchronize do
+      # first see if we recognize the email address
+      @existing_user = User.where(["UPPER(email)=?", thread.sender_email.upcase]).first
+      unless @existing_user
+        @new_user = User.new
+        @new_user.email = thread.sender_email
+        @new_user.user_profile.zipcode = thread.sender_zip5
+        @new_user.user_profile.zip_four = thread.sender_zip4
+      else
+        @new_user = nil
       end
 
-      if @new_user.save
-        redirect_to(:controller => 'account', :action => 'confirm', :login => @new_user.login)
+      # TODO: This smells, find out how it's hit and refactor
+      if request.post? && @new_user.present?
+        # TODO: Replace this with assign_attributes once upgraded to Rails 3.2
+        [:password, :accept_tos, :login].each do |attr|
+          @new_user.send("#{attr.to_s}=", params[:user][attr])
+        end
 
-        return
+        if @new_user.save
+          session.delete(:saving_user)
+          redirect_to(:controller => 'account', :action => 'confirm', :login => @new_user.login)
+          return
+        end
+
       end
     end
+
   end
 
   def group_signup_complete

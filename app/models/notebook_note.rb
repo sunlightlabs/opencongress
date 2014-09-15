@@ -33,6 +33,7 @@
 #  ip_address            :string(255)
 #  spam                  :boolean
 #  censored              :boolean
+#  data                  :text
 #
 
 class NotebookNote < NotebookItem

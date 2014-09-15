@@ -48,10 +48,6 @@ class Bill < Bookmarkable
 
   include ViewableObject
 
-  #========== CALLBACKS
-
-  before_save :update_bill_fulltext_search_table
-
   #========== CLASS VARIABLES
 
   @@DISPLAY_OBJECT_NAME = 'Bill'
@@ -96,7 +92,9 @@ class Bill < Bookmarkable
 
   #========== CALLBACKS
 
+  before_save :update_bill_fulltext_search_table
   after_save -> { @bill_text = nil }
+  triggers_notifications :bill_actions, :commentary
 
   #========== RELATIONS
 
@@ -106,10 +104,10 @@ class Bill < Bookmarkable
   has_one :bill_stats
   has_one :bill_fulltext
   has_one :wiki_link, :as => "wikiable"
-  has_one  :last_action, -> { order('actions.date DESC') },
-           :class_name => "Action"
-  has_one  :related_bill_session, -> { order("bills_relations.relation='session'") },
-           :through => :bill_relations, :source => :related_bill
+  has_one :last_action, -> { order('actions.date DESC') },
+          :class_name => "Action"
+  has_one :related_bill_session, -> { order("bills_relations.relation='session'") },
+          :through => :bill_relations, :source => :related_bill
 
   #----- HAS_MANY
 

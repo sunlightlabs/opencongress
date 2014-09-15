@@ -236,8 +236,8 @@ class User < OpenCongressModel
   delegate :street_address_2=, :to => :user_profile
   delegate :city=, :to => :user_profile
 
-  %w( zipcode zip_four street_address street_address_2 small_picture main_picture
-     first_name last_name full_name website about city coordinates location address mobile_phone ).each do |prop|
+  %w(zipcode zip_four street_address street_address_2 small_picture main_picture
+     first_name last_name full_name website about city coordinates location address mobile_phone).each do |prop|
     delegate prop.to_sym, to: :user_profile
   end
 
@@ -263,95 +263,84 @@ class User < OpenCongressModel
 
   #========== CLASS METHODS
 
-  class << self
+  def self.random_password
+    return SecureRandom.random_number(178689910246017054531432477289437798228285773001601743140683775).to_s(36)
+  end
 
-    def random_password
-      password = SecureRandom.random_number(178689910246017054531432477289437798228285773001601743140683775).to_s(36)
+  def self.login_stub_for_profile(profile)
+    address = Mail::Address.new(profile.email)
+    stub = address.local.sub(/[^a-z0-9].*$/i, '') # remove any non-alphnumeric character and everything following it
+    stub = "#{profile.first_name}#{profile.last_name.first}" if stub.length < 5
+    stub = 'newuser' if stub.length < 5
+    return stub
+  end
+
+  def self.unused_login(stub, max_attempts=100)
+    candidate = stub
+    (0..max_attempts).each do |attempt|
+      user = User.find_by_login(candidate)
+      return candidate if user.nil?
+      candidate = stub + SecureRandom.random_number(9999).to_s(10)
     end
+    return nil
+  end
 
-    def login_stub_for_profile (profile)
-      address = Mail::Address.new(profile.email)
-      stub = address.local.sub(/[^a-z0-9].*$/i, '') # remove any non-alphnumeric character and everything following it
-      if stub.length < 5
-        # In case we stripped off too much, or their email address is just ridiculously short
-        stub = "#{profile.first_name}#{profile.last_name.first}"
-      end
-      if stub.length < 5
-        stub = "newuser"
-      end
-      stub
-    end
+  def self.generate_for_profile(profile, options=HashWithIndifferentAccess.new)
+    begin
+      ActiveRecord::Base.transaction do
+        login = unused_login(login_stub_for_profile(profile))
+        user = User.new(:login => login,
+                        :email => profile.email,
+                        :password => random_password,
+                        :accepted_tos_at => profile.accept_tos && Time.now || nil,
+                        :state => profile.state
+        )
+        # Authable#make_password_reset_code is protected and that's probably not
+        # a bad thing. This, however is a kludge. FIXME.
+        user.send(:make_password_reset_code)
 
-    def unused_login (stub, max_attempts=100)
-      candidate = stub
-      (0..max_attempts).each do |attempt|
-        user = User.find_by_login(candidate)
-        if user.nil?
-          return candidate
-        end
-        candidate = stub + SecureRandom.random_number(9999).to_s(10)
-      end
-      return nil
-    end
+        user.suppress_activation_email = options[:suppress_activation_email]
+        user.save!
+        user = User.find_by_login(login)
 
-    def generate_for_profile (profile, options=HashWithIndifferentAccess.new)
-      begin
-        ActiveRecord::Base.transaction do
-          login = unused_login(login_stub_for_profile(profile))
-          user = User.new(:login => login,
-                          :email => profile.email,
-                          :password => random_password,
-                          :accepted_tos_at => profile.accept_tos && Time.now || nil,
-                          :state => profile.state
-          )
-          # Authable#make_password_reset_code is protected and that's probably not
-          # a bad thing. This, however is a kludge. FIXME.
-          user.send(:make_password_reset_code)
-
-          user.suppress_activation_email = options[:suppress_activation_email]
-          user.save!
-          user = User.find_by_login(login)
-
-          attributes = profile.attributes_hash.slice(:first_name, :last_name, :mobile_phone, :street_address, :street_address_2, :city, :zipcode, :zip_four)
-          if user.user_profile.id.nil?
-            uprof = UserProfile.new(attributes)
-            uprof.user = user
-            uprof.save!
-          else
-            user.user_profile.update_attributes(attributes)
-          end
-
-          return user
-        end
-      rescue ActiveRecord::RecordInvalid => e
-        if e.record.errors[:login].include?('has already been taken')
-          retry
+        attributes = profile.attributes_hash.slice(:first_name, :last_name, :mobile_phone, :street_address, :street_address_2, :city, :zipcode, :zip_four)
+        if user.user_profile.id.nil?
+          uprof = UserProfile.new(attributes)
+          uprof.user = user
+          uprof.save!
         else
-          raise
+          user.user_profile.update_attributes(attributes)
         end
+
+        return user
       end
+    rescue ActiveRecord::RecordInvalid => e
+      e.record.errors[:login].include?('has already been taken') ? retry : raise
     end
+  end
 
-    def highest_rated_commenters
-      cs = CommentScore.calculate(:count, :score, :include => "comment", :group => "comments.user_id", :order => "count_score DESC").collect {|p| p[1] > 3 && p[0] != nil ? p[0] : nil}.compact
-      CommentScore.calculate(:avg, :score, :include => "comment", :group => "comments.user_id", :conditions => ["comments.user_id in (?)", cs], :order => "avg_score DESC").each do |k|
-        puts "#{User.find_by_id(k[0]).login} - Average Rating: #{k[1]}"
-      end
+  def self.highest_rated_commenters
+    cs = CommentScore.calculate(:count, :score, :include => "comment", :group => "comments.user_id", :order => "count_score DESC").collect {|p| p[1] > 3 && p[0] != nil ? p[0] : nil}.compact
+    CommentScore.calculate(:avg, :score, :include => "comment", :group => "comments.user_id", :conditions => ["comments.user_id in (?)", cs], :order => "avg_score DESC").each do |k|
+      puts "#{User.find_by_id(k[0]).login} - Average Rating: #{k[1]}"
     end
+  end
 
-    def find_all_by_ip(address)
-      ip = UserIpAddress.int_form(address)
-      self.find(:all, :include => [:user_ip_addresses], :conditions => ["user_ip_addresses.addr = ?", ip])
-    end
+  def self.find_all_by_ip(address)
+    ip = UserIpAddress.int_form(address)
+    return self.includes(:user_ip_addresses).where('user_ip_addresses.addr = ?', ip)
+  end
 
-    def find_by_feed_key_option(key)
-      self.includes(:user_options).where("user_options.feed_key = ?", key).first
-    end
-
-  end # class << self
+  def self.find_by_feed_key_option(key)
+    self.includes(:user_options).where("user_options.feed_key = ?", key).first
+  end
 
   #========== INSTANCE METHODS
   public
+
+  def get_unseen_notifications
+    Notification.where(user_id:id, seen:0)
+  end
 
   def is_admin?
     return user_role.can_administer_users

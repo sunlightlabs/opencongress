@@ -50,6 +50,12 @@ class Bookmark < OpenCongressModel
   # NOTE: Comments belong to a user
   belongs_to :user
 
+  # Gets all user notifications for
+  def get_all_user_notifications(seen=0)
+    types = bookmarkable_type.constantize.class_variable_get(:@@NOTIFICATION_MODELS).map{|i| i.to_s.classify}
+    Notification.where(user_id:user_id,notifying_object_type:types,seen:seen)
+  end
+
   # Find all bookmarks for a given user
   #
   # @param user [User] the user model to find all bookmarks for

@@ -9,8 +9,11 @@
 #
 
 require 'united_states'
+require_dependency 'notifying_object'
 
 class RollCallVote < OpenCongressModel
+
+  include NotifyingObject
 
   #========== CLASS VARIABLES
 
@@ -53,6 +56,10 @@ class RollCallVote < OpenCongressModel
   scope :nays, -> { where('vote IN(?)', NEGATIVE_VALUES) }
   scope :presents, -> { where('vote IN(?)', PRESENT_VALUES) }
   scope :abstains, -> { where('vote IN(?)', ABSTAIN_VALUES) }
+
+  #==========
+
+  attr_accessible :vote, :roll_call_id, :person_id
 
   #========== CLASS METHODS
 

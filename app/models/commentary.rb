@@ -22,7 +22,10 @@
 #  commentariable_type :string(255)
 #
 
-class Commentary < OpenCongressModel                              
+class Commentary < OpenCongressModel
+
+  include NotifyingObject
+
   require 'htmlentities'
   belongs_to :commentariable, :polymorphic => true
   
@@ -31,7 +34,9 @@ class Commentary < OpenCongressModel
 #  acts_as_solr :fields => [:title,:excerpt,{:date => :date},:type_f,{:commentariable_id => :range_integer}, {:is_ok => :boolean}, {:commentariable_type => :string},
 #                          {:is_news => :boolean}, :is_ok_f, :is_news_f], 
 #               :facets => [:type_f, :is_ok_f, :is_news_f], :auto_commit => false
-  
+
+
+
   cattr_reader :per_page
   @@per_page = 30
 

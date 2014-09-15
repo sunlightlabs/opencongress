@@ -56,11 +56,6 @@ class Person < Bookmarkable
 
   include ViewableObject
 
-  #========== CALLBACKS
-
-  before_update :set_party
-  before_save :set_unaccented_name
-
   #========== CLASS VARIABLES
 
   @@DISPLAY_OBJECT_NAME = 'Person'
@@ -72,6 +67,12 @@ class Person < Bookmarkable
   SERIALIZATION_OPS = {:methods =>
                            [:oc_user_comments, :oc_users_tracking],
                        :include => [:recent_news, :recent_blogs]}.freeze
+
+  #========== CALLBACKS
+
+  before_update :set_party
+  before_save :set_unaccented_name
+  triggers_notifications :roll_call_votes, :commentary, :bill_cosponsors
 
   #========== RELATIONS
 
@@ -92,6 +93,8 @@ class Person < Bookmarkable
            :class_name => 'Bill', :through => :bill_cosponsors, :source => :bill
   has_many :roles, -> { order('roles.startdate DESC') }
   has_many :roll_call_votes, -> { includes(:roll_call).order('roll_calls.date DESC') }
+  has_many :commentary,
+           :as => :commentariable
   has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC, commentaries.id DESC') },
            :as => :commentariable, :class_name => 'Commentary'
   has_many :blogs, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='f'").order('commentaries.date DESC, commentaries.id DESC') },

@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   include UrlHelper
 
   # around_filter :maintenance
-  before_filter :create_session_mutex
+
   before_filter :require_utf8_params
   before_filter :facebook_check
   before_filter :clear_return_to
@@ -66,10 +66,6 @@ class ApplicationController < ActionController::Base
     rescue InvalidByteSequenceErrorFromParams
       return render_404
     end
-  end
-
-  def create_session_mutex
-    session[:save_mutex] = Mutex.new unless session[:save_mutex].present?
   end
 
   ##

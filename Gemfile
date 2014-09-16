@@ -48,7 +48,8 @@ gem 'delayed_job'#, '~> 3.1'
 
 # RMagick
 gem 'rmagick', '~> 2.13.1', :require => "RMagick"
-gem "galetahub-simple_captcha", '0.1.3', :require => "simple_captcha"
+gem 'simple_captcha2', require: 'simple_captcha'
+#gem "galetahub-simple_captcha", '0.1.3', :require => "simple_captcha"
 
 # Image uploads
 gem 'carrierwave'

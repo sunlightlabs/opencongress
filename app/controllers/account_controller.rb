@@ -206,7 +206,6 @@ class AccountController < ApplicationController
       return
     end
 
-
     # first see if we recognize the email address
     @existing_user = User.where(["UPPER(email)=?", thread.sender_email.upcase]).first
     unless @existing_user

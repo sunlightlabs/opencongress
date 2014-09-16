@@ -6792,6 +6792,14 @@ ALTER TABLE ONLY twitter_configs
 
 
 --
+-- Name: unique_email; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT unique_email UNIQUE (email);
+
+
+--
 -- Name: upcoming_bills_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -7097,6 +7105,13 @@ CREATE INDEX friend_emails_created_at_index ON friend_emails USING btree (create
 --
 
 CREATE INDEX friend_emails_ip_address_index ON friend_emails USING btree (ip_address);
+
+
+--
+-- Name: idx_key; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX idx_key ON simple_captcha_data USING btree (key);
 
 
 --
@@ -8410,4 +8425,8 @@ INSERT INTO schema_migrations (version) VALUES ('20140911165000');
 INSERT INTO schema_migrations (version) VALUES ('20140911172552');
 
 INSERT INTO schema_migrations (version) VALUES ('20140911215027');
+
+INSERT INTO schema_migrations (version) VALUES ('20140916103555');
+
+INSERT INTO schema_migrations (version) VALUES ('20140916113742');
 

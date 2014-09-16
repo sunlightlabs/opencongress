@@ -57,6 +57,7 @@ class UserNotifier < ActionMailer::Base
     @from        = "\"OpenCongress Login\" <accounts@opencongress.org>"
     @subject     = ""
     @sent_on     = Time.now
+    @body = Hash.new if @body.nil?
     @body[:user] = user
   end
 end

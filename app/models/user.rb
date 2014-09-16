@@ -338,6 +338,13 @@ class User < OpenCongressModel
   #========== INSTANCE METHODS
   public
 
+  def update_login_metadate(ip_addr)
+    update_attribute(:previous_login_date, last_login ? last_login : Time.now)
+    update_attribute(:last_login, Time.now)
+    user_ip_addresses.where(addr:UserIpAddress.int_form(ip_addr)).first_or_create
+  end
+
+
   def get_unseen_notifications
     Notification.where(user_id:id, seen:0)
   end

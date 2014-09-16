@@ -8,9 +8,8 @@ module EmailListable
       after_save Proc.new{
         obj = (user_ref == :self) ? self : send(user_ref)
         EmailSubscriptionUpdatedService.new(obj)
-      }, :if => Proc.new{
-        props.map{|p| return true if send(:"#{p}_changed?") }.compact.any?
-      }
+      }, :if => Proc.new{ props.each{|p| next true if send(:"#{p}_changed?") } }
     end
   end
+
 end

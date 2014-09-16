@@ -17,7 +17,7 @@ class LocationChangedService
     UserProfile.skip_callback(:save, :after, :change_location!)
 
     @user = user
-    @user.update_attribute(:district, nil)
+    @user.district = nil
     @user.district_needs_update = true
 
     # Get possible district and state for this user

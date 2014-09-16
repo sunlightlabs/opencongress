@@ -22,31 +22,27 @@ module Authable
     before_save   :encrypt_password
 
     scope :unconfirmed, -> { where(status: STATUSES[:unconfirmed]) }
-    scope :authorized, -> { where(status: "status > 0 and status < #{STATUSES[:deleted]}") }
+    scope :authorized, -> { where("status > 0 and status < #{STATUSES[:deleted]}") }
     scope :banned, -> { where(status: STATUSES[:banned]) }
     scope :deleted, -> { where(status: STATUSES[:deleted]) }
   end
 
   module ClassMethods
-    # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
+
+    # Authenticates a user by their login name and unecrypted password.
+    #
+    # @param login [String] user's login or email
+    # @param password [String] user's raw password
     def authenticate(login, password)
-      if login.match(/^[\w\-_+\.]+@[\w\-_\.]+$/).nil?
-        # got a normal username
-        u = User.authorized.where(["lower(login) = ?", login.downcase]).first
-      else
-        # got an email address
-        u = User.authorized.where(["lower(email) = ?", login.downcase]).first
-      end
-      if u && u.authenticated?(password)
-        # u.update_attribute(:previous_login_date, u.last_login ? u.last_login : Time.now)
-        # u.update_attribute(:last_login, Time.now)
-        u
-      else
-        nil
-      end
+      param = login.match(/^[\w\-_+\.]+@[\w\-_\.]+$/) ? 'email' : 'login'
+      u = User.authorized.where(["lower(#{param}) = ?", login.downcase]).first
+      return u && u.authenticated?(password) ? u : nil
     end
 
-    # Encrypts some data with the salt.
+    # Encrypts data with the salt.
+    #
+    # @param password [String] the password to encrypt
+    # @param salt [String] salt to encrypt password with
     def encrypt(password, salt)
       Digest::SHA1.hexdigest("--#{salt}--#{password}--")
     end
@@ -61,7 +57,6 @@ module Authable
     :deleted => 5,
     :banned => 6
   }
-
 
   def status_display
     STATUSES.invert[status].to_s

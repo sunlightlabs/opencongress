@@ -61,6 +61,7 @@ class AccountController < ApplicationController
   end
 
   def login
+
     if params[:login_action]
       if params[:login_action].is_a?(Hash)
         session[:login_action] = params[:login_action].clone
@@ -98,20 +99,20 @@ class AccountController < ApplicationController
     end
 
     if logged_in?
-      self.current_user.update_attribute(:previous_login_date, self.current_user.last_login ? self.current_user.last_login : Time.now)
-      self.current_user.update_attribute(:last_login, Time.now)
-      self.current_user.user_ip_addresses.find_or_create_by_addr(UserIpAddress.int_form(request.remote_ip))
       process_login_actions
-      cookies[:ocloggedin]="true"
-      if params[:remember_me] == "1"
+      cookies[:ocloggedin] = 'true'
+
+      if params[:remember_me] == '1'
         self.current_user.remember_me
         cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
       end
-      if self.current_user.fans.find(:first, :conditions => ["confirmed = ? AND created_at > ?", false, self.current_user.previous_login_date])
+
+      if self.current_user.fans.where('confirmed = ? AND created_at > ?', false, self.current_user.previous_login_date).first
         flash[:notice] = %Q[Logged in * <a href="#{url_for(:controller => 'friends', :login => self.current_user.login)}">New Friends Requests!</a> *]
       else
-        flash[:notice] = "Logged in successfully"
+        flash[:notice] = 'Logged in successfully'
       end
+
       redirect_back_or_default(user_profile_url(current_user.login), :uncacheable => true)
     else
       flash.now[:warning] = "Login failed"
@@ -288,7 +289,7 @@ class AccountController < ApplicationController
 
   def confirm
     @page_title = 'Confirm Your Email Address'
-    @user = User.find_by_login(params[:login], :conditions => ["activated_at is null"])
+    @user = User.where(login:params[:login],activated_at:nil).first
     @contact_congress_signup = session[:formageddon_unsent_threads].nil? ? false : true
 
     render_404 if @user.nil?
@@ -305,15 +306,9 @@ class AccountController < ApplicationController
                                                         wiki_uri.host)}"
     if cookie_domain
       cookies['PHPSESSID'] = {:value => '', :path => '/', :expires => Time.at(0), :domain => cookie_domain }
-
-      suffixes = ['wikiToken', 'wiki_session', 'wikiUserID', 'wikiUserName']
+      suffixes = %w( wikiToken wiki_session wikiUserID wikiUserName )
       suffix_pattern = Regexp.new("(#{suffixes.join('|')})$")
-      bye_bye_list = cookies.keys.select do |k|
-        not suffix_pattern.match(k).nil?
-      end
-      bye_bye_list.each do |k|
-        cookies.delete k, {:domain => cookie_domain}
-      end
+      cookies.each {|k,v| cookies.delete(k, {:domain => cookie_domain}) unless suffix_pattern.match(k).nil? }
     end
 
     # force hard delete of the facebook cookie
@@ -324,9 +319,11 @@ class AccountController < ApplicationController
     if params[:wiki_return_page]
       return redirect_to("#{wiki_base_url}/#{params[:wiki_return_page]}")
     end
+
     if params[:next]
       return redirect_to(params[:next])
     end
+
     flash[:notice] = "You have been logged out."
 
     redirect_to :controller => 'index'
@@ -637,6 +634,9 @@ class AccountController < ApplicationController
   end
 
   def process_login_actions
+
+    current_user.update_login_metadate(request.remote_ip)
+
     if session[:login_action] && session[:login_action][:url]
       if ['support_bill', 'oppose_bill'].include?(session[:login_action][:action])
         if session[:login_action][:bill]

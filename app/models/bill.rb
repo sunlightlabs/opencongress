@@ -155,6 +155,7 @@ class Bill < Bookmarkable
   has_many :contact_congress_letters,
            :as => :contactable
 
+
   with_options :class_name => 'Commentary' do |c|
     c.has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC, commentaries.id DESC') },
                :as => :commentariable
@@ -176,6 +177,7 @@ class Bill < Bookmarkable
   #========== ALIASES
 
   alias :blog :blogs
+  alias :bill_actions :actions
 
   #========== ACCESSORS
 

@@ -11,6 +11,8 @@
 
 class BillCosponsor < OpenCongressModel
 
+  include NotifyingObject
+
   self.table_name = :bills_cosponsors
 
   belongs_to :person  

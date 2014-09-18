@@ -2,6 +2,7 @@ module NotifyingObject
   extend ActiveSupport::Concern
 
   included do
+    class_attribute :bookmarkable_models
     has_many :notifications, :as => :notifying_object
   end
 

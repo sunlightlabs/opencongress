@@ -3,12 +3,13 @@ class Bookmarkable < OpenCongressModel
   #========== MODEL ATTRIBUTES
 
   self.abstract_class = true
+  class_attribute :notification_models
 
   #========== RELATIONS
 
   #----- HAS_MANY
 
-  has_many :bookmarks, :dependent => :destroy
+  has_many :bookmarks, :dependent => :destroy, :as => :bookmarkable
 
   #========== CLASS METHODS
 
@@ -18,8 +19,21 @@ class Bookmarkable < OpenCongressModel
   # @param *relations [Array<Symbol>] symbols for models that trigger notifications
   # @return void
   def self.triggers_notifications(*relations)
-    self.class_variable_set(:@@NOTIFICATION_MODELS, relations)
+    self.notification_models = relations
     bkm_sym = self.name.underscore.to_sym
+
+    self.class_eval do
+      def notifications
+        puts self.notification_models
+      end
+
+      def notification_objects
+        [] << self.notification_models.collect{|r|
+          self.method(r).call
+        }
+      end
+    end
+
     relations.each{|r|
       begin
         r_class = r.to_s.classify.constantize
@@ -28,18 +42,20 @@ class Bookmarkable < OpenCongressModel
 
             after_create :create_notifications
 
-            class_variable_set(:@@BOOKMARKABLE_MODEL, bkm_sym)
+            self.bookmarkable_models = (self.bookmarkable_models || [bkm_sym]) + [bkm_sym]
 
             def create_notifications
-              bkm_sym = self.class.class_variable_get(:@@BOOKMARKABLE_MODEL)
-              bookmarkable = self.method(bkm_sym).call
-              bookmarks = Bookmark.where(bookmarkable_type: bkm_sym.to_s.classify, bookmarkable_id: bookmarkable.id)
-              bookmarks.each{|bm|
-                Notification.create(notifying_object_id:self.id,
-                                    notifying_object_type:self.class.to_s,
-                                    user_id:bm.user_id,
-                                    seen: 0)
-              }
+              bkm_syms = self.bookmarkable_models
+              bkm_syms.each do |sym|
+                bookmarkable = self.method(sym).call
+                bookmarks = Bookmark.where(bookmarkable_type: sym.to_s.classify, bookmarkable_id: bookmarkable.id)
+                bookmarks.each{|bm|
+                  Notification.create(notifying_object_id:self.id,
+                                      notifying_object_type:self.class.to_s,
+                                      user_id:bm.user_id,
+                                      seen: 0)
+                }
+              end
             end
 
           end

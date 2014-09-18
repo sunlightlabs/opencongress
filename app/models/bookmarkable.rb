@@ -23,20 +23,40 @@ class Bookmarkable < OpenCongressModel
     bkm_sym = self.name.underscore.to_sym
 
     self.class_eval do
-      def notifications
-        puts self.notification_models
+
+      # Retrieves all notifying_objects for this bookmarkable instance
+      #
+      # @return [Array<Object>] aggregated array of all notifying_objects
+      def notifying_objects
+        ([] << self.notification_models.collect{|r| self.method(r).call }).flatten
       end
 
-      def notification_objects
-        [] << self.notification_models.collect{|r|
-          self.method(r).call
+      def notifications
+        query_params = notifying_objects.collect{|o|
+          {notifying_object_id:o.id, notifying_object_type: o.class.name}
         }
+        # TODO fix n+1 problem
+        return ([] << query_params.collect{|args| Notification.where(args) })
       end
+
     end
 
     relations.each{|r|
       begin
-        r_class = r.to_s.classify.constantize
+
+        ap(r)
+        reflection = reflect_on_association(r)
+        ap(reflection)
+        if reflection
+          begin
+            r_class = r.to_s.classify.constantize
+          rescue NameError => e
+            r_class = reflection.options[:class_name].constantize
+          end
+        else
+          r_class = r.to_s.classify.constantize
+        end
+
         if r_class.include?(NotifyingObject)
           r_class.class_eval do # new self scope
 

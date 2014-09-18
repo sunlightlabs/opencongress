@@ -434,6 +434,7 @@ class BillController < ApplicationController
     @meta_description = "Full bill text of #{@bill.title_full_common} on OpenCongress.org"
 
     @versions = @bill.bill_text_versions.all
+   
     if @versions.empty?
       return missing_text
     end
@@ -444,7 +445,6 @@ class BillController < ApplicationController
       logger.warn("Failed to provide bill text for #{@bill.ident}. Reason: #{e}")
       return missing_text
     end
-
     if params[:version]
       @selected_version = @versions.select{ |v| v.version == params[:version] }.first
     else
@@ -454,7 +454,6 @@ class BillController < ApplicationController
     @page_title = "Text of #{@bill.typenumber} as #{@selected_version.pretty_version}"
     @commented_nodes = @selected_version.bill_text_nodes.includes(:comments)
     @top_nodes = @selected_version.top_comment_nodes
-
     begin
       # open html from file
       if !@selected_version.nil?

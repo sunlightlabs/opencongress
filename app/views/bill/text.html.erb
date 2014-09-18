@@ -8,20 +8,21 @@
 </div>
 
 <script type='text/javascript'>
-  Event.observe(window, 'load', function() {
+  $j(document).ready(function(){
     <% @commented_nodes.each do |n| %>
       <% if n.comments.size > 0 %>
-        BillText.setCommentsForNode(<%= @selected_version.id %>, '<%= n.nid %>', <%= n.comments.size %>)
+        // BillText.setCommentsForNode(<%= @selected_version.id %>, '<%= n.nid %>', <%= n.comments.size %>)
       <% end %>
     <% end %>
-    
-    $('bill_text_loading').hide();
-    $('bill_text').show();
-    
+
+    $j('#bill_text_loading').hide();
+    $j('#bill_text').show();
+
     <% if @nid %>
       BillText.highlightNode('<%= @nid %>');
     <% end %>
-  });
+  })
+ 
 </script>
 
 
@@ -105,17 +106,17 @@
 
 
 <% unless @top_nodes.empty? %>
-<div id="most_commented">
-  <p>Most commented sections:</p>
-  <ul>
-    <% @top_nodes.each do |n| %>
-      <li>
-        <a href="#" onClick="BillText.highlightNode('<%= n.nid %>'); return false;">
-          Paragraph <%= number_with_delimiter(n.paragraph_number) %> (<%= n.comment_count %> comments)
-        </a>
-      </li>
-    <% end %>
-  </ul>
+  <div id="most_commented">
+    <p>Most commented sections:</p>
+    <ul>
+      <% @top_nodes.each do |n| %>
+        <li>
+          <a href="#" onClick="BillText.highlightNode('<%= n.nid %>'); return false;">
+            Paragraph <%= number_with_delimiter(n.paragraph_number) %> (<%= n.comment_count %> comments)
+          </a>
+        </li>
+      <% end %>
+    </ul>
   </div>
 <% end %>
 

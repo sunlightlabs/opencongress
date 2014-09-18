@@ -47,6 +47,7 @@ class Bill < Bookmarkable
   #========== INCLUDES
 
   include ViewableObject
+  include NotifyingObject
 
   #========== CLASS VARIABLES
 
@@ -94,7 +95,6 @@ class Bill < Bookmarkable
 
   before_save :update_bill_fulltext_search_table
   after_save -> { @bill_text = nil }
-  triggers_notifications :bill_actions, :commentary
 
   #========== RELATIONS
 
@@ -155,7 +155,6 @@ class Bill < Bookmarkable
   has_many :contact_congress_letters,
            :as => :contactable
 
-
   with_options :class_name => 'Commentary' do |c|
     c.has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC, commentaries.id DESC') },
                :as => :commentariable
@@ -174,10 +173,16 @@ class Bill < Bookmarkable
   belongs_to :key_vote_category,
              :class_name => "PvsCategory", :foreign_key => :key_vote_category_id
 
+  #-----
+
+
+
   #========== ALIASES
 
   alias :blog :blogs
   alias :bill_actions :actions
+
+  triggers_notifications :actions, :news
 
   #========== ACCESSORS
 

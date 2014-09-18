@@ -29,14 +29,12 @@ class Bookmark < OpenCongressModel
   #  b.belongs_to :committee
   # end
   begin
-    # insure all models have been touched so Bookmarkable has all descendants
-    Dir[Rails.root.join('app/models/*.rb').to_s].each{|path| File.basename(path, '.rb').camelize.constantize }
     # applies dynamic methods and relationships to Bookmark
     Bookmarkable.descendants.each{|model|
       model_str = model.name.downcase
       scope model_str.pluralize.to_sym, -> { includes(model_str.to_sym).where(:bookmarkable_type => model_str.capitalize) }
       with_options :foreign_key => 'bookmarkable_id' do |b|
-        if model_str.to_sym == :person then scope = -> { includes :roles } end
+        scope = -> { includes :roles } if model_str.to_sym == :person
         b.belongs_to(model_str.to_sym, scope || nil)
       end
     }
@@ -50,10 +48,15 @@ class Bookmark < OpenCongressModel
   # NOTE: Comments belong to a user
   belongs_to :user
 
-  # Gets all user notifications for
-  def get_all_user_notifications(seen=0)
-    types = bookmarkable_type.constantize.class_variable_get(:@@NOTIFICATION_MODELS).map{|i| i.to_s.classify}
-    Notification.where(user_id:user_id,notifying_object_type:types,seen:seen)
+  # Get all notifications for this bookmark
+  #
+  # @param seen [Integer] 0 for unseen, 1 for seen, nil for all
+  # @return [Relation<Notification>] notifications for the user associated with this bookmark
+  def notifications(seen=nil)
+    types = bookmarkable_type.constantize.notification_models.map{|i| i.to_s.classify}
+    query_params = {user_id:user_id,notifying_object_type:types}
+    query_params[:seen] = seen if seen.present?
+    Notification.where(query_params)
   end
 
   # Find all bookmarks for a given user

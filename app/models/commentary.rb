@@ -24,8 +24,6 @@
 
 class Commentary < OpenCongressModel
 
-  include NotifyingObject
-
   require 'htmlentities'
   belongs_to :commentariable, :polymorphic => true
   

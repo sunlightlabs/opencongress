@@ -47,7 +47,6 @@ class Bill < Bookmarkable
   #========== INCLUDES
 
   include ViewableObject
-  include NotifyingObject
 
   #========== CLASS VARIABLES
 

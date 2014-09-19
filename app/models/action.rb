@@ -26,7 +26,6 @@ require_dependency 'notifying_object'
 
 class Action < OpenCongressModel
   include Comparable
-  include NotifyingObject
  
   validates_presence_of :type
 

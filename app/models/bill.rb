@@ -1409,7 +1409,7 @@ class Bill < Bookmarkable
     bill_titles.select { |t| t.is_default == true }.first
   end
 
-  def self.chain_text_versions (versions)
+  def self.chain_text_versions(versions)
     chain = []
     current_versions = [nil]
     while versions.present? do

@@ -19,7 +19,7 @@ class BillTextNode < OpenCongressModel
   end
 
   def ident
-   "#{self.bill_text_version_id}-#{self.nid}"
+    "#{self.bill_text_version_id}-#{self.nid}"
   end
 
   def paragraph_number

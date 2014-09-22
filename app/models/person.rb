@@ -72,6 +72,7 @@ class Person < Bookmarkable
 
   before_update :set_party
   before_save :set_unaccented_name
+  triggers_notifications :roll_call_votes, :commentary, :bills_cosponsored
 
   #========== RELATIONS
 
@@ -121,7 +122,6 @@ class Person < Bookmarkable
   end
 
   acts_as_formageddon_recipient # contains has_many relationships
-  triggers_notifications :roll_call_votes, :commentary, :bills_cosponsored
 
   #========== SCOPES
 

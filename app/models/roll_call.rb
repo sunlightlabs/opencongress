@@ -239,7 +239,7 @@ class RollCall < OpenCongressModel
   end
 
   def display_title
-    if bill && (not bill.title_common.empty?)
+    if bill.present? && (not bill.title_common.empty?)
       bill.title_official
     elsif not question.nil?
       question

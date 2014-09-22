@@ -28,17 +28,6 @@ class Bookmark < OpenCongressModel
   #  b.belongs_ito :subject
   #  b.belongs_to :committee
   # end
-  begin
-    # applies dynamic methods and relationships to Bookmark
-    Bookmarkable.descendants.each{|model|
-      model_str = model.name.downcase
-      scope model_str.pluralize.to_sym, -> { includes(model_str.to_sym).where(:bookmarkable_type => model_str.capitalize) }
-      with_options :foreign_key => 'bookmarkable_id' do |b|
-        scope = -> { includes :roles } if model_str.to_sym == :person
-        b.belongs_to(model_str.to_sym, scope || nil)
-      end
-    }
-  end
 
   validates_uniqueness_of :bookmarkable_id, :scope => [:user_id, :bookmarkable_type]
 

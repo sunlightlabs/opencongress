@@ -94,6 +94,7 @@ class Bill < Bookmarkable
 
   before_save :update_bill_fulltext_search_table
   after_save -> { @bill_text = nil }
+  triggers_notifications :actions, :news
 
   #========== RELATIONS
 
@@ -175,13 +176,10 @@ class Bill < Bookmarkable
   #-----
 
 
-
   #========== ALIASES
 
   alias :blog :blogs
-  alias :bill_actions :actions
-
-  triggers_notifications :actions, :news
+  #alias :bill_actions :actions
 
   #========== ACCESSORS
 
@@ -191,12 +189,12 @@ class Bill < Bookmarkable
 
   #========== SCOPES
 
-  scope :for_subject, lambda {|subj| includes(:subjects).where("subjects.term" => subj)}
-  scope :major, where(:is_major => true)
-  scope :recently_acted, joins(:bill_titles, :actions).order("actions.date DESC")
-  scope :for_session, lambda {|sess| where("bills.session = ?", sess)}
-  scope :senate_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 's'}))
-  scope :house_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'}))
+  scope :for_subject, lambda {|subj| includes(:subjects).where('subjects.term' => subj) }
+  scope :major, -> { where(:is_major => true) }
+  scope :recently_acted, -> { joins(:bill_titles, :actions).order('actions.date DESC') }
+  scope :for_session, lambda {|sess| where('bills.session = ?', sess) }
+  scope :senate_bills, -> { where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 's'})) }
+  scope :house_bills, -> { where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'})) }
 
   #========== INSTANCE METHODS
 
@@ -215,39 +213,258 @@ class Bill < Bookmarkable
     return UnitedStates::Bills::ABBREVIATIONS
   end
 
-  class << self
+  def self.govtrack_reverse_lookup(typename)
+    return @@GOVTRACK_TYPE_LOOKUP.invert[typename]
+  end
 
-    def govtrack_reverse_lookup (typename)
-      return @@GOVTRACK_TYPE_LOOKUP.invert[typename]
+  def self.govtrack_lookup(typename)
+    return @@GOVTRACK_TYPE_LOOKUP[typename]
+  end
+
+  def self.available_sessions(relation = Bill.all)
+    return relation.select("DISTINCT session").map(&:session).uniq.sort
+  end
+
+  def self.all_types
+    return UnitedStates::Bills::ABBREVIATIONS
+  end
+
+  def self.all_types_ordered
+    sorted_pairs = UnitedStates::Bills::ABBREVIATIONS.sort_by do |k, v|
+      v.length
     end
+    return Hash[sorted_pairs].keys
+  end
 
-    def govtrack_lookup (typename)
-      return @@GOVTRACK_TYPE_LOOKUP[typename]
-    end
+  def self.in_senate
+    return UnitedStates::Bills::ABBREVIATIONS.keys[4..7]
+  end
 
-    def available_sessions(relation = Bill.all)
-      relation.select("DISTINCT session").map(&:session).uniq.sort
-    end
+  def self.in_house
+    UnitedStates::Bills::ABBREVIATIONS.keys[0..3]
+  end
 
-    def all_types
-      UnitedStates::Bills::ABBREVIATIONS
-    end
+  # return bill actions since last X
+  def self.find_changes_since_for_bills_tracked(current_user)
+    time_since = current_user.previous_login_date || 20.days.ago
+    time_since = 200.days.ago if Rails.env.development?
+    ids = current_user.bill_bookmarks.collect{|p| p.bookmarkable_id}
+    find_by_sql(["select bills.*, total_actions.action_count as actionn_count,
+                        total_blogs.blog_count as blogss_count, total_news.news_count as newss_count,
+                        total_comments.comments_count as commentss_count from bills
+                    LEFT OUTER JOIN (select count(actions.id) as action_count,
+                        actions.bill_id as bill_id_1 FROM actions WHERE
+                        actions.datetime > '#{time_since.to_s(:db)}'
+                        AND actions.bill_id in (#{ids.join(",")})
+                        group by bill_id_1) total_actions ON
+                        total_actions.bill_id_1 = bills.id
+                    LEFT OUTER JOIN (select count(commentaries.id) as blog_count,
+                        commentaries.commentariable_id as bill_id_2 FROM commentaries WHERE
+                        commentaries.commentariable_id IN (#{ids.join(",")}) AND
+                        commentaries.commentariable_type='Bill' AND
+                        commentaries.is_ok = 't' AND commentaries.is_news='f' AND
+                        commentaries.date > '#{time_since.to_s(:db)}'
+                        group by commentaries.commentariable_id)
+                        total_blogs ON total_blogs.bill_id_2 = bills.id
+                    LEFT OUTER JOIN (select count(commentaries.id) as news_count,
+                        commentaries.commentariable_id as bill_id_3 FROM commentaries WHERE
+                        commentaries.commentariable_id IN (#{ids.join(",")}) AND
+                        commentaries.commentariable_type='Bill' AND
+                        commentaries.is_ok = 't' AND commentaries.is_news='t' AND
+                        commentaries.date > '#{time_since.to_s(:db)}'
+                        group by commentaries.commentariable_id)
+                        total_news ON total_news.bill_id_3 = bills.id
+                    LEFT OUTER JOIN (select count(comments.id) as comments_count,
+                        comments.commentable_id as bill_id_4 FROM comments WHERE
+                        comments.created_at > '#{time_since.to_s(:db)}' AND
+                        comments.commentable_id in (#{ids.join(",")}) AND
+                        comments.commentable_type = 'Bill' GROUP BY comments.commentable_id)
+                        total_comments ON total_comments.bill_id_4 = bills.id WHERE bills.id IN (?)", current_user.bill_bookmarks.collect{|p| p.bookmarkable_id}])
+  end
 
-    def all_types_ordered
-      sorted_pairs = UnitedStates::Bills::ABBREVIATIONS.sort_by do |k, v|
-        v.length
+  # return bill actions since last X
+  def self.find_user_data_for_tracked_bill(bill, current_user)
+    time_since = current_user.previous_login_date || 20.days.ago
+    time_since = 200.days.ago if Rails.env.development?
+    find_by_id(bill.id,
+               :select => "bills.*, (select count(actions.id) from actions where actions.datetime > '#{time_since.to_s(:db)}' AND bill_id = #{bill.id} ) as action_count,
+                          (select count(commentaries.id) FROM commentaries
+                               WHERE commentaries.commentariable_id = #{bill.id}
+                                 AND commentaries.commentariable_type='Bill'
+                                 AND commentaries.is_ok = 't'
+                                 AND commentaries.is_news='f'
+                                 AND commentaries.date > '#{time_since.to_s(:db)}') as blog_count,
+                          (select count(commentaries.id) FROM commentaries
+                               WHERE commentaries.commentariable_id = #{bill.id}
+                                  AND commentaries.commentariable_type='Bill'
+                                  AND commentaries.is_ok = 't'
+                                  AND commentaries.is_news='t'
+                                  AND commentaries.date > '#{time_since.to_s(:db)}') as newss_count,
+                          (select count(comments.id) FROM comments
+                               WHERE comments.created_at > '#{time_since.to_s(:db)}'
+                                 AND comments.commentable_type='Bill'
+                                 AND comments.commentable_id = #{bill.id}) as comment_count")
+  end
+
+  def self.find_all_by_most_user_votes_for_range(range, options)
+    range = 30.days.to_i if range.nil?
+    possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
+                       "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
+                       "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
+    order = options[:order] ||= "vote_count_1 desc"
+    search = options[:search]
+    if possible_orders.include?(order)
+
+      limit = options[:limit] ||= 20
+      offset = options[:offset] ||= 0
+      not_null_check = order.split(' ').first
+
+      query = "
+            SELECT
+              bills.*,
+              #{search ? "rank(bill_fulltext.fti_names, ?, 1) as tsearch_rank, " : "" }
+              current_period.vote_count_1  as vote_count_1,
+              current_period.support_count_1 as support_count_1,
+              (total_counted.total_count - total_supported.total_support) as total_support,
+              current_period.current_support_pb as current_support_pb,
+              comments_total.total_comments as total_comments,
+              current_period_book.bookmark_count_1 as bookmark_count_1,
+              previous_period.vote_count_2 as vote_count_2,
+              previous_period.support_count_2 as support_count_2,
+              total_supported.total_support as total_opposed,
+              total_counted.total_count as total_count
+            FROM
+              #{search ? "bill_fulltext," : ""}
+              bills
+            INNER JOIN (
+              select bill_votes.bill_id  as bill_id_1,
+              count(bill_votes.bill_id) as vote_count_1,
+              sum(bill_votes.support) as support_count_1,
+              (count(bill_votes.bill_id) - sum(bill_votes.support)) as current_support_pb
+              FROM bill_votes
+              WHERE created_at > ? group by bill_id_1)
+            current_period ON bills.id = current_period.bill_id_1
+            LEFT OUTER JOIN (
+              select bill_votes.bill_id as bill_id_3,
+              sum(bill_votes.support) as total_support
+              FROM bill_votes
+              GROUP BY bill_votes.bill_id)
+            total_supported ON bills.id = total_supported.bill_id_3
+            LEFT OUTER JOIN (
+              select bill_votes.bill_id as bill_id_4,
+              count(bill_votes.support) as total_count
+              FROM bill_votes
+              GROUP BY bill_votes.bill_id)
+            total_counted ON bills.id = total_counted.bill_id_4
+            LEFT OUTER JOIN (
+              select comments.commentable_id as bill_id_5,
+              count(comments.id) as total_comments
+              FROM comments
+              WHERE created_at > ? AND
+              comments.commentable_type = 'Bill'
+              GROUP BY comments.commentable_id)
+            comments_total ON bills.id = comments_total.bill_id_5
+            LEFT OUTER JOIN (
+              select bill_votes.bill_id as bill_id_2,
+              count(bill_votes.bill_id) as vote_count_2,
+              sum(bill_votes.support) as support_count_2
+              FROM bill_votes
+              WHERE created_at > ? AND
+              created_at <= ?
+              GROUP BY bill_id_2)
+            previous_period ON bills.id = previous_period.bill_id_2
+            LEFT OUTER JOIN (
+              select bookmarks.bookmarkable_id as bill_id_1,
+               count(bookmarks.bookmarkable_id) as bookmark_count_1
+               FROM bookmarks
+                   WHERE created_at > ?
+               GROUP BY bill_id_1)
+            current_period_book ON bills.id = current_period_book.bill_id_1
+            WHERE #{not_null_check} IS NOT NULL
+            #{search ? "AND bill_fulltext.fti_names @@ to_tsquery('english', ?)
+            AND bills.id = bill_fulltext.bill_id" : ""}
+            ORDER BY #{order}
+            LIMIT #{limit}"
+
+      query_params = [range.seconds.ago,range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, range.seconds.ago]
+
+      if search
+        # Plug the search parameters into the query parmaeters
+        query_params.unshift(search)
+        query_params.push(search)
       end
-      Hash[sorted_pairs].keys
-    end
 
-    def in_senate
-      UnitedStates::Bills::ABBREVIATIONS.keys[4..7]
-    end
-
-    def in_house
-      UnitedStates::Bills::ABBREVIATIONS.keys[0..3]
+      Bill.find_by_sql([query, *query_params])
+    else
+      return []
     end
   end
+
+  def self.count_all_by_most_user_votes_for_range(range, options)
+    possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
+                       "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
+                       "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
+    order = options[:order] ||= "vote_count_1 desc"
+    search = options[:search]
+    if possible_orders.include?(order)
+      join_query = ""
+      join_query_bind = []
+      case order.split.first
+        when "bookmark_count_1"
+          join_query = "INNER JOIN (select bookmarks.bookmarkable_id as bill_id
+                   FROM bookmarks
+                  WHERE created_at > ? GROUP BY bookmarkable_id)
+               current_period_book ON bills.id=current_period_book.bill_id"
+          join_query_bind = [range.seconds.ago]
+        when "total_comments"
+          join_query = "INNER JOIN (select comments.commentable_id as bill_id
+                FROM comments
+                   WHERE created_at > ? AND
+                         comments.commentable_type = 'Bill'
+                GROUP BY comments.commentable_id)
+            comments_total ON bills.id=comments_total.bill_id"
+          join_query_bind = [range.seconds.ago]
+      end
+
+      query = "SELECT count(bills.*)
+            FROM
+              #{search ? "bill_fulltext," : ""}
+              bills
+             INNER JOIN (select bill_votes.bill_id
+                 FROM bill_votes WHERE created_at > ?
+                 GROUP BY bill_votes.bill_id) current_period
+             ON bills.id = current_period.bill_id
+             #{join_query}
+      #{search ? "WHERE bill_fulltext.fti_names @@ to_tsquery('english', ?) AND bills.id = bill_fulltext.bill_id" : ""}"
+      query_params = [range.seconds.ago, *join_query_bind]
+
+      if search
+        query_params.push(search)
+      end
+
+      k = Bill.count_by_sql([query, *query_params])
+      return k
+    else
+      return []
+    end
+  end
+
+  # Why are these next two methods in Bill if they just return BillVote stuff?
+  def self.total_votes_last_period(minutes)
+    return BillVote.calculate(:count, :all, :conditions => {:created_at => (Time.new - (minutes*2))..(Time.new - (minutes))})
+  end
+
+  def self.total_votes_this_period(minutes)
+    return BillVote.calculate(:count, :all, :conditions => ["created_at > ?", Time.new - (minutes)])
+  end
+
+  def self.percentage_difference_in_periods(minutes)
+    return (Bill.total_votes_last_period(minutes).to_f) / Bill.total_votes_this_period(minutes).to_f
+  end
+
+
+
+  #========== INSTANCE METHODS
 
   def bill_id
     "#{bill_type}#{number}-#{session}"
@@ -486,227 +703,6 @@ class Bill < Bookmarkable
     self.to_xml(default_options.merge(options))
   end
 
-  class << self
-    # return bill actions since last X
-    def find_changes_since_for_bills_tracked(current_user)
-       time_since = current_user.previous_login_date || 20.days.ago
-       time_since = 200.days.ago if Rails.env.development?
-       ids = current_user.bill_bookmarks.collect{|p| p.bookmarkable_id}
-       find_by_sql(["select bills.*, total_actions.action_count as actionn_count,
-                        total_blogs.blog_count as blogss_count, total_news.news_count as newss_count,
-                        total_comments.comments_count as commentss_count from bills
-                    LEFT OUTER JOIN (select count(actions.id) as action_count,
-                        actions.bill_id as bill_id_1 FROM actions WHERE
-                        actions.datetime > '#{time_since.to_s(:db)}'
-                        AND actions.bill_id in (#{ids.join(",")})
-                        group by bill_id_1) total_actions ON
-                        total_actions.bill_id_1 = bills.id
-                    LEFT OUTER JOIN (select count(commentaries.id) as blog_count,
-                        commentaries.commentariable_id as bill_id_2 FROM commentaries WHERE
-                        commentaries.commentariable_id IN (#{ids.join(",")}) AND
-                        commentaries.commentariable_type='Bill' AND
-                        commentaries.is_ok = 't' AND commentaries.is_news='f' AND
-                        commentaries.date > '#{time_since.to_s(:db)}'
-                        group by commentaries.commentariable_id)
-                        total_blogs ON total_blogs.bill_id_2 = bills.id
-                    LEFT OUTER JOIN (select count(commentaries.id) as news_count,
-                        commentaries.commentariable_id as bill_id_3 FROM commentaries WHERE
-                        commentaries.commentariable_id IN (#{ids.join(",")}) AND
-                        commentaries.commentariable_type='Bill' AND
-                        commentaries.is_ok = 't' AND commentaries.is_news='t' AND
-                        commentaries.date > '#{time_since.to_s(:db)}'
-                        group by commentaries.commentariable_id)
-                        total_news ON total_news.bill_id_3 = bills.id
-                    LEFT OUTER JOIN (select count(comments.id) as comments_count,
-                        comments.commentable_id as bill_id_4 FROM comments WHERE
-                        comments.created_at > '#{time_since.to_s(:db)}' AND
-                        comments.commentable_id in (#{ids.join(",")}) AND
-                        comments.commentable_type = 'Bill' GROUP BY comments.commentable_id)
-                        total_comments ON total_comments.bill_id_4 = bills.id WHERE bills.id IN (?)", current_user.bill_bookmarks.collect{|p| p.bookmarkable_id}])
-    end
-
-    # return bill actions since last X
-    def find_user_data_for_tracked_bill(bill, current_user)
-       time_since = current_user.previous_login_date || 20.days.ago
-       time_since = 200.days.ago if Rails.env.development?
-       find_by_id(bill.id,
-                      :select => "bills.*, (select count(actions.id) from actions where actions.datetime > '#{time_since.to_s(:db)}' AND bill_id = #{bill.id} ) as action_count,
-                          (select count(commentaries.id) FROM commentaries
-                               WHERE commentaries.commentariable_id = #{bill.id}
-                                 AND commentaries.commentariable_type='Bill'
-                                 AND commentaries.is_ok = 't'
-                                 AND commentaries.is_news='f'
-                                 AND commentaries.date > '#{time_since.to_s(:db)}') as blog_count,
-                          (select count(commentaries.id) FROM commentaries
-                               WHERE commentaries.commentariable_id = #{bill.id}
-                                  AND commentaries.commentariable_type='Bill'
-                                  AND commentaries.is_ok = 't'
-                                  AND commentaries.is_news='t'
-                                  AND commentaries.date > '#{time_since.to_s(:db)}') as newss_count,
-                          (select count(comments.id) FROM comments
-                               WHERE comments.created_at > '#{time_since.to_s(:db)}'
-                                 AND comments.commentable_type='Bill'
-                                 AND comments.commentable_id = #{bill.id}) as comment_count")
-    end
-
-    def find_all_by_most_user_votes_for_range(range, options)
-      range = 30.days.to_i if range.nil?
-      possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
-                         "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
-                         "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
-      order = options[:order] ||= "vote_count_1 desc"
-      search = options[:search]
-      if possible_orders.include?(order)
-
-        limit = options[:limit] ||= 20
-        offset = options[:offset] ||= 0
-        not_null_check = order.split(' ').first
-
-        query = "
-            SELECT
-              bills.*,
-              #{search ? "rank(bill_fulltext.fti_names, ?, 1) as tsearch_rank, " : "" }
-              current_period.vote_count_1 as vote_count_1,
-              current_period.support_count_1 as support_count_1,
-              (total_counted.total_count - total_supported.total_support) as total_support,
-              current_period.current_support_pb as current_support_pb,
-              comments_total.total_comments as total_comments,
-              current_period_book.bookmark_count_1 as bookmark_count_1,
-              previous_period.vote_count_2 as vote_count_2,
-              previous_period.support_count_2 as support_count_2,
-              total_supported.total_support as total_opposed,
-              total_counted.total_count as total_count
-            FROM
-              #{search ? "bill_fulltext," : ""}
-              bills
-            INNER JOIN (
-              select bill_votes.bill_id  as bill_id_1,
-              count(bill_votes.bill_id) as vote_count_1,
-              sum(bill_votes.support) as support_count_1,
-              (count(bill_votes.bill_id) - sum(bill_votes.support)) as current_support_pb
-              FROM bill_votes
-              WHERE created_at > ? group by bill_id_1)
-            current_period ON bills.id = current_period.bill_id_1
-            LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_3,
-              sum(bill_votes.support) as total_support
-              FROM bill_votes
-              GROUP BY bill_votes.bill_id)
-            total_supported ON bills.id = total_supported.bill_id_3
-            LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_4,
-              count(bill_votes.support) as total_count
-              FROM bill_votes
-              GROUP BY bill_votes.bill_id)
-            total_counted ON bills.id = total_counted.bill_id_4
-            LEFT OUTER JOIN (
-              select comments.commentable_id as bill_id_5,
-              count(comments.id) as total_comments
-              FROM comments
-              WHERE created_at > ? AND
-              comments.commentable_type = 'Bill'
-              GROUP BY comments.commentable_id)
-            comments_total ON bills.id = comments_total.bill_id_5
-            LEFT OUTER JOIN (
-              select bill_votes.bill_id as bill_id_2,
-              count(bill_votes.bill_id) as vote_count_2,
-              sum(bill_votes.support) as support_count_2
-              FROM bill_votes
-              WHERE created_at > ? AND
-              created_at <= ?
-              GROUP BY bill_id_2)
-            previous_period ON bills.id = previous_period.bill_id_2
-            LEFT OUTER JOIN (
-              select bookmarks.bookmarkable_id as bill_id_1,
-               count(bookmarks.bookmarkable_id) as bookmark_count_1
-               FROM bookmarks
-                   WHERE created_at > ?
-               GROUP BY bill_id_1)
-            current_period_book ON bills.id = current_period_book.bill_id_1
-            WHERE #{not_null_check} IS NOT NULL
-            #{search ? "AND bill_fulltext.fti_names @@ to_tsquery('english', ?)
-            AND bills.id = bill_fulltext.bill_id" : ""}
-            ORDER BY #{order}
-            LIMIT #{limit}"
-
-        query_params = [range.seconds.ago,range.seconds.ago, (range*2).seconds.ago, range.seconds.ago, range.seconds.ago]
-
-        if search
-          # Plug the search parameters into the query parmaeters
-          query_params.unshift(search)
-          query_params.push(search)
-        end
-
-        Bill.find_by_sql([query, *query_params])
-      else
-        return []
-      end
-    end
-
-    def count_all_by_most_user_votes_for_range(range, options)
-      possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
-                         "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
-                         "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
-      order = options[:order] ||= "vote_count_1 desc"
-      search = options[:search]
-      if possible_orders.include?(order)
-        join_query = ""
-        join_query_bind = []
-        case order.split.first
-          when "bookmark_count_1"
-            join_query = "INNER JOIN (select bookmarks.bookmarkable_id as bill_id
-                   FROM bookmarks
-                  WHERE created_at > ? GROUP BY bookmarkable_id)
-               current_period_book ON bills.id=current_period_book.bill_id"
-            join_query_bind = [range.seconds.ago]
-          when "total_comments"
-            join_query = "INNER JOIN (select comments.commentable_id as bill_id
-                FROM comments
-                   WHERE created_at > ? AND
-                         comments.commentable_type = 'Bill'
-                GROUP BY comments.commentable_id)
-            comments_total ON bills.id=comments_total.bill_id"
-            join_query_bind = [range.seconds.ago]
-        end
-
-        query = "SELECT count(bills.*)
-            FROM
-              #{search ? "bill_fulltext," : ""}
-              bills
-             INNER JOIN (select bill_votes.bill_id
-                 FROM bill_votes WHERE created_at > ?
-                 GROUP BY bill_votes.bill_id) current_period
-             ON bills.id = current_period.bill_id
-             #{join_query}
-            #{search ? "WHERE bill_fulltext.fti_names @@ to_tsquery('english', ?) AND bills.id = bill_fulltext.bill_id" : ""}"
-        query_params = [range.seconds.ago, *join_query_bind]
-
-        if search
-          query_params.push(search)
-        end
-
-        k = Bill.count_by_sql([query, *query_params])
-        return k
-      else
-        return []
-      end
-    end
-
-    # Why are these next two methods in Bill if they just return BillVote stuff?
-    def total_votes_last_period(minutes)
-      return BillVote.calculate(:count, :all, :conditions => {:created_at => (Time.new - (minutes*2))..(Time.new - (minutes))})
-    end
-
-    def total_votes_this_period(minutes)
-      return BillVote.calculate(:count, :all, :conditions => ["created_at > ?", Time.new - (minutes)])
-    end
-
-    def percentage_difference_in_periods(minutes)
-      return (Bill.total_votes_last_period(minutes).to_f) / Bill.total_votes_this_period(minutes).to_f
-    end
-
-  end # << self
-
   def adjusted_votes_this_period(total,this_period,minutes)
     return this_period.to_f * total.to_f
   end
@@ -737,84 +733,82 @@ class Bill < Bookmarkable
     end
   end
 
-  class << self
-    def find_by_ident(ident_string, find_options = {})
-      bill_type, number, session = Bill.ident ident_string
-      Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, find_options)
-    end
+  def self.find_by_ident(ident_string, find_options = {})
+    bill_type, number, session = Bill.ident ident_string
+    Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, find_options)
+  end
 
-    def find_all_by_ident(ident_array, find_options = {})
-      the_bill_conditions = []
-      the_bill_params = {}
-      limit = find_options[:limit] != 20
-      round = 1
-      ident_array.each do |ia|
-        bill_type, number, session = Bill.ident ia
-        the_bill_conditions << "(session = :session#{round} AND bill_type = :bill_type#{round} AND number = :number#{round})"
-        the_bill_params.merge!({"session#{round}".to_sym => session, "bill_type#{round}".to_sym => bill_type, "number#{round}".to_sym => number})
-        round = round + 1
+  def self.find_all_by_ident(ident_array, find_options = {})
+    the_bill_conditions = []
+    the_bill_params = {}
+    limit = find_options[:limit] != 20
+    round = 1
+    ident_array.each do |ia|
+      bill_type, number, session = Bill.ident ia
+      the_bill_conditions << "(session = :session#{round} AND bill_type = :bill_type#{round} AND number = :number#{round})"
+      the_bill_params.merge!({"session#{round}".to_sym => session, "bill_type#{round}".to_sym => bill_type, "number#{round}".to_sym => number})
+      round = round + 1
+    end
+    Bill.find(:all, :conditions => ["#{the_bill_conditions.join(' OR ')}", the_bill_params], :limit => find_options[:limit])
+#    Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, find_options)
+  end
+
+  def self.long_type_to_short(type)
+    raise RuntimeError, "long_type_to_short must be killed!"
+  end
+
+  def self.session_from_date(date)
+    session_a = OpenCongress::Application::CONGRESS_START_DATES.to_a.sort { |a, b| a[0] <=> b[0] }
+
+    session_a.each_with_index do |s, i|
+      return nil if s == session_a.last
+      s_date = Date.parse(s[1])
+      e_date = Date.parse(session_a[i+1][1])
+
+      if date >= s_date and date < e_date
+        return s[0]
       end
-      Bill.find(:all, :conditions => ["#{the_bill_conditions.join(' OR ')}", the_bill_params], :limit => find_options[:limit])
-  #    Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, find_options)
+    end
+    return nil
+  end
+
+  def self.top20_viewed
+    bills = ObjectAggregate.popular('Bill')
+
+    (bills.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
+      bv.stats.entered_top_viewed = Time.now
+      bv.save
     end
 
-    def long_type_to_short(type)
-      raise RuntimeError, "long_type_to_short must be killed!"
+    (bills.sort { |b1, b2| b2.stats.entered_top_viewed <=> b1.stats.entered_top_viewed })
+  end
+
+  def self.top5_viewed
+    bills = ObjectAggregate.popular('Bill', Settings.default_count_time, 5)
+
+    (bills.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
+      bv.stats.entered_top_viewed = Time.now
+      bv.save
     end
 
-    def session_from_date(date)
-      session_a = OpenCongress::Application::CONGRESS_START_DATES.to_a.sort { |a, b| a[0] <=> b[0] }
+    (bills.sort { |b1, b2| b2.stats.entered_top_viewed <=> b1.stats.entered_top_viewed })
+  end
 
-      session_a.each_with_index do |s, i|
-        return nil if s == session_a.last
-        s_date = Date.parse(s[1])
-        e_date = Date.parse(session_a[i+1][1])
+  def self.top20_commentary(type = 'news')
+    bills = Bill.find_by_most_commentary(type, num = 20)
 
-        if date >= s_date and date < e_date
-          return s[0]
-        end
-      end
-      return nil
+    date_method = :"entered_top_#{type}"
+    (bills.select {|b| b.stats.send(date_method).nil? }).each do |bv|
+      bv.stats.send("#{date_method}=", Time.now)
+      bv.save
     end
 
-    def top20_viewed
-      bills = ObjectAggregate.popular('Bill')
+    (bills.sort { |b1, b2| b2.stats.send(date_method) <=> b1.stats.send(date_method) })
+  end
 
-      (bills.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
-        bv.stats.entered_top_viewed = Time.now
-        bv.save
-      end
-
-      (bills.sort { |b1, b2| b2.stats.entered_top_viewed <=> b1.stats.entered_top_viewed })
-    end
-
-    def top5_viewed
-      bills = ObjectAggregate.popular('Bill', Settings.default_count_time, 5)
-
-      (bills.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
-        bv.stats.entered_top_viewed = Time.now
-        bv.save
-      end
-
-      (bills.sort { |b1, b2| b2.stats.entered_top_viewed <=> b1.stats.entered_top_viewed })
-    end
-
-    def top20_commentary(type = 'news')
-      bills = Bill.find_by_most_commentary(type, num = 20)
-
-      date_method = :"entered_top_#{type}"
-      (bills.select {|b| b.stats.send(date_method).nil? }).each do |bv|
-        bv.stats.send("#{date_method}=", Time.now)
-        bv.save
-      end
-
-      (bills.sort { |b1, b2| b2.stats.send(date_method) <=> b1.stats.send(date_method) })
-    end
-
-    def random(limit)
-      Bill.find_by_sql ["SELECT * FROM (SELECT random(), bills.* FROM bills ORDER BY 1) as bs LIMIT ?;", limit]
-    end
-  end # class << self
+  def self.random(limit)
+    Bill.find_by_sql ["SELECT * FROM (SELECT random(), bills.* FROM bills ORDER BY 1) as bs LIMIT ?;", limit]
+  end
 
   def log_referrer(referrer)
     unless (referrer.blank? || BillReferrer.no_follow?(referrer))
@@ -891,46 +885,46 @@ class Bill < Bookmarkable
     actions.size ? ((actions.select { |a| a.datetime > 30.days.ago}).size.to_f / actions.size.to_f ) : 0
   end
 
-  class << self
-    def sponsor_count
-      Bill.count(:all, :conditions => ["session = ?", Settings.default_congress], :group => "sponsor_id").sort {|a,b| b[1]<=>a[1]}
-    end
 
-    def cosponsor_count
-      Bill.count(:all, :include => [:bill_cosponsors], :conditions => ["bills.session = ?", Settings.default_congress], :group => "bills_cosponsors.person_id").sort {|a,b| b[1]<=>a[1]}
-    end
-
-    def find_by_most_commentary(type = 'news', num = 5, since = Settings.default_count_time, congress = Settings.default_congress, bill_types = ["h", "hc", "hj", "hr", "s", "sc", "sj", "sr"])
-
-      is_news = (type == "news") ? true : false
-
-      Bill.find_by_sql(["SELECT bills.*, top_bills.article_count AS article_count FROM bills
-                         INNER JOIN
-                         (SELECT commentaries.commentariable_id, count(commentaries.commentariable_id) AS article_count
-                          FROM commentaries
-                          WHERE commentaries.commentariable_type='Bill' AND
-                                commentaries.date > ? AND
-                                commentaries.is_news=? AND
-                                commentaries.is_ok='t'
-                          GROUP BY commentaries.commentariable_id
-                          ORDER BY article_count DESC) top_bills
-                         ON bills.id=top_bills.commentariable_id
-                         WHERE bills.session = ? AND bills.bill_type IN (?)
-                         ORDER BY article_count DESC LIMIT ?",
-                        since.ago, is_news, congress, bill_types, num])
-    end
-
-    def find_stalled_in_second_chamber(original_chamber = 's', session = Settings.default_congress, num = :all)
-      Bill.find_by_sql(["SELECT bills.* FROM bills
-                          INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass')
-                        WHERE bills.bill_type=? AND bills.session=?
-                        EXCEPT
-                          (SELECT bills.* FROM bills
-                            INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass')
-                            INNER JOIN actions a_v2 ON (bills.id=a_v2.bill_id AND (a_v2.vote_type='vote2' OR a_v2.vote_type='conference'))
-                            WHERE bills.bill_type=? AND bills.session=?);", original_chamber, session, original_chamber, session])
-    end
+  def self.sponsor_count
+    Bill.count(:all, :conditions => ["session = ?", Settings.default_congress], :group => "sponsor_id").sort {|a,b| b[1]<=>a[1]}
   end
+
+  def self.cosponsor_count
+    Bill.count(:all, :include => [:bill_cosponsors], :conditions => ["bills.session = ?", Settings.default_congress], :group => "bills_cosponsors.person_id").sort {|a,b| b[1]<=>a[1]}
+  end
+
+  def self.find_by_most_commentary(type = 'news', num = 5, since = Settings.default_count_time, congress = Settings.default_congress, bill_types = ["h", "hc", "hj", "hr", "s", "sc", "sj", "sr"])
+
+    is_news = (type == "news") ? true : false
+
+    Bill.find_by_sql(["SELECT bills.*, top_bills.article_count AS article_count FROM bills
+                       INNER JOIN
+                       (SELECT commentaries.commentariable_id, count(commentaries.commentariable_id) AS article_count
+                        FROM commentaries
+                        WHERE commentaries.commentariable_type='Bill' AND
+                              commentaries.date > ? AND
+                              commentaries.is_news=? AND
+                              commentaries.is_ok='t'
+                        GROUP BY commentaries.commentariable_id
+                        ORDER BY article_count DESC) top_bills
+                       ON bills.id=top_bills.commentariable_id
+                       WHERE bills.session = ? AND bills.bill_type IN (?)
+                       ORDER BY article_count DESC LIMIT ?",
+                      since.ago, is_news, congress, bill_types, num])
+  end
+
+  def self.find_stalled_in_second_chamber(original_chamber = 's', session = Settings.default_congress, num = :all)
+    Bill.find_by_sql(["SELECT bills.* FROM bills
+                        INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass')
+                      WHERE bills.bill_type=? AND bills.session=?
+                      EXCEPT
+                        (SELECT bills.* FROM bills
+                          INNER JOIN actions a_v ON (bills.id=a_v.bill_id AND a_v.vote_type='vote' AND a_v.result='pass')
+                          INNER JOIN actions a_v2 ON (bills.id=a_v2.bill_id AND (a_v2.vote_type='vote2' OR a_v2.vote_type='conference'))
+                          WHERE bills.bill_type=? AND bills.session=?);", original_chamber, session, original_chamber, session])
+  end
+
 
   def top_recipients_for_all_interest_groups(disposition = 'support', chamber = 'house', num = 10)
 
@@ -979,49 +973,47 @@ class Bill < Bookmarkable
     end
   end
 
-  class << self
-    def client_id_to_url(client_id)
-      client_id.slice!(/\d+_/)
-      long_type_to_short(client_id)
-    end
+  def self.client_id_to_url(client_id)
+    client_id.slice!(/\d+_/)
+    long_type_to_short(client_id)
+  end
 
-    def from_param(param)
-      md = /^(\d+)_(hconres|hres|hr|hjres|sjres|sconres|s|sres)(\d+)$/.match(param)
-      return [nil, nil, nil] unless md
-      id = md.captures[0].to_i
-      t = Bill.long_type_to_short(md.captures[1])
-      num = md.captures[2].to_i
-      (id || t | num) ? [id, t, num] : [nil, nil, nil]
-    end
+  def self.from_param(param)
+    md = /^(\d+)_(hconres|hres|hr|hjres|sjres|sconres|s|sres)(\d+)$/.match(param)
+    return [nil, nil, nil] unless md
+    id = md.captures[0].to_i
+    t = Bill.long_type_to_short(md.captures[1])
+    num = md.captures[2].to_i
+    (id || t | num) ? [id, t, num] : [nil, nil, nil]
+  end
 
-    def canonical_name(name)
-      "#{name.gsub(/[\.\s\/]+/,"").downcase}"
-    end
+  def self.canonical_name(name)
+    "#{name.gsub(/[\.\s\/]+/,"").downcase}"
+  end
 
-    def ident(bill_id)
-      pattern = /(hconres|hjres|hr|hres|s|sconres|sjres|sres)(\d+)-(\d+)/i
+  def self.ident(bill_id)
+    pattern = /(hconres|hjres|hr|hres|s|sconres|sjres|sres)(\d+)-(\d+)/i
+    match = pattern.match(bill_id)
+    if match
+      [match.captures[0].downcase,
+       match.captures[1],
+       match.captures[2]]
+    else
+      pattern = /(\d+)-(hc|hj|h|hr|s|sc|sj|sr)(\d+)/i
       match = pattern.match(bill_id)
       if match
-        [match.captures[0].downcase,
-         match.captures[1],
-         match.captures[2]]
+        [Bill.govtrack_reverse_lookup(match.captures[1].downcase),
+         match.captures[2],
+         match.captures[0]]
       else
-        pattern = /(\d+)-(hc|hj|h|hr|s|sc|sj|sr)(\d+)/i
-        match = pattern.match(bill_id)
-        if match
-          [Bill.govtrack_reverse_lookup(match.captures[1].downcase),
-           match.captures[2],
-           match.captures[0]]
-        else
-          [nil, nil, nil]
-        end
+        [nil, nil, nil]
       end
     end
+  end
 
-    def ident_pattern
-      /((\d+-[hs][rjc]?\d+)|((hconres|hjres|hres|hr|sconres|sjres|sres|s)\d+-\d+))/
-    end
-  end # class << self
+  def self.ident_pattern
+    /((\d+-[hs][rjc]?\d+)|((hconres|hjres|hres|hr|sconres|sjres|sres|s)\d+-\d+))/
+  end
 
   def ident
     "#{bill_type}#{number}-#{session}"

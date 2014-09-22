@@ -13,14 +13,35 @@ class Bookmarkable < OpenCongressModel
 
   #========== CLASS METHODS
 
-  # This method is called in concrete subclasses passing in the
+  def self.inherited(child)
+    super
+
+    model_str = child.name.downcase
+    Bookmark.class_eval do
+      scope model_str.pluralize.to_sym, -> { includes(model_str.to_sym).where(:bookmarkable_type => model_str.capitalize) }
+      with_options :foreign_key => 'bookmarkable_id' do |b|
+        scope = -> { includes :roles } if model_str.to_sym == :person
+        b.belongs_to(model_str.to_sym, scope || nil)
+      end
+    end
+
+    self.after_inherited { child.apply_notification_triggers }
+  end
+
+  def self.triggers_notifications(*relations)
+    self.notification_models = relations
+  end
+
+  # This method is cal  led in concrete subclasses passing in the
   # models that should trigger notifications.
   #
   # @param *relations [Array<Symbol>] symbols for models that trigger notifications
   # @return void
-  def self.triggers_notifications(*relations)
+  def self.apply_notification_triggers
 
-    self.notification_models = relations
+    relations = self.notification_models
+    return if relations.nil?
+
     bkm_sym = self.name.underscore.to_sym
 
     self.class_eval do
@@ -40,7 +61,7 @@ class Bookmarkable < OpenCongressModel
           {notifying_object_id:o.id, notifying_object_type: o.class.name}
         }
         # TODO fix n+1 problem
-        return ([] << query_params.collect{|args| Notification.where(args) })
+        return ([] << query_params.collect{|args| Notification.where(args) }).flatten
       end
 
     end
@@ -48,17 +69,15 @@ class Bookmarkable < OpenCongressModel
     relations.each{|r|
       begin
 
-        ap(r)
         reflection = reflect_on_association(r)
-        ap(reflection)
         if reflection
-          begin
-            r_class = r.to_s.classify.constantize
-          rescue NameError => e
+          if reflection.options[:class_name]
             r_class = reflection.options[:class_name].constantize
+          else
+            r_class = r.to_s.classify.constantize
           end
         else
-          r_class = r.to_s.classify.constantize
+          raise
         end
 
         r_class.class_eval do # new self scope
@@ -85,8 +104,8 @@ class Bookmarkable < OpenCongressModel
           end
         end
 
-      rescue NameError => e
-        puts "#{r_class.to_s} isn't a model" # //TODO how to handle this problem?
+      rescue
+        puts "#{r} isn't a model" # //TODO how to handle this problem?
       end
     }
   end

@@ -13,8 +13,6 @@ require_dependency 'notifying_object'
 
 class RollCallVote < OpenCongressModel
 
-  include NotifyingObject
-
   #========== CLASS VARIABLES
 
   @@VOTE_FOR_SYMBOL = {

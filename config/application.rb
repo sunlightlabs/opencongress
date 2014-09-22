@@ -33,7 +33,7 @@ module OpenCongress
                                 )
 
     config.after_initialize do
-
+      # code to run after initialization of app
     end
 
     # Only load the plugins named here, in the order given (default is alphabetical).

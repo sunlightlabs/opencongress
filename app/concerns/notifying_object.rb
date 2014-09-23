@@ -3,7 +3,7 @@ module NotifyingObject
 
   included do
     class_attribute :bookmarkable_models
-    has_many :notifications, :as => :notifying_object
+    has_many :notifications, :as => :notifying_object, dependent: :destroy
   end
 
   def self.abstract_class?

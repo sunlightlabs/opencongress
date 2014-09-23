@@ -34,6 +34,7 @@ class Commentary < OpenCongressModel
 #               :facets => [:type_f, :is_ok_f, :is_news_f], :auto_commit => false
 
 
+  attr_accessible :commentariable_id, :commentariable_type, :is_ok, :is_news
 
   cattr_reader :per_page
   @@per_page = 30

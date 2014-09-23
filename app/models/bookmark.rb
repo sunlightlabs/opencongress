@@ -12,7 +12,7 @@
 class Bookmark < OpenCongressModel
 
   belongs_to :bookmarkable, :polymorphic => true
-
+  attr_accessible :bookmarkable_type
   # This block of code is dynamically generating scopes and relationships
   # for Bookmark using the hierarchy defined in Bookmarkable. For example,
   # the code below is equivalent to the following at the time of this comment.

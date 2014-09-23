@@ -75,5 +75,52 @@ describe Bill do
       expect(bill.related_articles).to be_empty
     end
   end
+
+  describe '#find_all_by_most_user_votes_for_range' do
+
+    describe 'sets order specified by option hash or 20 by default' do
+      before(:each) do
+        @iteration_count = 10
+        @iteration_count.times do |first_iteration|
+          bill = FactoryGirl.create(:bill, id: first_iteration + 1)
+          first_iteration.times do |second_iteration|
+            bill.bill_votes.create(support: 0)
+          end
+        end
+      end
+
+      it 'has no specified order' do
+        response = Bill.find_all_by_most_user_votes_for_range(nil, {})
+        expect(response.first.id).to  eq @iteration_count
+      end
+
+      it 'has current_support_pb assigned as order' do
+        response = Bill.find_all_by_most_user_votes_for_range(nil, {order: "current_support_pb desc"})
+         expect(response.first.id).to  eq @iteration_count
+      end
+
+      it 'has support_count assigned as order' do
+        @bill = Bill.find(10)
+        @bill.bill_votes.each do |bill_vote|
+          bill_vote.support = 1
+          bill_vote.save
+        end
+
+        response = Bill.find_all_by_most_user_votes_for_range(nil, {order: "support_count_1 desc"})
+        expect(response.first.id).to  eq @iteration_count
+
+        response = Bill.find_all_by_most_user_votes_for_range(nil, {order: "support_count_1 asc"})
+        expect(response.last.id).to  eq @iteration_count
+      end
+    end
+
+    it 'defauls the range to 30 days if not specified' do
+      @bill = FactoryGirl.create(:bill)
+      @bill_vote = @bill.bill_votes.create
+
+      response  = Bill.find_all_by_most_user_votes_for_range(nil, {})
+      expect(response).to include(@bill)
+    end
+  end
 end
 

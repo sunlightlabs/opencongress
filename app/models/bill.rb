@@ -545,10 +545,12 @@ class Bill < Bookmarkable
 
     def find_all_by_most_user_votes_for_range(range, options)
       range = 30.days.to_i if range.nil?
+
       possible_orders = ["vote_count_1 desc", "vote_count_1 asc", "current_support_pb asc",
                          "current_support_pb desc", "bookmark_count_1 asc", "bookmark_count_1 desc",
                          "support_count_1 desc", "support_count_1 asc", "total_comments asc", "total_comments desc"]
       order = options[:order] ||= "vote_count_1 desc"
+      
       search = options[:search]
       if possible_orders.include?(order)
 

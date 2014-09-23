@@ -126,12 +126,15 @@ class Committee < Bookmarkable
   end
 
 
-  def self.by_chamber(chamber)
-    if chamber == 'both'
-      Committee.find(:all, :conditions => ['active = ?', true])
-    else
-      Committee.find(:all, :conditions => ['active = ?', true]).select { |c| c.chamber.match(/#{chamber}/i) }
-    end
+  def self.by_chamber(chamber, opts={})
+    opts = {include_joint_committees: true, include_subcommittees: false}.merge(opts)
+    #CAUTION: there is careful string interpolation into SQL in following line 
+    parent_id_clause = opts[:include_subcommittees] ? nil : "AND parent_id IS NULL"
+    Committee.where(
+      "(chamber LIKE ? or chamber LIKE ?) AND active = 't' #{parent_id_clause}",
+      chamber,
+      (opts[:include_joint_committees] ? "joint" : "")
+    )
   end
 
   def chair
@@ -154,13 +157,10 @@ class Committee < Bookmarkable
                                        :session => Settings.default_congress) .first
     membership and membership.person
   end
-  
-  def self.major_committees
-    Committee.find(:all, :conditions => ["subcommittee_name IS NULL"], :order => 'name')
-  end
 
+  #the following 3 methods are likely broken and also likely not in use
   def self.find_by_people_name_ci(name)
-    Committee.find(:first, :conditions => ["lower(people_name) = ?", name.downcase])
+    Committee.where(:first, :conditions => ["lower(people_name) = ?", name.downcase])
   end
 
   def self.find_by_name_ci(name)
@@ -183,11 +183,6 @@ class Committee < Bookmarkable
   def homepage
     @@HOMEPAGES[name.downcase]
   end
-  
-  # Commented out because this now shadows a relation
-  #def subcommittees
-  #  Committee.find(:all, :conditions => ["name = ? and subcommittee_name != ''", name], :order => "subcommittee_name asc")
-  #end
   
   def bills_sponsored(limit)
     ids = Bill.joins(:bill_committees).select('bills.id').where('bills_committees.committee_id = ? AND session = ?', id, Settings.default_congress).order('lastaction DESC').limit(limit).collect {|b| b.id }
@@ -257,16 +252,6 @@ class Committee < Bookmarkable
     end
     pn
   end
-	
-#  def chamber
-#    if name.match(/^house/i)
-#      "House"
-#    elsif name.match(/^senate/i)
-#      "Senate"
-#    else
-#      ""
-#    end
-#  end
 
   def future_meetings
     self.meetings.select { |m| m.meeting_at > Time.now }
@@ -300,28 +285,24 @@ class Committee < Bookmarkable
     time_since = current_user.previous_login_date
     time_since = 200.days.ago if Rails.env.development?
 
-    bills.find(:all, :include => [:actions],
-                     :conditions => ['bills.session = ? AND actions.datetime > ? AND actions.action_type = ?', congress, time_since, 'introduced'],
-                     :order => 'bills.introduced DESC',
-                     :limit => 20);
+    bills.joins(:actions)
+      .where('bills.session = ? AND actions.datetime > ? AND actions.action_type = ?', congress, time_since, 'introduced')
+      .order("bills.introduced DESC")
+      .limit(20)
   end
 
   def latest_reports(limit = 5)
-    self.committee_reports.find(:all, :order => "reported_at DESC", :conditions => ["reported_at is not null"], :limit => limit)
+    self.committee_reports.where("reported_at IS NOT NULL").order("reported_at DESC").limit(limit)
   end
 
   def new_reports_since(current_user, congress = Settings.default_congress)
     time_since = current_user.previous_login_date
     time_since = 200.days.ago if Rails.env.development?
-
-    committee_reports.find(:all,
-                     :conditions => ['reported_at > ?', time_since],
-                     :order => 'reported_at DESC',
-                     :limit => 20);
+    committee_reports.where("reported_at > ? ", time_since).limit(20).order("reported_at DESC")
   end
 
   def comments_since(current_user)
-    self.comments.count(:id, :conditions => ["created_at > ?", current_user.previous_login_date])
+    self.comments.where("created_at > ?", current_user.previous_login_date).count
   end
 
   

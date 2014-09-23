@@ -22,6 +22,8 @@ class Committee < Bookmarkable
   has_many :people, :through => :committee_people
   alias :members :people # for convenience, seems to make more sense
 
+  triggers_notifications :bills
+
   has_many :bill_committees
   has_many :bills, -> { order("bills.lastaction DESC") },
            :through => :bill_committees
@@ -43,7 +45,6 @@ class Committee < Bookmarkable
   belongs_to :parent, :class_name => "Committee"
 
   # validates_uniqueness_of :thomas_id
-
   
   @@DISPLAY_OBJECT_NAME = 'Committee'
   
@@ -92,7 +93,8 @@ class Committee < Bookmarkable
     "senate aging (special)" => "http://aging.senate.gov",
     "senate joint committee on printing" => "http://jcp.senate.gov/",
     "senate joint committee on taxation" => "http://www.house.gov/jct",
-    "senate joint economic committee" => "http://jec.senate.gov/"}
+    "senate joint economic committee" => "http://jec.senate.gov/"
+  }
 
   @@STOP_WORDS = ["committee", "subcommittee"]
 

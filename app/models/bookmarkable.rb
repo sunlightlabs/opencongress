@@ -95,6 +95,16 @@ class Bookmarkable < OpenCongressModel
           raise
         end
 
+        # check for plural many-to-many relationship
+        if r_as.nil?
+          if r_class.reflect_on_association(bkm_sym).nil?
+            bkm_sym = bkm_sym.to_s.pluralize.to_sym
+            if r_class.reflect_on_association(bkm_sym).nil?
+              raise
+            end
+          end
+        end
+
         # This code block makes the model a notification model
         # and adds callbacks to create notifications for users
         # tracking the parent concrete bookmarkable model.
@@ -113,15 +123,18 @@ class Bookmarkable < OpenCongressModel
           def create_notifications
             self.bookmarkable_models.each do |obj|
               bookmarkable = self.method(obj[:as]||obj[:model]).call
-              if (bookmarkable.method(obj[:rel]).call).include?(self)
-                bookmarks = Bookmark.where(bookmarkable_type: obj[:model].to_s.classify, bookmarkable_id: bookmarkable.id)
-                bookmarks.each{|bm|
-                  Notification.create(notifying_object_id:self.id,
-                                      notifying_object_type:self.class.to_s,
-                                      user_id:bm.user_id,
-                                      seen: 0)
-                }
-              end
+              bookmarkable = [bookmarkable] unless bookmarkable.respond_to? :each
+              bookmarkable.each {|bkm|
+                if (bkm.method(obj[:rel]).call).include?(self)
+                  bookmarks = Bookmark.where(bookmarkable_type: obj[:model].to_s.classify, bookmarkable_id: bkm.id)
+                  bookmarks.each{|bm|
+                    Notification.create(notifying_object_id:self.id,
+                                        notifying_object_type:self.class.to_s,
+                                        user_id:bm.user_id,
+                                        seen: 0)
+                  }
+                end
+              }
             end
           end
 

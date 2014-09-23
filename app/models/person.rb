@@ -72,7 +72,7 @@ class Person < Bookmarkable
 
   before_update :set_party
   before_save :set_unaccented_name
-  triggers_notifications :roll_call_votes, :commentary, :bills_cosponsored
+  triggers_notifications :roll_call_votes, :commentary, :bill_cosponsors
 
   #========== RELATIONS
 
@@ -88,6 +88,7 @@ class Person < Bookmarkable
   has_many :committee_people, -> { where("committees_people.session = ?", Settings.default_congress ) }
   has_many :bills, -> { includes([ :bill_titles, :actions ]).where("bills.session = ?", Settings.default_congress).order('bills.introduced DESC') },
            :foreign_key => :sponsor_id
+  has_many :bill_cosponsors
   has_many :bills_cosponsored, -> { where('bills.session = ?', Settings.default_congress).order('bills.introduced DESC') },
            :class_name => 'Bill', :through => :bill_cosponsors, :source => :bill
   has_many :roles, -> { order('roles.startdate DESC') }

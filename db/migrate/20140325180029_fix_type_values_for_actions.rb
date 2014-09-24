@@ -1,7 +1,7 @@
 class FixTypeValuesForActions < ActiveRecord::Migration
   def self.up
-    Action.update_all({:type => 'AmendmentAction'}, 'type is null and amendment_id is not null')
-    Action.update_all({:type => 'BillAction'}, 'type is null and amendment_id is null and bill_id is not null')
+    Action.where('type IS NULL and amendment_id IS NOT NULL').update_all(:type => 'AmendmentAction')
+    Action.where('type IS NULL and amendment_id IS NULL and bill_id IS NOT NULL').update_all(:type => 'BillAction')
   end
 
   def self.down

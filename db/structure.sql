@@ -26,89 +26,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 SET search_path = public, pg_catalog;
 
 --
--- Name: gtsq; Type: DOMAIN; Schema: public; Owner: -
---
-
-CREATE DOMAIN gtsq AS text;
-
-
---
--- Name: gtsvector; Type: DOMAIN; Schema: public; Owner: -
---
-
-CREATE DOMAIN gtsvector AS pg_catalog.gtsvector;
-
-
---
--- Name: statinfo; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE statinfo AS (
-	word text,
-	ndoc integer,
-	nentry integer
-);
-
-
---
--- Name: tokenout; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE tokenout AS (
-	tokid integer,
-	token text
-);
-
-
---
--- Name: tokentype; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE tokentype AS (
-	tokid integer,
-	alias text,
-	descr text
-);
-
-
---
--- Name: tsdebug; Type: TYPE; Schema: public; Owner: -
---
-
-CREATE TYPE tsdebug AS (
-	ts_name text,
-	tok_type text,
-	description text,
-	token text,
-	dict_name text[],
-	tsvector pg_catalog.tsvector
-);
-
-
---
--- Name: tsquery; Type: DOMAIN; Schema: public; Owner: -
---
-
-CREATE DOMAIN tsquery AS pg_catalog.tsquery;
-
-
---
--- Name: tsvector; Type: DOMAIN; Schema: public; Owner: -
---
-
-CREATE DOMAIN tsvector AS pg_catalog.tsvector;
-
-
---
--- Name: _get_parser_from_curcfg(); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION _get_parser_from_curcfg() RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $$select prsname::text from pg_catalog.pg_ts_parser p join pg_ts_config c on cfgparser = p.oid where c.oid = show_curcfg();$$;
-
-
---
 -- Name: aggregate_increment(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -206,156 +123,6 @@ CREATE FUNCTION comment_page(comment_id integer, c_id integer, c_type character 
 
 
 --
--- Name: concat(pg_catalog.tsvector, pg_catalog.tsvector); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION concat(pg_catalog.tsvector, pg_catalog.tsvector) RETURNS pg_catalog.tsvector
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$tsvector_concat$$;
-
-
---
--- Name: dex_init(internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION dex_init(internal) RETURNS internal
-    LANGUAGE c
-    AS '$libdir/tsearch2', 'tsa_dex_init';
-
-
---
--- Name: dex_lexize(internal, internal, integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION dex_lexize(internal, internal, integer) RETURNS internal
-    LANGUAGE c STRICT
-    AS '$libdir/tsearch2', 'tsa_dex_lexize';
-
-
---
--- Name: get_covers(pg_catalog.tsvector, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION get_covers(pg_catalog.tsvector, pg_catalog.tsquery) RETURNS text
-    LANGUAGE c STRICT
-    AS '$libdir/tsearch2', 'tsa_get_covers';
-
-
---
--- Name: headline(text, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION headline(text, pg_catalog.tsquery) RETURNS text
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$ts_headline$$;
-
-
---
--- Name: headline(oid, text, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION headline(oid, text, pg_catalog.tsquery) RETURNS text
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$ts_headline_byid$$;
-
-
---
--- Name: headline(text, text, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION headline(text, text, pg_catalog.tsquery) RETURNS text
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/tsearch2', 'tsa_headline_byname';
-
-
---
--- Name: headline(text, pg_catalog.tsquery, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION headline(text, pg_catalog.tsquery, text) RETURNS text
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$ts_headline_opt$$;
-
-
---
--- Name: headline(oid, text, pg_catalog.tsquery, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION headline(oid, text, pg_catalog.tsquery, text) RETURNS text
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$ts_headline_byid_opt$$;
-
-
---
--- Name: headline(text, text, pg_catalog.tsquery, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION headline(text, text, pg_catalog.tsquery, text) RETURNS text
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/tsearch2', 'tsa_headline_byname';
-
-
---
--- Name: length(pg_catalog.tsvector); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION length(pg_catalog.tsvector) RETURNS integer
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$tsvector_length$$;
-
-
---
--- Name: lexize(text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION lexize(text) RETURNS text[]
-    LANGUAGE c STRICT
-    AS '$libdir/tsearch2', 'tsa_lexize_bycurrent';
-
-
---
--- Name: lexize(oid, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION lexize(oid, text) RETURNS text[]
-    LANGUAGE internal STRICT
-    AS $$ts_lexize$$;
-
-
---
--- Name: lexize(text, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION lexize(text, text) RETURNS text[]
-    LANGUAGE c STRICT
-    AS '$libdir/tsearch2', 'tsa_lexize_byname';
-
-
---
--- Name: longtxs(double precision, text, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION longtxs(v_time double precision, v_status text, v_schema text) RETURNS SETOF pg_stat_activity
-    LANGUAGE sql
-    AS $_$
-
-SELECT * from pg_stat_activity
-WHERE extract(minute from current_timestamp-query_start) > $1
-AND current_query = $2 ;
-
-$_$;
-
-
---
--- Name: numnode(pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION numnode(pg_catalog.tsquery) RETURNS integer
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$tsquery_numnode$$;
-
-
---
 -- Name: oc_votes_apart(integer, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -416,181 +183,73 @@ CREATE FUNCTION oc_votes_together(pid integer, after timestamp without time zone
 
 
 --
--- Name: parse(text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rank(tsvector, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION parse(text) RETURNS SETOF tokenout
-    LANGUAGE c STRICT
-    AS '$libdir/tsearch2', 'tsa_parse_current';
-
-
---
--- Name: parse(oid, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION parse(oid, text) RETURNS SETOF tokenout
-    LANGUAGE internal STRICT
-    AS $$ts_parse_byid$$;
-
-
---
--- Name: parse(text, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION parse(text, text) RETURNS SETOF tokenout
-    LANGUAGE internal STRICT
-    AS $$ts_parse_byname$$;
-
-
---
--- Name: plainto_tsquery(text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION plainto_tsquery(text) RETURNS pg_catalog.tsquery
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$plainto_tsquery$$;
-
-
---
--- Name: plainto_tsquery(oid, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION plainto_tsquery(oid, text) RETURNS pg_catalog.tsquery
-    LANGUAGE internal IMMUTABLE STRICT
-    AS $$plainto_tsquery_byid$$;
-
-
---
--- Name: plainto_tsquery(text, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION plainto_tsquery(text, text) RETURNS pg_catalog.tsquery
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/tsearch2', 'tsa_plainto_tsquery_name';
-
-
---
--- Name: prsd_end(internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION prsd_end(internal) RETURNS void
-    LANGUAGE c
-    AS '$libdir/tsearch2', 'tsa_prsd_end';
-
-
---
--- Name: prsd_getlexeme(internal, internal, internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION prsd_getlexeme(internal, internal, internal) RETURNS integer
-    LANGUAGE c
-    AS '$libdir/tsearch2', 'tsa_prsd_getlexeme';
-
-
---
--- Name: prsd_headline(internal, internal, internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION prsd_headline(internal, internal, internal) RETURNS internal
-    LANGUAGE c
-    AS '$libdir/tsearch2', 'tsa_prsd_headline';
-
-
---
--- Name: prsd_lextype(internal); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION prsd_lextype(internal) RETURNS internal
-    LANGUAGE c
-    AS '$libdir/tsearch2', 'tsa_prsd_lextype';
-
-
---
--- Name: prsd_start(internal, integer); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION prsd_start(internal, integer) RETURNS internal
-    LANGUAGE c
-    AS '$libdir/tsearch2', 'tsa_prsd_start';
-
-
---
--- Name: querytree(pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION querytree(pg_catalog.tsquery) RETURNS text
-    LANGUAGE internal STRICT
-    AS $$tsquerytree$$;
-
-
---
--- Name: rank(pg_catalog.tsvector, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION rank(pg_catalog.tsvector, pg_catalog.tsquery) RETURNS real
+CREATE FUNCTION rank(tsvector, tsquery) RETURNS real
     LANGUAGE internal IMMUTABLE STRICT
     AS $$ts_rank_tt$$;
 
 
 --
--- Name: rank(real[], pg_catalog.tsvector, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rank(real[], tsvector, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rank(real[], pg_catalog.tsvector, pg_catalog.tsquery) RETURNS real
+CREATE FUNCTION rank(real[], tsvector, tsquery) RETURNS real
     LANGUAGE internal IMMUTABLE STRICT
     AS $$ts_rank_wtt$$;
 
 
 --
--- Name: rank(pg_catalog.tsvector, pg_catalog.tsquery, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rank(tsvector, tsquery, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rank(pg_catalog.tsvector, pg_catalog.tsquery, integer) RETURNS real
+CREATE FUNCTION rank(tsvector, tsquery, integer) RETURNS real
     LANGUAGE internal IMMUTABLE STRICT
     AS $$ts_rank_ttf$$;
 
 
 --
--- Name: rank(real[], pg_catalog.tsvector, pg_catalog.tsquery, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rank(real[], tsvector, tsquery, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rank(real[], pg_catalog.tsvector, pg_catalog.tsquery, integer) RETURNS real
+CREATE FUNCTION rank(real[], tsvector, tsquery, integer) RETURNS real
     LANGUAGE internal IMMUTABLE STRICT
     AS $$ts_rank_wttf$$;
 
 
 --
--- Name: rank_cd(pg_catalog.tsvector, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rank_cd(tsvector, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rank_cd(pg_catalog.tsvector, pg_catalog.tsquery) RETURNS real
+CREATE FUNCTION rank_cd(tsvector, tsquery) RETURNS real
     LANGUAGE internal IMMUTABLE STRICT
     AS $$ts_rankcd_tt$$;
 
 
 --
--- Name: rank_cd(real[], pg_catalog.tsvector, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rank_cd(real[], tsvector, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rank_cd(real[], pg_catalog.tsvector, pg_catalog.tsquery) RETURNS real
+CREATE FUNCTION rank_cd(real[], tsvector, tsquery) RETURNS real
     LANGUAGE internal IMMUTABLE STRICT
     AS $$ts_rankcd_wtt$$;
 
 
 --
--- Name: rank_cd(pg_catalog.tsvector, pg_catalog.tsquery, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rank_cd(tsvector, tsquery, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rank_cd(pg_catalog.tsvector, pg_catalog.tsquery, integer) RETURNS real
+CREATE FUNCTION rank_cd(tsvector, tsquery, integer) RETURNS real
     LANGUAGE internal IMMUTABLE STRICT
     AS $$ts_rankcd_ttf$$;
 
 
 --
--- Name: rank_cd(real[], pg_catalog.tsvector, pg_catalog.tsquery, integer); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rank_cd(real[], tsvector, tsquery, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rank_cd(real[], pg_catalog.tsvector, pg_catalog.tsquery, integer) RETURNS real
+CREATE FUNCTION rank_cd(real[], tsvector, tsquery, integer) RETURNS real
     LANGUAGE internal IMMUTABLE STRICT
     AS $$ts_rankcd_wttf$$;
 
@@ -605,37 +264,37 @@ CREATE FUNCTION reset_tsearch() RETURNS void
 
 
 --
--- Name: rewrite(pg_catalog.tsquery, text); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rewrite(tsquery, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rewrite(pg_catalog.tsquery, text) RETURNS pg_catalog.tsquery
+CREATE FUNCTION rewrite(tsquery, text) RETURNS tsquery
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsquery_rewrite_query$$;
 
 
 --
--- Name: rewrite(pg_catalog.tsquery, pg_catalog.tsquery, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rewrite(tsquery, tsquery, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rewrite(pg_catalog.tsquery, pg_catalog.tsquery, pg_catalog.tsquery) RETURNS pg_catalog.tsquery
+CREATE FUNCTION rewrite(tsquery, tsquery, tsquery) RETURNS tsquery
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsquery_rewrite$$;
 
 
 --
--- Name: rewrite_accum(pg_catalog.tsquery, pg_catalog.tsquery[]); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rewrite_accum(tsquery, tsquery[]); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rewrite_accum(pg_catalog.tsquery, pg_catalog.tsquery[]) RETURNS pg_catalog.tsquery
+CREATE FUNCTION rewrite_accum(tsquery, tsquery[]) RETURNS tsquery
     LANGUAGE c
     AS '$libdir/tsearch2', 'tsa_rewrite_accum';
 
 
 --
--- Name: rewrite_finish(pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: rewrite_finish(tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION rewrite_finish(pg_catalog.tsquery) RETURNS pg_catalog.tsquery
+CREATE FUNCTION rewrite_finish(tsquery) RETURNS tsquery
     LANGUAGE c
     AS '$libdir/tsearch2', 'tsa_rewrite_finish';
 
@@ -695,10 +354,10 @@ CREATE FUNCTION set_curprs(text) RETURNS void
 
 
 --
--- Name: setweight(pg_catalog.tsvector, "char"); Type: FUNCTION; Schema: public; Owner: -
+-- Name: setweight(tsvector, "char"); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION setweight(pg_catalog.tsvector, "char") RETURNS pg_catalog.tsvector
+CREATE FUNCTION setweight(tsvector, "char") RETURNS tsvector
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsvector_setweight$$;
 
@@ -794,10 +453,10 @@ CREATE FUNCTION stat(text, text) RETURNS SETOF statinfo
 
 
 --
--- Name: strip(pg_catalog.tsvector); Type: FUNCTION; Schema: public; Owner: -
+-- Name: strip(tsvector); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION strip(pg_catalog.tsvector) RETURNS pg_catalog.tsvector
+CREATE FUNCTION strip(tsvector) RETURNS tsvector
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsvector_strip$$;
 
@@ -842,7 +501,7 @@ CREATE FUNCTION thesaurus_lexize(internal, internal, integer, internal) RETURNS 
 -- Name: to_tsquery(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION to_tsquery(text) RETURNS pg_catalog.tsquery
+CREATE FUNCTION to_tsquery(text) RETURNS tsquery
     LANGUAGE internal IMMUTABLE STRICT
     AS $$to_tsquery$$;
 
@@ -851,7 +510,7 @@ CREATE FUNCTION to_tsquery(text) RETURNS pg_catalog.tsquery
 -- Name: to_tsquery(oid, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION to_tsquery(oid, text) RETURNS pg_catalog.tsquery
+CREATE FUNCTION to_tsquery(oid, text) RETURNS tsquery
     LANGUAGE internal IMMUTABLE STRICT
     AS $$to_tsquery_byid$$;
 
@@ -860,7 +519,7 @@ CREATE FUNCTION to_tsquery(oid, text) RETURNS pg_catalog.tsquery
 -- Name: to_tsquery(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION to_tsquery(text, text) RETURNS pg_catalog.tsquery
+CREATE FUNCTION to_tsquery(text, text) RETURNS tsquery
     LANGUAGE c IMMUTABLE STRICT
     AS '$libdir/tsearch2', 'tsa_to_tsquery_name';
 
@@ -869,7 +528,7 @@ CREATE FUNCTION to_tsquery(text, text) RETURNS pg_catalog.tsquery
 -- Name: to_tsvector(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION to_tsvector(text) RETURNS pg_catalog.tsvector
+CREATE FUNCTION to_tsvector(text) RETURNS tsvector
     LANGUAGE internal IMMUTABLE STRICT
     AS $$to_tsvector$$;
 
@@ -878,7 +537,7 @@ CREATE FUNCTION to_tsvector(text) RETURNS pg_catalog.tsvector
 -- Name: to_tsvector(oid, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION to_tsvector(oid, text) RETURNS pg_catalog.tsvector
+CREATE FUNCTION to_tsvector(oid, text) RETURNS tsvector
     LANGUAGE internal IMMUTABLE STRICT
     AS $$to_tsvector_byid$$;
 
@@ -887,7 +546,7 @@ CREATE FUNCTION to_tsvector(oid, text) RETURNS pg_catalog.tsvector
 -- Name: to_tsvector(text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION to_tsvector(text, text) RETURNS pg_catalog.tsvector
+CREATE FUNCTION to_tsvector(text, text) RETURNS tsvector
     LANGUAGE c IMMUTABLE STRICT
     AS '$libdir/tsearch2', 'tsa_to_tsvector_name';
 
@@ -920,33 +579,6 @@ CREATE FUNCTION token_type(text) RETURNS SETOF tokentype
 
 
 --
--- Name: ts_debug(text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION ts_debug(text) RETURNS SETOF tsdebug
-    LANGUAGE sql STRICT
-    AS $_$
-select
-        (select c.cfgname::text from pg_catalog.pg_ts_config as c
-         where c.oid = show_curcfg()),
-        t.alias as tok_type,
-        t.descr as description,
-        p.token,
-        ARRAY ( SELECT m.mapdict::pg_catalog.regdictionary::pg_catalog.text
-                FROM pg_catalog.pg_ts_config_map AS m
-                WHERE m.mapcfg = show_curcfg() AND m.maptokentype = p.tokid
-                ORDER BY m.mapseqno )
-        AS dict_name,
-        strip(to_tsvector(p.token)) as tsvector
-from
-        parse( _get_parser_from_curcfg(), $1 ) as p,
-        token_type() as t
-where
-        t.tokid = p.tokid
-$_$;
-
-
---
 -- Name: tsearch2(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -956,66 +588,59 @@ CREATE FUNCTION tsearch2() RETURNS trigger
 
 
 --
--- Name: tsq_mcontained(pg_catalog.tsquery, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: tsq_mcontained(tsquery, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION tsq_mcontained(pg_catalog.tsquery, pg_catalog.tsquery) RETURNS boolean
+CREATE FUNCTION tsq_mcontained(tsquery, tsquery) RETURNS boolean
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsq_mcontained$$;
 
 
 --
--- Name: tsq_mcontains(pg_catalog.tsquery, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: tsq_mcontains(tsquery, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION tsq_mcontains(pg_catalog.tsquery, pg_catalog.tsquery) RETURNS boolean
+CREATE FUNCTION tsq_mcontains(tsquery, tsquery) RETURNS boolean
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsq_mcontains$$;
 
 
 --
--- Name: tsquery_and(pg_catalog.tsquery, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: tsquery_and(tsquery, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION tsquery_and(pg_catalog.tsquery, pg_catalog.tsquery) RETURNS pg_catalog.tsquery
+CREATE FUNCTION tsquery_and(tsquery, tsquery) RETURNS tsquery
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsquery_and$$;
 
 
 --
--- Name: tsquery_not(pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: tsquery_not(tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION tsquery_not(pg_catalog.tsquery) RETURNS pg_catalog.tsquery
+CREATE FUNCTION tsquery_not(tsquery) RETURNS tsquery
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsquery_not$$;
 
 
 --
--- Name: tsquery_or(pg_catalog.tsquery, pg_catalog.tsquery); Type: FUNCTION; Schema: public; Owner: -
+-- Name: tsquery_or(tsquery, tsquery); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION tsquery_or(pg_catalog.tsquery, pg_catalog.tsquery) RETURNS pg_catalog.tsquery
+CREATE FUNCTION tsquery_or(tsquery, tsquery) RETURNS tsquery
     LANGUAGE internal IMMUTABLE STRICT
     AS $$tsquery_or$$;
 
 
 --
--- Name: rewrite(pg_catalog.tsquery[]); Type: AGGREGATE; Schema: public; Owner: -
+-- Name: rewrite(tsquery[]); Type: AGGREGATE; Schema: public; Owner: -
 --
 
-CREATE AGGREGATE rewrite(pg_catalog.tsquery[]) (
+CREATE AGGREGATE rewrite(tsquery[]) (
     SFUNC = rewrite_accum,
-    STYPE = pg_catalog.tsquery,
+    STYPE = tsquery,
     FINALFUNC = rewrite_finish
 );
-
-
---
--- Name: tsquery_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
---
-
-CREATE OPERATOR FAMILY tsquery_ops USING btree;
 
 
 --
@@ -1023,20 +648,13 @@ CREATE OPERATOR FAMILY tsquery_ops USING btree;
 --
 
 CREATE OPERATOR CLASS tsquery_ops
-    FOR TYPE pg_catalog.tsquery USING btree AS
-    OPERATOR 1 <(pg_catalog.tsquery,pg_catalog.tsquery) ,
-    OPERATOR 2 <=(pg_catalog.tsquery,pg_catalog.tsquery) ,
-    OPERATOR 3 =(pg_catalog.tsquery,pg_catalog.tsquery) ,
-    OPERATOR 4 >=(pg_catalog.tsquery,pg_catalog.tsquery) ,
-    OPERATOR 5 >(pg_catalog.tsquery,pg_catalog.tsquery) ,
-    FUNCTION 1 (pg_catalog.tsquery, pg_catalog.tsquery) tsquery_cmp(pg_catalog.tsquery,pg_catalog.tsquery);
-
-
---
--- Name: tsvector_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
---
-
-CREATE OPERATOR FAMILY tsvector_ops USING btree;
+    FOR TYPE tsquery USING btree AS
+    OPERATOR 1 <(tsquery,tsquery) ,
+    OPERATOR 2 <=(tsquery,tsquery) ,
+    OPERATOR 3 =(tsquery,tsquery) ,
+    OPERATOR 4 >=(tsquery,tsquery) ,
+    OPERATOR 5 >(tsquery,tsquery) ,
+    FUNCTION 1 (tsquery, tsquery) tsquery_cmp(tsquery,tsquery);
 
 
 --
@@ -1044,13 +662,13 @@ CREATE OPERATOR FAMILY tsvector_ops USING btree;
 --
 
 CREATE OPERATOR CLASS tsvector_ops
-    FOR TYPE pg_catalog.tsvector USING btree AS
-    OPERATOR 1 <(pg_catalog.tsvector,pg_catalog.tsvector) ,
-    OPERATOR 2 <=(pg_catalog.tsvector,pg_catalog.tsvector) ,
-    OPERATOR 3 =(pg_catalog.tsvector,pg_catalog.tsvector) ,
-    OPERATOR 4 >=(pg_catalog.tsvector,pg_catalog.tsvector) ,
-    OPERATOR 5 >(pg_catalog.tsvector,pg_catalog.tsvector) ,
-    FUNCTION 1 (pg_catalog.tsvector, pg_catalog.tsvector) tsvector_cmp(pg_catalog.tsvector,pg_catalog.tsvector);
+    FOR TYPE tsvector USING btree AS
+    OPERATOR 1 <(tsvector,tsvector) ,
+    OPERATOR 2 <=(tsvector,tsvector) ,
+    OPERATOR 3 =(tsvector,tsvector) ,
+    OPERATOR 4 >=(tsvector,tsvector) ,
+    OPERATOR 5 >(tsvector,tsvector) ,
+    FUNCTION 1 (tsvector, tsvector) tsvector_cmp(tsvector,tsvector);
 
 
 SET default_tablespace = '';
@@ -2530,17 +2148,17 @@ ALTER SEQUENCE crp_sectors_id_seq OWNED BY crp_sectors.id;
 
 CREATE TABLE delayed_jobs (
     id integer NOT NULL,
-    priority integer DEFAULT 0 NOT NULL,
-    attempts integer DEFAULT 0 NOT NULL,
-    handler text NOT NULL,
+    priority integer DEFAULT 0,
+    attempts integer DEFAULT 0,
+    handler text,
     last_error text,
     run_at timestamp without time zone,
     locked_at timestamp without time zone,
     failed_at timestamp without time zone,
     locked_by character varying(255),
-    queue character varying(255),
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    queue character varying(255)
 );
 
 
@@ -3622,8 +3240,7 @@ CREATE TABLE notebook_items (
     user_agent character varying(255),
     ip_address character varying(255),
     spam boolean,
-    censored boolean,
-    data text
+    censored boolean
 );
 
 
@@ -3980,60 +3597,6 @@ CREATE TABLE person_stats (
 );
 
 
-SET default_with_oids = true;
-
---
--- Name: pg_ts_cfg; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE pg_ts_cfg (
-    ts_name text NOT NULL,
-    prs_name text NOT NULL,
-    locale text
-);
-
-
---
--- Name: pg_ts_cfgmap; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE pg_ts_cfgmap (
-    ts_name text NOT NULL,
-    tok_alias text NOT NULL,
-    dict_name text[]
-);
-
-
---
--- Name: pg_ts_dict; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE pg_ts_dict (
-    dict_name text NOT NULL,
-    dict_init regprocedure,
-    dict_initoption text,
-    dict_lexize regprocedure NOT NULL,
-    dict_comment text
-);
-
-
---
--- Name: pg_ts_parser; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE pg_ts_parser (
-    prs_name text NOT NULL,
-    prs_start regprocedure NOT NULL,
-    prs_nexttoken regprocedure NOT NULL,
-    prs_end regprocedure NOT NULL,
-    prs_headline regprocedure NOT NULL,
-    prs_lextype regprocedure NOT NULL,
-    prs_comment text
-);
-
-
-SET default_with_oids = false;
-
 --
 -- Name: political_notebooks; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
@@ -4064,48 +3627,6 @@ CREATE SEQUENCE political_notebooks_id_seq
 --
 
 ALTER SEQUENCE political_notebooks_id_seq OWNED BY political_notebooks.id;
-
-
---
--- Name: user_privacy_options; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE user_privacy_options (
-    id integer NOT NULL,
-    name integer DEFAULT 1,
-    email integer DEFAULT 0,
-    zipcode integer DEFAULT 1,
-    location integer DEFAULT 2,
-    profile integer DEFAULT 2,
-    actions integer DEFAULT 2,
-    bookmarks integer DEFAULT 2,
-    friends integer DEFAULT 2,
-    user_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    political_notebook integer DEFAULT 2,
-    watchdog integer DEFAULT 2,
-    groups integer DEFAULT 2
-);
-
-
---
--- Name: privacy_options_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE privacy_options_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: privacy_options_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE privacy_options_id_seq OWNED BY user_privacy_options.id;
 
 
 --
@@ -4866,6 +4387,48 @@ ALTER SEQUENCE user_options_id_seq OWNED BY user_options.id;
 
 
 --
+-- Name: user_privacy_options; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE user_privacy_options (
+    id integer NOT NULL,
+    name integer DEFAULT 1,
+    email integer DEFAULT 0,
+    zipcode integer DEFAULT 1,
+    location integer DEFAULT 2,
+    profile integer DEFAULT 2,
+    actions integer DEFAULT 2,
+    bookmarks integer DEFAULT 2,
+    friends integer DEFAULT 2,
+    user_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    political_notebook integer DEFAULT 2,
+    watchdog integer DEFAULT 2,
+    groups integer DEFAULT 2
+);
+
+
+--
+-- Name: user_privacy_options_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE user_privacy_options_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_privacy_options_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE user_privacy_options_id_seq OWNED BY user_privacy_options.id;
+
+
+--
 -- Name: user_profiles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -5037,8 +4600,8 @@ CREATE VIEW v_current_roles AS
     people.id AS person_id,
     roles.role_type
    FROM ((people
-   JOIN roles ON ((roles.person_id = people.id)))
-   JOIN states ON (((people.state)::text = (states.abbreviation)::text)))
+     JOIN roles ON ((roles.person_id = people.id)))
+     JOIN states ON (((people.state)::text = (states.abbreviation)::text)))
   WHERE (roles.enddate > now());
 
 
@@ -5933,7 +5496,7 @@ ALTER TABLE ONLY user_options ALTER COLUMN id SET DEFAULT nextval('user_options_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user_privacy_options ALTER COLUMN id SET DEFAULT nextval('privacy_options_id_seq'::regclass);
+ALTER TABLE ONLY user_privacy_options ALTER COLUMN id SET DEFAULT nextval('user_privacy_options_id_seq'::regclass);
 
 
 --
@@ -6608,38 +6171,6 @@ ALTER TABLE ONLY person_approvals
 
 
 --
--- Name: pg_ts_cfg_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY pg_ts_cfg
-    ADD CONSTRAINT pg_ts_cfg_pkey PRIMARY KEY (ts_name);
-
-
---
--- Name: pg_ts_cfgmap_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY pg_ts_cfgmap
-    ADD CONSTRAINT pg_ts_cfgmap_pkey PRIMARY KEY (ts_name, tok_alias);
-
-
---
--- Name: pg_ts_dict_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY pg_ts_dict
-    ADD CONSTRAINT pg_ts_dict_pkey PRIMARY KEY (dict_name);
-
-
---
--- Name: pg_ts_parser_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY pg_ts_parser
-    ADD CONSTRAINT pg_ts_parser_pkey PRIMARY KEY (prs_name);
-
-
---
 -- Name: political_notebooks_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -6792,14 +6323,6 @@ ALTER TABLE ONLY twitter_configs
 
 
 --
--- Name: unique_email; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY users
-    ADD CONSTRAINT unique_email UNIQUE (email);
-
-
---
 -- Name: upcoming_bills_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -6916,13 +6439,6 @@ ALTER TABLE ONLY write_rep_emails
 --
 
 CREATE INDEX actions_bill_id_index ON actions USING btree (bill_id);
-
-
---
--- Name: aggregatable_date_poly_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX aggregatable_date_poly_idx ON object_aggregates USING btree (date, aggregatable_type, aggregatable_id);
 
 
 --
@@ -7472,17 +6988,17 @@ CREATE INDEX index_formageddon_letters_on_formageddon_thread_id ON formageddon_l
 
 
 --
+-- Name: index_formageddon_letters_on_status; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_formageddon_letters_on_status ON formageddon_letters USING btree (status);
+
+
+--
 -- Name: index_fundraisers_on_person_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_fundraisers_on_person_id ON fundraisers USING btree (person_id);
-
-
---
--- Name: index_geo_ips_on_start_ip_and_end_ip; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_geo_ips_on_start_ip_and_end_ip ON geo_ips USING btree (start_ip, end_ip);
 
 
 --
@@ -7507,24 +7023,10 @@ CREATE INDEX index_lower_tag_names ON tags USING btree (lower((name)::text));
 
 
 --
--- Name: index_notebook_items_on_censored; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_notebook_items_on_censored ON notebook_items USING btree (censored);
-
-
---
 -- Name: index_notebook_items_on_political_notebook_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_notebook_items_on_political_notebook_id ON notebook_items USING btree (political_notebook_id);
-
-
---
--- Name: index_notebook_items_on_spam; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_notebook_items_on_spam ON notebook_items USING btree (spam);
 
 
 --
@@ -7591,13 +7093,6 @@ CREATE INDEX index_political_notebooks_on_group_id ON political_notebooks USING 
 
 
 --
--- Name: index_privacy_options_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_privacy_options_on_user_id ON user_privacy_options USING btree (user_id);
-
-
---
 -- Name: index_roles_on_enddate; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -7626,13 +7121,6 @@ CREATE INDEX index_roles_on_startdate ON roles USING btree (startdate);
 
 
 --
--- Name: index_roll_call_votes_on_roll_call_id_and_vote; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_roll_call_votes_on_roll_call_id_and_vote ON roll_call_votes USING btree (roll_call_id, vote);
-
-
---
 -- Name: index_roll_calls_on_amendment_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -7651,20 +7139,6 @@ CREATE INDEX index_roll_calls_on_bill_id ON roll_calls USING btree (bill_id);
 --
 
 CREATE INDEX index_roll_calls_on_where_and_number_and_date ON roll_calls USING btree ("where", number, date);
-
-
---
--- Name: index_searches_lower_search_text; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_searches_lower_search_text ON searches USING btree (lower((search_text)::text));
-
-
---
--- Name: index_searches_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_searches_on_created_at ON searches USING btree (created_at);
 
 
 --
@@ -7724,6 +7198,13 @@ CREATE UNIQUE INDEX index_user_options_on_user_id ON user_options USING btree (u
 
 
 --
+-- Name: index_user_privacy_options_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_user_privacy_options_on_user_id ON user_privacy_options USING btree (user_id);
+
+
+--
 -- Name: index_user_profiles_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -7756,13 +7237,6 @@ CREATE INDEX index_users_on_facebook_uid ON users USING btree (facebook_uid);
 --
 
 CREATE INDEX index_users_on_login ON users USING btree (login);
-
-
---
--- Name: index_users_on_status; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_users_on_status ON users USING btree (status);
 
 
 --
@@ -7920,20 +7394,6 @@ CREATE INDEX users_lower_login_index ON users USING btree (lower((login)::text))
 
 
 --
--- Name: users_state_district_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX users_state_district_index ON users USING btree (state, district);
-
-
---
--- Name: users_state_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX users_state_index ON users USING btree (state);
-
-
---
 -- Name: aggregate_bill_votes_trigger; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -8029,200 +7489,6 @@ CREATE TRIGGER upcoming_bill_tsvectorupdate BEFORE INSERT OR UPDATE ON upcoming_
 --
 
 SET search_path TO "$user",public;
-
-INSERT INTO schema_migrations (version) VALUES ('20080715215558');
-
-INSERT INTO schema_migrations (version) VALUES ('20080827015858');
-
-INSERT INTO schema_migrations (version) VALUES ('20080903003226');
-
-INSERT INTO schema_migrations (version) VALUES ('20080907060146');
-
-INSERT INTO schema_migrations (version) VALUES ('20080909001523');
-
-INSERT INTO schema_migrations (version) VALUES ('20080911013335');
-
-INSERT INTO schema_migrations (version) VALUES ('20080920112404');
-
-INSERT INTO schema_migrations (version) VALUES ('20080925163620');
-
-INSERT INTO schema_migrations (version) VALUES ('20081006011103');
-
-INSERT INTO schema_migrations (version) VALUES ('20081009022845');
-
-INSERT INTO schema_migrations (version) VALUES ('20081009022933');
-
-INSERT INTO schema_migrations (version) VALUES ('20081014232042');
-
-INSERT INTO schema_migrations (version) VALUES ('20081111025433');
-
-INSERT INTO schema_migrations (version) VALUES ('20081113024227');
-
-INSERT INTO schema_migrations (version) VALUES ('20081117030534');
-
-INSERT INTO schema_migrations (version) VALUES ('20081117235038');
-
-INSERT INTO schema_migrations (version) VALUES ('20081120012826');
-
-INSERT INTO schema_migrations (version) VALUES ('20081120013057');
-
-INSERT INTO schema_migrations (version) VALUES ('20081205060112');
-
-INSERT INTO schema_migrations (version) VALUES ('20081229015856');
-
-INSERT INTO schema_migrations (version) VALUES ('20081231021047');
-
-INSERT INTO schema_migrations (version) VALUES ('20090101045551');
-
-INSERT INTO schema_migrations (version) VALUES ('20090107164906');
-
-INSERT INTO schema_migrations (version) VALUES ('20090107194724');
-
-INSERT INTO schema_migrations (version) VALUES ('20090114032254');
-
-INSERT INTO schema_migrations (version) VALUES ('20090116012326');
-
-INSERT INTO schema_migrations (version) VALUES ('20090117175416');
-
-INSERT INTO schema_migrations (version) VALUES ('20090121035742');
-
-INSERT INTO schema_migrations (version) VALUES ('20090127025149');
-
-INSERT INTO schema_migrations (version) VALUES ('20090131202631');
-
-INSERT INTO schema_migrations (version) VALUES ('20090211014032');
-
-INSERT INTO schema_migrations (version) VALUES ('20090216070042');
-
-INSERT INTO schema_migrations (version) VALUES ('20090218020012');
-
-INSERT INTO schema_migrations (version) VALUES ('20090224013934');
-
-INSERT INTO schema_migrations (version) VALUES ('20090227040428');
-
-INSERT INTO schema_migrations (version) VALUES ('20090304022259');
-
-INSERT INTO schema_migrations (version) VALUES ('20090307153137');
-
-INSERT INTO schema_migrations (version) VALUES ('20090325033857');
-
-INSERT INTO schema_migrations (version) VALUES ('20090407234228');
-
-INSERT INTO schema_migrations (version) VALUES ('20090417195827');
-
-INSERT INTO schema_migrations (version) VALUES ('20090503234738');
-
-INSERT INTO schema_migrations (version) VALUES ('20090512214848');
-
-INSERT INTO schema_migrations (version) VALUES ('20090527004131');
-
-INSERT INTO schema_migrations (version) VALUES ('20090527004445');
-
-INSERT INTO schema_migrations (version) VALUES ('20090527014302');
-
-INSERT INTO schema_migrations (version) VALUES ('20090602062417');
-
-INSERT INTO schema_migrations (version) VALUES ('20090604142844');
-
-INSERT INTO schema_migrations (version) VALUES ('20090604201433');
-
-INSERT INTO schema_migrations (version) VALUES ('20090622211253');
-
-INSERT INTO schema_migrations (version) VALUES ('20090626002723');
-
-INSERT INTO schema_migrations (version) VALUES ('20090706235137');
-
-INSERT INTO schema_migrations (version) VALUES ('20090722010931');
-
-INSERT INTO schema_migrations (version) VALUES ('20090724212938');
-
-INSERT INTO schema_migrations (version) VALUES ('20090725235957');
-
-INSERT INTO schema_migrations (version) VALUES ('20090727163317');
-
-INSERT INTO schema_migrations (version) VALUES ('20090730113924');
-
-INSERT INTO schema_migrations (version) VALUES ('20090804203516');
-
-INSERT INTO schema_migrations (version) VALUES ('20090804203939');
-
-INSERT INTO schema_migrations (version) VALUES ('20090807221541');
-
-INSERT INTO schema_migrations (version) VALUES ('20090908235658');
-
-INSERT INTO schema_migrations (version) VALUES ('20090909000743');
-
-INSERT INTO schema_migrations (version) VALUES ('20091109001926');
-
-INSERT INTO schema_migrations (version) VALUES ('20091201223051');
-
-INSERT INTO schema_migrations (version) VALUES ('20091204191227');
-
-INSERT INTO schema_migrations (version) VALUES ('20091207182604');
-
-INSERT INTO schema_migrations (version) VALUES ('20100122185532');
-
-INSERT INTO schema_migrations (version) VALUES ('20100225005011');
-
-INSERT INTO schema_migrations (version) VALUES ('20100227110831');
-
-INSERT INTO schema_migrations (version) VALUES ('20100228211106');
-
-INSERT INTO schema_migrations (version) VALUES ('20100401235324');
-
-INSERT INTO schema_migrations (version) VALUES ('20100515215737');
-
-INSERT INTO schema_migrations (version) VALUES ('20100630211146');
-
-INSERT INTO schema_migrations (version) VALUES ('20100707180635');
-
-INSERT INTO schema_migrations (version) VALUES ('20100707183122');
-
-INSERT INTO schema_migrations (version) VALUES ('20100727093528');
-
-INSERT INTO schema_migrations (version) VALUES ('20100921190837');
-
-INSERT INTO schema_migrations (version) VALUES ('20101001114446');
-
-INSERT INTO schema_migrations (version) VALUES ('20101017042656');
-
-INSERT INTO schema_migrations (version) VALUES ('20101023022759');
-
-INSERT INTO schema_migrations (version) VALUES ('20101114023941');
-
-INSERT INTO schema_migrations (version) VALUES ('20101209200331');
-
-INSERT INTO schema_migrations (version) VALUES ('20110130211130');
-
-INSERT INTO schema_migrations (version) VALUES ('20110217225301');
-
-INSERT INTO schema_migrations (version) VALUES ('20110306192052');
-
-INSERT INTO schema_migrations (version) VALUES ('20110507004548');
-
-INSERT INTO schema_migrations (version) VALUES ('20110518182519');
-
-INSERT INTO schema_migrations (version) VALUES ('20110518233248');
-
-INSERT INTO schema_migrations (version) VALUES ('20110526181158');
-
-INSERT INTO schema_migrations (version) VALUES ('20110526194928');
-
-INSERT INTO schema_migrations (version) VALUES ('20110610045033');
-
-INSERT INTO schema_migrations (version) VALUES ('20110610165044');
-
-INSERT INTO schema_migrations (version) VALUES ('20110614175640');
-
-INSERT INTO schema_migrations (version) VALUES ('20110710171354');
-
-INSERT INTO schema_migrations (version) VALUES ('20110715185602');
-
-INSERT INTO schema_migrations (version) VALUES ('20110727204907');
-
-INSERT INTO schema_migrations (version) VALUES ('20110727212839');
-
-INSERT INTO schema_migrations (version) VALUES ('20110823164612');
 
 INSERT INTO schema_migrations (version) VALUES ('20111108013246');
 
@@ -8413,8 +7679,6 @@ INSERT INTO schema_migrations (version) VALUES ('20140723174758');
 INSERT INTO schema_migrations (version) VALUES ('20140731155926');
 
 INSERT INTO schema_migrations (version) VALUES ('20140731184412');
-
-INSERT INTO schema_migrations (version) VALUES ('20140827210416');
 
 INSERT INTO schema_migrations (version) VALUES ('20140908175416');
 

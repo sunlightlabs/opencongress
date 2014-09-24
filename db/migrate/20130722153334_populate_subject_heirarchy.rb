@@ -6,7 +6,7 @@ class PopulateSubjectHeirarchy < ActiveRecord::Migration
     #             nil     is term
     #               n     us subject, n = id of parent
     #          top.id     is category
-    top = Subject.find_or_initialize_by_term("\u22a4") # unicode "top"
+    top = Subject.find_or_initialize_by(term: "\u22a4") # unicode "top"
     top.save!
 
     category = nil

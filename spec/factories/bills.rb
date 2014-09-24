@@ -20,7 +20,7 @@ FactoryGirl.define do
     summary "Blair Holt's Firearm Licensing and Record of Sale ..."
     plain_language_summary "The Blair Holt's Firearm Licensing and Record of S..." 
     hot_bill_category_id nil 
-    updated "2013-07-26 02:20:47" 
+    updated 30.days.to_i 
     page_views_count 1421649 
     is_frontpage_hot false
     news_article_count 333 

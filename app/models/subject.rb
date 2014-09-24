@@ -139,7 +139,7 @@ class Subject < Bookmarkable
   end
 
   def self.find_by_term_icase (term)
-    first(:conditions => ['lower(term) = ?', term.downcase])
+    where('lower(term) = ?', term.downcase).first
   end
 
   # TODO: Take this for a ride on the refactor tractor

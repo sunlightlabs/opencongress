@@ -25,6 +25,9 @@
 
 class BillAction < Action
 
+  include PublicActivity::Model
+  tracked owner: :bill
+
   belongs_to :bill
 
   attr_accessible :bill_id
@@ -38,4 +41,3 @@ class BillAction < Action
   end
   
 end
-

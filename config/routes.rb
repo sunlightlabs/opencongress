@@ -103,6 +103,7 @@ OpenCongress::Application.routes.draw do
     end
   end
 
+
   match 'bill' => redirect('/bill/all'), :via => [:get]
 
   scope 'people', :controller => 'people' do

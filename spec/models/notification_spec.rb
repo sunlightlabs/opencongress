@@ -2,13 +2,12 @@
 #
 # Table name: notifications
 #
-#  id                    :integer          not null, primary key
-#  user_id               :integer
-#  notifying_object_id   :integer
-#  seen                  :integer
-#  created_at            :datetime
-#  updated_at            :datetime
-#  notifying_object_type :string(255)
+#  id            :integer          not null, primary key
+#  user_id       :integer
+#  seen          :integer
+#  created_at    :datetime
+#  updated_at    :datetime
+#  activities_id :integer
 #
 
 require 'rails_helper'

@@ -70,6 +70,8 @@ class User < OpenCongressModel
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
 
+  #========== CALLBACKS
+
   # This filter merges the validation errors in user_profile with user
   # so that input forms using attributes from user_profile spit have
   # the validation messages as they appear in user_profile.
@@ -79,8 +81,6 @@ class User < OpenCongressModel
     errors.to_hash.delete_if { |name, value| name.to_s().include? 'user_profile' }
     # user_profile.errors.clear() - may need this later for some reason
   }
-
-  #========== CALLBACKS
 
   update_email_subscription_when_changed :self, [:email]
   # on ban or delete, clean up this user's associations with various parts of the site
@@ -343,7 +343,6 @@ class User < OpenCongressModel
     update_attribute(:last_login, Time.now)
     user_ip_addresses.where(addr:UserIpAddress.int_form(ip_addr)).first_or_create
   end
-
 
   def get_unseen_notifications
     Notification.where(user_id:id, seen:0)

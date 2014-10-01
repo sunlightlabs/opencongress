@@ -123,7 +123,7 @@ class Action < OpenCongressModel
       if action_type == 'introduced'
         "Introduced in #{self.bill.chamber.capitalize}"
       else
-        ""
+        ''
       end
     else
       text
@@ -163,6 +163,7 @@ class Action < OpenCongressModel
   end
   
   private
+
   def action_to_s
     "#{self.date_std}: #{self.text} " + self.refers.join(' ')
   end

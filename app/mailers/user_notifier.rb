@@ -1,5 +1,8 @@
 class UserNotifier < ActionMailer::Base
 
+  default :from => "noreply@opencongress.org"
+  after_action :send_mail
+
   def signup_notification(user)
     setup_email(user)
     @subject    += 'Confirm Your OpenCongress Login'
@@ -30,34 +33,47 @@ class UserNotifier < ActionMailer::Base
     @body[:comment] = comment
   end
 
-  def friend_notification(friend)
-    setup_email(friend.friend)
+  def friend_invite_notification(notification)
+    setup_email(notification.recipient)
     @from = "\"OpenCongress Friends\" <friends@opencongress.org>"
-    @subject    += "#{CGI::escapeHTML(friend.user.login)} invites you to be Friends on OpenCongress"
-    @body[:friend] = friend
+    @subject    += "#{CGI::escapeHTML(notification.activity.owner.login)} invites you to be Friends on OpenCongress"
+    @body[:friend] = notification.activity.trackable
   end
 
-  def friendship_broken_notification(friend)
-    setup_email(friend.user)
+  def friend_broken_notification(notification)
+    setup_email(notification.recipient)
     @from = "\"OpenCongress Friends\" <friends@opencongress.org>"
-    @subject  += "#{CGI::escapeHTML(friend.friend.login)} has ended your OpenCongress Friendship"
-    @body[:friend] = friend
+    @subject  += "#{CGI::escapeHTML(notification.activity.owner.login)} has ended your OpenCongress Friendship"
+    @friend = notification.activity.trackable
   end
 
-  def friend_confirmed_notification(friend)
-    setup_email(friend.user)
+  def friend_confirmed_notification(notification)
+    setup_email(notification.recipient)
     @from = "\"OpenCongress Friends\" <friends@opencongress.org>"
-    @subject  += "#{CGI::escapeHTML(friend.friend.login)} has accepted your Friend invitation on OpenCongress!"
-    @body[:friend] = friend
+    @subject  += "#{CGI::escapeHTML(notification.activity.owner.login)} has accepted your Friend invitation on OpenCongress!"
+    @friend = notification.activity.trackable
+  end
+
+  def bill_action_create_notification(notification)
+    setup_email(notification.recipient)
+    @from = "\"OpenCongress Notification\" <notification@opencongress.org>"
+    @subject  += "#{CGI::escapeHTML(notification.activity.owner.title_full_common)} has received an action!"
+    @user = notification.recipient
+    @bill_action = notification.activity.trackable
   end
 
   protected
+
   def setup_email(user)
     @recipients  = "#{user.email}"
-    @from        = "\"OpenCongress Login\" <accounts@opencongress.org>"
-    @subject     = ""
+    @subject     = ''
     @sent_on     = Time.now
-    @body = Hash.new if @body.nil?
-    @body[:user] = user
   end
+
+  private
+
+  def send_mail
+    mail(from: @from, to: @recipients, subject: @subject)
+  end
+
 end

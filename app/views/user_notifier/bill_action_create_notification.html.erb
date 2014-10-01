@@ -1,0 +1,13 @@
+Hi <%=h @user.login %>,
+
+<%=h @bill_action.bill.title_full_common %> was <%=h @bill_action.to_s %>
+
+You may view the bill's actions by visiting this link:
+
+<%= url_for :controller => :bill, :id => @bill_action.bill, :action => :actions_votes, :only_path => false %>
+
+You can unsubscribe from receiving notifications for this bill by visiting this link:
+
+
+Thanks!
+The OpenCongress TEAM

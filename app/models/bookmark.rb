@@ -11,41 +11,41 @@
 
 class Bookmark < OpenCongressModel
 
-  belongs_to :bookmarkable, :polymorphic => true
-
-  # This block of code is dynamically generating scopes and relationships
-  # for Bookmark using the hierarchy defined in Bookmarkable. For example,
-  # the code below is equivalent to the following at the time of this comment.
-  #
-  # scope :bills, includes(:bill).where(:bookmarkable_type => 'Bill')
-  # scope :committees, includes(:committee).where(:bookmarkable_type => 'Committee')
-  # scope :people, includes(:person).where(:bookmarkable_type => 'Person')
-  # scope :subjects, includes(:subject).where(:bookmarkable_type => 'Subject')
-
-  # with_options :foreign_key => 'bookmarkable_id' do |b|
-  #  b.belongs_to :person, -> { includes :roles}
-  #  b.belongs_to :bill
-  #  b.belongs_ito :subject
-  #  b.belongs_to :committee
-  # end
+  #========== VALIDATORS
 
   validates_uniqueness_of :bookmarkable_id, :scope => [:user_id, :bookmarkable_type]
 
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
+  belongs_to :bookmarkable, :polymorphic => true
+  belongs_to :user # NOTE: Comments belong to a user
+
+  #========== SCOPES
+
+  scope :bills, includes(:bill).where(:bookmarkable_type => 'Bill')
+  scope :committees, includes(:committee).where(:bookmarkable_type => 'Committee')
+  scope :people, includes(:person).where(:bookmarkable_type => 'Person')
+  scope :subjects, includes(:subject).where(:bookmarkable_type => 'Subject')
+
+  with_options :foreign_key => 'bookmarkable_id' do |b|
+    b.belongs_to :person, -> { includes :roles}
+    b.belongs_to :bill
+    b.belongs_to :subject
+    b.belongs_to :committee
+  end
+
   # NOTE: install the acts_as_taggable plugin if you want bookmarks to be tagged.
   acts_as_taggable
-
-  # NOTE: Comments belong to a user
-  belongs_to :user
 
   # Get all notifications for this bookmark
   #
   # @param seen [Integer] 0 for unseen, 1 for seen, nil for all
   # @return [Relation<Notification>] notifications for the user associated with this bookmark
   def notifications(seen=nil)
-    types = bookmarkable_type.constantize.notification_models.map{|i| i.to_s.classify}
-    query_params = {user_id:user_id,notifying_object_type:types}
-    query_params[:seen] = seen if seen.present?
-    Notification.where(query_params)
+    ids = PublicActivity::Activity.where(owner_id:self.bookmarkable_id, owner_type:self.bookmarkable_type).collect{|a| a.id}
+    Notification.where(activities_id:ids, seen: seen.nil? ? 0 : 1)
   end
 
   # Find all bookmarks for a given user

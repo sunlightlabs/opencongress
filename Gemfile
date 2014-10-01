@@ -20,6 +20,9 @@ gem 'yard'
 
 gem "settingslogic"
 
+# user notification system
+gem 'public_activity'
+
 gem 'titlecase'
 
 # HAML support

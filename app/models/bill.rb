@@ -94,7 +94,6 @@ class Bill < Bookmarkable
 
   before_save :update_bill_fulltext_search_table
   after_save -> { @bill_text = nil }
-  triggers_notifications :actions, :news
 
   #========== RELATIONS
 

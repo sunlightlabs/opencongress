@@ -72,7 +72,6 @@ class Person < Bookmarkable
 
   before_update :set_party
   before_save :set_unaccented_name
-  triggers_notifications :roll_call_votes, :commentary, :bill_cosponsors
 
   #========== RELATIONS
 

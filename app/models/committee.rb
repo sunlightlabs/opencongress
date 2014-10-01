@@ -22,8 +22,6 @@ class Committee < Bookmarkable
   has_many :people, :through => :committee_people
   alias :members :people # for convenience, seems to make more sense
 
-  triggers_notifications :bills
-
   has_many :bill_committees
   has_many :bills, -> { order("bills.lastaction DESC") },
            :through => :bill_committees

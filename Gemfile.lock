@@ -343,6 +343,11 @@ GEM
     pry-stack_explorer (0.4.9.1)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
+    public_activity (1.4.2)
+      actionpack (>= 3.0.0)
+      activerecord (>= 3.0)
+      i18n (>= 0.5.0)
+      railties (>= 3.0.0)
     rabl (0.11.0)
       activesupport (>= 2.3.14)
     rack (1.5.2)
@@ -564,6 +569,7 @@ DEPENDENCIES
   pry-nav
   pry-rescue
   pry-stack_explorer
+  public_activity
   rabl
   rack-contrib
   rack-mini-profiler

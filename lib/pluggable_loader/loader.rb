@@ -2,7 +2,7 @@ module PluggableLoader
   class Loader
     # Returns a list of paths to loaded engines.
     def engine_paths
-      @engine_paths ||= Rails::Engine.subclasses.map(&:instance).collect{ |engine| engine.config.root.to_s }
+      @engine_paths ||= Rails::Engine.subclasses.map(&:instance).collect{|engine| engine.config.root.to_s }
     end
 
     # Returns a list of paths to loaded plugins.

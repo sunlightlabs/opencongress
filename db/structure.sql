@@ -722,6 +722,44 @@ ALTER SEQUENCE actions_id_seq OWNED BY actions.id;
 
 
 --
+-- Name: activities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE activities (
+    id integer NOT NULL,
+    trackable_id integer,
+    trackable_type character varying(255),
+    owner_id integer,
+    owner_type character varying(255),
+    key character varying(255),
+    parameters text,
+    recipient_id integer,
+    recipient_type character varying(255),
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE activities_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: activities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE activities_id_seq OWNED BY activities.id;
+
+
+--
 -- Name: amendments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3271,11 +3309,10 @@ ALTER SEQUENCE notebook_items_id_seq OWNED BY notebook_items.id;
 CREATE TABLE notifications (
     id integer NOT NULL,
     user_id integer,
-    notifying_object_id integer,
     seen integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    notifying_object_type character varying(255)
+    activities_id integer
 );
 
 
@@ -4838,6 +4875,13 @@ ALTER TABLE ONLY actions ALTER COLUMN id SET DEFAULT nextval('actions_id_seq'::r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY activities ALTER COLUMN id SET DEFAULT nextval('activities_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY amendments ALTER COLUMN id SET DEFAULT nextval('amendments_id_seq'::regclass);
 
 
@@ -5610,6 +5654,14 @@ ALTER TABLE ONLY write_rep_emails ALTER COLUMN id SET DEFAULT nextval('write_rep
 
 ALTER TABLE ONLY actions
     ADD CONSTRAINT actions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: activities_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY activities
+    ADD CONSTRAINT activities_pkey PRIMARY KEY (id);
 
 
 --
@@ -6688,6 +6740,27 @@ CREATE INDEX index_actions_on_roll_call_id ON actions USING btree (roll_call_id)
 
 
 --
+-- Name: index_activities_on_owner_id_and_owner_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activities_on_owner_id_and_owner_type ON activities USING btree (owner_id, owner_type);
+
+
+--
+-- Name: index_activities_on_recipient_id_and_recipient_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activities_on_recipient_id_and_recipient_type ON activities USING btree (recipient_id, recipient_type);
+
+
+--
+-- Name: index_activities_on_trackable_id_and_trackable_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activities_on_trackable_id_and_trackable_type ON activities USING btree (trackable_id, trackable_type);
+
+
+--
 -- Name: index_bad_commentaries_on_cid_and_ctype; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -7077,6 +7150,20 @@ CREATE INDEX index_lower_tag_names ON tags USING btree (lower((name)::text));
 --
 
 CREATE INDEX index_notebook_items_on_political_notebook_id ON notebook_items USING btree (political_notebook_id);
+
+
+--
+-- Name: index_notebook_items_on_spam; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_notebook_items_on_spam ON notebook_items USING btree (spam);
+
+
+--
+-- Name: index_notifications_on_activities_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_notifications_on_activities_id ON notifications USING btree (activities_id);
 
 
 --
@@ -7757,3 +7844,6 @@ INSERT INTO schema_migrations (version) VALUES ('20140929213333');
 
 INSERT INTO schema_migrations (version) VALUES ('20141001173322');
 
+INSERT INTO schema_migrations (version) VALUES ('20140926213853');
+
+INSERT INTO schema_migrations (version) VALUES ('20140929215301');

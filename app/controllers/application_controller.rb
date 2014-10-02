@@ -1,4 +1,5 @@
 require 'authenticated_system'
+require 'csv'
 require_dependency 'email_congress'
 
 class ApplicationController < ActionController::Base

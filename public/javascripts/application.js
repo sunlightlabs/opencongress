@@ -351,5 +351,14 @@ BillText = {
     $(document).on('click', '.close_add_notebook', function(){
       NotebookForm.hideAllForms();
     });
+
+    $(".top-banner .close").on("click", function(e){
+      e.preventDefault();
+      var url = $(this).attr('href');
+      $.get(url, function(){});
+      $(this).parent().slideUp();
+    });
+    
   });
+
 })(jQuery);

@@ -1,8 +1,10 @@
 <div class="bootstrap-enabled">
     <div class="top-banner">
+    <%= link_to("close", close_banner_path , class: "close") %>
+    <!-- <a class="close" href="#">close</a> -->
         <div class="top-banner--ppf">
-            <p><strong>We need your help!</strong> Help us make OpenCongress even better by telling us what's important to you!</p>
-            <a class="btn" href="http://sunlight.typeform.com/to/gYNdkt" target="_blank">Take this quick survey</a>
+            <p><strong>Download your politcal notebook before it's too late!</strong> OpenCrongress will be deprecating the My Political Notebook feature in the upcoming months</p>
+            <%= link_to "Download Your Notebook", political_notebook_path(current_user.login), class: 'btn' %>
         </div>
     </div>
 </div>

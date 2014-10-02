@@ -1,0 +1,5 @@
+type, title, url, date, description
+
+<%- @items.each do |item| -%>
+  <%="#{item.type.gsub('Notebook', '')}, #{item.title}, #{item.url}, #{item.date}, #{item.description}" %>
+<%- end -%>

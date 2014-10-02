@@ -280,6 +280,7 @@ OpenCongress::Application.routes.draw do
   match 'howtouse' => 'about#howtouse'
   match '/userguide' => redirect("/howtouse")
 
+  get '/banner-dismiss' => 'index#close_banner', as: 'close_banner'
   resources :contact, :only => [:index, :create]
 
   match ':controller(/:action(/:id))'

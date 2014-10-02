@@ -5,7 +5,6 @@
     font-size: 16px;
     color: #333;
     position: relative;
-    height: 65px;
     background: #efefef;
     border: 1px solid #ddd;
     border-top: none;
@@ -52,7 +51,7 @@
     margin-left: 25px;
 }
 
-.top-banner--ppf .btn {
+.top-banner--ppf .btn, .alert.btn {
     margin-left: 25px;
     padding: 5px 15px;
     border-bottom: 2px solid #c55948;
@@ -65,12 +64,12 @@
 }
 
 .top-banner--ppf .btn:hover,
-.top-banner--ppf .btn:active {
+.top-banner--ppf .btn:active, .alert.btn:hover {
     background: #e56753;
     color: #fff;
 }
 
-.top-banner--ppf .btn:active {
+.top-banner--ppf .btn:active, .alert.btn:active {
     top: 1px;
     border-bottom: 1px solid #c55948;
 }

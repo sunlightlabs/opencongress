@@ -82,7 +82,8 @@ class Person < Bookmarkable
   has_one :wiki_link, :as => 'wikiable'
 
   #----- HAS_MANY
-
+  
+  has_many :person_identifiers, foreign_key: :bioguideid, primary_key: :bioguideid #keep this when merging beta
   has_many :committees,
            :through => :committee_people
   has_many :committee_people, -> { where("committees_people.session = ?", Settings.default_congress ) }
@@ -1677,6 +1678,30 @@ class Person < Bookmarkable
 
   def as_xml(ops = {})
     super(SERIALIZATION_OPS.merge(ops))
+  end
+
+  def fec_ids
+    person_identifiers.where(namespace: 'fec').map{|id| id.value}
+  end
+
+  def fec_ids=(ids=[])
+    raise ArgumentError, "must pass in an array" unless ids.class == Array
+    person_identifiers.where(namespace: 'fec').destroy_all #kill existing FEC ids
+    ids.each do |id|
+      person_identifiers.create!(
+        namespace: 'fec',
+        value: id
+      )
+    end
+  end
+
+  def add_fec_id(id)
+    unless fec_ids.include?(id)
+      person_identifiers.create!(
+        namespace: 'fec',
+        value: id
+      )
+    end
   end
 
 end

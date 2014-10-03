@@ -65,6 +65,9 @@ module UnitedStates
       leg_person.govtrack_id = leg_hash['id']['govtrack']
       leg_person.thomas_id = leg_hash['id']['thomas']
       leg_person.fec_id = leg_hash['id']['fec']
+      unless leg_hash['id']['fec'].nil?
+        leg_hash['id']['fec'].each{|id| leg_person.add_fec_id(id)}
+      end
       leg_person.lis_id = leg_hash['id']['lis']
       leg_person.cspan_id = leg_hash['id']['cspan']
       leg_person.bioguideid = leg_hash['id']['bioguide']
@@ -116,8 +119,10 @@ module UnitedStates
           state_name = State::ABBREVIATIONS.invert.fetch(state_abbrev, nil)
 
           unless state_name.nil?
+            #Rails 4: state = State.where(abbreviation: state_abbrev, name: state_name).first_or_create
             state = State.find_or_create_by_abbreviation_and_name(state_abbrev, state_name)
             if leg_hash['+current_term']['district']
+              #Rails 4: district = state.districts.where(district_number: leg_hash['+current_term']['district']).first_or_create
               district = state.districts.find_or_create_by_district_number(leg_hash['+current_term']['district'])
             end
           end

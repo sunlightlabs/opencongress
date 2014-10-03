@@ -63,4 +63,44 @@ describe Person do
       expect(colorado_people.map(&:state).uniq).to eq(["CO"])
     end
   end
+  describe "person identifiers" do
+    before(:each) do
+      @person = people(:person_226043605)
+      @person.person_identifiers.create(
+        namespace: "fec",
+        value: "originalfecid"
+      )
+    end
+    describe "fec_ids" do
+      it "should return an array of values" do
+        expect(@person.fec_ids.class).to equal(Array)
+      end
+      it "should return an empty array if no fec ids" do
+        expect(people(:person_412493).fec_ids).to eq([])
+      end
+    end
+    describe "fec_ids=" do
+      it "should set ALL associated fec_ids with fec_ids=" do
+        @person.fec_ids=["new array", "of values"]
+        @person.save
+        expect(@person.fec_ids).not_to include("originalfecid")
+        expect(@person.fec_ids.count).to eq(2)
+      end
+    end
+    describe "add_fec_id" do
+      it "should nondestructively add ids to existing array" do
+        person = people(:person_412493)
+        person.fec_ids = ["this_is_an_fec_id"]
+        person.add_fec_id("this_too")
+        expect(person.fec_ids).to include("this_is_an_fec_id")
+        expect(person.fec_ids).to include("this_too")
+      end
+      it "should not add duplicate ids" do
+        person = people(:person_412330)
+        person.fec_ids = ["this_is_an_fec_id"]
+        person.add_fec_id("this_is_an_fec_id")
+        expect(person.fec_ids.count).to eq(1)
+      end
+    end
+  end
 end

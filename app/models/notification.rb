@@ -2,40 +2,48 @@
 #
 # Table name: notifications
 #
-#  id            :integer          not null, primary key
-#  user_id       :integer
-#  seen          :integer
-#  created_at    :datetime
-#  updated_at    :datetime
-#  activities_id :integer
+#  id                        :integer          not null, primary key
+#  created_at                :datetime
+#  updated_at                :datetime
+#  activities_id             :integer
+#  aggregate_notification_id :integer
 #
 
 class Notification < OpenCongressModel
 
   #========== CALLBACKS
 
-  after_create -> { send_email_notification }
+
+
+  #========== VALIDATORS
+
+  validates_presence_of :aggregate_notification
 
   #========== RELATIONS
 
   #----- BELONGS_TO
 
   belongs_to :activity, :class_name => 'PublicActivity::Activity', :foreign_key => 'activities_id'
-  belongs_to :user
-
-  alias :recipient :user
+  belongs_to :aggregate_notification
 
   #========== ACCESSORS
 
-  attr_accessible :user_id, :activities_id, :seen
+  attr_accessible :activities_id, :aggregate_notification_id
+
+  #========== CLASS METHODS
+
+
 
   #========== INSTANCE METHODS
 
+  public
+
+  def activity_option
+    ActivityOption.where(key:activity.key).first
+  end
+
   private
 
-  def send_email_notification
-    method = "#{activity.key.sub('.','_')}_notification".to_sym
-    UserNotifier.send(method, self).deliver if UserNotifier.respond_to?(method)
-  end
+
 
 end

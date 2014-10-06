@@ -169,6 +169,8 @@ class User < OpenCongressModel
   has_many :notebook_items,
            :through => :political_notebook
   has_many :contact_congress_letters
+  has_many :aggregate_notifications
+  has_many :user_notification_settings
 
   #----- BELONGS_TO
 
@@ -354,6 +356,10 @@ class User < OpenCongressModel
 
   def has_state_and_district?
     state.present? and district.present?
+  end
+
+  def notification_settings(key=nil)
+    key.nil? ? user_notification_settings : user_notification_settings.joins(:activity_option).where('activity_options.key=?', key).first
   end
 
   def placeholder

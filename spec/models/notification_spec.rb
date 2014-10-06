@@ -2,12 +2,11 @@
 #
 # Table name: notifications
 #
-#  id            :integer          not null, primary key
-#  user_id       :integer
-#  seen          :integer
-#  created_at    :datetime
-#  updated_at    :datetime
-#  activities_id :integer
+#  id                        :integer          not null, primary key
+#  created_at                :datetime
+#  updated_at                :datetime
+#  activities_id             :integer
+#  aggregate_notification_id :integer
 #
 
 require 'spec_helper'

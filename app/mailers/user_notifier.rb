@@ -1,8 +1,8 @@
 class UserNotifier < ActionMailer::Base
 
   default :from => 'noreply@opencongress.org'
-  before_action :setup_email
-  after_action :send_email
+  before_action -> { :setup_email if correct_argument }
+  after_action -> { :send_email if correct_argument }
 
   def signup_notification(user)
     @subject    += 'Confirm Your OpenCongress Login'
@@ -54,28 +54,27 @@ class UserNotifier < ActionMailer::Base
     @bill_action = notification.activity.trackable
   end
 
-  protected
-
-  def setup_email
-    @recipients  = "#{get_recipient.email}"
-    @subject     = ''
-    @sent_on     = Time.now
-    @user        = get_notification.recipient
-    @trackable   = get_notification.activity.trackable
+  def setup_email(an)
+    @user             = @an.recipient
+    @recipients       = "#{@user.email}"
+    @subject          = ''
+    @sent_on          = Time.now
+    @activity_owner   = @an.activity_owner
+    @trackables       = @an.activities
   end
 
   private
 
   def send_email
-    mail(from: @from, to: @recipients, subject: @subject)
+    # TODO make universal template for notifications
+    mail(from: @from, to: @recipients, subject: @subject, template_name: 'template')
   end
 
-  def get_notification
-    _args[0].is_a?(Notification) ? _args[0] : raise TypeError
-  end
-
-  def get_recipient
-      get_notification.recipient
+  def correct_argument
+    if _args.size == 1 and _args[0].is_a?(AggregateNotification)
+      @an = _args[0] ; true
+    end
+    false
   end
 
 end

@@ -760,6 +760,70 @@ ALTER SEQUENCE activities_id_seq OWNED BY activities.id;
 
 
 --
+-- Name: activity_options; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE activity_options (
+    id integer NOT NULL,
+    key character varying(255),
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: activity_options_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE activity_options_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: activity_options_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE activity_options_id_seq OWNED BY activity_options.id;
+
+
+--
+-- Name: aggregate_notifications; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE aggregate_notifications (
+    id integer NOT NULL,
+    click_count integer,
+    score integer,
+    user_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: aggregate_notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE aggregate_notifications_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: aggregate_notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE aggregate_notifications_id_seq OWNED BY aggregate_notifications.id;
+
+
+--
 -- Name: amendments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3303,16 +3367,50 @@ ALTER SEQUENCE notebook_items_id_seq OWNED BY notebook_items.id;
 
 
 --
+-- Name: notification_emails; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE notification_emails (
+    id integer NOT NULL,
+    sent integer,
+    received integer,
+    code character varying(255),
+    click_count integer,
+    aggregate_notification_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: notification_emails_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE notification_emails_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: notification_emails_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE notification_emails_id_seq OWNED BY notification_emails.id;
+
+
+--
 -- Name: notifications; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE notifications (
     id integer NOT NULL,
-    user_id integer,
-    seen integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    activities_id integer
+    activities_id integer,
+    aggregate_notification_id integer
 );
 
 
@@ -4466,6 +4564,41 @@ ALTER SEQUENCE user_mailing_lists_id_seq OWNED BY user_mailing_lists.id;
 
 
 --
+-- Name: user_notification_settings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE user_notification_settings (
+    id integer NOT NULL,
+    timeframe character varying(255),
+    threshold integer,
+    email_freq character varying(255),
+    user_id integer,
+    activity_option_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: user_notification_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE user_notification_settings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_notification_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE user_notification_settings_id_seq OWNED BY user_notification_settings.id;
+
+
+--
 -- Name: user_options; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4876,6 +5009,20 @@ ALTER TABLE ONLY actions ALTER COLUMN id SET DEFAULT nextval('actions_id_seq'::r
 --
 
 ALTER TABLE ONLY activities ALTER COLUMN id SET DEFAULT nextval('activities_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY activity_options ALTER COLUMN id SET DEFAULT nextval('activity_options_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY aggregate_notifications ALTER COLUMN id SET DEFAULT nextval('aggregate_notifications_id_seq'::regclass);
 
 
 --
@@ -5358,6 +5505,13 @@ ALTER TABLE ONLY notebook_items ALTER COLUMN id SET DEFAULT nextval('notebook_it
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY notification_emails ALTER COLUMN id SET DEFAULT nextval('notification_emails_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY notifications ALTER COLUMN id SET DEFAULT nextval('notifications_id_seq'::regclass);
 
 
@@ -5575,6 +5729,13 @@ ALTER TABLE ONLY user_mailing_lists ALTER COLUMN id SET DEFAULT nextval('user_ma
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY user_notification_settings ALTER COLUMN id SET DEFAULT nextval('user_notification_settings_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY user_options ALTER COLUMN id SET DEFAULT nextval('user_options_id_seq'::regclass);
 
 
@@ -5662,6 +5823,22 @@ ALTER TABLE ONLY actions
 
 ALTER TABLE ONLY activities
     ADD CONSTRAINT activities_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: activity_options_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY activity_options
+    ADD CONSTRAINT activity_options_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: aggregate_notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY aggregate_notifications
+    ADD CONSTRAINT aggregate_notifications_pkey PRIMARY KEY (id);
 
 
 --
@@ -6201,6 +6378,14 @@ ALTER TABLE ONLY notebook_items
 
 
 --
+-- Name: notification_emails_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY notification_emails
+    ADD CONSTRAINT notification_emails_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -6265,7 +6450,15 @@ ALTER TABLE ONLY person_approvals
 
 
 --
--- Name: person_identifiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+-- Name: person_identifiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY person_identifiers
+    ADD CONSTRAINT person_identifiers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pg_ts_cfg_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
 --
 
 ALTER TABLE ONLY person_identifiers
@@ -6454,6 +6647,14 @@ ALTER TABLE ONLY user_ip_addresses
 
 ALTER TABLE ONLY user_mailing_lists
     ADD CONSTRAINT user_mailing_lists_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_notification_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY user_notification_settings
+    ADD CONSTRAINT user_notification_settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -6758,6 +6959,13 @@ CREATE INDEX index_activities_on_recipient_id_and_recipient_type ON activities U
 --
 
 CREATE INDEX index_activities_on_trackable_id_and_trackable_type ON activities USING btree (trackable_id, trackable_type);
+
+
+--
+-- Name: index_aggregate_notifications_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_aggregate_notifications_on_user_id ON aggregate_notifications USING btree (user_id);
 
 
 --
@@ -7160,10 +7368,24 @@ CREATE INDEX index_notebook_items_on_spam ON notebook_items USING btree (spam);
 
 
 --
+-- Name: index_notification_emails_on_aggregate_notification_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_notification_emails_on_aggregate_notification_id ON notification_emails USING btree (aggregate_notification_id);
+
+
+--
 -- Name: index_notifications_on_activities_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_notifications_on_activities_id ON notifications USING btree (activities_id);
+
+
+--
+-- Name: index_notifications_on_aggregate_notification_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_notifications_on_aggregate_notification_id ON notifications USING btree (aggregate_notification_id);
 
 
 --
@@ -7304,6 +7526,20 @@ CREATE INDEX index_taggings_on_tag_id ON taggings USING btree (tag_id);
 --
 
 CREATE INDEX index_taggings_on_taggable_id_and_taggable_type_and_context ON taggings USING btree (taggable_id, taggable_type, context);
+
+
+--
+-- Name: index_user_notification_settings_on_activity_option_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_user_notification_settings_on_activity_option_id ON user_notification_settings USING btree (activity_option_id);
+
+
+--
+-- Name: index_user_notification_settings_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_user_notification_settings_on_user_id ON user_notification_settings USING btree (user_id);
 
 
 --
@@ -7847,3 +8083,5 @@ INSERT INTO schema_migrations (version) VALUES ('20141001173322');
 INSERT INTO schema_migrations (version) VALUES ('20140926213853');
 
 INSERT INTO schema_migrations (version) VALUES ('20140929215301');
+
+INSERT INTO schema_migrations (version) VALUES ('20141006153954');

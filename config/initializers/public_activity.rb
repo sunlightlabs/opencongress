@@ -15,6 +15,7 @@ PublicActivity::Activity.class_eval do
 
     elsif self.recipient_id.present?
       Notification.create(activities_id:self.id, user_id:recipient.id, seen: 0)
+
     end
 
   end

@@ -3240,7 +3240,8 @@ CREATE TABLE notebook_items (
     user_agent character varying(255),
     ip_address character varying(255),
     spam boolean,
-    censored boolean
+    censored boolean,
+    data text
 );
 
 
@@ -3569,6 +3570,40 @@ ALTER SEQUENCE person_approvals_id_seq OWNED BY person_approvals.id;
 
 
 --
+-- Name: person_identifiers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE person_identifiers (
+    id integer NOT NULL,
+    person_id integer,
+    bioguideid character varying(255),
+    namespace text,
+    value text,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: person_identifiers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE person_identifiers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: person_identifiers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE person_identifiers_id_seq OWNED BY person_identifiers.id;
+
+
+--
 -- Name: person_stats; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3627,6 +3662,48 @@ CREATE SEQUENCE political_notebooks_id_seq
 --
 
 ALTER SEQUENCE political_notebooks_id_seq OWNED BY political_notebooks.id;
+
+
+--
+-- Name: user_privacy_options; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE user_privacy_options (
+    id integer NOT NULL,
+    name integer DEFAULT 1,
+    email integer DEFAULT 0,
+    zipcode integer DEFAULT 1,
+    location integer DEFAULT 2,
+    profile integer DEFAULT 2,
+    actions integer DEFAULT 2,
+    bookmarks integer DEFAULT 2,
+    friends integer DEFAULT 2,
+    user_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    political_notebook integer DEFAULT 2,
+    watchdog integer DEFAULT 2,
+    groups integer DEFAULT 2
+);
+
+
+--
+-- Name: privacy_options_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE privacy_options_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: privacy_options_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE privacy_options_id_seq OWNED BY user_privacy_options.id;
 
 
 --
@@ -4384,48 +4461,6 @@ CREATE SEQUENCE user_options_id_seq
 --
 
 ALTER SEQUENCE user_options_id_seq OWNED BY user_options.id;
-
-
---
--- Name: user_privacy_options; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE user_privacy_options (
-    id integer NOT NULL,
-    name integer DEFAULT 1,
-    email integer DEFAULT 0,
-    zipcode integer DEFAULT 1,
-    location integer DEFAULT 2,
-    profile integer DEFAULT 2,
-    actions integer DEFAULT 2,
-    bookmarks integer DEFAULT 2,
-    friends integer DEFAULT 2,
-    user_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    political_notebook integer DEFAULT 2,
-    watchdog integer DEFAULT 2,
-    groups integer DEFAULT 2
-);
-
-
---
--- Name: user_privacy_options_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE user_privacy_options_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: user_privacy_options_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE user_privacy_options_id_seq OWNED BY user_privacy_options.id;
 
 
 --
@@ -5335,6 +5370,13 @@ ALTER TABLE ONLY person_approvals ALTER COLUMN id SET DEFAULT nextval('person_ap
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY person_identifiers ALTER COLUMN id SET DEFAULT nextval('person_identifiers_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY political_notebooks ALTER COLUMN id SET DEFAULT nextval('political_notebooks_id_seq'::regclass);
 
 
@@ -5496,7 +5538,7 @@ ALTER TABLE ONLY user_options ALTER COLUMN id SET DEFAULT nextval('user_options_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY user_privacy_options ALTER COLUMN id SET DEFAULT nextval('user_privacy_options_id_seq'::regclass);
+ALTER TABLE ONLY user_privacy_options ALTER COLUMN id SET DEFAULT nextval('privacy_options_id_seq'::regclass);
 
 
 --
@@ -6168,6 +6210,14 @@ ALTER TABLE ONLY people
 
 ALTER TABLE ONLY person_approvals
     ADD CONSTRAINT person_approvals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: person_identifiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY person_identifiers
+    ADD CONSTRAINT person_identifiers_pkey PRIMARY KEY (id);
 
 
 --
@@ -7086,10 +7136,24 @@ CREATE INDEX index_people_on_title ON people USING btree (title);
 
 
 --
+-- Name: index_person_identifiers_on_bioguideid; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_person_identifiers_on_bioguideid ON person_identifiers USING btree (bioguideid);
+
+
+--
 -- Name: index_political_notebooks_on_group_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_political_notebooks_on_group_id ON political_notebooks USING btree (group_id);
+
+
+--
+-- Name: index_privacy_options_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_privacy_options_on_user_id ON user_privacy_options USING btree (user_id);
 
 
 --
@@ -7195,13 +7259,6 @@ CREATE INDEX index_user_options_on_sms_notifications ON user_options USING btree
 --
 
 CREATE UNIQUE INDEX index_user_options_on_user_id ON user_options USING btree (user_id);
-
-
---
--- Name: index_user_privacy_options_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_user_privacy_options_on_user_id ON user_privacy_options USING btree (user_id);
 
 
 --
@@ -7680,6 +7737,8 @@ INSERT INTO schema_migrations (version) VALUES ('20140731155926');
 
 INSERT INTO schema_migrations (version) VALUES ('20140731184412');
 
+INSERT INTO schema_migrations (version) VALUES ('20140827210416');
+
 INSERT INTO schema_migrations (version) VALUES ('20140908175416');
 
 INSERT INTO schema_migrations (version) VALUES ('20140910155039');
@@ -7693,4 +7752,8 @@ INSERT INTO schema_migrations (version) VALUES ('20140911215027');
 INSERT INTO schema_migrations (version) VALUES ('20140916103555');
 
 INSERT INTO schema_migrations (version) VALUES ('20140916113742');
+
+INSERT INTO schema_migrations (version) VALUES ('20140929213333');
+
+INSERT INTO schema_migrations (version) VALUES ('20141001173322');
 

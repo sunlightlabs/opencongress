@@ -36,6 +36,7 @@ class AccountController < ApplicationController
     def common_prefix (as, bs)
       as.zip(bs).select{ |a, b| a == b }.map(&:first)
     end
+
   end
 
   def index

@@ -14,7 +14,7 @@ class Notification < OpenCongressModel
 
   #========== CALLBACKS
 
-  after_save -> (notification) { send_email(notification) }
+  after_create -> { send_email_notification }
 
   #========== RELATIONS
 
@@ -33,9 +33,9 @@ class Notification < OpenCongressModel
 
   private
 
-  def send_email(notification)
+  def send_email_notification
     method = "#{activity.key.sub('.','_')}_notification".to_sym
-    UserNotifier.send(method, notification).deliver if UserNotifier.respond_to?(method)
+    UserNotifier.send(method, self).deliver if UserNotifier.respond_to?(method)
   end
 
 end

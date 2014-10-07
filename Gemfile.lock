@@ -134,6 +134,7 @@ GEM
     coffee-script-source (1.8.0)
     colored (1.2)
     columnize (0.8.9)
+    connection_pool (2.0.0)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     cucumber (1.3.16)
@@ -326,8 +327,6 @@ GEM
     postmark-rails (0.8.0)
       actionmailer (>= 3.0.0)
       postmark (~> 1.3.0)
-    protected_attributes (1.0.8)
-      activemodel (>= 4.0.1, < 5.0)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -397,6 +396,8 @@ GEM
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
     redis (3.1.0)
+    redis-namespace (1.5.1)
+      redis (~> 3.0, >= 3.0.4)
     require_all (1.3.2)
     rmagick (2.13.3)
     rspec (3.0.0)
@@ -439,6 +440,12 @@ GEM
     sexmachine (0.1.0)
       unicode_utils (>= 1.3.0)
     sexp_processor (4.4.4)
+    sidekiq (3.2.5)
+      celluloid (= 0.15.2)
+      connection_pool (>= 2.0.0)
+      json
+      redis (>= 3.0.6)
+      redis-namespace (>= 1.3.1)
     silent-postgres (0.1.1)
     simple-rss (1.3.1)
     simple_captcha2 (0.3.2)
@@ -562,7 +569,6 @@ DEPENDENCIES
   possessive
   postmark-mitt
   postmark-rails
-  protected_attributes
   prototype_legacy_helper (= 0.0.0)!
   pry
   pry-byebug
@@ -590,6 +596,7 @@ DEPENDENCIES
   sentry-raven
   settingslogic
   sexmachine
+  sidekiq
   silent-postgres
   simple-rss
   simple_captcha2

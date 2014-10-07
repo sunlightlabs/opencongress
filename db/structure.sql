@@ -796,8 +796,8 @@ ALTER SEQUENCE activity_options_id_seq OWNED BY activity_options.id;
 
 CREATE TABLE aggregate_notifications (
     id integer NOT NULL,
-    click_count integer,
-    score integer,
+    click_count integer DEFAULT 0,
+    score integer DEFAULT 0,
     user_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
@@ -3372,10 +3372,10 @@ ALTER SEQUENCE notebook_items_id_seq OWNED BY notebook_items.id;
 
 CREATE TABLE notification_emails (
     id integer NOT NULL,
-    sent integer,
-    received integer,
+    sent integer DEFAULT 0,
+    received integer DEFAULT 0,
     code character varying(255),
-    click_count integer,
+    click_count integer DEFAULT 0,
     aggregate_notification_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
@@ -8085,3 +8085,5 @@ INSERT INTO schema_migrations (version) VALUES ('20140926213853');
 INSERT INTO schema_migrations (version) VALUES ('20140929215301');
 
 INSERT INTO schema_migrations (version) VALUES ('20141006153954');
+
+INSERT INTO schema_migrations (version) VALUES ('20141007163915');

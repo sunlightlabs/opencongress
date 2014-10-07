@@ -41,8 +41,6 @@ class UserPrivacyOptions < OpenCongressModel
     end
   end
 
-  attr_accessible *ACCESSIBLE_ATTRS
-
   # sets all options to private
   def privatize!
     ACCESSIBLE_ATTRS.map{|att| self.send("#{att}=".to_sym, 0)}

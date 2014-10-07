@@ -57,7 +57,6 @@ class RollCallVote < OpenCongressModel
 
   #==========
 
-  attr_accessible :vote, :roll_call_id, :person_id
 
   #========== CLASS METHODS
 

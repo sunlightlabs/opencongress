@@ -53,8 +53,6 @@ class Comment < OpenCongressModel
   end
   has_many :comment_scores
 
-  attr_accessible :comment, :name, :email, :homepage, :title
-
   acts_as_nested_set :scope => :root
 
   rakismet_attrs({

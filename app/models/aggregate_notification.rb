@@ -3,8 +3,8 @@
 # Table name: aggregate_notifications
 #
 #  id          :integer          not null, primary key
-#  click_count :integer
-#  score       :integer
+#  click_count :integer          default(0)
+#  score       :integer          default(0)
 #  user_id     :integer
 #  created_at  :datetime
 #  updated_at  :datetime
@@ -12,27 +12,50 @@
 
 class AggregateNotification < OpenCongressModel
 
+  #========== CALLBACKS
+
+  #========== RELATIONS
+
   has_many :notifications
   has_many :activities, :class_name => 'PublicActivity::Activity', :through => :notifications
   belongs_to :user
 
   alias :recipient :user
 
-  attr_accessible :user_id, :click_count, :score
+  #========== METHODS
 
-  def self.create_from_activity(activity, user_id)
+  #----- CLASS
 
-    # TODO: optimize this with database indexes
-    an = User.find(user_id).aggregate_notifications
-    .joins(:notifications,:activities)
-    .where('activities.owner_id'=>activity.owner_id, 'activities.owner_type' => activity.owner_type, 'activities.key' => activity.key ).last
+  # Factory for aggregate notification creation for when public activity generates activity.
+  #
+  # @param activity_id [Integer] PublicActivity::Activity id value
+  # @param user_id [Integer] User id value
+  # @return [AggregateNotification, nil] the instance of nil
+  def self.create_from_activity(activity_id, user_id)
 
-    an = AggregateNotification.create(user_id:user_id) if an.nil?
+    activity = PublicActivity::Activity.find(activity_id)
 
-    Notification.create(activities_id:activity.id,aggregate_notification_id:an.id)
+    if activity.present?
 
-    an.email_notification if an.email_conditions_met?
+      # TODO: optimize this with database indexes
+      an = User.find(user_id).aggregate_notifications
+      .joins(:notifications,:activities)
+      .where('activities.owner_id'=>activity.owner_id, 'activities.owner_type'=>activity.owner_type, 'activities.key'=>activity.key ).last
+
+      # TODO: figure out whether to generate new aggregate notification based on user notification settings
+
+      an = AggregateNotification.create(user_id:user_id) if an.nil?
+      Notification.create(activities_id:activity.id, aggregate_notification_id:an.id)
+      an.email_notification if an.email_conditions_met?
+
+      return an
+
+    else
+      return nil
+    end
   end
+
+  public
 
   def activity_owner
     activities.first.owner if activities.any?
@@ -42,12 +65,8 @@ class AggregateNotification < OpenCongressModel
     activities.first.key if activities.any?
   end
 
-  def child_notification_created
-    email_notification
-  end
-
   def email_notification
-    UserNotifier.setup_email(self).deliver
+    NotificationEmail.create(aggregate_notification_id:self.id)
   end
 
   def email_conditions_met?
@@ -61,5 +80,8 @@ class AggregateNotification < OpenCongressModel
     return false
 
   end
+
+  private
+
 
 end

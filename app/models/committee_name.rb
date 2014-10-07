@@ -11,7 +11,7 @@
 #
 
 class CommitteeName < OpenCongressModel
-  attr_accessible :name, :session
 
   belongs_to :committee
+
 end

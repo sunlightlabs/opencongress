@@ -13,8 +13,6 @@ class Notification < OpenCongressModel
 
   #========== CALLBACKS
 
-
-
   #========== VALIDATORS
 
   validates_presence_of :aggregate_notification
@@ -28,11 +26,7 @@ class Notification < OpenCongressModel
 
   #========== ACCESSORS
 
-  attr_accessible :activities_id, :aggregate_notification_id
-
   #========== CLASS METHODS
-
-
 
   #========== INSTANCE METHODS
 
@@ -43,7 +37,5 @@ class Notification < OpenCongressModel
   end
 
   private
-
-
 
 end

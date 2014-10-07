@@ -19,8 +19,8 @@ class Friend < OpenCongressModel
 
   #========== CALLBACKS
 
-  after_update -> (friend) { confirm_friendship(friend) if friend.confirmed_changed? and friend.confirmed? }
-  # after_create -> (friend) { }
+  after_create  -> { create_activity(:follow, owner: :user, recipient: :friend) unless confirmed? }
+  before_destroy -> { create_activity(:defriended, owner: :user, recipient: :friend) }
 
   #========== RELATIONS
 
@@ -29,33 +29,41 @@ class Friend < OpenCongressModel
   belongs_to :user
   belongs_to :friend, :class_name => 'User', :foreign_key => 'friend_id'
 
-  #=========== ACCESSORS
+  #========== METHODS
 
-  attr_accessible :user_id, :friend_id, :confirmed, :confirmed_at
+  #----- CLASS
 
-  #tracked owner: :user, recipient: :friend
-
-  def confirm!
-    @confirmed = true
-    now = Time.new
-    update_attributes!({:confirmed => true, :confirmed_at => now})
-    Friend.create({:friend_id => self.user_id, :user_id => self.friend_id, :confirmed => true, :confirmed_at => now})
-    self.create_activity :confirm, owner: :friend, recipient: :user
+  def self.create_confirmed_friendship(u1, u2)
+    Friend.create({:friend_id => u1.id, :user_id => u2.id, :confirmed => true, :confirmed_at => Time.new})
+    Friend.create({:friend_id => u2.id, :user_id => u1.id, :confirmed => true, :confirmed_at => Time.new})
   end
+
+  #----- INSTANCE
 
   def confirmed?
     self.confirmed
   end
 
-  def send_email_notification(friend)
-    UserNotifier.friend_notification(friend).deliver unless friend.confirmed == true
+  def confirm!
+    if not confirmed? and Friend.where(friend: self.user, user: self.friend).empty?
+      now = Time.new
+      update_attributes!({:confirmed => true, :confirmed_at => now})
+      reciprocate = Friend.create({:friend => self.user, :user => self.friend, :confirmed => true, :confirmed_at => now})
+      reciprocate.create_activity(:confirmed, owner => :user, recipient => :friend)
+    else
+      false
+    end
   end
 
-
-  def recently_confirmed?
-    @confirmed
+  def defriend
+    self.inverse_friend.update_attributes!({:confirmed => false, :confirmed_at => nil})
+    self.destroy
   end
-  
+
+  def inverse_friend
+    Friend.where(user:self.friend, friend: self.user).first if confirmed?
+  end
+
   def self.recent_activity(friends)
     ra = []
     number_of_friends = friends.length
@@ -77,30 +85,5 @@ class Friend < OpenCongressModel
 
     ra.compact.sort_by{|p| p.created_at}.reverse
   end
-
-  def self.create_confirmed_friendship(u1, u2)
-    Friend.create({:friend_id => u1.id, :user_id => u2.id, :confirmed => true, :confirmed_at => Time.new})
-    Friend.create({:friend_id => u2.id, :user_id => u1.id, :confirmed => true, :confirmed_at => Time.new})
-  end
-
-  private
-
-  def confirm_friendship(friend)
-    if Friend.where(friend: friend.user, user: friend.friend).empty?
-      reciprocate = Friend.create({:friend_id => friend.user_id,
-                     :user_id => friend.friend_id,
-                     :confirmed => true,
-                     :confirmed_at => Time.new})
-      reciprocate.create_activity :confirmed, owner: friend.friend, recipient: friend.user
-    end
-
-
-    # if friend.
-    # if friend.recently_confirmed?
-    # UserNotifier.friend_confirmed_notification(friend).deliver
-    # Friend.create({:friend_id => friend.user_id, :user_id => friend.friend_id, :confirmed => true, :confirmed_at => Time.new}) unless Friend.find_by_friend_id_and_user_id(friend.user_id, friend.friend_id)
-    #end
-  end
-
 
 end

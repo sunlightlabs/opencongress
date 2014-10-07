@@ -8,7 +8,7 @@ gem 'rake', '~> 0.9.1'
 gem 'railties'
 gem 'thin'
 gem 'dalli'
-gem 'protected_attributes'
+# gem 'protected_attributes'
 gem 'rails-observers'
 
 # database gems -- need both pg and mysql for app and wiki
@@ -48,6 +48,7 @@ gem 'rabl'
 
 # Background tasks
 gem 'delayed_job'#, '~> 3.1'
+gem 'sidekiq'
 
 # RMagick
 gem 'rmagick', '~> 2.13.1', :require => "RMagick"

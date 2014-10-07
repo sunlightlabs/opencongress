@@ -30,8 +30,6 @@ class BillAction < Action
 
   belongs_to :bill
 
-  attr_accessible :bill_id
-
   def display
     "<h4>#{bill.title_full_common}</h4>"
   end

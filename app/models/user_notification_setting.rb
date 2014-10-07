@@ -17,5 +17,6 @@ class UserNotificationSetting < OpenCongressModel
   belongs_to :user
   belongs_to :activity_option
 
+  DEFAULT_SETTINGS = { threshold: 1 }
 
 end

@@ -1,8 +1,8 @@
 class UserNotifier < ActionMailer::Base
 
   default :from => 'noreply@opencongress.org'
-  before_action -> { :setup_email if correct_argument }
-  after_action -> { :send_email if correct_argument }
+  # before_action -> { :setup_email if correct_argument }
+  after_action -> { :send_email }
 
   def signup_notification(user)
     @subject    += 'Confirm Your OpenCongress Login'
@@ -54,13 +54,14 @@ class UserNotifier < ActionMailer::Base
     @bill_action = notification.activity.trackable
   end
 
-  def setup_email(an)
-    @user             = @an.recipient
+  def setup_email(ne)
+    an = ne.aggregate_notification
+    @user             = an.recipient
     @recipients       = "#{@user.email}"
     @subject          = ''
     @sent_on          = Time.now
-    @activity_owner   = @an.activity_owner
-    @trackables       = @an.activities
+    @activity_owner   = an.activity_owner
+    @trackables       = an.activities
   end
 
   private

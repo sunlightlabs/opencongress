@@ -1,5 +1,5 @@
 class SimpleCaptcha::SimpleCaptchaData
-  attr_accessible :captcha, :captcha_key, :key
+
 end
 
 SimpleCaptcha.setup do |sc|

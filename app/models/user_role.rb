@@ -13,6 +13,7 @@
 #
 
 class UserRole < OpenCongressModel
+
   has_many :users
   validates_uniqueness_of :name
   

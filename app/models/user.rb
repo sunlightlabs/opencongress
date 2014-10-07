@@ -219,10 +219,10 @@ class User < OpenCongressModel
 
   # Note that some attrs are defined in authable_model
   # accept_tos and email_confirmation are unpersisted accessors for validation only
-  attr_accessible :email, :accept_tos, :accepted_tos_at, :remember_created_at,
-                  :representative_id, :state, :district, :user_privacy_options_attributes,
-                  :user_options_attributes, :user_profile_attributes, :zipcode, :street_address,
-                  :street_address_2, :city, :district_needs_update, :website
+  # attr_accessible :email, :accept_tos, :accepted_tos_at, :remember_created_at,
+  #                :representative_id, :state, :district, :user_privacy_options_attributes,
+  #                :user_options_attributes, :user_profile_attributes, :zipcode, :street_address,
+  #                :street_address_2, :city, :district_needs_update, :website
 
   attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email
 
@@ -265,13 +265,14 @@ class User < OpenCongressModel
 
   #========== CLASS METHODS
 
-  def self.random_password
-    return SecureRandom.random_number(178689910246017054531432477289437798228285773001601743140683775).to_s(36)
+  def self.random_password(length=40)
+    return SecureRandom.hex(length/2)
   end
 
   def self.login_stub_for_profile(profile)
     address = Mail::Address.new(profile.email)
-    stub = address.local.sub(/[^a-z0-9].*$/i, '') # remove any non-alphnumeric character and everything following it
+    # remove any non-alphnumeric character and everything following it
+    stub = address.local.sub(/[^a-z0-9].*$/i, '')
     stub = "#{profile.first_name}#{profile.last_name.first}" if stub.length < 5
     stub = 'newuser' if stub.length < 5
     return stub
@@ -340,26 +341,63 @@ class User < OpenCongressModel
   #========== INSTANCE METHODS
   public
 
+  def recent_activity(timeframe=7.days)
+    range = (Time.now-timeframe)..Time.now
+    PublicActivity::Activity.where(created_at: range, owner_id: id, owner_type: 'User')
+  end
+
   def update_login_metadate(ip_addr)
     update_attribute(:previous_login_date, last_login ? last_login : Time.now)
     update_attribute(:last_login, Time.now)
     user_ip_addresses.where(addr:UserIpAddress.int_form(ip_addr)).first_or_create
   end
 
+  # Follows another user or confirms friendship if already being followed by user
+  #
+  # @param user [User] user to follow
+  # @return [Boolean] true for success, false otherwise
+  def follow(user)
+    # already following the user so return false
+    return false if Friend.where(user: self, friend: user).any?
+
+    # check if already being followed by other user
+    followed = Friend.where(user: user, friend: self).first
+
+    # confirm if being followed, otherwise create one-way friend
+    followed.present? ? followed.confirm! : Friend.create({user: self, friend: user, confirmed: false })
+  end
+
+  # Unfollows another user and unconfirming their friendship
+  #
+  # @param user [User] user to follow
+  # @return [Boolean] true for success, false otherwise
+  def unfollow(user)
+    friend = Friend.where(user: self, friend: user).first
+    friend.present? ? friend.defriend : false
+  end
+
+  # Retrieves user's notification settings
+  #
+  # @param key [String] activity key for specific settings, nil for all
+  # @return [UserNotificationSetting, Relation<UserNotificationSetting>] one or all user's notification settings
+  def notification_settings(key=nil)
+    ns = key.nil? ? user_notification_settings : user_notification_settings.joins(:activity_option).where('activity_options.key=?', key).first
+    ns.present? ? ns : UserNotificationSetting::DEFAULT_SETTINGS
+  end
+
+  # Retrieves user's unseen notifications
+  #
+  # @return [Relation<AggregateNotification>] all unseen notifications
   def get_unseen_notifications
-    Notification.where(user_id:id, seen:0)
+    aggregate_notifications.where(click_count: 0)
   end
 
   def is_admin?
-    return user_role.can_administer_users
+    user_role.can_administer_users
   end
 
   def has_state_and_district?
     state.present? and district.present?
-  end
-
-  def notification_settings(key=nil)
-    key.nil? ? user_notification_settings : user_notification_settings.joins(:activity_option).where('activity_options.key=?', key).first
   end
 
   def placeholder

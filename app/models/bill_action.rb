@@ -25,10 +25,17 @@
 
 class BillAction < Action
 
-  include PublicActivity::Model
-  tracked owner: :bill
+  #========== INCLUDES
+
+  include PublicActivity::Model ; tracked owner: :bill
+
+  #========== RELATIONS
 
   belongs_to :bill
+
+  #========== METHODS
+
+  #----- INSTANCE
 
   def display
     "<h4>#{bill.title_full_common}</h4>"

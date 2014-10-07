@@ -22,13 +22,15 @@ class Notification < OpenCongressModel
   #----- BELONGS_TO
 
   belongs_to :activity, :class_name => 'PublicActivity::Activity', :foreign_key => 'activities_id'
-  belongs_to :aggregate_notification
+  belongs_to :aggregate_notification, touch:true
 
   #========== ACCESSORS
 
-  #========== CLASS METHODS
+  #========== METHODS
 
-  #========== INSTANCE METHODS
+  #----- CLASS
+
+  #----- INSTANCE
 
   public
 
@@ -37,5 +39,7 @@ class Notification < OpenCongressModel
   end
 
   private
+
+
 
 end

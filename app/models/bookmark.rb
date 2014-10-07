@@ -17,10 +17,9 @@ class Bookmark < OpenCongressModel
 
   #========== RELATIONS
 
-  #----- BELONGS_TO
+  #----- BELONGS TO
 
   belongs_to :bookmarkable, :polymorphic => true
-
   belongs_to :user # NOTE: Comments belong to a user
 
   #========== SCOPES
@@ -40,14 +39,9 @@ class Bookmark < OpenCongressModel
   # NOTE: install the acts_as_taggable plugin if you want bookmarks to be tagged.
   acts_as_taggable
 
-  # Get all notifications for this bookmark
-  #
-  # @param seen [Integer] 0 for unseen, 1 for seen, nil for all
-  # @return [Relation<Notification>] notifications for the user associated with this bookmark
-  def notifications(seen=nil)
-    ids = PublicActivity::Activity.where(owner_id:self.bookmarkable_id, owner_type:self.bookmarkable_type).collect{|a| a.id}
-    Notification.where(activities_id:ids, seen: seen.nil? ? 0 : 1)
-  end
+  #========== METHODS
+
+  #----- CLASS
 
   # Find all bookmarks for a given user
   #
@@ -81,6 +75,17 @@ class Bookmark < OpenCongressModel
   # @return [Relation<Bill>]
   def self.find_bookmarked_bills_by_user(user)
     where(user_id:user, bookmarkable_type: 'Bill')
+  end
+
+  #----- INSTANCE
+
+  # Get all notifications for this bookmark
+  #
+  # @param seen [Integer] 0 for unseen, greater than 0 for numbers of times seen, nil for all
+  # @return [Relation<Notification>] notifications for the user associated with this bookmark
+  def aggregate_notifications(seen=nil)
+    ids = PublicActivity::Activity.where(owner_id:self.bookmarkable_id, owner_type:self.bookmarkable_type).collect{|a| a.id}
+    AggregateNotification.includes(:activities).where(user_id: self.user_id, click_count: seen.nil? ? 0..Float::INFINITY : seen, 'activities.id' => ids)
   end
 
 end

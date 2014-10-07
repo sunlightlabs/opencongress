@@ -70,7 +70,7 @@ class User < OpenCongressModel
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
 
-  #========== CALLBACKS
+  #========== FILTERS
 
   # This filter merges the validation errors in user_profile with user
   # so that input forms using attributes from user_profile spit have
@@ -169,7 +169,7 @@ class User < OpenCongressModel
   has_many :notebook_items,
            :through => :political_notebook
   has_many :contact_congress_letters
-  has_many :aggregate_notifications
+  has_many :aggregate_notifications, -> { includes(:activities) }
   has_many :user_notification_settings
 
   #----- BELONGS_TO
@@ -263,7 +263,9 @@ class User < OpenCongressModel
     define_method(meth.to_sym){ send(:"_#{meth}") || send(:"build_#{meth}")}
   end
 
-  #========== CLASS METHODS
+  #========== METHODS
+
+  #----- CLASS
 
   def self.random_password(length=40)
     return SecureRandom.hex(length/2)
@@ -338,7 +340,8 @@ class User < OpenCongressModel
     self.includes(:user_options).where("user_options.feed_key = ?", key).first
   end
 
-  #========== INSTANCE METHODS
+  #----- INSTANCE
+
   public
 
   def recent_activity(timeframe=7.days)

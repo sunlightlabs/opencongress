@@ -16,7 +16,7 @@ require 'securerandom'
 
 class NotificationEmail < OpenCongressModel
 
-  #========== CALLBACKS
+  #========== FILTERS
 
   before_create -> { set_link_code }
   after_create -> { send_email }

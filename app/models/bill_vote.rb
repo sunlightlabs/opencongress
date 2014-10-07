@@ -11,7 +11,7 @@
 #
 
 class BillVote < OpenCongressModel
-  attr_accessible :support
+
   # 1 = opposed, 0 = supported
   belongs_to :user
   belongs_to :bill

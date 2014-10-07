@@ -19,7 +19,6 @@ class PersonIdentifier < ActiveRecord::Base
     :presence => true
 
   #========== FILTERS
-  attr_accessible :value, :namespace
   before_validation :downcase_namespace
 
   #========== PUBLIC METHODS  

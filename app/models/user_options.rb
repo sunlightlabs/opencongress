@@ -15,18 +15,34 @@
 require_dependency 'email_listable'
 
 class UserOptions < OpenCongressModel
+
+  #========== INCLUDES
+
   include EmailListable
+
+  #========== CONSTANTS
 
   HUMANIZED_ATTRIBUTES = {
     :opencongress_mail => "OpenCongress mailing preference",
     :partner_mail => "Partner mailing preference"
   }
 
-  belongs_to :user
+  #========== FILTERS
 
   update_email_subscription_when_changed :user, [:opencongress_mail, :partner_mail]
   before_save :ensure_feed_key
 
+  #========== RELATIONS
+
+  #----- BELONGS TO
+
+  belongs_to :user
+
+  #========== METHODS
+
+  #----- INSTANCE
+
+  public
 
   def reset_feed_key
     update_attribute(:feed_key, generate_feed_key)
@@ -35,9 +51,7 @@ class UserOptions < OpenCongressModel
   protected
 
   def ensure_feed_key
-    unless feed_key.present?
-      self.feed_key = generate_feed_key
-    end
+    self.feed_key = generate_feed_key unless feed_key.present?
   end
 
   def generate_feed_key

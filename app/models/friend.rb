@@ -19,7 +19,7 @@ class Friend < OpenCongressModel
 
   #========== FILTERS
 
-  after_create  -> { create_activity(:follow, owner: :user, recipient: :friend) unless confirmed? }
+  after_create   -> { create_activity(:follow, owner: :user, recipient: :friend) unless confirmed? }
   before_destroy -> { create_activity(:defriended, owner: :user, recipient: :friend) }
 
   #========== RELATIONS
@@ -65,7 +65,7 @@ class Friend < OpenCongressModel
   def confirm!
     if not confirmed? and Friend.where(friend: self.user, user: self.friend).empty?
       now = Time.new
-      update_attributes!({:confirmed => true, :confirmed_at => now})
+      self.update_attributes!({:confirmed => true, :confirmed_at => now})
       reciprocate = Friend.create({:friend => self.user, :user => self.friend, :confirmed => true, :confirmed_at => now})
       reciprocate.create_activity(:confirmed, owner => :user, recipient => :friend)
     else
@@ -78,6 +78,9 @@ class Friend < OpenCongressModel
     self.destroy
   end
 
+  # Gets the inverse friendship for this friendship instance
+  #
+  # @return [Friend] the inverse friend of this friends
   def inverse_friend
     Friend.where(user:self.friend, friend: self.user).first if confirmed?
   end

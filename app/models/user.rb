@@ -36,7 +36,6 @@ require_dependency 'email_listable'
 require_dependency 'multi_geocoder'
 require_dependency 'visible_by_privacy_option_query'
 
-# this model expects a certain database layout and its based on the name/login pattern.
 class User < OpenCongressModel
 
   #========== INCLUDES
@@ -47,9 +46,9 @@ class User < OpenCongressModel
   #========== CONSTANTS
 
   HUMANIZED_ATTRIBUTES = {
-      :email => "E-mail address",
-      :accept_tos => "Terms of service",
-      :login => "Username"
+      :email => 'E-mail address',
+      :accept_tos => 'Terms of service',
+      :login => 'Username'
   }
 
   PROFILE_IMAGE_SIZES = [:main_picture, :small_picture]
@@ -69,6 +68,7 @@ class User < OpenCongressModel
   validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
+  validates_presence_of       :user_notification_options
 
   #========== FILTERS
 
@@ -112,6 +112,7 @@ class User < OpenCongressModel
   has_one  :watch_dog
   has_one  :political_notebook,
            :dependent => :destroy
+  has_one  :user_notification_options
 
   #----- HAS_MANY
 
@@ -169,8 +170,9 @@ class User < OpenCongressModel
   has_many :notebook_items,
            :through => :political_notebook
   has_many :contact_congress_letters
-  has_many :aggregate_notifications, -> { includes(:activities) }
-  has_many :user_notification_settings
+  has_many :notification_aggregates, -> { includes(:activities) }
+  has_many :user_notification_option_items, -> { joins(:activity_option) },
+           :through => :user_notification_options
 
   #----- BELONGS_TO
 
@@ -190,6 +192,8 @@ class User < OpenCongressModel
   alias_method :voted_bills, :bills_voted_on
   alias_method :supported_bills, :bills_supported
   alias_method :opposed_bills, :bills_opposed
+  alias_method :notification_options, :user_notification_options
+  alias_method :notification_option_items, :user_notification_option_items
 
   #========== SCOPES
 
@@ -366,29 +370,47 @@ class User < OpenCongressModel
     followed.present? ? followed.confirm! : Friend.create({user: self, friend: user, confirmed: false })
   end
 
-  # Unfollows another user and unconfirming their friendship
+  # Unfollows another user
   #
-  # @param user [User] user to follow
+  # @param user [User] user to unfollow
   # @return [Boolean] true for success, false otherwise
   def unfollow(user)
     friend = Friend.where(user: self, friend: user).first
-    friend.present? ? friend.defriend : false
+    friend.defriend if friend.present?
   end
 
-  # Retrieves user's notification settings
+  # Retrieves all or specific notification settings for a user
   #
   # @param key [String] activity key for specific settings, nil for all
-  # @return [UserNotificationSetting, Relation<UserNotificationSetting>] one or all user's notification settings
-  def notification_settings(key=nil)
-    ns = key.nil? ? user_notification_settings : user_notification_settings.joins(:activity_option).where('activity_options.key=?', key).first
-    ns.present? ? ns : UserNotificationSetting::DEFAULT_SETTINGS
+  # @param bookmark [Bookmark] bookmark object for granular options, nil for all
+  # @return [UserNotificationOptionItem, Relation<UserNotificationOptionItem>] one or all user's notification settings
+  def notification_option_item(key=nil, bookmark=nil)
+
+    return notification_option_items if key.nil? and bookmark.nil?
+
+    if key.present? and bookmark.present?
+      n_opt = notification_option_items.where('activity_options.key = ? AND bookmark_id = ?', key, bookmark.id)
+      return n_opt.first if n_opt.any?
+    end
+
+    if key.present?
+      n_opt = notification_option_items.where('activity_options.key = ?', key)
+      return n_opt.first if n_opt.any?
+    end
+
+    if bookmark.present?
+      n_opt = notification_option_items.where('bookmark_id = ?', bookmark.id)
+      return n_opt.first if n_opt.any?
+    end
+
+    UserNotificationOptionItem::DEFAULT_ATTRIBUTES
   end
 
   # Retrieves user's unseen notifications
   #
   # @return [Relation<AggregateNotification>] all unseen notifications
   def get_unseen_notifications
-    aggregate_notifications.where(click_count: 0)
+    notification_aggregates.where(click_count: 0)
   end
 
   def is_admin?
@@ -792,6 +814,5 @@ class User < OpenCongressModel
   def attributes_protected_by_default
     []
   end
-
 
 end

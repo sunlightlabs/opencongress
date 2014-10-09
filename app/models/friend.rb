@@ -29,6 +29,10 @@ class Friend < OpenCongressModel
   belongs_to :user
   belongs_to :friend, :class_name => 'User', :foreign_key => 'friend_id'
 
+  #========== ALIASES
+
+  alias_attribute :confirmed?, :confirmed
+
   #========== METHODS
 
   #----- CLASS
@@ -58,10 +62,6 @@ class Friend < OpenCongressModel
 
   public
 
-  def confirmed?
-    self.confirmed
-  end
-
   def confirm!
     if not confirmed? and Friend.where(friend: self.user, user: self.friend).empty?
       now = Time.new
@@ -74,15 +74,19 @@ class Friend < OpenCongressModel
   end
 
   def defriend
-    self.inverse_friend.update_attributes!({:confirmed => false, :confirmed_at => nil})
-    self.destroy
+    if inverse_friend.present?
+      self.inverse_friend.update_attributes!({:confirmed => false, :confirmed_at => nil})
+      self.destroy
+    else
+      false
+    end
   end
 
   # Gets the inverse friendship for this friendship instance
   #
-  # @return [Friend] the inverse friend of this friends
+  # @return [Friend, nil] the inverse friend of this friends or nil if it doesn't exist
   def inverse_friend
-    Friend.where(user:self.friend, friend: self.user).first if confirmed?
+    confirmed? ? Friend.where(user: self.friend, friend: self.user).first : nil
   end
 
 end

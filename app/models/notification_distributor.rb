@@ -25,9 +25,8 @@ class NotificationDistributor < OpenCongressModel
   # the user's settings for that notification type.
   #
   # @param na_id [Integer] id of the NotificationAggregate to distribute
-  def self.initiate_distribution(na_id)
+  def self.initiate_distribution(na)
 
-    na = NotificationAggregate.find(na_id)
     user = na.user
     na_options = user.notification_option_item(na.activity_key, na.bookmark)
 

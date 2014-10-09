@@ -86,23 +86,4 @@ class NotificationAggregate < OpenCongressModel
     Bookmark.where(bookmarkable_id:ao.id, bookmarkable_type: ao.class.name, user_id: self.user_id).first
   end
 
-  private
-
-  def email_notification
-    NotificationEmail.create(aggregate_notification_id:self.id)
-  end
-
-  def email_conditions_met?
-    usn = user.notification_settings(activity_key)
-
-    return true if notifications.count >= usn.threshold
-    # TODO: determine other conditions for notification settings
-    # condition 2...
-    # condition 3...
-    # condition 4...
-
-    return false
-
-  end
-
 end

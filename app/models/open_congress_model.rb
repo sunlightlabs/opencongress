@@ -7,7 +7,7 @@ class OpenCongressModel < ActiveRecord::Base
   #
   # @return [Array<Model>] array of subclasses
   def self.descendants
-    # Dir.glob(Rails.root.join('app/models/*.rb').to_s) {|path| require path }
+    Dir.glob(Rails.root.join('app/models/**/*.rb').to_s) {|path| require path }
     super
   end
 
@@ -44,6 +44,8 @@ class OpenCongressModel < ActiveRecord::Base
     end)
   end
 
-
-
+  def set_default_attributes_for_nil
+    self.class::DEFAULT_ATTRIBUTES.each {|k,v| self.send("#{k.to_s}=".to_sym, v) if self.send(k).blank? } if defined? self.class::DEFAULT_ATTRIBUTES
   end
+
+end

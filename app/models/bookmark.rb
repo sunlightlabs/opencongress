@@ -83,9 +83,9 @@ class Bookmark < OpenCongressModel
   #
   # @param seen [Integer] 0 for unseen, greater than 0 for numbers of times seen, nil for all
   # @return [Relation<Notification>] notifications for the user associated with this bookmark
-  def aggregate_notifications(seen=nil)
+  def notification_aggregates(seen=nil)
     ids = PublicActivity::Activity.where(owner_id:self.bookmarkable_id, owner_type:self.bookmarkable_type).collect{|a| a.id}
-    AggregateNotification.includes(:activities).where(user_id: self.user_id, click_count: seen.nil? ? 0..Float::INFINITY : seen, 'activities.id' => ids)
+    NotificationAggregate.includes(:activities).where(user_id: self.user_id, click_count: seen.nil? ? 0..Float::INFINITY : seen, 'activities.id' => ids)
   end
 
 end

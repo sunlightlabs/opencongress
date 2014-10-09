@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: person_identifiers
+#
+#  id         :integer          not null, primary key
+#  person_id  :integer
+#  bioguideid :string(255)
+#  namespace  :text
+#  value      :text
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 class PersonIdentifier < ActiveRecord::Base
   
   #========== INCLUDES

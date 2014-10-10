@@ -42,27 +42,29 @@ class NotificationAggregate < OpenCongressModel
   #
   # @param activity_id [Integer] PublicActivity::Activity id value
   # @param user_id [Integer] User id value
-  # @return [AggregateNotification, nil] the instance of nil
+  # @return [AggregateNotification, nil] an instance of nil
   def self.create_from_activity(activity_id, user_id)
 
     activity = PublicActivity::Activity.find(activity_id)
 
     if activity.present?
 
+      user = User.find(user_id)
+
       # TODO: optimize this with database indexes
       # check if an aggregate notification already exists for this activity
-      an = User.find(user_id).notification_aggregates.where('activities.owner_id'=>activity.owner_id,
-                                                            'activities.owner_type'=>activity.owner_type,
-                                                            'activities.key'=>activity.key).last
+      na = user.notification_aggregates.where('activities.owner_id'=>activity.owner_id,
+                                              'activities.owner_type'=>activity.owner_type,
+                                              'activities.key'=>activity.key).last
 
-      # TODO: determine whether to generate new aggregate notification based on user notification settings
-
+      # get user's settings for this particular activity and item based on their bookmark
+      na_options = user.notification_option_item(na.activity_key, na.bookmark)
       # create new aggregate notification if user settings calls for it
-      an = NotificationAggregate.create(user_id:user_id) if an.nil?
+      na = NotificationAggregate.create(user_id:user_id, updated_at: nil) if na_options.stale_aggregate?(na)
       # create notification item and associated with aggregate notification
-      NotificationItem.create(activities_id:activity.id, notification_aggregate_id:an.id)
+      NotificationItem.create(activities_id:activity.id, notification_aggregate_id:na.id)
 
-      return an
+      return na
 
     else
       return nil

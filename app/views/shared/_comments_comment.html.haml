@@ -16,7 +16,7 @@
   .commentfl{ :id => "comfl#{comment.id.to_s}", :style => "clear:both;float:none;#{'display:none;' if (def_fil <= comment.average_rating)}"}
     %p
       Filtered Comment [
-      = link_to_function "show", "new Effect.Appear('com#{comment.id.to_s}');Element.hide('comfl#{comment.id.to_s}');"
+      = link_to "show", :onclick => "new Effect.Appear('com#{comment.id.to_s}');Element.hide('comfl#{comment.id.to_s}');"
       ]
 
   .comment{ :id => "com#{comment.id.to_s}", :style => "clear:both;float:none;width: 100%;#{'display:none;'  if (def_fil > comment.average_rating)}" }
@@ -68,7 +68,7 @@
             });
         - unless @simple_comments
           = link_to '<span>Link</span>'.html_safe, ((preview) ? '#' : url_for(comment.commentable_link.merge({:goto_comment => comment.id}))), { :class => 'small_button' }
-        = link_to_remote "<span>Reply</span>".html_safe, :url => preview ? '#' : {:controller => 'comments', :action => 'showcomfield', :parent_id => comment.id, :object => object.id, :type => object.class.to_s}, :update => "com_" + comment.id.to_s, :complete => "Element.toggle('com_" + comment.id.to_s + "');", :html => { :class => 'small_button' }
+        = link_to "<span>Reply</span>".html_safe, :url => preview ? '#' : {:controller => 'comments', :action => 'showcomfield', :parent_id => comment.id, :object => object.id, :type => object.class.to_s}, :update => "com_" + comment.id.to_s, :complete => "Element.toggle('com_" + comment.id.to_s + "');", :html => { :class => 'small_button', :remote => true }
 
         .rate_comm{ :id => "rate_comment_#{comment.id.to_s}" }
           - if logged_in?
@@ -99,11 +99,11 @@
           });
 
       .comm_comm_more
-        = link_to_function "&darr;", "Element.hide('rates_show_#{comment.id}');new Effect.BlindDown('rates_more_#{comment.id}');off_#{comment.id.to_s}=true", :id => "rates_show_#{comment.id}", :class => "comm_more_tab"
+        = link_to "&darr;", :onclick => "Element.hide('rates_show_#{comment.id}');new Effect.BlindDown('rates_more_#{comment.id}');off_#{comment.id.to_s}=true", :id => "rates_show_#{comment.id}", :class => "comm_more_tab"
 
     .comm_rating{ :id => "rates_more_#{comment.id}", :style => "display:none;" }
       .comm_rating_inner
-        = link_to_function "&uarr;", "new Effect.BlindUp('rates_more_#{comment.id}');Element.show('rates_show_#{comment.id}');off_#{comment.id.to_s}=false", :class => "comm_more_tab less"
+        = link_to "&uarr;", :onclick => "new Effect.BlindUp('rates_more_#{comment.id}');Element.show('rates_show_#{comment.id}');off_#{comment.id.to_s}=false", :class => "comm_more_tab less"
         %span{ :id => "comm_overall_#{comment.id}" }
           Overall Rating:
           = number_with_precision(comment.average_rating,:precision => 1)

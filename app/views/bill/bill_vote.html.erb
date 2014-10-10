@@ -1,1 +1,1 @@
-<%= draw_user_bill_vote(@bill) %> <span>Added bill to <%= @bv.support == true ? "Bills I Support" : "Bills I Oppose" %></span>
+<span>Added bill to <%= @bill_vote.support == 0 ? "Bills I Support" : "Bills I Oppose" %></span>

@@ -1048,7 +1048,7 @@ background: rgba(54,205,143, .2);
 .tabs { padding: 2em 0; }
 #sort_nav ul.tabs { margin-left: 0; }
 .tabs li { display: inline-block; }
-.tab-pane { display: none; }
+.tab-pane { display: block; }
 .tab-pane.active { display: block; }
 .img-polaroid { border: 1px solid #ddd; padding: 2px; display: block; }
 

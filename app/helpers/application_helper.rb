@@ -540,13 +540,13 @@ EOT
       if logged_in?
         "<div class='voting_buttons'>" +
           link_to(image_tag('yes.png') + "<span>I Support this Bill</span>".html_safe,
-                         {:remote => true, :url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :support}},
+                         {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :support, :remote => true},
                          :class => "yes #{yah}") +
           "
 
         " +
           link_to(image_tag('no.png') + "<span>I Oppose this Bill</span>".html_safe,
-                         {:remote => true, :url => {:controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :oppose}},
+                         {:remote => true, :controller => 'bill', :action => 'bill_vote', :bill => bill.ident, :id => :oppose},
                          :class => "no #{nah}") +
           %Q{
         </div>

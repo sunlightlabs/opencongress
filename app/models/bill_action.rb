@@ -27,7 +27,7 @@ class BillAction < Action
 
   #========== INCLUDES
 
-  include PublicActivity::Model ; tracked owner: :bill
+  include PublicActivity::Model ; tracked owner: :bill, only: :create
 
   #========== RELATIONS
 

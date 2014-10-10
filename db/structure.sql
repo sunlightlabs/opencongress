@@ -3829,7 +3829,8 @@ CREATE TABLE notification_outbounds (
     receive_code character varying(255),
     outbound_type character varying(255),
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    is_digest boolean
 );
 
 
@@ -5054,7 +5055,8 @@ CREATE TABLE user_notification_option_items (
     activity_option_id integer,
     bookmark_id integer,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    aggregate_timeframe integer DEFAULT 21600
 );
 
 
@@ -8935,4 +8937,8 @@ INSERT INTO schema_migrations (version) VALUES ('20141007163915');
 INSERT INTO schema_migrations (version) VALUES ('20141008222429');
 
 INSERT INTO schema_migrations (version) VALUES ('20141009154958');
+
+INSERT INTO schema_migrations (version) VALUES ('20141010144456');
+
+INSERT INTO schema_migrations (version) VALUES ('20141010192805');
 

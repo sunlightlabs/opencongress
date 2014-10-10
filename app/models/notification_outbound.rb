@@ -9,28 +9,44 @@
 #  outbound_type :string(255)
 #  created_at    :datetime
 #  updated_at    :datetime
+#  is_digest     :boolean
 #
 
 class NotificationOutbound < OpenCongressModel
 
+  #========== CONSTANTS
+
+  OUTBOUND_TYPES = %w(email mms_message mobile)
+
+  #========== FILTERS
+
   before_create -> { create_receive_code }
-  after_create -> { send_notification }
+
+  #========== RELATIONS
 
   has_many :notification_aggregates, :through => :notification_distributors
 
-  private
+  #========== METHODS
 
-  def create_receive_code
-    self.code = SecureRandom.hex(32)
+  #----- INSTANCE
+
+  public
+
+  def is_digest?
+    self.is_digest
   end
 
-  # TODO: implement these cases
+  def user
+    notification_aggregates.last.user
+  end
+
+  # TODO: implement delivery cases
   def send_notification
 
     case outbound_type
       when 'email'
         puts 'Sending email...'
-      when 'mms'
+      when 'mms_message'
         puts 'Sending mms...'
       when 'mobile'
         puts 'Sending mobile...'
@@ -38,6 +54,12 @@ class NotificationOutbound < OpenCongressModel
         logger.error "Outbound type '#{outbound_type}' not found."
     end
 
+  end
+
+  private
+
+  def create_receive_code
+    self.receive_code = SecureRandom.hex(32)
   end
 
 end

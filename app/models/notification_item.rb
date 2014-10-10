@@ -11,8 +11,6 @@
 
 class NotificationItem < OpenCongressModel
 
-  #========== CALLBACKS
-
   #========== VALIDATORS
 
   validates_presence_of :notification_aggregate, :activity
@@ -24,13 +22,10 @@ class NotificationItem < OpenCongressModel
   belongs_to :activity, :class_name => 'PublicActivity::Activity', :foreign_key => 'activities_id'
   belongs_to :notification_aggregate, touch:true
 
-  #========== ACCESSORS
-
   #========== METHODS
 
   #----- CLASS
 
   #----- INSTANCE
-
 
 end

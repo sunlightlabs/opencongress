@@ -16,6 +16,7 @@
 #  bookmark_id                 :integer
 #  created_at                  :datetime
 #  updated_at                  :datetime
+#  aggregate_timeframe         :integer          default(21600)
 #
 
 class UserNotificationOptionItem < OpenCongressModel
@@ -52,5 +53,15 @@ class UserNotificationOptionItem < OpenCongressModel
   #----- CLASS
 
   #----- INSTANCE
+
+  public
+
+  # Determines whether a new NotificationAggregate should be created
+  #
+  # @param na [NotificationAggregate] current notification aggregate
+  # @return [Boolean] true if should create new aggregate notification, false otherwise
+  def stale_aggregate?(na)
+    na.nil? or (Time.now - na.updated_at) >= aggregate_timeframe
+  end
 
 end

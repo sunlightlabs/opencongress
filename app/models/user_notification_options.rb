@@ -30,7 +30,6 @@ class UserNotificationOptions < OpenCongressModel
   has_many :user_notification_option_items, :foreign_key => 'user_notification_option_id'
   has_many :activity_options, :through => :user_notification_option_items
 
-
   #========== METHODS
 
   #----- INSTANCE

@@ -9,8 +9,6 @@ module Authable
   included do
     apply_simple_captcha
 
-    #attr_accessible :login, :password, :password_confirmation, :remember_token,
-    #                :captcha, :captcha_key
     attr_accessor :password, :password_confirmation, :current_password, :remember_token_expires_at
     ##
     # Further, the following fields should be defined in your AR model

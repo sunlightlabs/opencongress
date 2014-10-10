@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 feature "Bills", :type => :feature do
   self.use_transactional_fixtures = false

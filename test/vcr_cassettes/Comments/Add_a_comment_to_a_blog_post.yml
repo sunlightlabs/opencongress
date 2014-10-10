@@ -1,0 +1,81 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://<AKISMET_KEY>.rest.akismet.com/1.1/comment-check
+    body:
+      encoding: US-ASCII
+      string: comment_author=dirt&comment_author_email=dshettler-dirt%40gmail.com&comment_content=hello+world&comment_permalink=http%3A%2F%2F127.0.0.1%3A55371%2Fbill%2Fhr45-111%2Fshow&user_ip=127.0.0.1&user_agent=Mozilla%2F5.0+%28Macintosh%3B+Intel+Mac+OS+X+10.9%3B+rv%3A32.0%29+Gecko%2F20100101+Firefox%2F32.0&referrer=http%3A%2F%2F127.0.0.1%3A55371%2Fbill%2Fhr45-111%2Fcomments&HTTP_HOST=127.0.0.1%3A55542&HTTP_USER_AGENT=Mozilla%2F5.0+%28Macintosh%3B+Intel+Mac+OS+X+10.9%3B+rv%3A32.0%29+Gecko%2F20100101+Firefox%2F32.0&HTTP_ACCEPT=text%2Fhtml%2Capplication%2Fxhtml%2Bxml%2Capplication%2Fxml%3Bq%3D0.9%2C%2A%2F%2A%3Bq%3D0.8&HTTP_ACCEPT_LANGUAGE=en-US%2Cen%3Bq%3D0.5&HTTP_ACCEPT_ENCODING=gzip%2C+deflate&HTTP_REFERER=http%3A%2F%2F127.0.0.1%3A55542%2Fbill%2Fhr45-111%2Fshow&HTTP_CONNECTION=keep-alive&HTTP_VERSION=HTTP%2F1.1&comment_type=comment&blog=http%3A%2F%2Fwww.example.com%2F&is_test=1
+    headers:
+      User-Agent:
+      - Rails/4.1.5 | Rakismet/1.5.0
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Thu, 09 Oct 2014 21:07:50 GMT
+      Content-Type:
+      - text/plain; charset=utf-8
+      Content-Length:
+      - '5'
+      Connection:
+      - keep-alive
+      X-Akismet-Server:
+      - 10.5.10.223
+      X-Akismet-Guid:
+      - 5c970d093acf8ed0521d419ac2969aa9
+    body:
+      encoding: UTF-8
+      string: 'false'
+    http_version: 
+  recorded_at: Thu, 09 Oct 2014 21:07:50 GMT
+- request:
+    method: post
+    uri: http://<AKISMET_KEY>.rest.akismet.com/1.1/comment-check
+    body:
+      encoding: US-ASCII
+      string: comment_author=dirt&comment_author_email=dshettler-dirt%40gmail.com&comment_content=hello+world&comment_permalink=http%3A%2F%2F127.0.0.1%3A55961%2Fbill%2Fhr45-111%2Fshow&user_ip=127.0.0.1&user_agent=Mozilla%2F5.0+%28Macintosh%3B+Intel+Mac+OS+X+10.9%3B+rv%3A32.0%29+Gecko%2F20100101+Firefox%2F32.0&referrer=http%3A%2F%2F127.0.0.1%3A55961%2Fbill%2Fhr45-111%2Fcomments&HTTP_HOST=127.0.0.1%3A55961&HTTP_USER_AGENT=Mozilla%2F5.0+%28Macintosh%3B+Intel+Mac+OS+X+10.9%3B+rv%3A32.0%29+Gecko%2F20100101+Firefox%2F32.0&HTTP_ACCEPT=%2A%2F%2A%3Bq%3D0.5%2C+text%2Fjavascript%2C+application%2Fjavascript%2C+application%2Fecmascript%2C+application%2Fx-ecmascript&HTTP_ACCEPT_LANGUAGE=en-US%2Cen%3Bq%3D0.5&HTTP_ACCEPT_ENCODING=gzip%2C+deflate&HTTP_X_REQUESTED_WITH=XMLHttpRequest&HTTP_REFERER=http%3A%2F%2F127.0.0.1%3A55961%2Fbill%2Fhr45-111%2Fcomments&HTTP_CONNECTION=keep-alive&HTTP_PRAGMA=no-cache&HTTP_CACHE_CONTROL=no-cache&HTTP_VERSION=HTTP%2F1.1&comment_type=comment&blog=http%3A%2F%2Fwww.example.com%2F&is_test=1
+    headers:
+      User-Agent:
+      - Rails/4.1.5 | Rakismet/1.5.0
+      Content-Type:
+      - application/x-www-form-urlencoded
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx
+      Date:
+      - Thu, 09 Oct 2014 21:11:47 GMT
+      Content-Type:
+      - text/plain; charset=utf-8
+      Content-Length:
+      - '5'
+      Connection:
+      - keep-alive
+      X-Akismet-Server:
+      - 10.5.10.232
+      X-Akismet-Guid:
+      - 5c970d093acf8ed0521d419ac2969aa9
+    body:
+      encoding: UTF-8
+      string: 'false'
+    http_version: 
+  recorded_at: Thu, 09 Oct 2014 21:11:47 GMT
+recorded_with: VCR 2.9.2

@@ -193,3 +193,5 @@ group :test do
   gem 'launchy'
   gem 'spork'
 end
+
+gem "rails-backbone"

@@ -587,7 +587,6 @@ DEPENDENCIES
   rake (~> 0.9.1)
   rakismet
   random_data
-  redis
   rmagick (~> 2.13.1)
   rspec-rails
   ruby-openid

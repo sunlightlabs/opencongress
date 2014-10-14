@@ -139,9 +139,6 @@ gem 'phaxio'
 # You'll have to build QT yourself on Ubuntu: https://code.google.com/p/wkhtmltopdf/wiki/compilation
 gem 'pdfkit'
 
-## Production code coverage (dead code finder)
-# gem 'coverband', :git => 'https://github.com/danmayer/coverband.git'
-
 gem 'awesome_print'
 
 group :deployment do
@@ -172,7 +169,6 @@ group :test, :development do
   gem 'guard'
   gem 'guard-livereload'
   gem 'rack-mini-profiler'
-  gem 'redis'
   gem 'rspec-rails'
   gem 'random_data'
   gem 'factory_girl_rails'

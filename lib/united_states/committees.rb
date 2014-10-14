@@ -37,7 +37,7 @@ module UnitedStates
         thomas_id = cmte_hash['thomas_id']
       end
 
-      cmte_rec = Committee.find_or_initialize_by_thomas_id(thomas_id)
+      cmte_rec = Committee.find_or_initialize_by(thomas_id: thomas_id)
       cmte_rec.name = parent_cmte.nil? ? cmte_hash['name'] : parent_cmte.name
       cmte_rec.subcommittee_name = parent_cmte.nil? ? nil : cmte_hash['name']
       chamber = parent_cmte.nil? ? cmte_hash['type'] : parent_cmte.chamber
@@ -54,7 +54,7 @@ module UnitedStates
 
       names = cmte_hash.fetch('names', [])
       names.each do |session, name|
-        name_rec = cmte_rec.names.find_or_initialize_by_session(session)
+        name_rec = cmte_rec.names.find_or_initialize_by(session: session)
         name_rec.name = name
         name_rec.save!
       end

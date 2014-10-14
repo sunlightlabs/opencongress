@@ -1,0 +1,84 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://congress.api.sunlightfoundation.com/districts/locate?zip=22204
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.8.9
+      X-Apikey:
+      - "<SUNLIGHT_KEY>"
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.1.19
+      Date:
+      - Wed, 08 Oct 2014 16:40:01 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Vary:
+      - Accept-Encoding
+      Status:
+      - 200 OK
+    body:
+      encoding: UTF-8
+      string: '{"results":[{"state":"VA","district":8}],"count":1}'
+    http_version: 
+  recorded_at: Wed, 08 Oct 2014 16:40:01 GMT
+- request:
+    method: get
+    uri: https://congress.api.sunlightfoundation.com/legislators/locate?zip=22204
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.8.9
+      X-Apikey:
+      - "<SUNLIGHT_KEY>"
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.1.19
+      Date:
+      - Wed, 08 Oct 2014 16:40:01 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Vary:
+      - Accept-Encoding
+      Status:
+      - 200 OK
+    body:
+      encoding: UTF-8
+      string: '{"results":[{"bioguide_id":"K000384","birthday":"1958-02-26","chamber":"senate","contact_form":"http://www.kaine.senate.gov/contact","crp_id":"N00033177","district":null,"facebook_id":"482778861771212","fax":"202-228-6363","fec_ids":["S2VA00142"],"first_name":"Timothy","gender":"M","govtrack_id":"412582","icpsr_id":41305,"in_office":true,"last_name":"Kaine","lis_id":"S362","middle_name":null,"name_suffix":null,"nickname":null,"oc_email":"Sen.Kaine@opencongress.org","ocd_id":"ocd-division/country:us/state:va","office":"388
+        Russell Senate Office Building","party":"D","phone":"202-224-4024","senate_class":1,"state":"VA","state_name":"Virginia","state_rank":"junior","term_end":"2019-01-03","term_start":"2013-01-03","thomas_id":"02176","title":"Sen","twitter_id":"SenKaineOffice","votesmart_id":50772,"website":"http://www.kaine.senate.gov","youtube_id":"SenatorTimKaine"},{"bioguide_id":"M000933","birthday":"1945-05-16","chamber":"house","contact_form":"https://moran.house.gov/contact-me","crp_id":"N00002083","district":8,"facebook_id":"100123453059","fax":"202-225-0017","fec_ids":["H0VA08040"],"first_name":"James","gender":"M","govtrack_id":"400283","icpsr_id":29149,"in_office":true,"last_name":"Moran","middle_name":"P.","name_suffix":"Jr.","nickname":"Jim","oc_email":"Rep.Moran@opencongress.org","ocd_id":"ocd-division/country:us/state:va/cd:8","office":"2252
+        Rayburn House Office Building","party":"D","phone":"202-225-4376","state":"VA","state_name":"Virginia","term_end":"2015-01-03","term_start":"2013-01-03","thomas_id":"00832","title":"Rep","twitter_id":"Jim_Moran","votesmart_id":27118,"website":"http://moran.house.gov","youtube_id":"RepJamesPMoran"},{"bioguide_id":"W000805","birthday":"1954-12-15","chamber":"senate","contact_form":"http://www.warner.senate.gov/public//index.cfm?p=ContactPage#form_f9db6196-2dc7-4cda-8add-f8435a71318a","crp_id":"N00002097","district":null,"facebook_id":"7935122852","fax":"202-224-6295","fec_ids":["S6VA00093","P80003023"],"first_name":"Mark","gender":"M","govtrack_id":"412321","icpsr_id":40909,"in_office":true,"last_name":"Warner","lis_id":"S327","middle_name":null,"name_suffix":null,"nickname":null,"oc_email":"Sen.Warner@opencongress.org","ocd_id":"ocd-division/country:us/state:va","office":"475
+        Russell Senate Office Building","party":"D","phone":"202-224-2023","senate_class":2,"state":"VA","state_name":"Virginia","state_rank":"senior","term_end":"2015-01-03","term_start":"2009-01-06","thomas_id":"01897","title":"Sen","twitter_id":"MarkWarner","votesmart_id":535,"website":"http://www.warner.senate.gov","youtube_id":"SenatorMarkWarner"}],"count":3,"page":{"count":3,"per_page":20,"page":1}}'
+    http_version: 
+  recorded_at: Wed, 08 Oct 2014 16:40:01 GMT
+recorded_with: VCR 2.9.2

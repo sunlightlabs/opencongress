@@ -43,7 +43,7 @@ class ProfileController < ApplicationController
         redirect_to :back and return
       end
     end
-    if @user.update_attributes(params[:user])
+    if @user.update_attributes(user_params)
       flash[:notice] = 'Your profile was updated.'
       redirect_to user_profile_path(@user.login)
     else
@@ -447,8 +447,7 @@ class ProfileController < ApplicationController
 
   def update_privacy
      @user = current_user
-     params[:user_privacy_options].delete("user_id")
-     @user.user_privacy_options.update_attributes(params[:user_privacy_options])
+     @user.update_attributes(user_params)
      flash[:notice] = "Privacy Setting Updated"
      redirect_back_by_referer_or_default(user_profile_path(@user.login))
   end
@@ -559,6 +558,36 @@ class ProfileController < ApplicationController
     end
   rescue
       redirect_to "/" and return
+  end
+
+  def user_params
+    params.require(:user).permit(
+      :login,
+      :password,
+      :password_confirmation,
+      :email,
+      :zipcode,
+      :captcha,
+      :captcha_key,
+      :accept_tos,
+      :user_options_attributes => [
+        :opencongress_mail,
+        :partner_mail
+      ],
+      :user_privacy_options_attributes => [
+        :name,
+        :email,
+        :zipcode,
+        :location,
+        :profile,
+        :actions,
+        :bookmarks,
+        :friends,
+        :political_notebook,
+        :watchdog,
+        :groups
+      ]
+    )
   end
 end
 

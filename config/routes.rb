@@ -218,7 +218,7 @@ OpenCongress::Application.routes.draw do
   scope 'users/:login' do
     get 'profile' => 'profile#show', :as => :user_profile
     get 'profile/edit' => 'profile#edit', :as => :edit_profile
-    put 'profile' => 'profile#update', :as => :update_profile
+    patch 'profile' => 'profile#update', :as => :update_profile
     delete 'profile' => 'profile#destroy', :as => :destroy_profile
     delete 'profile/images' => 'profile#delete_images', :as => :delete_profile_images
 

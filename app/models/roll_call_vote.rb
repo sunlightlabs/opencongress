@@ -58,6 +58,7 @@ class RollCallVote < OpenCongressModel
   #==========
 
 
+
   #========== CLASS METHODS
 
   def self.for_duo (p1, p2)

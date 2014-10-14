@@ -219,10 +219,6 @@ class User < OpenCongressModel
 
   # Note that some attrs are defined in authable_model
   # accept_tos and email_confirmation are unpersisted accessors for validation only
-  # attr_accessible :email, :accept_tos, :accepted_tos_at, :remember_created_at,
-  #                :representative_id, :state, :district, :user_privacy_options_attributes,
-  #                :user_options_attributes, :user_profile_attributes, :zipcode, :street_address,
-  #                :street_address_2, :city, :district_needs_update, :website
 
   attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email
 

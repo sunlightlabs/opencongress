@@ -3,6 +3,7 @@ class SimpleCaptcha::SimpleCaptchaData
 end
 
 SimpleCaptcha.setup do |sc|
+  sc.always_pass = Rails.env.test?
   # default: 100x28
   # sc.image_size = '120x40'
 

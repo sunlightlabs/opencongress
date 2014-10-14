@@ -1,0 +1,42 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://congress.api.sunlightfoundation.com/districts/locate?zip=22204
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.8.9
+      X-Apikey:
+      - "<SUNLIGHT_KEY>"
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.1.19
+      Date:
+      - Tue, 07 Oct 2014 15:54:31 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Vary:
+      - Accept-Encoding
+      Status:
+      - 200 OK
+    body:
+      encoding: UTF-8
+      string: '{"results":[{"state":"VA","district":8}],"count":1}'
+    http_version: 
+  recorded_at: Tue, 07 Oct 2014 15:54:31 GMT
+recorded_with: VCR 2.9.2

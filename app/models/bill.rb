@@ -957,7 +957,7 @@ class Bill < Bookmarkable
 
   def self.find_by_ident(ident_string, find_options = {})
     bill_type, number, session = Bill.ident ident_string
-    Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, find_options)
+    Bill.find_by(bill_type: bill_type, number: number, session: session)
   end
 
   def self.find_all_by_ident(ident_array, find_options = {})

@@ -10,7 +10,7 @@
       = fb_connect_async_js
       = fb_login_and_redirect "#{fb_login_redirect_url}", :scope => 'email,user_location,user_about_me'
 
-    #loginform.floatleft.form.clear{ :title => "Account login" }
+    #loginform.floatleft.form{ :title => "Account login" }
       %h3 Login with Your OpenCongress Account
       = render :partial => 'login_form'
 

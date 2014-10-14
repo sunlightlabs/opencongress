@@ -10,19 +10,19 @@
   $j('#comment-preview-<%= @object.id %>').slideDown('slow');
 <% else %>
   <% if @parent %>
-    $('comment_reply_<%= @parent.id %>').update("<%= escape_javascript(render :partial => 'shared/comments_comment', :locals => {:object => @object, :comment => @comment, :myscores => Array.new}) %>")
+    $j('comment_reply_<%= @parent.id %>').update("<%= escape_javascript(render :partial => 'shared/comments_comment', :locals => {:object => @object, :comment => @comment, :myscores => Array.new}) %>")
     new Effect.ScrollTo('comment_reply_<%= @parent.id %>');
     new Effect.Highlight('comment_reply_<%= @parent.id %>', {duration: 4});
   <% else %>
-
-    $('<%= params[:master_container] %>').update("<%= escape_javascript(render :partial => 'shared/comments_list', :locals => {:object => @object, :master_container => params[:master_container] }) %>")
-
+    // removed because it was broken in rails 4. Just going to return the comment for now $j('#<%= params[:master_container] %>').update("<%= escape_javascript(render :partial => 'shared/comments_list', :locals => {:object => @object, :master_container => params[:master_container] }) %>")
+    // the following line is basically nonsense and should be replaced
+    $j('#<%= params[:master_container] %>').html('<%= escape_javascript(@comment.comment) %>')
     new Effect.ScrollTo('com<%= @comment.id %>');
     new Effect.Highlight('com<%= @comment.id %>', {duration: 4});
-    if ($('no_comments') != undefined) {
-      $('no_comments').hide();
+    if ($j('no_comments') != undefined) {
+      $j('no_comments').hide();
     }
-    $('comment-preview-<%= @object.id %>').hide();
+    $j('comment-preview-<%= @object.id %>').hide();
   <% end %>
 <% end %>
 

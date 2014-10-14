@@ -81,7 +81,7 @@ class Person < Bookmarkable
   has_one :wiki_link, :as => 'wikiable'
 
   #----- HAS_MANY
-  
+
   has_many :person_identifiers, foreign_key: :bioguideid, primary_key: :bioguideid #keep this when merging beta
   has_many :committees,
            :through => :committee_people

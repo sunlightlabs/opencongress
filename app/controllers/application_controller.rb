@@ -345,7 +345,7 @@ class ApplicationController < ActionController::Base
   def get_site_text_page
     page_params = site_text_params_string(params)
 
-    @site_text_page = SiteTextPage.find_by_page_params(page_params)
+    @site_text_page = SiteTextPage.find_by(page_params: page_params)
     @site_text_page = OpenStruct.new if @site_text_page.nil?
   end
 

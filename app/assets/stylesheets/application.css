@@ -1,24 +1,4 @@
-/***
-This is a css asset manifest. It lists .scss files, 
-which will get concatenated and served. Our requires 
-are mostly in beta.scss, so we can take advantage
-of SCSS stuff.
-***/
-/* ...
-*= require_self
-*= require master
-*= 960.css
-*= require classes.css
-*= require modal.css
-*= require reset.css
-*= require typo.css
-*= require master.css
-*= require home.css
-*= require jqModal.css
-*= require jquery.jcarousel.css
-*= require search.css
-*= require bootstrap-custom.min.css
-*= require interim_index.css
-*= require kludge.css
-*= require beta
-*/
+/* Using PureCSS as our base layout */
+/* Please consult http://purecss.io/ for more information */
+/* on how to use PureCSS */
+@import "main";

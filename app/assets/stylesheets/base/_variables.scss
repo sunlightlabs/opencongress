@@ -1,0 +1,96 @@
+// ------------------------------
+// Grid System
+// ------------------------------
+
+// Max width
+$max-width:             60em !default;  // 16px * 60 = 960px
+
+// Grid breakpoints
+
+
+
+// ------------------------------
+// Typography
+// ------------------------------
+
+// Type settings
+$base-font-family:      "proxima-nova",sans-serif;
+$base-font-size:        16px !default;
+$base-line-height:      24px !default;
+
+// Headings scale
+$giga-size:             90px !default;
+$mega-size:             72px !default;
+$kilo-size:             60px !default;
+
+$h1-size:               48px !default; // .alpha
+$h2-size:               36px !default; // .beta
+$h3-size:               24px !default; // .gamma
+$h4-size:               21px !default; // .delta
+$h5-size:               18px !default; // .epsilon
+$h6-size:               16px !default; // .zeta
+
+// Text helpers
+$milli-size:            14px !default;
+$micro-size:            12px !default;
+
+
+
+// ------------------------------
+// UI Colors
+// ------------------------------
+
+// Text colors
+$text-color:            #4D4D4D;
+$heading-color:         #222;
+
+// Base color
+$dark-blue:             #3B4556;
+$blue:                  #29ABE2;
+#light-blue:            #29ABE2;
+#gray-blue:             #F2F9F9;
+
+
+// Utility colors
+$yellow:                #F7CA18;
+
+// Accent colors
+$dark-gray:             #F7CA18;
+$light-gray:            #FCFCFC;
+$beige:                 #FAF9F3;
+
+
+
+// ------------------------------
+// Brand Colors
+// ------------------------------
+$brand-color-linkedin:    
+$brand-color-twitter:     
+$brand-color-facebook:    
+$brand-color-google:      
+$brand-color-pinterest:   
+
+
+
+// ------------------------------
+// UI Styles
+// ------------------------------
+
+// Roundedness
+$radius:                0.1875rem;
+$round:                 200px;
+
+
+
+// ------------------------------
+// Spacing
+// ------------------------------
+
+// Vertical rhythm units.
+$base-spacing-unit:     $base-line-height !default;
+$half-spacing-unit:     $base-spacing-unit / 2 !default;
+$line-height-ratio:     $base-line-height / $base-font-size;
+
+// Alternate vertical rhythym for long form
+$long-base-unit:        $long-line-height !default;
+$long-line-ratio:       $long-line-height / $long-font-size;

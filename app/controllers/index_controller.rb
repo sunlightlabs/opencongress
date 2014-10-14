@@ -1,7 +1,6 @@
 require_dependency 'ipaddr'
 
 class IndexController < ApplicationController
-  layout "frontpage"
 
   caches_page :pipa
 

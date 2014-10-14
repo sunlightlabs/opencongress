@@ -1,0 +1,28 @@
+// --------------------
+// Global
+// --------------------
+
+// Box model
+
+* {
+  @include box-sizing(border-box);
+}
+
+// Document default styles
+html {
+  font-family: $base-font-family;
+  font-size: ($base-font-size/16px) * 1em;
+  background-color: #FFFFFF;
+  color: $text-color;
+  overflow-y: scroll;
+  min-height: 100%;
+}
+
+// Default link styles
+a {
+  color: $blue;
+
+  &:hover {
+    color: shade($blue, 10%)
+  }
+}

@@ -5,9 +5,6 @@
 // Max width
 $max-width:             60em !default;  // 16px * 60 = 960px
 
-// Grid breakpoints
-
-
 
 // ------------------------------
 // Typography
@@ -47,8 +44,8 @@ $heading-color:         #222;
 // Base color
 $dark-blue:             #3B4556;
 $blue:                  #29ABE2;
-#light-blue:            #29ABE2;
-#gray-blue:             #F2F9F9;
+$light-blue:            #29ABE2;
+$gray-blue:             #F2F9F9;
 
 
 // Utility colors
@@ -60,18 +57,6 @@ $light-gray:            #FCFCFC;
 $beige:                 #FAF9F3;
 
 
-
-// ------------------------------
-// Brand Colors
-// ------------------------------
-$brand-color-linkedin:    
-$brand-color-twitter:     
-$brand-color-facebook:    
-$brand-color-google:      
-$brand-color-pinterest:   
-
-
-
 // ------------------------------
 // UI Styles
 // ------------------------------
@@ -81,16 +66,8 @@ $radius:                0.1875rem;
 $round:                 200px;
 
 
-
-// ------------------------------
+// -------------------------------
 // Spacing
-// ------------------------------
+// -------------------------------
 
-// Vertical rhythm units.
 $base-spacing-unit:     $base-line-height !default;
-$half-spacing-unit:     $base-spacing-unit / 2 !default;
-$line-height-ratio:     $base-line-height / $base-font-size;
-
-// Alternate vertical rhythym for long form
-$long-base-unit:        $long-line-height !default;
-$long-line-ratio:       $long-line-height / $long-font-size;

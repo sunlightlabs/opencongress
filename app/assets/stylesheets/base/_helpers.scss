@@ -1,0 +1,104 @@
+// ------------------------------
+// Clearfix
+// ------------------------------
+
+.cf {
+  @include clearfix;
+}
+
+
+// ------------------------------
+// Float Helpers
+// ------------------------------
+
+// Box alignment
+.float-right {
+  float: right !important;
+}
+.float-left {
+  float: left !important;
+}
+.float-none {
+  float: none !important;
+}
+.float-center {
+  text-align: center;
+
+  > * {
+    display: inline-block;
+  }
+}
+
+// Widths
+.full-width {
+  width: 100%;
+}
+
+// ------------------------------
+// Box Model Helpers
+// ------------------------------
+
+// Margins
+.no-margin {
+  margin: 0 !important;
+}
+.no-margin-bottom {
+  margin-bottom: 0 !important;
+}
+.quarter-margin-bottom {
+  @include rem('margin-bottom', $base-spacing-unit/4);
+}
+.half-margin-bottom {
+  @include rem('margin-bottom', $base-spacing-unit/2);
+}
+.base-margin-bottom {
+  @include rem('margin-bottom', $base-spacing-unit);
+}
+
+// ------------------------------
+// Text Helpers
+// ------------------------------
+
+// Text alignment
+.text-left {
+  text-align: left !important;
+}
+.text-center {
+  text-align: center !important;
+}
+.text-right {
+  text-align: right !important;
+}
+.no-underline {
+  text-decoration: none;
+}
+.no-wrap {
+  white-space: nowrap;
+}
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover.hover-truncated {
+    background-color: white;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+}
+
+// ------------------------------
+// Font Style Helpers
+// ------------------------------
+
+// Weights
+.weight-normal {
+  font-weight: 400;
+}
+.weight-semibold {
+  font-weight: 600;
+}
+.weight-bold {
+  font-weight: 700;
+}

@@ -677,19 +677,15 @@ class BillController < ApplicationController
 
   def bill_vote
     return head :bad_request if not BillVote.is_valid_user_position(params[:id])
-
+    
     new_position = params[:id].to_sym
     @bill = Bill.find_by_ident(params[:bill])
     prev_position = BillVote.current_user_position(@bill, current_user)
-
+    
     if prev_position != new_position
-      @bv = BillVote.establish_user_position(@bill, current_user, new_position)
-    end
-
-    render :update do |page|
-      page.replace_html 'vote_results_' + @bill.id.to_s, :partial => "bill_votes"
-      page.replace_html 'users_result', user_bill_result(@bill)
-      page.visual_effect :pulsate, 'users_result'
+      @bill_vote = BillVote.establish_user_position(@bill, current_user, new_position)
+    else
+      @bill_vote = prev_position
     end
   end
 

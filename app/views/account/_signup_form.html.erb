@@ -26,23 +26,23 @@
         $j(document).ready(function() { $j('#user_captcha').addClass("field"); });
       </script>
 
-      <div class="clear margintop floatleft behave"><br/>
+      <div class="margintop floatleft behave"><br/>
       <%= f.simple_fields_for :user_options do |o| %>
         <%= f.check_box :opencongress_mail, :style => "margin-top:-6px;", :class => "tick" %>
         <label class="send" for="user_options_attributes_opencongress_mail">Send me major updates about OpenCongress <em>(optional)</em></label>
       </div>
 
-        <div class="clear margintop floatleft behave"><br/>
+        <div class="margintop floatleft behave"><br/>
         <%= f.check_box :partner_mail, :class => "tick" %>
         <label class="send" for="user_options_attributes_partner_mail">Join the Sunlight Foundation email list <em>(optional)</em></label>
       <% end %>
     </div>
 
-  <div class="clear margintop floatleft behave"><%= f.check_box :accept_tos, :class => "tick" %>
+  <div class="margintop floatleft behave"><%= f.check_box :accept_tos, :class => "tick" %>
     <label class="toss" for "user_accept_tos" %>I agree to the <a href="/about/terms_of_service">Terms of Service</a> and <a href="/about/privacy_policy">Privacy Policy.</a></label>
   </div>
 
-  <input type="image" value="Register" class="floatright margintop behave clear" src="<%= image_path 'register.png' %>" />
+  <input type="image" value="Register" class="floatright margintop behave" src="<%= image_path 'register.png' %>" />
 
   <div class="clear"><em>We will not share your email address with anyone for any reason, unless you ask us to.</em></div>
 

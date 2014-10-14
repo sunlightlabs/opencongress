@@ -10,7 +10,7 @@ class CommentsController < ApplicationController
       if @object.is_a?(Article)
         return head 403
       end
-      @comment = Comment.new(params[:comment])
+      @comment = Comment.new(comment_params)
       if @object.kind_of? NotebookItem and !@object.political_notebook.group.nil?
         unless @object.political_notebook.group.owner_or_member?(current_user)
           @error_msg = "You must be a member of the group to post comments!"
@@ -37,7 +37,7 @@ class CommentsController < ApplicationController
         return
       end
 
-      dup = Comment.find(:first, :conditions => ["commentable_type = ? AND comment = ? AND commentable_id = ?", @object.class.to_s,@comment.comment,@object.id])
+      dup = Comment.where(["commentable_type = ? AND comment = ? AND commentable_id = ?", @object.class.to_s,@comment.comment,@object.id]).take
       if dup
         @error_msg = "Duplicate Comment"
         return
@@ -249,5 +249,11 @@ class CommentsController < ApplicationController
       format.html
       format.js
     end
+  end
+
+  private
+
+  def comment_params
+    params.require(:comment).permit(:comment)
   end
 end

@@ -1,12 +1,12 @@
 - if params[:comment_sort] == 'rating' 
-  - comments = object.comments.paginate(:page => params[:comment_page], :include => [:user], :order => "comments.plus_score_count - comments.minus_score_count DESC" )
+  - comments = object.comments.includes(:user).order("comments.plus_score_count - comments.minus_score_count DESC").paginate(:page => params[:comment_page])
 - elsif params[:comment_sort] == 'newest'
-  - comments = object.comments.paginate(:page => params[:comment_page], :include => [:user], :order => "comments.created_at DESC" ) 
+  - comments = object.comments.includes(:user).order("comments.created_at DESC").paginate(:page => params[:comment_page]) 
 - else
-  - comments = object.comments.paginate(:page => params[:comment_page], :include => [:user], :order => "comments.root_id ASC, comments.lft ASC" ) 
+  - comments = object.comments.includes(:user).order("comments.root_id ASC, comments.lft ASC").paginate(:page => params[:comment_page]) 
      
 - if comments.size > 0
-  - logged_in? ? myscores = current_user.comment_scores.find(:all) : myscores = Array.new
+  - logged_in? ? myscores = current_user.comment_scores.to_a : myscores = Array.new
      
   - if comments.total_pages > 1
     %p.this_many

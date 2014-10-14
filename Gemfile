@@ -8,7 +8,6 @@ gem 'rake', '~> 0.9.1'
 gem 'railties'
 gem 'thin'
 gem 'dalli'
-# gem 'protected_attributes'
 gem 'rails-observers'
 
 # database gems -- need both pg and mysql for app and wiki
@@ -121,7 +120,7 @@ gem 'rakismet'
 gem 'oauth'
 gem 'facebooker2'
 
-gem 'will_paginate', '~> 3.0.pre2'
+gem 'will_paginate'
 
 gem "validates_captcha"
 
@@ -180,11 +179,10 @@ group :test do
   gem 'vcr'
   gem 'fuubar'
   gem 'poltergeist'  # Requires PhantomJS >= 1.8.1
-  gem 'cucumber'
-  #gem 'cucumber-rails', '~>1.x',   :require => false
+  gem 'cucumber-rails', :require => false
   gem 'fuubar-cucumber',      :git => 'git://github.com/martinciu/fuubar-cucumber.git'
   gem 'webmock',              '~> 1.9.0'
-  gem 'selenium-client'
+  gem 'selenium-webdriver'
   gem 'capybara'
   gem 'launchy'
   gem 'spork'

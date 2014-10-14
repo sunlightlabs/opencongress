@@ -266,8 +266,7 @@ class AccountController < ApplicationController
 
   def signup
     @page_title = 'Create a New Account'
-
-    @user = User.new(params[:user])
+    @user = User.new(user_params) unless params[:user].nil?
     @user.email = session[:invite].invitee_email unless session[:invite].nil? or request.post?
 
     return unless request.post?
@@ -695,5 +694,22 @@ class AccountController < ApplicationController
         end
       end
     end
+  end
+
+  def user_params
+    params.require(:user).permit(
+      :login,
+      :password,
+      :password_confirmation,
+      :email,
+      :zipcode,
+      :captcha,
+      :captcha_key,
+      :accept_tos,
+      :user_options_attributes => [
+        :opencongress_mail,
+        :partner_mail
+      ]
+    )
   end
 end

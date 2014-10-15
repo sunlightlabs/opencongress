@@ -12,11 +12,14 @@
 #  is_digest     :boolean
 #
 
+require 'securerandom'
+
 class NotificationOutbound < OpenCongressModel
 
   #========== CONSTANTS
 
-  OUTBOUND_TYPES = %w(email mms_message mobile)
+  OUTBOUND_TYPES = %w(email mms_message mobile feed)
+  DEFAULT_OUTBOUND_TIMEFRAME = 3600 # seconds
 
   #========== FILTERS
 
@@ -25,6 +28,11 @@ class NotificationOutbound < OpenCongressModel
   #========== RELATIONS
 
   has_many :notification_aggregates, :through => :notification_distributors
+  has_many :notification_distributors
+
+  #========== ACCESSORS
+
+  attr_accessor :outbound_timeframe
 
   #========== METHODS
 
@@ -40,23 +48,33 @@ class NotificationOutbound < OpenCongressModel
     notification_aggregates.last.user
   end
 
-  # TODO: implement delivery cases
-  def send_notification
-
-    case outbound_type
-      when 'email'
-        puts 'Sending email...'
-      when 'mms_message'
-        puts 'Sending mms...'
-      when 'mobile'
-        puts 'Sending mobile...'
-      else
-        logger.error "Outbound type '#{outbound_type}' not found."
-    end
-
+  def queue_outbound
+    send_notification
+    self.update_attributes!({sent: 1})
   end
 
   private
+
+  # TODO: implement the delivery cases
+  def send_notification
+    self.send("send_#{outbound_type}".to_sym) rescue logger.error "Outbound type '#{outbound_type}' not found."
+  end
+
+  def send_email
+    NotificationMailer.setup_email(self).deliver
+  end
+
+  def send_mms_message
+    puts "send mms message with code #{receive_code} and #{notification_distributors.count} distributors"
+  end
+
+  def send_mobile
+    puts "send mobile with code #{receive_code} and #{notification_distributors.count} distributors"
+  end
+
+  def send_feed
+    puts "send feed with code #{receive_code} and #{notification_distributors.count} distributors"
+  end
 
   def create_receive_code
     self.receive_code = SecureRandom.hex(32)

@@ -27,13 +27,13 @@ class UserNotificationOptionItem < OpenCongressModel
 
   DEFAULT_ATTRIBUTES = {
     feed: 1,
-    feed_priority: 'm',
+    feed_priority: '10',
     email: 1,
-    email_frequency: 'week',
+    email_frequency: '10',
     mobile: 0,
-    mobile_frequency: nil,
+    mobile_frequency: '10',
     mms_message: 0,
-    mms_message_frequency: nil,
+    mms_message_frequency: '10',
   }
 
   #========== VALIDATORS
@@ -56,12 +56,32 @@ class UserNotificationOptionItem < OpenCongressModel
 
   public
 
+  def feed?
+    self.feed == 1
+  end
+
+  def email?
+    self.email == 1
+  end
+
+  def mobile?
+    self.mobile == 1
+  end
+
+  def mms_message?
+    self.mms_message == 1
+  end
+
+  def feed_frequency
+    feed_priority
+  end
+
   # Determines whether a new NotificationAggregate should be created
   #
   # @param na [NotificationAggregate] current notification aggregate
   # @return [Boolean] true if should create new aggregate notification, false otherwise
   def stale_aggregate?(na)
-    na.nil? or (Time.now - na.updated_at) >= aggregate_timeframe
+    na.nil? or (Time.now - na.updated_at) >= self.aggregate_timeframe
   end
 
 end

@@ -1332,12 +1332,7 @@ class Bill < Bookmarkable
 
   def title_full_common # bill type, number and popular, short or official title
     title = default_title || popular_title || short_title || official_title
-
-    if title.nil?
-      ""
-    else
-      "#{title_prefix} #{number}: #{title.title}"
-    end
+    title.present? ? "#{title_prefix} #{number}: #{title.title}" : ''
   end
 
   def title_prefix
@@ -1605,6 +1600,10 @@ class Bill < Bookmarkable
     super(stylize_serialization(ops))
   end
 
+  def to_email_subject
+    title_full_common
+  end
+
   private
 
   def stylize_serialization(ops)
@@ -1626,7 +1625,7 @@ class Bill < Bookmarkable
   end
 
   def default_title
-    bill_titles.select { |t| t.is_default == true }.first
+    bill_titles.select {|t| t.is_default == true }.first
   end
 
   def self.chain_text_versions(versions)
@@ -1642,5 +1641,6 @@ class Bill < Bookmarkable
     end
     return chain
   end
+
 
 end

@@ -20,7 +20,7 @@ class Friend < OpenCongressModel
   #========== FILTERS
 
   after_create   -> { create_activity(:follow, owner: :user, recipient: :friend) unless confirmed? }
-  before_destroy -> { create_activity(:defriended, owner: :user, recipient: :friend) }
+  before_destroy -> { create_activity(:unfollow, owner: :user, recipient: :friend) }
 
   #========== RELATIONS
 
@@ -76,10 +76,8 @@ class Friend < OpenCongressModel
   def defriend
     if inverse_friend.present?
       self.inverse_friend.update_attributes!({:confirmed => false, :confirmed_at => nil})
-      self.destroy
-    else
-      false
     end
+    self.destroy
   end
 
   # Gets the inverse friendship for this friendship instance

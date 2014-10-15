@@ -19,14 +19,15 @@ class NotificationDistributor < OpenCongressModel
   #========== FILTERS
 
   before_create -> { create_link_code }
+  after_save -> { notification_outbound.queue_outbound unless notification_outbound.delay_send.nil? }
 
   #========== SCOPES
 
   scope :unsent_outbounds, -> (na, d) { where(notification_aggregate_id: na.id)
-                                        .joins(:notification_outbound)
+                                        .includes(:notification_outbound)
                                         .where('notification_outbounds.sent' => 0,
                                                'notification_outbounds.is_digest' => d) }
-  scope :with_outbound_type, -> (type) { joins(:notification_outbound)
+  scope :with_outbound_type, -> (type) { includes(:notification_outbound)
                                          .where('notification_outbounds.outbound_type' => type) }
 
   #========== RELATIONS
@@ -60,18 +61,13 @@ class NotificationDistributor < OpenCongressModel
         if na_option.send("#{type}?".to_sym) # check whether user wants notification for the outbound type
           u_nd_wtype = u_nd.with_outbound_type(type)
           new_nd = NotificationDistributor.new(notification_aggregate_id: na.id)
-          if u_nd_wtype.first.present?
-            _no = u_nd_wtype.first.notification_outbound
-            new_outbound = false
-          else
-            _no = NotificationOutbound.create(outbound_type: type,
-                                                is_digest: false,
-                                                outbound_timeframe: na_option.send("#{type}_frequency".to_sym) )
-            new_outbound = true
-          end
+          _no =  u_nd_wtype.any? ?
+                 u_nd_wtype.first.notification_outbound :
+                 NotificationOutbound.create(outbound_type: type,
+                                             is_digest: false,
+                                             delay_send: na_option.send("#{type}_frequency".to_sym) )
           new_nd.notification_outbound = _no
           new_nd.save
-          _no.queue_outbound if new_outbound
         end
       end
 

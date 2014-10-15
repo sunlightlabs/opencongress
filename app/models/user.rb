@@ -407,7 +407,7 @@ class User < OpenCongressModel
       return n_opt.first if n_opt.any?
     end
 
-    UserNotificationOptionItem::DEFAULT_ATTRIBUTES
+    UserNotificationOptionItem.new(UserNotificationOptionItem::DEFAULT_ATTRIBUTES)
   end
 
   # Retrieves user's unseen notifications

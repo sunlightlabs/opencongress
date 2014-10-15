@@ -12,7 +12,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
-  factory :notification do
+  factory :notifications do
     user_id 1
     notifying_object 1
     seen 1

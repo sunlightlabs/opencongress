@@ -32,7 +32,7 @@ class NotificationOutbound < OpenCongressModel
 
   #========== ACCESSORS
 
-  attr_accessor :outbound_timeframe
+  attr_accessor :delay_send
 
   #========== METHODS
 
@@ -48,17 +48,21 @@ class NotificationOutbound < OpenCongressModel
     notification_aggregates.last.user
   end
 
-  def queue_outbound
-    send_notification
-    self.update_attributes!({sent: 1})
+  def queue_outbound(delay=false)
+    if delay
+      self.delay_for(delay_send.present? ? delay_send : DEFAULT_OUTBOUND_TIMEFRAME, :retry => 3).send_notification
+    else
+      self.send_notification
+    end
   end
-
-  private
 
   # TODO: implement the delivery cases
   def send_notification
     self.send("send_#{outbound_type}".to_sym) rescue logger.error "Outbound type '#{outbound_type}' not found."
+    self.update_attributes!({sent: 1})
   end
+
+  private
 
   def send_email
     NotificationMailer.setup_email(self).deliver

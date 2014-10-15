@@ -1,0 +1,7 @@
+<h5>New activity in Congress for <%= render "notifications/#{na.activity_key.split('.')[0]}/#{na.activity_key.split('.')[1]}/headline", :na => na %></h5>
+
+<ul>
+  <% na.activities.includes(:trackable).each do |a| %>
+      <li><%= render "notifications/#{a.key.split('.')[0]}/#{a.key.split('.')[1]}/body", :activity => a %></li>
+  <% end %>
+</ul>

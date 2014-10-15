@@ -22,8 +22,8 @@ class NotificationAggregate < OpenCongressModel
 
   #----- HAS MANY
 
-  has_many :notification_items
-  has_many :notification_distributors
+  has_many :notification_items, :dependent => :delete_all
+  has_many :notification_distributors, :dependent => :destroy
   has_many :activities, :class_name => 'PublicActivity::Activity', :through => :notification_items
 
   #----- BELONGS TO
@@ -42,14 +42,13 @@ class NotificationAggregate < OpenCongressModel
   #
   # @param activity_id [Integer] PublicActivity::Activity id value
   # @param user_id [Integer] User id value
-  # @return [AggregateNotification, nil] an instance of nil
+  # @return [AggregateNotification, nil] an instance or nil
   def self.create_from_activity(activity_id, user_id)
 
     activity = PublicActivity::Activity.find(activity_id)
+    user = User.find(user_id)
 
-    if activity.present?
-
-      user = User.find(user_id)
+    if activity.present? and user.present?
 
       # TODO: optimize this with database indexes
       # check if an aggregate notification already exists for this activity
@@ -57,8 +56,12 @@ class NotificationAggregate < OpenCongressModel
                                               'activities.owner_type'=>activity.owner_type,
                                               'activities.key'=>activity.key).last
 
-      # get user's settings for this particular activity and item based on their bookmark
-      na_options = user.notification_option_item(na.activity_key, na.bookmark)
+      # get bookmark for aggregate if it exists
+      bookmark = na.present? ? na.bookmark : Bookmark.where(user_id: user_id,
+                                                            bookmarkable_id: activity.owner_id,
+                                                            bookmarkable_type: activity.owner_type).last
+      # get user's settings for this particular activity and bookmark if it exists
+      na_options = user.notification_option_item(activity.key, bookmark)
       # create new aggregate notification if user settings calls for it
       na = NotificationAggregate.create(user_id:user_id, updated_at: nil) if na_options.stale_aggregate?(na)
       # create notification item and associated with aggregate notification

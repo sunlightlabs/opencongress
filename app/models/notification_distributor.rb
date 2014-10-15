@@ -18,14 +18,23 @@ class NotificationDistributor < OpenCongressModel
 
   #========== FILTERS
 
-  before_create -> { set_link_code }
+  before_create -> { create_link_code }
+
+  #========== SCOPES
+
+  scope :unsent_outbounds, -> (na, d) { where(notification_aggregate_id: na.id)
+                                        .joins(:notification_outbound)
+                                        .where('notification_outbounds.sent' => 0,
+                                               'notification_outbounds.is_digest' => d) }
+  scope :with_outbound_type, -> (type) { joins(:notification_outbound)
+                                         .where('notification_outbounds.outbound_type' => type) }
 
   #========== RELATIONS
 
   #----- BELONGS_TO
 
   belongs_to :notification_aggregate
-  belongs_to :notification_outbound
+  belongs_to :notification_outbound, :dependent => :destroy
 
   #========== METHODS
 
@@ -40,22 +49,32 @@ class NotificationDistributor < OpenCongressModel
     na = NotificationAggregate.find(na_id)
 
     if na.present?
-      na_options = na.user.notification_option_item(na.activity_key, na.bookmark)
 
-      nd = NotificationDistributor.where(notification_aggregate_id: na.id)
-                                  .joins(:notification_outbound).where('notification_outbounds.sent' => 0,
-                                                                       'notification_outbounds.is_digest' => false)
+      # retrieve the user's notification settings for specific activity and bookmarked item
+      na_option = na.user.notification_option_item(na.activity_key, na.bookmark)
+
+      # retrieve the distributors for which the associated outbound is unsent and isn't a digest
+      u_nd = unsent_outbounds(na, false)
 
       NotificationOutbound::OUTBOUND_TYPES.each do |type|
-        if na_options.send(type.to_sym) == 1
-          no = nd.joins(:notification_outbound).where('notification_outbounds.outbound_type' => type)
+        if na_option.send("#{type}?".to_sym) # check whether user wants notification for the outbound type
+          u_nd_wtype = u_nd.with_outbound_type(type)
           new_nd = NotificationDistributor.new(notification_aggregate_id: na.id)
-          _no = no.first.present? ? no.first.notification_outbound : NotificationOutbound.create(outbound_type: type.to_s, is_digest: false)
+          if u_nd_wtype.first.present?
+            _no = u_nd_wtype.first.notification_outbound
+            new_outbound = false
+          else
+            _no = NotificationOutbound.create(outbound_type: type,
+                                                is_digest: false,
+                                                outbound_timeframe: na_option.send("#{type}_frequency".to_sym) )
+            new_outbound = true
+          end
           new_nd.notification_outbound = _no
           new_nd.save
-          # TODO : check if _no should be sent now either because last email was sent past the threshold value or user wants notifications immediately (small delay to allow mass notifications)
+          _no.queue_outbound if new_outbound
         end
       end
+
     else
       nil
     end
@@ -66,7 +85,8 @@ class NotificationDistributor < OpenCongressModel
 
   private
 
-  def set_link_code
+  # Generates a random string to use as a secure outward facing identifier
+  def create_link_code
     self.link_code = SecureRandom.hex(32)
   end
 

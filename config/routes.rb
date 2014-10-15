@@ -328,6 +328,8 @@ OpenCongress::Application.routes.draw do
   match ':controller(/:action(/:id))', :via => [:get,:post,:put,:delete]
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
+
+
   # root :to => 'index#index', :as => :home
   # Dev homepage
   root :to => 'index#index', :as => :home

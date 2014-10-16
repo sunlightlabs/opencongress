@@ -1,1 +1,1 @@
-<%= render "notifications/#{activity.key.split('.')[0]}/#{activity.key.split('.')[1]}/type/#{activity.trackable.action_type}", :activity => activity %>
+<%= render "notifications/#{activity.key.split('.')[0]}/#{activity.key.split('.')[1]}/type/#{activity.trackable.action_type}", :bill_action => activity.trackable %>

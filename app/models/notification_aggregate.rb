@@ -50,16 +50,13 @@ class NotificationAggregate < OpenCongressModel
 
     if activity.present? and user.present?
 
+
+      na_query = activity.recipient.present? ?
+                 {'activities.key'=>activity.key, 'activities.recipient_id'=>user_id} :
+                 {'activities.key'=>activity.key, 'activities.owner_id'=>activity.owner_id, 'activities.owner_type'=>activity.owner_type}
+
       # TODO: optimize this with database indexes
-      if activity.recipient.present?
-        na = user.notification_aggregates.where('activities.key'=>activity.key,
-                                                'activities.recipient_id' => user_id).last
-      else
-        # check if an aggregate notification already exists for this activity
-        na = user.notification_aggregates.where('activities.owner_id'=>activity.owner_id,
-                                                'activities.owner_type'=>activity.owner_type,
-                                                'activities.key'=>activity.key).last
-      end
+      na = user.notification_aggregates.where(na_query).last
 
       # get bookmark for aggregate if it exists
       bookmark = na.present? ? na.bookmark : Bookmark.where(user_id: user_id,

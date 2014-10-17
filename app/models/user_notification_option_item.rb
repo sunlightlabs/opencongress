@@ -33,7 +33,7 @@ class UserNotificationOptionItem < OpenCongressModel
     mobile: 0,
     mobile_frequency: '10',
     mms_message: 0,
-    mms_message_frequency: '10',
+    mms_message_frequency: '10'
   }
 
   #========== VALIDATORS

@@ -59,7 +59,8 @@ bill1:
   last_vote_where: 
 
 
-bills_001: 
+bills_001:
+  id: "59951"
   sponsor_id: "400333"
   number: "3590"
   bill_type: h
@@ -72,7 +73,6 @@ bills_001:
   topresident_datetime: "2010-03-23"
   last_speech: 
   page_views_count: "306920"
-  id: "59951"
   caption: The health care reform bill, passed by the House on March 21, 2010. President Obama is expected to sign it into law by March 23, 2010.
   is_frontpage_hot: t
   pl: 
@@ -84,6 +84,37 @@ bills_001:
   updated: 2010-04-06 03:07:37
   plain_language_summary: |
     This is the major health care reform bill, passed by the House on March 21, 2010 by a party-line vote of <a href="http://www.opencongress.org/vote/2010/h/165">219-212</a>. It would expand health care coverage to 31 million currently uninsured Americans through a combination of cost controls, subsidies and mandates. It is estimated to cost $848 billion over a 10 year period, but would be fully offset by new taxes and revenues and would actually reduce the deficit by $131 billion over the same period. The Democratic Policy Committee has posted <a href="http://dpc.senate.gov/dpcdoc-sen_health_care_bill.cfm">a summary and more information about the bill.</a> The Republicans have posted their own summary <a href="http://go2.wordpress.com/?id=725X1342&site=senatus.wordpress.com&url=http%3A%2F%2Frpc.senate.gov%2Fpublic%2F_files%2FL28HR3590HealthCare120209ac.pdf">here</a> (.pdf).
+  last_vote_where:
 
-
-  last_vote_where: 
+bill_notify:
+  id: 88518
+  session: 113
+  bill_type: hr
+  number: 5052
+  introduced: 1404964800
+  sponsor_id: 412549
+  lastaction: 1404964800
+  rolls:
+  last_vote_date:
+  last_vote_where:
+  last_vote_roll:
+  last_speech:
+  pl:
+  topresident_date:
+  topresident_datetime:
+  summary:
+  plain_language_summary:
+  hot_bill_category_id:
+  updated: 2014-07-28 04:03:01
+  page_views_count: 22
+  is_frontpage_hot:
+  news_article_count: 0
+  blog_article_count: 0
+  caption:
+  key_vote_category_id:
+  is_major:
+  top_subject_id:
+  short_title:
+  popular_title:
+  official_title:
+  manual_title:

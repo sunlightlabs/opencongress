@@ -27,6 +27,7 @@ PublicActivity::Activity.class_eval do
     elsif self.recipient_id.present?
       NotificationAggregate.create_from_activity(self.id, recipient.id)
     end
+
   end
 
   def action

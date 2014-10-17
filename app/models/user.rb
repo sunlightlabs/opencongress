@@ -390,8 +390,10 @@ class User < OpenCongressModel
   # @return [UserNotificationOptionItem, Relation<UserNotificationOptionItem>] one or all user's notification settings
   def notification_option_item(key=nil, bookmark=nil)
 
+    # return all options if no arguments passed
     return notification_option_items if key.nil? and bookmark.nil?
 
+    # try fine-grain notification option item if both bookmark and key passed
     if key.present? and bookmark.present?
       n_opt = notification_option_items.where('activity_options.key = ? AND bookmark_id = ?', key, bookmark.id)
       return n_opt.first if n_opt.any?
@@ -407,6 +409,7 @@ class User < OpenCongressModel
       return n_opt.first if n_opt.any?
     end
 
+    # otherwise use default settings
     UserNotificationOptionItem.new(UserNotificationOptionItem::DEFAULT_ATTRIBUTES)
   end
 

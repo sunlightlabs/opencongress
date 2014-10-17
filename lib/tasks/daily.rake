@@ -276,7 +276,7 @@ namespace :update do
       Bill.expire_meta_govtrack_fragments
 
       # TODO: only invalidate updated bills
-      bills = Bill.find(:all, :conditions => ["session = ?", Settings.default_congress])
+      bills = Bill.where(session: Settings.default_congress)
       bills.each do |b|
         b.send :expire_govtrack_fragments
       end

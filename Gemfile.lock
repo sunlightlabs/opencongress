@@ -445,9 +445,8 @@ GEM
       multi_json (~> 1.0)
       rubyzip (~> 1.0)
       websocket (~> 1.0)
-    sentry-raven (0.9.4)
+    sentry-raven (0.10.1)
       faraday (>= 0.7.6)
-      hashie (>= 1.1.0)
       uuidtools
     settingslogic (2.0.9)
     sexmachine (0.1.0)
@@ -606,7 +605,7 @@ DEPENDENCIES
   ruby-openid
   sass-rails (>= 4.0.0)
   selenium-webdriver
-  sentry-raven
+  sentry-raven (= 0.10.1)
   settingslogic
   sexmachine
   sidekiq

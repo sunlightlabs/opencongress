@@ -128,6 +128,9 @@ gem 'acts-as-taggable-on'
 
 gem 'simple_form'
 
+# Report errors to Sentry
+gem 'sentry-raven', "0.10.1"
+
 # Mail
 gem 'mechanize'
 gem 'formageddon', '~> 0.0.2', :git => 'git://github.com/sunlightlabs/formageddon.git', :branch => "beta"
@@ -152,7 +155,6 @@ end
 
 group :production, :staging do
   gem 'unicorn'
-  gem 'sentry-raven' #, :git => "git://github.com/getsentry/raven-ruby.git"
 end
 
 group :test, :development do

@@ -8,6 +8,24 @@
   font-size: ($font-size / $base-font-size) * 1rem;
 }
 
+// ------------------------------
+// Buttons
+// ------------------------------
+
+// Button style mixin
+@mixin button($button-color) {
+  background-color: $button-color;
+  color: white !important;
+
+  &:hover,
+  &:focus {
+    background: shade($button-color, 15%);
+    color: white;
+  }
+  &:visited {
+    color: white;
+  }
+}
 
 // ------------------------------
 // Rems Converter

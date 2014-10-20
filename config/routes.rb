@@ -326,6 +326,7 @@ OpenCongress::Application.routes.draw do
   resources :contact, :only => [:index, :create]
 
   match ':controller(/:action(/:id))', :via => [:get,:post,:put,:delete]
+  get '/style-guide', to: "index#styleguide"
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
   # root :to => 'index#index', :as => :home

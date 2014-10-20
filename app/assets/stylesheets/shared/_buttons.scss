@@ -1,0 +1,24 @@
+// Sitewide button stylings
+// 
+// .button        - Base button style
+// 
+// Styleguide 1.1
+
+.button {
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-family: inherit;
+  color: $white;
+  font-size: 100%;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+  line-height: 1;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  padding-right: 1em;
+  padding-left: 1em;
+}

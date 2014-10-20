@@ -120,6 +120,11 @@ class IndexController < ApplicationController
     render :layout => 'application'
   end
 
+  def styleguide
+     @styleguide = Kss::Parser.new("#{Rails.root}/app/assets/stylesheets")
+     render template: "index/buttons"
+  end
+
   protected
 
   def render_popular(type)
@@ -137,5 +142,6 @@ class IndexController < ApplicationController
       render(:text => "<p>No recent #{pluralize(0, type).sub('0 ', '')} to show.</p>".html_safe)
     end
   end
+
 
 end

@@ -1,0 +1,18 @@
+<html>
+
+  <body>
+    <p>
+      Unfortunately, we could not deliver your message to <%= @email.to %> because our system only processes plaintext emails. If you need help configuring your email client to send a plaintext email, don't hesitate to <a href="mailto:opencongress@sunlightfoundation.com">contact us</a>.
+    </p>
+
+    <p>
+    Here is what we have on file as the contents of the email (it may look a bit garbled):
+    </p>
+    <hr>
+    <p>
+    <%= @email.html_body %>
+    </p>
+  </body>
+
+</html>
+

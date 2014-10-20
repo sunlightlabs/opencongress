@@ -59,6 +59,7 @@ class EmailCongressController < ApplicationController
 
     if @email.text_body.blank? && !@email.html_body.blank?
       EmailCongressMailer.html_body_alert(@email).deliver
+      EmailCongressMailer.must_send_text_version(@email).deliver
       return head :ok
     end
 

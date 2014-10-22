@@ -10,17 +10,18 @@ OpenCongress::Application.configure do
   config.assets.compress = true
   config.assets.js_compressor  = :uglifier
   config.assets.digest = true
-
+  config.eager_load = true
+  
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
 
   # Disable delivery errors, bad email addresses will be ignored
   config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.perform_deliveries = true
-  config.action_mailer.delivery_method = :postmark
-  config.action_mailer.default_url_options = {
-    :host => 'staging.opencongress.org'
-  }
+  config.action_mailer.perform_deliveries = false
+  #config.action_mailer.delivery_method = :postmark
+  #config.action_mailer.default_url_options = {
+  #  :host => 'staging.opencongress.org'
+  #}
 
   config.faxable.deliver_faxes = false
 

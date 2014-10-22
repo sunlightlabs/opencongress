@@ -19,10 +19,13 @@ require 'state'
 class ContactCongressLetter < OpenCongressModel
 
   #========== INCLUDES
+
   include ViewableObject
+  include PrivacyObject
   include ContactCongressLettersHelper
 
   #========== RELATIONS
+
   has_many :formageddon_threads, :through => :contact_congress_letters_formageddon_threads, :class_name => 'Formageddon::FormageddonThread'
   has_many :contact_congress_letters_formageddon_threads
   has_many :comments, :as => :commentable
@@ -33,7 +36,10 @@ class ContactCongressLetter < OpenCongressModel
   #========== CONSTANTS
 
 
-  #========== PUBLIC METHODS
+  #========== METHODS
+
+  #----- INSTANCE
+
   public
 
   def ident
@@ -63,19 +69,15 @@ class ContactCongressLetter < OpenCongressModel
 
   def regarding
     if contactable_type == 'Bill'
-      return "#{contactable.typenumber} #{contactable.title_common}"
+      "#{contactable.typenumber} #{contactable.title_common}"
     elsif contactable_type == 'Subject'
-      return contactable.term
+      contactable.term
     end
   end
 
   def get_additional_letters
     letters = []
-    formageddon_threads.each do |t|
-      if t.formageddon_letters.size > 1
-        letters << t.formageddon_letters[1..-1]
-      end
-    end
+    formageddon_threads.each {|t| letters << t.formageddon_letters[1..-1] if t.formageddon_letters.size > 1 }
     letters.flatten!.sort!{|a,b| a.created_at <=> b.created_at } unless letters.empty?
     return letters
   end
@@ -92,7 +94,7 @@ class ContactCongressLetter < OpenCongressModel
         return true
       end
     else
-      return true
+      true
     end
   end
 
@@ -106,7 +108,7 @@ class ContactCongressLetter < OpenCongressModel
   # chooses to throw in their full name randomly in the body of their message.
   #
   def message_no_pii
-    return strip_pii_from_message(get_letter(), message())
+    strip_pii_from_message(get_letter, message)
   end
 
   def privacy
@@ -116,4 +118,5 @@ class ContactCongressLetter < OpenCongressModel
   def public?
     privacy == 'PUBLIC'
   end
+
 end

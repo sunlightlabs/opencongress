@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: notification_outbounds
+#
+#  id            :integer          not null, primary key
+#  sent          :integer          default(0)
+#  received      :integer          default(0)
+#  receive_code  :string(255)
+#  outbound_type :string(255)
+#  created_at    :datetime
+#  updated_at    :datetime
+#  is_digest     :boolean
+#
+
 require 'spec_helper'
 
 describe NotificationOutbound do

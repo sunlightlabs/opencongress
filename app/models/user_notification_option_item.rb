@@ -52,6 +52,10 @@ class UserNotificationOptionItem < OpenCongressModel
 
   #----- CLASS
 
+  def self.default
+    UserNotificationOptionItem.new(DEFAULT_ATTRIBUTES)
+  end
+
   #----- INSTANCE
 
   public

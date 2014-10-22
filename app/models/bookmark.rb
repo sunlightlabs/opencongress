@@ -11,6 +11,10 @@
 
 class Bookmark < OpenCongressModel
 
+  #========== INCLUDES
+
+  include PrivacyObject
+
   #========== VALIDATORS
 
   validates_uniqueness_of :bookmarkable_id, :scope => [:user_id, :bookmarkable_type]
@@ -22,19 +26,19 @@ class Bookmark < OpenCongressModel
   belongs_to :bookmarkable, :polymorphic => true
   belongs_to :user # NOTE: Comments belong to a user
 
-  #========== SCOPES
-
-  scope :bills, includes(:bill).where(:bookmarkable_type => 'Bill')
-  scope :committees, includes(:committee).where(:bookmarkable_type => 'Committee')
-  scope :people, includes(:person).where(:bookmarkable_type => 'Person')
-  scope :subjects, includes(:subject).where(:bookmarkable_type => 'Subject')
-
   with_options :foreign_key => 'bookmarkable_id' do |b|
     b.belongs_to :person, -> { includes :roles}
     b.belongs_to :bill
     b.belongs_to :subject
     b.belongs_to :committee
   end
+
+  #========== SCOPES
+
+  scope :bills, includes(:bill).where(:bookmarkable_type => 'Bill')
+  scope :committees, includes(:committee).where(:bookmarkable_type => 'Committee')
+  scope :people, includes(:person).where(:bookmarkable_type => 'Person')
+  scope :subjects, includes(:subject).where(:bookmarkable_type => 'Subject')
 
   # NOTE: install the acts_as_taggable plugin if you want bookmarks to be tagged.
   acts_as_taggable

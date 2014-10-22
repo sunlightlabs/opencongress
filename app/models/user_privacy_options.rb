@@ -20,6 +20,7 @@
 #
 
 class UserPrivacyOptions < OpenCongressModel
+
   belongs_to :user
 
   PRIVACY_OPTIONS = {
@@ -43,4 +44,5 @@ class UserPrivacyOptions < OpenCongressModel
     ACCESSIBLE_ATTRS.map{|att| self.send("#{att}=".to_sym, 0)}
     save
   end
+
 end

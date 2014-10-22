@@ -42,6 +42,7 @@ class User < OpenCongressModel
 
   include Authable
   include EmailListable
+  include PrivacyObject
 
   #========== CONSTANTS
 
@@ -76,8 +77,8 @@ class User < OpenCongressModel
   # the validation messages as they appear in user_profile.
   # Otherwise, the message is prepended by the words User profile.
   after_validation -> {
-    user_profile.errors.each  { |name, value| errors.add(name.to_sym(), value) }
-    errors.to_hash.delete_if { |name, value| name.to_s().include? 'user_profile' }
+    user_profile.errors.each  { |name, value| errors.add(name.to_sym, value) }
+    errors.to_hash.delete_if { |name, value| name.to_s.include? 'user_profile' }
     # user_profile.errors.clear() - may need this later for some reason
   }
 
@@ -172,6 +173,7 @@ class User < OpenCongressModel
   has_many :notification_aggregates, -> { includes(:activities) }
   has_many :user_notification_option_items, -> { joins(:activity_option) },
            :through => :user_notification_options
+  has_many :user_privacy_option_items
 
   #----- BELONGS_TO
 
@@ -227,10 +229,10 @@ class User < OpenCongressModel
 
   #========== SERIALIZERS
 
-  serialize :possible_states     # List serialization
-  serialize :possible_districts  # List serialization
+  serialize :possible_states, Array
+  serialize :possible_districts, Array
 
-  #========== DELEGATED ATTRIBUTES / METHODS
+  #========== DELEGATE
 
   delegate :zipcode=, :to => :user_profile
   delegate :street_address=, :to => :user_profile
@@ -382,30 +384,96 @@ class User < OpenCongressModel
   #
   # @param key [String] activity key for specific settings, nil for all
   # @param bookmark [Bookmark] bookmark object for granular options, nil for all
-  # @return [UserNotificationOptionItem, Relation<UserNotificationOptionItem>] one or all user's notification settings
+  # @return [UserNotificationOptionItem, nil] one or all user's notification settings
   def notification_option_item(key=nil, bookmark=nil)
 
-    # return all options if no arguments passed
-    return notification_option_items if key.nil? and bookmark.nil?
+    # return nil if no arguments passed
+    return nil if key.nil? and bookmark.nil?
 
-    # try fine-grain notification option item if both bookmark and key passed
     if key.present? and bookmark.present?
-      n_opt = notification_option_items.where('activity_options.key = ? AND bookmark_id = ?', key, bookmark.id)
-      return n_opt.first if n_opt.any?
+      noi = notification_option_items.where('activity_options.key = ? AND bookmark_id = ?', key, bookmark.id).last
+    elsif key.present?
+      noi = notification_option_items.where('activity_options.key = ?', key).last
+    elsif bookmark.present?
+      noi = notification_option_items.where('bookmark_id = ?', bookmark.id).last
+    else
+      noi = nil
     end
 
-    if key.present?
-      n_opt = notification_option_items.where('activity_options.key = ?', key)
-      return n_opt.first if n_opt.any?
+    noi.present? ? noi : UserNotificationOptionItem.default
+
+  end
+
+  # Retrieves specific notification settings for behavior based
+  # on specific item, type, and/or method
+  #
+  # @param args [Hash] arguments containing one or more of the following:
+  #        item [PrivacyObject] object which includes the privacy_object module
+  #        type [String] type of a PrivacyObject for generic privacy setting
+  #        method [String] specific method or attribute privacy
+  # @return [UserPrivacyOptionItem] privacy options (may construct temporary default)
+  def privacy_option_for(args={item:nil,type:nil,method:nil})
+
+    begin
+      args.init_missing_keys(nil, :item, :type, :method)
+
+      query = { :method => args[:method] }
+
+      # check granular item instance first
+      if args[:item].present?
+        query[:privacy_object_type] = args[:item].class.name
+        query[:privacy_object_id] = args[:item].id
+        upoi = user_privacy_option_items.where(query).first
+        return upoi unless upoi.nil?
+      end
+
+      # check general type next
+      if args[:type].present? or args[:item].present?
+        query[:privacy_object_type] = args[:type] || args[:item].class.name
+        query[:privacy_object_id] = nil
+        upoi = user_privacy_option_items.where(query).first
+        return upoi unless upoi.nil?
+      end
+
+      # use default privacy if no privacy option found
+      return UserPrivacyOptionItem.default(self, args)
+    rescue
+      UserPrivacyOptionItem.default(self, {})
     end
 
-    if bookmark.present?
-      n_opt = notification_option_items.where('bookmark_id = ?', bookmark.id)
-      return n_opt.first if n_opt.any?
-    end
+  end
 
-    # otherwise use default settings
-    UserNotificationOptionItem.new(UserNotificationOptionItem::DEFAULT_ATTRIBUTES)
+  # Sets all privacy options to broad default values
+  #
+  # @param privacy [Symbol] privacy options - :public, :private, :friend
+  def set_all_default_privacies(privacy)
+    if UserPrivacyOptionItem::PRIVACY_OPTIONS.has_key?(privacy)
+      UserPrivacyOptionItem::DEFAULTS.each do |key,val|
+        UserPrivacyOptionItem::DEFAULTS[key][privacy].each do |k,v|
+          item = user_privacy_option_items.where(privacy_object_type:key, privacy_object_id: nil, method:k).first
+          item.present? ? item.update({privacy:v}) : UserPrivacyOptionItem.create(user_id: self.id,
+                                                                                  privacy_object_type: key,
+                                                                                  privacy_object_id: nil,
+                                                                                  method: k,
+                                                                                  privacy: v)
+        end
+      end
+    end
+  end
+
+  # Checks if user can show a PrivacyObject to another user
+  #
+  # @param user [User] user to check privacy of
+  # @param args [Hash] arguments containing one or more of the following:
+  #        item [PrivacyObject] object which includes the privacy_object module
+  #        type [String] type of a PrivacyObject for generic privacy setting
+  #        method [String] specific method or attribute privacy
+  # @return [Boolean] true if this user can view, false otherwise
+  def can_show_to?(user, args={item:nil,type:nil,method:nil})
+    if !args.has_key?(:item) and !args.has_key?(:type) and args.has_key?(:method)
+      args[:item] = user
+    end
+    self.privacy_option_for(args).can_show_to?(user)
   end
 
   # Retrieves user's unseen notifications

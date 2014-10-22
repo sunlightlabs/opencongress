@@ -10,6 +10,7 @@
 #
 
 class State < OpenCongressModel
+
   ABBREVIATIONS = {
     "Alabama" => "AL",
     "Alaska" => "AK",
@@ -64,12 +65,13 @@ class State < OpenCongressModel
     "Wyoming" => "WY"
   }
 
-  ABBREVIATIONS_REVERSE = ABBREVIATIONS.invert()
+  ABBREVIATIONS_REVERSE = ABBREVIATIONS.invert
 
   has_many :districts
 
   has_many :v_current_roles
   has_many :roles, :through => :v_current_roles
+
   has_many :people, :through => :v_current_roles do
     def representatives
       where("v_current_roles.role_type = 'rep'")

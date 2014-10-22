@@ -86,8 +86,7 @@ module ContactCongressLettersHelper
     regexp_str.gsub!(/[^0-9A-Za-z@|,\#\.\-\s+(\()(\))(\|)\*]/, '')
     regexp_str = "(#{regexp_str})"
 
-    puts regexp_str
-    return message.gsub(/#{regexp_str}/i,'')
+    message.gsub(/#{regexp_str}/i,'')
   end
 
   def privacy_button_classes (letter, button)

@@ -1012,6 +1012,13 @@ CREATE AGGREGATE rewrite(pg_catalog.tsquery[]) (
 
 
 --
+-- Name: tsquery_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
+--
+
+CREATE OPERATOR FAMILY tsquery_ops USING btree;
+
+
+--
 -- Name: tsquery_ops; Type: OPERATOR CLASS; Schema: public; Owner: -
 --
 
@@ -1023,6 +1030,13 @@ CREATE OPERATOR CLASS tsquery_ops
     OPERATOR 4 >=(pg_catalog.tsquery,pg_catalog.tsquery) ,
     OPERATOR 5 >(pg_catalog.tsquery,pg_catalog.tsquery) ,
     FUNCTION 1 (pg_catalog.tsquery, pg_catalog.tsquery) tsquery_cmp(pg_catalog.tsquery,pg_catalog.tsquery);
+
+
+--
+-- Name: tsvector_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
+--
+
+CREATE OPERATOR FAMILY tsvector_ops USING btree;
 
 
 --
@@ -5133,6 +5147,41 @@ ALTER SEQUENCE user_options_id_seq OWNED BY user_options.id;
 
 
 --
+-- Name: user_privacy_option_items; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE user_privacy_option_items (
+    id integer NOT NULL,
+    user_id integer,
+    privacy_object_id integer,
+    privacy_object_type character varying(255),
+    method character varying(255),
+    privacy integer DEFAULT 0,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: user_privacy_option_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE user_privacy_option_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_privacy_option_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE user_privacy_option_items_id_seq OWNED BY user_privacy_option_items.id;
+
+
+--
 -- Name: user_profiles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -6256,6 +6305,13 @@ ALTER TABLE ONLY user_options ALTER COLUMN id SET DEFAULT nextval('user_options_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY user_privacy_option_items ALTER COLUMN id SET DEFAULT nextval('user_privacy_option_items_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY user_privacy_options ALTER COLUMN id SET DEFAULT nextval('privacy_options_id_seq'::regclass);
 
 
@@ -7224,6 +7280,14 @@ ALTER TABLE ONLY user_notification_options
 
 ALTER TABLE ONLY user_options
     ADD CONSTRAINT user_options_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_privacy_option_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY user_privacy_option_items
+    ADD CONSTRAINT user_privacy_option_items_pkey PRIMARY KEY (id);
 
 
 --
@@ -8202,6 +8266,27 @@ CREATE UNIQUE INDEX index_user_options_on_user_id ON user_options USING btree (u
 
 
 --
+-- Name: index_user_po_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_user_po_id ON user_privacy_option_items USING btree (privacy_object_id);
+
+
+--
+-- Name: index_user_po_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_user_po_type ON user_privacy_option_items USING btree (privacy_object_type);
+
+
+--
+-- Name: index_user_privacy_option_items_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_user_privacy_option_items_on_user_id ON user_privacy_option_items USING btree (user_id);
+
+
+--
 -- Name: index_user_profiles_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -8927,4 +9012,6 @@ INSERT INTO schema_migrations (version) VALUES ('20141009154958');
 INSERT INTO schema_migrations (version) VALUES ('20141010144456');
 
 INSERT INTO schema_migrations (version) VALUES ('20141010192805');
+
+INSERT INTO schema_migrations (version) VALUES ('20141020171359');
 

@@ -36,7 +36,9 @@
 require_dependency 'spammable'
 
 class Comment < OpenCongressModel
+
   include Spammable
+  include PrivacyObject
 
   belongs_to :user
   belongs_to :commentable, :polymorphic => true
@@ -51,6 +53,7 @@ class Comment < OpenCongressModel
     c.belongs_to :notebook_note
     c.belongs_to :notebook_link
   end
+
   has_many :comment_scores
 
   acts_as_nested_set :scope => :root

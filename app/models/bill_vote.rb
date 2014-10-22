@@ -12,12 +12,13 @@
 
 class BillVote < OpenCongressModel
 
-  # 1 = opposed, 0 = supported
+  include PrivacyObject
+
   belongs_to :user
   belongs_to :bill
 
-  scope :supporting, where(:support => 0)
-  scope :opposing, where(:support => 1)
+  scope :supporting, -> { where(:support => 0) }
+  scope :opposing, -> { where(:support => 1) }
 
   POSITION_CHOICES = { :support => 0, :oppose => 1 }
 
@@ -62,4 +63,5 @@ class BillVote < OpenCongressModel
       return nil
     end
   end
+
 end

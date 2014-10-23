@@ -113,12 +113,12 @@ class UserPrivacyOptionItem < OpenCongressModel
   #        type [String] type of a PrivacyObject for generic privacy setting
   #        method [String] specific method or attribute privacy
   # @return [Integer] default privacy setting
-  def self.default_privacy_for(args={item:nil,type:nil,method:nil})
+  def self.default_privacy_for(args={item:nil,type:nil,method:nil}, privacy=nil)
 
     begin
       args.init_missing_keys(nil, :item, :type, :method)
       type = args[:item].present? ? args[:item].class.name : args[:type]
-      return DEFAULTS[type][DEFAULT_PRIVACY][args[:method]]
+      return DEFAULTS[type][privacy||DEFAULT_PRIVACY][args[:method]]
     rescue TypeError
       return DEFAULT_PRIVACY
     end

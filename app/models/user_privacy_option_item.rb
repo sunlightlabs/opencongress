@@ -89,15 +89,16 @@ class UserPrivacyOptionItem < OpenCongressModel
 
 
   # Returns whether user argument is allowed to see privacy object
+  # TODO: create privacy model if more sophisticated privacy settings needed
   #
-  # @param user [User] user to test if they can see associated privacy object
+  # @param viewer [User] user to test if they can see associated privacy object
   # @return [Boolean] true if user can see privacy object, false otherwise
-  def can_show_to?(user)
+  def can_show_to?(viewer)
     case self.privacy
       when PRIVACY_OPTIONS[:public]
         return true
       when PRIVACY_OPTIONS[:friend]
-        return Friend.are_confirmed_friends?(self.user, user)
+        return Friend.are_confirmed_friends?(self.user, viewer)
       when UserPrivacyOptionItem::PRIVACY_OPTIONS[:private]
         return false
       else

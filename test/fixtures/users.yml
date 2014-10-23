@@ -94,3 +94,26 @@ users_003:
   district: 8
   accepted_tos_at: <%= 10.minutes.ago %>
   activated_at: <%= 10.minutes.ago %>
+
+users_004:
+
+  salt: d3bc4851d15d3be6a489f35ff5733d35c0811263
+  activated_at: 2008-01-14 04:19:05.480086
+  created_at: 2008-01-13 23:18:44.867131
+  last_login: 2010-04-02 08:49:05.425035
+  crypted_password: e9df7394fdecfe1d3c354ef7818ba93ba9c67578
+  password_reset_code:
+  updated_at: 2010-04-02 08:49:05.426847
+  activation_code:
+  previous_login_date: 2010-03-26 14:41:25.196049
+  id: "13"
+  representative_id: "400301"
+  user_role_id: "2"
+  remember_token:
+  accepted_tos_at: 2009-03-24 23:42:42.592366
+  state: MA
+  identity_url:
+  status: 1
+  login: crdunwel
+  district: 1
+  email: clayton.dunwell@gmail.com

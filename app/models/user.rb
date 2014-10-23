@@ -183,11 +183,7 @@ class User < OpenCongressModel
 
   #========== ALIASES
 
-  #----- ATTRIBUTES
-
   alias_attribute :username, :login
-
-  #----- METHODS
 
   # These are just here for some consistency in naming patterns
   alias_method :voted_bills, :bills_voted_on
@@ -198,21 +194,22 @@ class User < OpenCongressModel
 
   #========== SCOPES
 
-  scope :for_state, lambda {|state| where("state = ?", state.upcase) }
-  scope :for_district, lambda {|state, district| for_state(state).where("district = ?", district.to_i) }
-  scope :active, lambda { where("previous_login_date >= ?", 1.months.ago) }
-  scope :inactive, lambda { where("previous_login_date < ? OR previous_login_date IS NULL", 3.months.ago)}
-  scope :tracking_bill, lambda {|bill| includes(:bookmarked_bills).where("bills.id" => bill.id) }
-  scope :voted_on_bill, lambda {|bill| includes(:bills_voted_on).where("bills.id" => bill.id) }
-  scope :supporting_bill, lambda {|bill| includes(:bills_supported).where("bills.id" => bill.id) }
-  scope :opposing_bill, lambda {|bill| includes(:bills_opposed).where("bills.id" => bill.id) }
-  scope :supporting_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
-  scope :opposing_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
-  scope :ranking_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating is not null")}
-  scope :tracking_person, lambda {|person| includes(:bookmarked_people).where("people.id" => person.id) }
-  scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subjects.id" => subject.id) }
-  scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committees.id" => committee.id) }
+  scope :for_state, lambda {|state| where('state = ?', state.upcase) }
+  scope :for_district, lambda {|state, district| for_state(state).where('district = ?', district.to_i) }
+  scope :active, lambda { where('previous_login_date >= ?', 1.months.ago) }
+  scope :inactive, lambda { where('previous_login_date < ? OR previous_login_date IS NULL', 3.months.ago)}
+  scope :tracking_bill, lambda {|bill| includes(:bookmarked_bills).where('bills.id' => bill.id) }
+  scope :voted_on_bill, lambda {|bill| includes(:bills_voted_on).where('bills.id' => bill.id) }
+  scope :supporting_bill, lambda {|bill| includes(:bills_supported).where('bills.id' => bill.id) }
+  scope :opposing_bill, lambda {|bill| includes(:bills_opposed).where('bills.id' => bill.id) }
+  scope :supporting_person, lambda{|person| includes(:person_approvals).where('person_approvals.person_id' => person.id).where('rating > 5')}
+  scope :opposing_person, lambda{|person| includes(:person_approvals).where('person_approvals.person_id' => person.id).where('rating > 5')}
+  scope :ranking_person, lambda{|person| includes(:person_approvals).where('person_approvals.person_id' => person.id).where('rating is not null')}
+  scope :tracking_person, lambda {|person| includes(:bookmarked_people).where('people.id' => person.id) }
+  scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where('subjects.id' => subject.id) }
+  scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where('committees.id' => committee.id) }
   scope :mypn_spammers, lambda{includes(:political_notebook => [:notebook_items]).where('notebook_items.spam = ?', true).order('users.login ASC')}
+
 
   # These are LoD helpers that just pass on AR relations from Person
   def bookmarked_senators; bookmarked_people.sen; end
@@ -333,12 +330,39 @@ class User < OpenCongressModel
   end
 
   def self.find_all_by_ip(address)
-    ip = UserIpAddress.int_form(address)
-    return self.includes(:user_ip_addresses).where('user_ip_addresses.addr = ?', ip)
+    includes(:user_ip_addresses).where('user_ip_addresses.addr = ?', UserIpAddress.int_form(address))
   end
 
   def self.find_by_feed_key_option(key)
-    self.includes(:user_options).where("user_options.feed_key = ?", key).first
+    includes(:user_options).where('user_options.feed_key = ?', key).first
+  end
+
+  def self.fix_duplicate_users
+    User.find_by_sql('select login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
+      puts k.login
+      number = k.r1_tally.to_i
+      User.where(login: k.login).order('created_at DESC').each do |j|
+        number = number - 1
+        j.destroy unless number == 1
+      end
+    end
+
+    User.find_by_sql('select email, COUNT(*) as r1_tally FROM users GROUP BY email HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
+      puts k.email
+      number = k.r1_tally.to_i
+      User.where(email: k.email).order('created_at DESC')
+      User.find_all_by_email(k.email, :order => "created_at desc").each do |j|
+        number = number - 1
+        j.destroy unless number == 1
+      end
+    end
+
+    User.find_by_sql('select lower(login) as login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
+      next if k.nil?
+      puts k.login
+      number = k.r1_tally.to_i
+      k.destroy if k.activated_at.nil?
+    end
   end
 
   #----- INSTANCE
@@ -404,45 +428,6 @@ class User < OpenCongressModel
 
   end
 
-  # Retrieves specific notification settings for behavior based
-  # on specific item, type, and/or method
-  #
-  # @param args [Hash] arguments containing one or more of the following:
-  #        item [PrivacyObject] object which includes the privacy_object module
-  #        type [String] type of a PrivacyObject for generic privacy setting
-  #        method [String] specific method or attribute privacy
-  # @return [UserPrivacyOptionItem] privacy options (may construct temporary default)
-  def privacy_option_for(args={item:nil,type:nil,method:nil})
-
-    begin
-      args.init_missing_keys(nil, :item, :type, :method)
-
-      query = { :method => args[:method] }
-
-      # check granular item instance first
-      if args[:item].present?
-        query[:privacy_object_type] = args[:item].class.name
-        query[:privacy_object_id] = args[:item].id
-        upoi = user_privacy_option_items.where(query).first
-        return upoi unless upoi.nil?
-      end
-
-      # check general type next
-      if args[:type].present? or args[:item].present?
-        query[:privacy_object_type] = args[:type] || args[:item].class.name
-        query[:privacy_object_id] = nil
-        upoi = user_privacy_option_items.where(query).first
-        return upoi unless upoi.nil?
-      end
-
-      # use default privacy if no privacy option found
-      return UserPrivacyOptionItem.default(self, args)
-    rescue
-      UserPrivacyOptionItem.default(self, {})
-    end
-
-  end
-
   # Sets all privacy options to broad default values
   #
   # @param privacy [Symbol] privacy options - :public, :private, :friend
@@ -450,10 +435,13 @@ class User < OpenCongressModel
     if UserPrivacyOptionItem::PRIVACY_OPTIONS.has_key?(privacy)
       UserPrivacyOptionItem::DEFAULTS.each do |key,val|
         UserPrivacyOptionItem::DEFAULTS[key][privacy].each do |k,v|
-          item = user_privacy_option_items.where(privacy_object_type:key, privacy_object_id: nil, method:k).first
+          item = user_privacy_option_items
+                    .where(privacy_object_type:key,
+                           privacy_object_id: key == 'User' ? self.id : nil,
+                           method:k).first
           item.present? ? item.update({privacy:v}) : UserPrivacyOptionItem.create(user_id: self.id,
                                                                                   privacy_object_type: key,
-                                                                                  privacy_object_id: nil,
+                                                                                  privacy_object_id: key == 'User' ? self.id : nil,
                                                                                   method: k,
                                                                                   privacy: v)
         end
@@ -461,19 +449,18 @@ class User < OpenCongressModel
     end
   end
 
-  # Checks if user can show a PrivacyObject to another user
+  def set_all_privacies(privacy)
+    # TODO implement to set all current privacy settings to argument value
+  end
+
+  # Checks if user can show a PrivacyObject (w/ method) to a viewing user
   #
-  # @param user [User] user to check privacy of
-  # @param args [Hash] arguments containing one or more of the following:
-  #        item [PrivacyObject] object which includes the privacy_object module
-  #        type [String] type of a PrivacyObject for generic privacy setting
-  #        method [String] specific method or attribute privacy
+  # @param viewer [User] viewing user
+  # @param item [PrivacyObject] object to show to viewer
+  # @param method [String] method to determine privacy of
   # @return [Boolean] true if this user can view, false otherwise
-  def can_show_to?(user, args={item:nil,type:nil,method:nil})
-    if !args.has_key?(:item) and !args.has_key?(:type) and args.has_key?(:method)
-      args[:item] = user
-    end
-    self.privacy_option_for(args).can_show_to?(user)
+  def can_show_item_to?(viewer, item, method=nil)
+    privacy_option_for({item:item, method:method}).can_show_to?(viewer)
   end
 
   # Retrieves user's unseen notifications
@@ -791,34 +778,6 @@ class User < OpenCongressModel
     UserNotifier.comment_warning(self, comment).deliver
   end
 
-  def self.fix_duplicate_users
-    User.find_by_sql('select login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
-      puts k.login
-      number = k.r1_tally.to_i
-      User.where(login: k.login).order('created_at DESC').each do |j|
-        number = number - 1
-        j.destroy unless number == 1
-      end
-    end
-
-    User.find_by_sql('select email, COUNT(*) as r1_tally FROM users GROUP BY email HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
-      puts k.email
-      number = k.r1_tally.to_i
-      User.where(email: k.email).order('created_at DESC')
-      User.find_all_by_email(k.email, :order => "created_at desc").each do |j|
-        number = number - 1
-        j.destroy unless number == 1
-      end
-    end
-
-    User.find_by_sql('select lower(login) as login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
-      next if k.nil?
-      puts k.login
-      number = k.r1_tally.to_i
-      k.destroy if k.activated_at.nil?
-    end
-  end
-
   def password_required?
     !openid? && !facebook_connect_user? && (crypted_password.blank? || !password.blank?)
   end
@@ -833,6 +792,45 @@ class User < OpenCongressModel
 
   def should_receive_creation_email?
     !facebook_connect_user? && !suppress_activation_email
+  end
+
+  # Retrieves specific notification settings for behavior based
+  # on specific item, type, and/or method
+  #
+  # @param args [Hash] arguments containing one or more of the following:
+  #        item [PrivacyObject] object which includes the privacy_object module
+  #        type [String] type of a PrivacyObject for generic privacy setting
+  #        method [String] specific method or attribute privacy
+  # @return [UserPrivacyOptionItem] privacy options (may construct temporary default)
+  def privacy_option_for(args={item:nil,type:nil,method:nil})
+
+    begin
+      args.init_missing_keys(nil, :item, :type, :method)
+
+      query = { :method => args[:method] }
+
+      # check granular item instance first
+      if args[:item].present?
+        query[:privacy_object_type] = args[:item].class.name
+        query[:privacy_object_id] = args[:item].id
+        upoi = user_privacy_option_items.where(query).first
+        return upoi unless upoi.nil?
+      end
+
+      # check general type next
+      if args[:type].present? or args[:item].present?
+        query[:privacy_object_type] = args[:type] || args[:item].class.name
+        query[:privacy_object_id] = nil
+        upoi = user_privacy_option_items.where(query).first
+        return upoi unless upoi.nil?
+      end
+
+      # use default privacy if no privacy option found
+      return UserPrivacyOptionItem.default(self, args)
+    rescue
+      UserPrivacyOptionItem.default(self, {})
+    end
+
   end
 
   private

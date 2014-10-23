@@ -42,7 +42,6 @@ OpenCongress::Application.configure do
 
   config.eager_load = false
 
-
   # Log the query plan for queries taking more than this (works
   # with SQLite, MySQL, and PostgreSQL)
 

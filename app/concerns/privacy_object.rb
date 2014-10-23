@@ -1,3 +1,11 @@
+# This module is to be included in models which should have associated
+# privacy settings. The model MUST belong to a user (foreign key to user_id)
+# as otherwise user privacy options can't be associated with instances of that model
+# The essential method of this module is "can_show_to?" which returns true
+# or false depending on whether the viewer argument can view the instance
+# according to the owning user's privacy settings. The second argument (method)
+# is optional and if included checks for the granular method/attribute privacy
+
 module PrivacyObject
   extend ActiveSupport::Concern
 
@@ -23,7 +31,7 @@ module PrivacyObject
     def update_all_privacies(user, privacy)
       user.user_privacy_option_items
           .where(privacy_object_type:self.name)
-          .update_all(privacy:UserPrivacyOptionItem::PRIVACY_OPTIONS[privacy])
+          .update_all(privacy:UserPrivacyOptionItem.default_privacy_for(type:self.name,privacy))
     end
 
   end
@@ -45,7 +53,7 @@ module PrivacyObject
   #
   # @param privacy [Symbol] :public, :friend, :private
   # @param method [String]
-  def set_privacy(privacy, method=nil, u_id=nil)
+  def set_privacy(privacy, method=nil)
     privacy_options.create(privacy:privacy, method:method, user_id: user_id)
   end
 
@@ -78,7 +86,7 @@ module PrivacyObject
     else # apply default options to new PrivacyObject
       upoi = user.user_privacy_option_items.where(privacy_object_type: self.class.name,
                                                   privacy_object_id: nil)
-      upoi.each do |item|
+      upoi.each do |item| # set default privacy for specific instance
         new_upoi = item.dup
         new_upoi.privacy_object_id = self.id
         new_upoi.save

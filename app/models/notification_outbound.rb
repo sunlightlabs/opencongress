@@ -58,8 +58,10 @@ class NotificationOutbound < OpenCongressModel
 
   # TODO: implement the delivery cases
   def send_notification
-    self.send("send_#{outbound_type}".to_sym) rescue logger.error "Outbound type '#{outbound_type}' not found."
-    self.update_attributes!({sent: 1})
+    if Rails.env == "production"
+      self.send("send_#{outbound_type}".to_sym) rescue logger.error "Outbound type '#{outbound_type}' not found."
+      self.update_attributes!({sent: 1})
+    end
   end
 
   private

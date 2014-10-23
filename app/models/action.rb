@@ -22,7 +22,6 @@
 #  in_subcommittee  :text
 #  ordinal_position :integer
 #
-require_dependency 'notifying_object'
 
 class Action < OpenCongressModel
   include Comparable

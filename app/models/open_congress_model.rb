@@ -45,7 +45,7 @@ class OpenCongressModel < ActiveRecord::Base
   end
 
   def set_default_attributes_for_nil
-    self.class::DEFAULT_ATTRIBUTES.each {|k,v| self.send("#{k.to_s}=".to_sym, v) if self.send(k).blank? } if defined? self.class::DEFAULT_ATTRIBUTES
+    self.class::DEFAULT_ATTRIBUTES.each {|k,v| self.send("#{k.to_s}=".to_sym, v) if self.respond_to?(k) and self.send(k).blank? } if defined? self.class::DEFAULT_ATTRIBUTES
   end
 
 end

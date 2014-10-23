@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: notification_distributors
+#
+#  id                        :integer          not null, primary key
+#  notification_aggregate_id :integer
+#  notification_outbound_id  :integer
+#  link_code                 :string(255)
+#  view_count                :integer          default(0)
+#  stop_request              :integer          default(0)
+#  created_at                :datetime
+#  updated_at                :datetime
+#
+
 require 'spec_helper'
 
 describe NotificationDistributor do

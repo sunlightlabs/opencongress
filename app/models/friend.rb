@@ -16,6 +16,7 @@ class Friend < OpenCongressModel
   #========== INCLUDES
 
   include PublicActivity::Model
+  include PrivacyObject
 
   #========== FILTERS
 
@@ -58,6 +59,16 @@ class Friend < OpenCongressModel
     ra.compact.sort_by{|p| p.created_at}.reverse
   end
 
+  # Checks to see if both user arguments are confirmed friends
+  #
+  # @param u1 [User] user 1
+  # @param u2 [User] user 2
+  # @return [Boolean] true if both users are confirmed friends, false otherwise
+  def self.are_confirmed_friends?(u1, u2)
+    Friend.where(user_id: u1.id, friend_id: u2.id, confirmed: true).any? and
+        Friend.where(user_id: u2.id, friend_id: u1.id, confirmed: true).any?
+  end
+
   #----- INSTANCE
 
   public
@@ -74,9 +85,8 @@ class Friend < OpenCongressModel
   end
 
   def defriend
-    if inverse_friend.present?
-      self.inverse_friend.update_attributes!({:confirmed => false, :confirmed_at => nil})
-    end
+    i_f = inverse_friend
+    i_f.update_attributes!({:confirmed => false, :confirmed_at => nil}) if i_f.present?
     self.destroy
   end
 

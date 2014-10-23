@@ -45,9 +45,11 @@ class NotificationOutbound < OpenCongressModel
   end
 
   def user
-    notification_aggregates.last.user
+    self.notification_aggregates.last.user
   end
 
+  # Queues an outbound for delivery. If delay=true then Sidekiq
+  # will queue the message for delivery at a later time.
   def queue_outbound(delay=false)
     if delay
       self.delay_for(delay_send.present? ? delay_send : DEFAULT_OUTBOUND_TIMEFRAME, :retry => 3).send_notification
@@ -56,7 +58,9 @@ class NotificationOutbound < OpenCongressModel
     end
   end
 
-  # TODO: implement the delivery cases
+  # Sends the notification message by utilizing the method corresponding to the outbound_type
+  # The send_notifications variable is located in application_settings.yml. If it is not specified
+  # then the default is not to send notifications. # TODO: implement all the delivery cases
   def send_notification
     begin
       if Settings.send_notifications?

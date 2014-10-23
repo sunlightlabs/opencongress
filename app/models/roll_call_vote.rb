@@ -9,7 +9,6 @@
 #
 
 require 'united_states'
-require_dependency 'notifying_object'
 
 class RollCallVote < OpenCongressModel
 

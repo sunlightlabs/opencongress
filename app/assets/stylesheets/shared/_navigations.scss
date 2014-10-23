@@ -1,0 +1,51 @@
+.nav {
+  margin: 0;
+  list-style: none;
+  padding: $base-spacing-unit * 2 0 0 0;
+
+  @extend .cf;
+
+  a {
+    display: block;
+    font-size: $h3-size;
+    text-decoration: none;
+  }
+}
+
+// Stack the nav list left-to-right
+.nav-horizontal {
+
+  > li {
+      float: left;
+      width: 80px / 5px * 1%;
+
+    &.active {
+      font-weight: 600;
+    }
+    
+    a {
+      color: $text-color;
+    }
+  }
+}
+
+.nav-block {
+  background: $dark-blue;
+  padding: ($base-spacing-unit * 2) 0 15px 0;
+  > li {
+    line-height: 1.5;
+    width: 100%;
+    color: $white;
+
+    &.active {
+      color: $yellow;
+    }
+  }
+
+  a {
+    color: inherit;
+    font-size: 1.2em;
+    padding: $base-spacing-unit/4 50px;
+    font-weight: 100;
+  }
+}

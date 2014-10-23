@@ -35,6 +35,26 @@
 }
 
 // ------------------------------
+// Colors
+// ------------------------------
+
+.dark-blue {
+  background: $dark-blue;
+}
+
+.yellow {
+  background: $yellow;
+}
+
+.blue {
+  background: $blue
+}
+
+.beige {
+  background: $beige;
+}
+
+// ------------------------------
 // Box Model Helpers
 // ------------------------------
 
@@ -93,6 +113,10 @@
 // ------------------------------
 
 // Weights
+.weight-light {
+  font-weight: 300;
+}
+
 .weight-normal {
   font-weight: 400;
 }
@@ -101,4 +125,15 @@
 }
 .weight-bold {
   font-weight: 700;
+}
+
+
+// -----------------------------
+// Not Sure
+// -----------------------------
+
+.icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }

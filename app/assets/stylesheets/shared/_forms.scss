@@ -17,7 +17,7 @@
 
 
 // Form wrapper styling
-form, fieldset {
+fieldset {
   @include rem('padding', $base-spacing-unit);
 }
 
@@ -63,3 +63,21 @@ legend {
     border-color: $red;
   }
 }
+
+// Search form
+.search {
+  @include rem('padding', $base-spacing-unit/4);
+  margin: 12px;
+  background: tint($dark-blue, 20%);
+  border: none;
+  width: 40%;
+  font-weight: 300;
+  @include rem('font-size', 18px);
+  @include placeholder {
+      color: $white;
+    }
+  &:focus,
+  &:active {
+    border: none;
+    }
+  }

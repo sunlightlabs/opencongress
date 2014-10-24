@@ -74,6 +74,20 @@ describe EmailCongressController, type: :controller do
 	    assert_redirected_to @controller.url_for(:action => :confirmed,
 	                                             :confirmation_code => seed.confirmation_code)
     end
+
+    it 'should send a warning email to people that haven\'t supplied a plaintext verion' do
+      email = incoming_email({
+        "To" => at_email_congress('myreps'),
+        "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ],
+        "From" => @user.email,
+        "FromFull" => {"Name" => @user.full_name, "Email" => @user.email},
+        "TextBody" => ""
+      })
+      request.env['RAW_POST_DATA'] = JSON.dump(email)
+      post(:message_to_members)
+      message = ActionMailer::Base.deliveries.last
+      assert_match(/^Email Congress could not deliver your message/, message.subject)
+    end
   end
   describe 'New users' do
     it 'no_bounce_for_illegitimate_recipients_for_new_user' do

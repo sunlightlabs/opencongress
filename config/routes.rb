@@ -329,6 +329,8 @@ OpenCongress::Application.routes.draw do
   get '/style-guide', to: "index#styleguide"
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
+
+
   # root :to => 'index#index', :as => :home
   # Dev homepage
   root :to => 'index#index', :as => :home

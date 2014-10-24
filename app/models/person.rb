@@ -37,12 +37,12 @@
 #  total_session_votes       :integer
 #  votes_democratic_position :integer
 #  votes_republican_position :integer
-#  death_date                :date
 #  govtrack_id               :integer
 #  fec_id                    :string(255)
 #  thomas_id                 :string(255)
 #  cspan_id                  :integer
 #  lis_id                    :string(255)
+#  death_date                :date
 #  twitter_id                :string(255)
 #
 
@@ -117,9 +117,9 @@ class Person < Bookmarkable
   has_many :fundraisers, -> { order('fundraisers.start_time DESC') }
 
   with_options :class_name => "RollCall", :through => :roll_call_votes, :source => :roll_call do |rc|
-    rc.has_many :unabstained_roll_calls, -> { includes(:bill).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
-    rc.has_many :abstained_roll_calls,  -> { includes(:bill).where("vote IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
-    rc.has_many :party_votes, -> { includes(:bill).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}") }
+    rc.has_many :unabstained_roll_calls, -> { joins(:bill).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
+    rc.has_many :abstained_roll_calls,  -> { joins(:bill).where("vote IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
+    rc.has_many :party_votes, ->(party=self.party){ joins(:bill).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}") }
   end
 
   acts_as_formageddon_recipient # contains has_many relationships

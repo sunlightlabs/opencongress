@@ -621,7 +621,7 @@ DEPENDENCIES
   ruby-openid
   sass-rails (>= 4.0.0)
   selenium-webdriver
-  sentry-raven
+  sentry-raven (= 0.10.1)
   settingslogic
   sexmachine
   sidekiq

@@ -9,11 +9,19 @@
 #  updated_at :datetime
 #
 
+require 'ipaddr'
+
 class UserIpAddress < OpenCongressModel
+
+  #========== RELATIONS
+
+  #----- BELONGS TO
 
   belongs_to :user
 
-  require 'ipaddr'
+  #========== METHODS
+
+  #----- CLASS
 
   def self.find_by_ip(address)
      ip = UserIpAddress.int_form(address)
@@ -28,7 +36,11 @@ class UserIpAddress < OpenCongressModel
   def self.int_form(address)
     IPAddr.new(address).to_i
   end
-  
+
+  #----- INSTANCE
+
+  public
+
   def to_s
     IPAddr.new(self.addr, Socket::AF_INET).to_s
   end

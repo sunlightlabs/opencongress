@@ -1,3 +1,8 @@
+<% if (current_user.is_admin? rescue false) %>
+    <div class="admin-bar">
+        revision: <%= git_revision %>
+    </div>
+<% end %>
 <div class="sunlight_bar brandingbar bootstrap-enabled" data-bb-brandingbar="true">
     <div class="contentWrapper">
         <div class="span8">

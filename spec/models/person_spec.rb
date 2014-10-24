@@ -63,6 +63,14 @@ describe Person do
       expect(colorado_people.map(&:state).uniq).to eq(["CO"])
     end
   end
+  describe "roll call votes" do
+    it "should filter roll call votes by party" do
+      vote_with_party = FactoryGirl.create(:roll_call_vote, :republican_voting_with_party)
+      expect(vote_with_party.person.party_votes.count).to eq(1)
+      vote_without_party = FactoryGirl.create(:roll_call_vote, :republican_voting_against_party)
+      expect(vote_without_party.person.party_votes.count).to eq(1)
+    end
+  end
   describe "person identifiers" do
     before(:each) do
       @person = people(:person_226043605)

@@ -1,0 +1,17 @@
+# == Schema Information
+#
+# Table name: bookmarks
+#
+#  id                :integer          not null, primary key
+#  created_at        :datetime         not null
+#  bookmarkable_type :string(15)       default(""), not null
+#  bookmarkable_id   :integer          default(0), not null
+#  user_id           :integer          default(0), not null
+#
+
+bookmark10:
+  id: 10
+  created_at: 2014-03-24 23:42:42.592366
+  bookmarkable_type: 'Bill'
+  bookmarkable_id: 88518
+  user_id: 12

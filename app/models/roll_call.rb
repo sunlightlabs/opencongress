@@ -104,6 +104,12 @@ class RollCall < OpenCongressModel
   end
 
   #  before_save :set_party_lines
+  # set_party_lines is called from a RollCallVote after_save callback to
+  # recount_party_lines
+  # 
+  # A #{party}_position of false indicates that a majority of party members 
+  # voted nay on the bill; a #{party_position} of true indicates that a 
+  # majority of party members voted Yea on the bill. 
   def set_party_lines
     if republican_nay_votes.count >= republican_aye_votes.count
       self.republican_position = false

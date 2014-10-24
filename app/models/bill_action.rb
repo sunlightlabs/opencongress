@@ -27,7 +27,7 @@ class BillAction < Action
 
   #========== INCLUDES
 
-  include PublicActivity::Model ; tracked owner: :bill
+  include PublicActivity::Model ; tracked owner: :bill, only: :create
 
   #========== RELATIONS
 
@@ -43,6 +43,10 @@ class BillAction < Action
 
   def rss_date
     Time.at(self.date)
+  end
+
+  def to_email_body
+    render "notifications/bill_action/create/type/#{self.action_type}", :bill_action => self
   end
   
 end

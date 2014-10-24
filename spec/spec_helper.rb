@@ -18,7 +18,7 @@ VCR.configure do |config|
   config.configure_rspec_metadata!
   config.default_cassette_options = { :record => :new_episodes }
   config.filter_sensitive_data("<SUNLIGHT_KEY>") { ApiKeys.sunlightlabs_key }
-  config.filter_sensitive_data("<BITLY_KEY>") { ApiKeys.bitly }  
+  config.filter_sensitive_data("<BITLY_KEY>") { ApiKeys.bitly }
   config.filter_sensitive_data("<MAPQUEST_KEY>") { ApiKeys.mapquest }
   config.filter_sensitive_data("<AKISMET_KEY>") { ApiKeys.akismet }
   config.filter_sensitive_data("<TEXAS_AM_API_KEY>") { ApiKeys.texas_am_api_key }
@@ -59,7 +59,7 @@ RSpec.configure do |config|
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
-  
+
   config.include ApplicationHelper
 
   config.before(:suite) do

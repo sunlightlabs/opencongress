@@ -28,7 +28,7 @@ def do_stats_for_person(s)
 end
 
 puts "Calculating sponsored bills stats..."
-peoples = [ Person.sen, Person.rep ]
+peoples = [ Person.sen.to_a, Person.rep.to_a ]
 peoples.each do |people|
 
   i = 1
@@ -44,7 +44,7 @@ end
 
 people_types = [ 'sen', 'rep' ]
 people_types.each do |p_type|
-  joined_people = Person.send(p_type.to_sym).includes(:person_stats)
+  joined_people = Person.send(p_type.to_sym).includes(:person_stats).to_a
 
   puts joined_people.inspect
 

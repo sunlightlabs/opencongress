@@ -1,0 +1,18 @@
+# == Schema Information
+#
+# Table name: activity_options
+#
+#  id              :integer          not null, primary key
+#  key             :string(255)
+#  created_at      :datetime
+#  updated_at      :datetime
+#  owner_model     :string(255)
+#  trackable_model :string(255)
+#
+
+
+bill_action.create:
+  id: 3
+  key: 'bill_action.create'
+  owner_model: 'Bill'
+  trackable_model: 'BillAction'

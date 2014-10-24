@@ -1,45 +1,31 @@
 # == Schema Information
 #
-# Table name: notifications
+# Table name: notification_items
 #
 #  id                        :integer          not null, primary key
+#  notification_aggregate_id :integer
+#  activities_id             :integer
 #  created_at                :datetime
 #  updated_at                :datetime
-#  activities_id             :integer
-#  aggregate_notification_id :integer
 #
 
-class Notification < OpenCongressModel
-
-  #========== CALLBACKS
+class NotificationItem < OpenCongressModel
 
   #========== VALIDATORS
 
-  validates_presence_of :aggregate_notification
+  validates_presence_of :notification_aggregate, :activity
 
   #========== RELATIONS
 
   #----- BELONGS_TO
 
   belongs_to :activity, :class_name => 'PublicActivity::Activity', :foreign_key => 'activities_id'
-  belongs_to :aggregate_notification, touch:true
-
-  #========== ACCESSORS
+  belongs_to :notification_aggregate, touch:true
 
   #========== METHODS
 
   #----- CLASS
 
   #----- INSTANCE
-
-  public
-
-  def activity_option
-    ActivityOption.where(key:activity.key).first
-  end
-
-  private
-
-
 
 end

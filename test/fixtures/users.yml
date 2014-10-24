@@ -31,6 +31,7 @@
 #
 
 jdoe:
+
   id: 1
   email: jdoe@example.com
   login: jdoe
@@ -55,14 +56,14 @@ users_001:
   remember_token:
   accepted_tos_at: 2009-03-24 23:42:42.592366
   state: MA
-
   identity_url:
   status: 1
   login: donnyshaw
   district: 1
-
   email: donnydonnyzxcasdqwe@gmail.com
+
 users_002:
+
   salt: 8b74ca288d0e05c7ede7723b8990d43cc506421d
   activated_at: 2010-01-13 16:50:45.022104
   created_at: 2010-01-13 10:48:47.772348
@@ -78,12 +79,12 @@ users_002:
   remember_token:
   accepted_tos_at: 2010-01-13 10:48:47.532932
   state: DC
-
   identity_url:
   status: 1
   login: enaing
   district: 0
   email: enaing@gmail.com
+
 users_003:
   status: 1
   login: dan

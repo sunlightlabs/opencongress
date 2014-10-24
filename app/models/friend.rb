@@ -19,8 +19,8 @@ class Friend < OpenCongressModel
 
   #========== FILTERS
 
-  after_create  -> { create_activity(:follow, owner: :user, recipient: :friend) unless confirmed? }
-  before_destroy -> { create_activity(:defriended, owner: :user, recipient: :friend) }
+  after_create   -> { create_activity(:follow, owner: :user, recipient: :friend) unless confirmed? }
+  before_destroy -> { create_activity(:unfollow, owner: :user, recipient: :friend) }
 
   #========== RELATIONS
 
@@ -28,6 +28,10 @@ class Friend < OpenCongressModel
 
   belongs_to :user
   belongs_to :friend, :class_name => 'User', :foreign_key => 'friend_id'
+
+  #========== ALIASES
+
+  alias_attribute :confirmed?, :confirmed
 
   #========== METHODS
 
@@ -58,14 +62,10 @@ class Friend < OpenCongressModel
 
   public
 
-  def confirmed?
-    self.confirmed
-  end
-
   def confirm!
     if not confirmed? and Friend.where(friend: self.user, user: self.friend).empty?
       now = Time.new
-      update_attributes!({:confirmed => true, :confirmed_at => now})
+      self.update_attributes!({:confirmed => true, :confirmed_at => now})
       reciprocate = Friend.create({:friend => self.user, :user => self.friend, :confirmed => true, :confirmed_at => now})
       reciprocate.create_activity(:confirmed, owner => :user, recipient => :friend)
     else
@@ -74,12 +74,17 @@ class Friend < OpenCongressModel
   end
 
   def defriend
-    self.inverse_friend.update_attributes!({:confirmed => false, :confirmed_at => nil})
+    if inverse_friend.present?
+      self.inverse_friend.update_attributes!({:confirmed => false, :confirmed_at => nil})
+    end
     self.destroy
   end
 
+  # Gets the inverse friendship for this friendship instance
+  #
+  # @return [Friend, nil] the inverse friend of this friends or nil if it doesn't exist
   def inverse_friend
-    Friend.where(user:self.friend, friend: self.user).first if confirmed?
+    confirmed? ? Friend.where(user: self.friend, friend: self.user).first : nil
   end
 
 end

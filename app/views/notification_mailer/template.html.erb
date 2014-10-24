@@ -1,0 +1,20 @@
+Hi <%=h @user.login %>,
+
+The following has occured in Congress recently so we're notifying you.
+
+<% @distributors.each do |d| %>
+
+    <h5><%= d.notification_aggregate.activity_owner.to_email_subject %></h5>
+
+    <ul>
+      <% d.notification_aggregate.activities.each do |a| %>
+          <li><%= a.trackable.to_email_body.capitalize! %> on <%= a.trackable.datetime.to_s %></li>
+      <% end %>
+    </ul>
+
+<% end %>
+
+You can unsubscribe from receiving notifications for this bill by visiting this link:
+
+Thanks!
+The OpenCongress TEAM

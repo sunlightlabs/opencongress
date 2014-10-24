@@ -75,6 +75,7 @@ class NotificationOutbound < OpenCongressModel
   private
 
   def send_email
+    puts "sending notification email..."
     NotificationMailer.setup_email(self).deliver
   end
 

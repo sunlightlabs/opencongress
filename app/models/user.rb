@@ -68,7 +68,6 @@ class User < OpenCongressModel
   validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
-  validates_presence_of       :user_notification_options
 
   #========== FILTERS
 

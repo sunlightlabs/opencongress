@@ -69,7 +69,6 @@ class User < OpenCongressModel
   validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
-  validates_presence_of       :user_notification_options
 
   #========== FILTERS
 
@@ -83,7 +82,10 @@ class User < OpenCongressModel
     # user_profile.errors.clear() - may need this later for some reason
   }
 
+  after_create -> { set_all_default_privacies(UserPrivacyOptionItem::DEFAULT_PRIVACY) }
+
   update_email_subscription_when_changed :self, [:email]
+
   # on ban or delete, clean up this user's associations with various parts of the site
   after_save -> {
     privatize!
@@ -211,7 +213,6 @@ class User < OpenCongressModel
   scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where('committees.id' => committee.id) }
   scope :mypn_spammers, lambda{includes(:political_notebook => [:notebook_items]).where('notebook_items.spam = ?', true).order('users.login ASC')}
 
-
   # These are LoD helpers that just pass on AR relations from Person
   def bookmarked_senators; bookmarked_people.sen; end
   def bookmarked_representatives; bookmarked_people.rep; end
@@ -230,7 +231,7 @@ class User < OpenCongressModel
   serialize :possible_states, Array
   serialize :possible_districts, Array
 
-  #========== DELEGATE
+  #========== DELEGATERS
 
   delegate :zipcode=, :to => :user_profile
   delegate :street_address=, :to => :user_profile
@@ -266,6 +267,9 @@ class User < OpenCongressModel
 
   #----- CLASS
 
+  # Generate a random hex string of an input length
+  #
+  # @return [String] hex string of input length
   def self.random_password(length=40)
     return SecureRandom.hex(length/2)
   end
@@ -370,11 +374,18 @@ class User < OpenCongressModel
 
   public
 
+  # Retrieves recent activity for the current user for a given timeframe
+  #
+  # @param timeframe [Time] time back to consider recent
+  # @return [Relation<PublicActivity::Activity>] activity of the user
   def recent_activity(timeframe=7.days)
     range = (Time.now-timeframe)..Time.now
     PublicActivity::Activity.where(created_at: range, owner_id: id, owner_type: 'User')
   end
 
+  # Update user metadate to include last login time and log their IP
+  #
+  # @param ip_addr [String] string representation of IP address
   def update_login_metadate(ip_addr)
     update_attribute(:previous_login_date, last_login ? last_login : Time.now)
     update_attribute(:last_login, Time.now)
@@ -388,10 +399,8 @@ class User < OpenCongressModel
   def follow(user)
     # already following the user so return false
     return false if Friend.where(user: self, friend: user).any?
-
     # check if already being followed by other user
     followed = Friend.where(user: user, friend: self).first
-
     # confirm if being followed, otherwise create one-way friend
     followed.present? ? followed.confirm! : Friend.create({user: self, friend: user, confirmed: false })
   end
@@ -405,15 +414,12 @@ class User < OpenCongressModel
     friend.defriend if friend.present?
   end
 
-  # Retrieves all or specific notification settings for a user
+  # Retrieves specific notification settings for a user
   #
   # @param key [String] activity key for specific settings, nil for all
   # @param bookmark [Bookmark] bookmark object for granular options, nil for all
-  # @return [UserNotificationOptionItem, nil] one or all user's notification settings
+  # @return [UserNotificationOptionItem] a user's notification settings
   def notification_option_item(key=nil, bookmark=nil)
-
-    # return nil if no arguments passed
-    return nil if key.nil? and bookmark.nil?
 
     if key.present? and bookmark.present?
       noi = notification_option_items.where('activity_options.key = ? AND bookmark_id = ?', key, bookmark.id).last
@@ -425,29 +431,16 @@ class User < OpenCongressModel
       noi = nil
     end
 
+    # return notification option if it exists, fall back on unpersisted generic default otherwise
     noi.present? ? noi : UserNotificationOptionItem.default
-
   end
 
-  # Sets all privacy options to broad default values
+  # Sets all default privacy options to broad default values. Used when
+  # user selects their default privacy settings.
   #
   # @param privacy [Symbol] privacy options - :public, :private, :friend
   def set_all_default_privacies(privacy)
-    if UserPrivacyOptionItem::PRIVACY_OPTIONS.has_key?(privacy)
-      UserPrivacyOptionItem::DEFAULTS.each do |key,val|
-        UserPrivacyOptionItem::DEFAULTS[key][privacy].each do |k,v|
-          item = user_privacy_option_items
-                    .where(privacy_object_type:key,
-                           privacy_object_id: key == 'User' ? self.id : nil,
-                           method:k).first
-          item.present? ? item.update({privacy:v}) : UserPrivacyOptionItem.create(user_id: self.id,
-                                                                                  privacy_object_type: key,
-                                                                                  privacy_object_id: key == 'User' ? self.id : nil,
-                                                                                  method: k,
-                                                                                  privacy: v)
-        end
-      end
-    end
+    UserPrivacyOptionItem.set_all_default_privacies_for(self, privacy)
   end
 
   def set_all_privacies(privacy)
@@ -829,7 +822,7 @@ class User < OpenCongressModel
       # use default privacy if no privacy option found
       return UserPrivacyOptionItem.default(self, args)
     rescue
-      UserPrivacyOptionItem.default(self, {})
+      UserPrivacyOptionItem.default(self, nil)
     end
 
   end

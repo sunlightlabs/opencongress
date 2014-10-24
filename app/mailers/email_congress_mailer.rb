@@ -6,7 +6,13 @@ class EmailCongressMailer < ActionMailer::Base
   def html_body_alert (email)
     @email = email
     mail(:to => Settings.contact_us_email,
-         :subject => "EmailCongress message has only HTML body: #{email.subject}")
+         :subject => "Sent #{email.from_email} an error message re: HTML-only email: #{email.subject}")
+  end
+
+  def must_send_text_version (email)
+    @email = email
+    mail(:to => email.from_email,
+         :subject => "Email Congress could not deliver your message: #{email.subject}")
   end
 
   def no_recipient_bounce (email)

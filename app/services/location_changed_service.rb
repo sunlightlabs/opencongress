@@ -14,6 +14,7 @@ class LocationChangedService
   #
   def initialize(user)
 
+    # skip the change_location callback in this block so we don't enter infinite loop
     UserProfile.skip_callback(:save, :after, :change_location!)
 
     @user = user
@@ -53,7 +54,7 @@ class LocationChangedService
       @user.representative = nil
     end
 
-    # Save and skip the change_location callback so we don't enter infinite loop
+    # save and
     @user.save()
     join_default_groups()
     UserProfile.set_callback(:save, :after, :change_location!)

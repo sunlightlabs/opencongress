@@ -43,6 +43,28 @@ class PersonIdentifier < ActiveRecord::Base
 
   #----- INSTANCE
 
+  #========== VALIDATIONS
+  
+  validates :value,
+            :uniqueness => {
+                :scope => :namespace,
+                :case_sensitive => true,
+                :message => "must be unique within namespace"
+            },
+            :presence => true
+  validates :namespace,
+            :presence => true
+
+  #========== FILTERS
+
+  before_validation :downcase_namespace
+
+  #========== METHODS
+
+  #----- CLASS
+
+  #----- INSTANCE
+
   public
 
   def downcase_namespace

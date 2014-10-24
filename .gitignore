@@ -31,7 +31,10 @@ TAGS
 *.sqlite3
 helium.json
 sendhelium
+.revision
 .idea
 .idea/*
 *.bak
 .env
+*.sublime-workspace
+*.sublime-project

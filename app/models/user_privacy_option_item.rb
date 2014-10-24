@@ -14,14 +14,15 @@
 
 class UserPrivacyOptionItem < OpenCongressModel
 
+  #========== CONSTANTS
+
   PRIVACY_OPTIONS = {
     :private => 0,
     :friends => 1,
     :public => 2
   }
 
-  # fall back to private if all else fails
-  DEFAULT_PRIVACY = :private
+  DEFAULT_PRIVACY = :private  # fall back to private if all else fails
 
   DEFAULTS = {
     nil => {
@@ -84,27 +85,35 @@ class UserPrivacyOptionItem < OpenCongressModel
     }
   }
 
+  #========== RELATIONS
+
   belongs_to :privacy_object, :polymorphic => true
   belongs_to :user
 
+  #========== METHODS
 
-  # Returns whether user argument is allowed to see privacy object
-  # TODO: create privacy model if more sophisticated privacy settings needed
+  #----- CLASS
+
+  # Sets all privacy options to broad default values
   #
-  # @param viewer [User] user to test if they can see associated privacy object
-  # @return [Boolean] true if user can see privacy object, false otherwise
-  def can_show_to?(viewer)
-    case self.privacy
-      when PRIVACY_OPTIONS[:public]
-        return true
-      when PRIVACY_OPTIONS[:friend]
-        return Friend.are_confirmed_friends?(self.user, viewer)
-      when UserPrivacyOptionItem::PRIVACY_OPTIONS[:private]
-        return false
-      else
-        raise KeyError
+  # @param privacy [Symbol] privacy options - :public, :private, :friend
+  def self.set_all_default_privacies_for(user, privacy)
+    if PRIVACY_OPTIONS.has_key?(privacy)
+      DEFAULTS.keys.each do |model|
+        DEFAULTS[model][privacy].each do |m,v|
+          item = user.user_privacy_option_items.where(privacy_object_type:model,
+                                                      privacy_object_id: model == 'User' ? user.id : nil,
+                                                      method:m).first
+          item.present? ? item.update({privacy:v}) : UserPrivacyOptionItem.create(user_id: self.id,
+                                                                                  privacy_object_type: model,
+                                                                                  privacy_object_id: model == 'User' ? user.id : nil,
+                                                                                  method: m,
+                                                                                  privacy: v)
+        end
+      end
     end
   end
+
 
   # Retrieves the default privacy setting for arguments
   #
@@ -147,6 +156,25 @@ class UserPrivacyOptionItem < OpenCongressModel
                                        privacy: PRIVACY_OPTIONS[DEFAULT_PRIVACY])
     end
 
+  end
+
+  #----- INSTANCE
+
+  # Returns whether user argument is allowed to see privacy object
+  #
+  # @param viewer [User] user to test if they can see this privacy object
+  # @return [Boolean] true if user can see privacy object, false otherwise
+  def can_show_to?(viewer)
+    case self.privacy
+      when PRIVACY_OPTIONS[:public]
+        return true
+      when PRIVACY_OPTIONS[:friend]
+        return Friend.are_confirmed_friends?(user, viewer)
+      when UserPrivacyOptionItem::PRIVACY_OPTIONS[:private]
+        return false
+      else
+        raise KeyError
+    end
   end
 
 end

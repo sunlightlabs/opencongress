@@ -31,7 +31,7 @@ module PrivacyObject
     def update_all_privacies(user, privacy)
       user.user_privacy_option_items
           .where(privacy_object_type:self.name)
-          .update_all(privacy:UserPrivacyOptionItem.default_privacy_for(type:self.name,privacy))
+          .update_all(privacy:UserPrivacyOptionItem.default_privacy_for({type:self.name},privacy))
     end
 
   end
@@ -46,15 +46,18 @@ module PrivacyObject
   # @param method [String] granular attribute or method control
   # @return [Boolean] true if input user can see object, false otherwise
   def can_show_to?(viewer, method=nil)
-    privacy_options.where(method:method).first.can_show_to?(viewer)
+    po = privacy_options.where(method:method).first ||
+         UserPrivacyOptionItem.default(user,{item:self,method:method})
+    po.can_show_to?(viewer)
   end
 
   # Sets privacy for this PrivacyObject and method
   #
   # @param privacy [Symbol] :public, :friend, :private
-  # @param method [String]
+  # @param method [String] method to set privacy for
   def set_privacy(privacy, method=nil)
-    privacy_options.create(privacy:privacy, method:method, user_id: user_id)
+    query = {privacy:privacy, method:method, user_id: user_id}
+    privacy_options.create(query) if privacy_options.where({method:method, user_id: user_id}).empty?
   end
 
   # Update privacy for this PrivacyObject and method
@@ -62,7 +65,8 @@ module PrivacyObject
   # @param privacy [Symbol] :public, :friend, :private
   # @param method [String] method to update privacy of
   def update_privacy(privacy, method=nil)
-    privacy_options.where(method:method).first.update(privacy:UserPrivacyOptionItem::PRIVACY_OPTIONS[privacy])
+    po = privacy_options.where(method:method).first
+    po.update(privacy:UserPrivacyOptionItem::PRIVACY_OPTIONS[privacy]) if po.present?
   end
 
   # Collects all the viewable methods to the input user

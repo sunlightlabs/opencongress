@@ -146,7 +146,9 @@ class Person < Bookmarkable
 
   alias :blog :blogs
 
-  #========== CLASS METHODS
+  #========== METHODS
+
+  #----- CLASS
 
   def self.custom_index_rebuild
     ['rep','sen'].each{|title|
@@ -554,9 +556,6 @@ class Person < Bookmarkable
     ).references(:roles).first
   end
 
-
-
-
   ##
   # This returns a pair of arrays: [ [sen1, sen2], [rep1, ... repN] ]
   # Callers must check the length of the rep array in case
@@ -821,8 +820,17 @@ class Person < Bookmarkable
     FragmentCacheSweeper::expire_fragments(fragments)
   end
 
-  #========== INSTANCE METHODS
+  #----- INSTANCE
+
   public
+
+  def sponsored_bills_passed
+    bills.joins(:actions).where('actions.action_type = ?', 'enacted')
+  end
+
+  def cosponsored_bills_passed
+    bills_cosponsored.joins(:actions).where('actions.action_type = ?', 'enacted')
+  end
 
   def congresses_active
     current_congress = UnitedStates::Congress.congress_for_year(Date.today.year)

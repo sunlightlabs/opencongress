@@ -1373,8 +1373,12 @@ class Bill < Bookmarkable
   end
 
   def enacted_action
-    actions.select { |a| a.action_type == 'enacted' }.last
+    actions.where('actions.action_type = ?', 'enacted').last
   end
+
+ # def enacted_action
+ #   actions.select { |a| a.action_type == 'enacted' }.last
+ # end
 
   # returns a hash with info on each step of the bill's progress
   def bill_status_hash

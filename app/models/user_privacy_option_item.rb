@@ -104,7 +104,7 @@ class UserPrivacyOptionItem < OpenCongressModel
           item = user.user_privacy_option_items.where(privacy_object_type:model,
                                                       privacy_object_id: model == 'User' ? user.id : nil,
                                                       method:m).first
-          item.present? ? item.update({privacy:v}) : UserPrivacyOptionItem.create(user_id: self.id,
+          item.present? ? item.update({privacy:v}) : UserPrivacyOptionItem.create(user_id: user.id,
                                                                                   privacy_object_type: model,
                                                                                   privacy_object_id: model == 'User' ? user.id : nil,
                                                                                   method: m,

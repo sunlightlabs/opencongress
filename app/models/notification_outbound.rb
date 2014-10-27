@@ -58,13 +58,24 @@ class NotificationOutbound < OpenCongressModel
 
   # TODO: implement the delivery cases
   def send_notification
-    self.send("send_#{outbound_type}".to_sym) rescue logger.error "Outbound type '#{outbound_type}' not found."
-    self.update_attributes!({sent: 1})
+    begin
+      if Settings.send_notifications?
+        self.send("send_#{outbound_type}".to_sym)
+        self.update_attributes!({sent: 1})
+      end
+    rescue NoMethodError
+      logger.error "Outbound type '#{outbound_type}' not found for send_notification."
+    rescue Settingslogic::MissingSetting
+      logger.error 'config/application_settings.yml is missing send_notifications?'
+    rescue
+      logger.error 'Unknown error in send_notification'
+    end
   end
 
   private
 
   def send_email
+    puts "sending notification email..."
     NotificationMailer.setup_email(self).deliver
   end
 

@@ -28,17 +28,12 @@ def do_stats_for_person(s)
 end
 
 puts "Calculating sponsored bills stats..."
-peoples = [ Person.sen.to_a, Person.rep.to_a ]
-peoples.each do |people|
-
-  i = 1
-  total = people.size
-  while(s = people.pop)
-    puts "Calculating sponsored bills stats for #{s.name} (#{i}/#{total})"
-
-    do_stats_for_person(s)
-
-    i += 1
+chambers = [ "sen", "rep" ]
+chambers.each do |chamber|
+  puts "Processing chamber: #{chamber}"
+  Person.joins(:roles).where(["roles.role_type=? AND roles.enddate > ?", chamber, Date.today]).find_each do |person|
+    puts "Calculating for #{person.name}"
+    do_stats_for_person(person)
   end
 end
 

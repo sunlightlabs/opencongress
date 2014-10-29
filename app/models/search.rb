@@ -28,13 +28,15 @@ class Search < OpenCongressModel
                         ]
 
   SEARCH_FILTER_CODE_MAP = Hash[SEARCH_FILTERS_LIST.collect.with_index {|v,i| [v,i]}]
-  CODE_SEARCH_FILTER_MAP = SEARCH_FILTER_CODE_MAP.invert()
+  CODE_SEARCH_FILTER_MAP = SEARCH_FILTER_CODE_MAP.invert
 
   #========== RELATIONS
 
+  #----- BELONGS_TO
+
   belongs_to :user
 
-  #========== CALLBACKS
+  #========== FILTERS
 
   before_validation :doctor_data_for_save
   after_save :doctor_data_for_load
@@ -52,55 +54,53 @@ class Search < OpenCongressModel
   serialize :search_filters, Array
   serialize :search_congresses, Array
 
-  #========== PUBLIC METHODS
+  #========== METHODS
+
+  #----- CLASS
+
+  # Retrieves the top searched terms from the database
+  #
+  # @return [Relation<Search>] top searches
+  def self.top_search_terms(num = 100, since = Settings.default_count_time)
+    Search.find_by_sql(["SELECT LOWER(search_text) as text, COUNT(id) as count
+                         FROM searches
+                         WHERE created_at > ? AND LOWER(search_text) <> 'none'
+                         GROUP BY LOWER(search_text) ORDER BY count DESC LIMIT ?", since.days.ago, num])
+  end
+
+  #----- INSTANCE
+
   public
 
-  ##
+  # Convenience method to get congresses from the search filters.
+  #
+  # @return [Array<String>] the congresses numbers as strings
+  def get_congresses
+    self.search_congresses
+  end
+
+  def get_query_stripped
+    prepare_tsearch_query(self.search_text.to_s)
+  end
+
+  private
+
   # Doctors the input data before saving to the database. This is done to compress the search filters
   # into a smaller size so we don't needlessly store extraneous information in the database.
   #
   def doctor_data_for_save
     self.page = 1 if (self.page.nil? || self.page < 1)
     self.search_text = truncate(self.search_text, :length => 255)
-    self.search_filters.each_with_index {|v,i|
-      self.search_filters[i] = SEARCH_FILTER_CODE_MAP[v.to_sym] if v.is_a? String
-    }
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = SEARCH_FILTER_CODE_MAP[v.to_sym] if v.is_a? String  }
     unless self.search_congresses.is_a? Array then self.search_congresses = ["#{Settings.default_congress}"] end
   end
 
-  ##
   # This is the reverse operation for :doctor_data_for_save whereby
   # we convert the database representation to the explicit symbol
   # representation for each search filter.
   #
   def doctor_data_for_load
-    begin
-        self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] }
-    rescue
-      false
-    end
-  end
-
-  # Convenience method to get congresses from the search filters.
-  #
-  # @return [Array<String>] the congresses numbers as strings
-  def get_congresses
-    return self.search_congresses
-  end
-
-
-  def get_query_stripped
-    return prepare_tsearch_query(self.search_text.to_s)
-  end
-
-  ##
-  # Retrieves the top searched terms from the database
-  #
-  def Search.top_search_terms(num = 100, since = Settings.default_count_time)
-    Search.find_by_sql(["SELECT LOWER(search_text) as text, COUNT(id) as count 
-                         FROM searches 
-                         WHERE created_at > ? AND LOWER(search_text) <> 'none'
-                         GROUP BY LOWER(search_text) ORDER BY count DESC LIMIT ?", since.ago, num])
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] } rescue false
   end
 
 end

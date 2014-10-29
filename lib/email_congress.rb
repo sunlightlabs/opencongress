@@ -413,7 +413,7 @@ module EmailCongress
     def reify_as_formageddon_letter (thread, seed)
       # Creates a FormageddonLetter instance, associated with the given FormageddonThread.
       letter = Formageddon::FormageddonLetter.new
-      letter.subject = seed.email_subject.blank?() ? '(no subject)' : seed.email_subject
+      letter.subject = seed.email_subject.blank? ? '(no subject)' : seed.email_subject
       letter.message = seed.email_body
       letter.direction = 'TO_RECIPIENT'
       letter.issue_area = nil   # This will be set if required by the contact form.

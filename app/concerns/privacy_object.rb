@@ -10,6 +10,7 @@ module PrivacyObject
   extend ActiveSupport::Concern
 
   included do
+    validates_presence_of :user, :unless => -> (po) { po.class.name == 'User' }
     has_many :privacy_options, :as => :privacy_object, :class_name => 'UserPrivacyOptionItem'
     after_create :set_initial_privacy
   end
@@ -86,8 +87,9 @@ module PrivacyObject
   def set_initial_privacy
 
     if self.class.name == 'User' # set all defaults for new user
-      user.set_all_default_privacies(:private)
+      set_all_default_privacies(:private)
     else # apply default options to new PrivacyObject
+      puts self.class.name
       upoi = user.user_privacy_option_items.where(privacy_object_type: self.class.name,
                                                   privacy_object_id: nil)
       upoi.each do |item| # set default privacy for specific instance

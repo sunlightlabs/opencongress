@@ -116,7 +116,7 @@ describe Bill do
 
     it 'defauls the range to 30 days if not specified' do
       @bill = FactoryGirl.create(:bill)
-      @bill_vote = @bill.bill_votes.create
+      @bill_vote = @bill.bill_votes.create(user:User.find(13))
 
       response  = Bill.find_all_by_most_user_votes_for_range(nil, {})
       expect(response).to include(@bill)

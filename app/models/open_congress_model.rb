@@ -1,6 +1,12 @@
 class OpenCongressModel < ActiveRecord::Base
 
+  #========== ATTRIBUTES
+
   self.abstract_class = true
+
+  #========== METHODS
+
+  #----- CLASS
 
   # Insures all descendants have been touched
   # so the descendant array is complete
@@ -43,6 +49,10 @@ class OpenCongressModel < ActiveRecord::Base
       end
     end)
   end
+
+  #----- INSTANCE
+
+  public
 
   def set_default_attributes_for_nil
     self.class::DEFAULT_ATTRIBUTES.each {|k,v| self.send("#{k.to_s}=".to_sym, v) if self.respond_to?(k) and self.send(k).blank? } if defined? self.class::DEFAULT_ATTRIBUTES

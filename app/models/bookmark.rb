@@ -14,6 +14,8 @@ class Bookmark < OpenCongressModel
   #========== INCLUDES
 
   include PrivacyObject
+  # NOTE: install the acts_as_taggable plugin if you want bookmarks to be tagged.
+  acts_as_taggable
 
   #========== VALIDATORS
 
@@ -39,9 +41,6 @@ class Bookmark < OpenCongressModel
   scope :committees, includes(:committee).where(:bookmarkable_type => 'Committee')
   scope :people, includes(:person).where(:bookmarkable_type => 'Person')
   scope :subjects, includes(:subject).where(:bookmarkable_type => 'Subject')
-
-  # NOTE: install the acts_as_taggable plugin if you want bookmarks to be tagged.
-  acts_as_taggable
 
   #========== METHODS
 

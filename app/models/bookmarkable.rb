@@ -1,6 +1,6 @@
 class Bookmarkable < OpenCongressModel
 
-  #========== MODEL ATTRIBUTES
+  #========== ATTRIBUTES
 
   self.abstract_class = true
 
@@ -10,7 +10,11 @@ class Bookmarkable < OpenCongressModel
 
   has_many :bookmarks, :dependent => :destroy, :as => :bookmarkable
 
-  #========== INSTANCE METHODS
+  #========== METHODS
+
+  #----- INSTANCE
+
+  public
 
   # Finds all users currently bookmarking this bookmarkable object
   #

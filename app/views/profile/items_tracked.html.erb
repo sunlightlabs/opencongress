@@ -69,7 +69,7 @@
                                     <% unless committee.new_reports_since(@user).length == 0 %>
                                             <li><%= toggler_with_span_class("new_reports_#{committee.id}", "<span>New Reports (#{committee.new_reports_since(@user).length})</span>", '<span>Hide New Reports</span>', 'med_button', 'med_button on') %></li>
                                     <% end %>
-                                    <% unless committee.comments_since(@user) == 0 %>
+                                    <% unless committee.comments_since_last_login(@user) == 0 %>
                                             <li><%= toggler_with_span_class("new_comments_#{committee.id}", "<span>New Comments (#{committee.comments_since(@user)})</span>", '<span>Hide New Comments</span>', 'med_button', 'med_button on') %></li>
                                     <% end %>
                             </ul>
@@ -109,7 +109,7 @@
           <% unless subject.new_bills_since(@user).size == 0 %>
             <li><%= toggler_with_span_class("new_bills_#{subject.term}", "<span>New Bills (#{subject.new_bills_since(@user).length})</span>", '<span>Hide New Bills</span>', 'med_button', 'med_button on') %></li>
           <% end %>
-          <% unless subject.comments_since(@user) == 0 %>
+          <% unless subject.comments_since_last_login(@user) == 0 %>
             <li><%= toggler_with_span_class("new_comments_#{subject.term}", "<span>New Comments (#{subject.comments_since(@user)})</span>", '<span>Hide New Comments</span>', 'med_button', 'med_button on') %></li>
           <% end %>
         </ul>

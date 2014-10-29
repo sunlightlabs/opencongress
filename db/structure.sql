@@ -2177,7 +2177,8 @@ CREATE TABLE committees (
     page_views_count integer,
     thomas_id character varying(255),
     chamber character varying(255),
-    parent_id integer
+    parent_id integer,
+    homepage_url character varying(255)
 );
 
 
@@ -9014,4 +9015,6 @@ INSERT INTO schema_migrations (version) VALUES ('20141010144456');
 INSERT INTO schema_migrations (version) VALUES ('20141010192805');
 
 INSERT INTO schema_migrations (version) VALUES ('20141020171359');
+
+INSERT INTO schema_migrations (version) VALUES ('20141029194043');
 

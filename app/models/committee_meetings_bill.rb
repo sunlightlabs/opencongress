@@ -8,6 +8,12 @@
 #
 
 class CommitteeMeetingsBill < OpenCongressModel
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :committee_meeting
   belongs_to :bill
+
 end

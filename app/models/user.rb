@@ -103,6 +103,12 @@ class User < OpenCongressModel
 
   #========== RELATIONS
 
+  #----- BELONGS_TO
+
+  belongs_to :representative,
+             :class_name => 'Person', :foreign_key => 'representative_id'
+  belongs_to :user_role
+
   #----- HAS_ONE
 
   has_one  :user_profile
@@ -177,12 +183,6 @@ class User < OpenCongressModel
   has_many :user_notification_option_items, -> { joins(:activity_option) },
            :through => :user_notification_options
   has_many :user_privacy_option_items
-
-  #----- BELONGS_TO
-
-  belongs_to :representative,
-             :class_name => 'Person', :foreign_key => 'representative_id'
-  belongs_to :user_role
 
   #========== ALIASES
 
@@ -376,11 +376,15 @@ class User < OpenCongressModel
 
   # Retrieves recent activity for the current user for a given timeframe
   #
+  # @param limit [Integer] limit number of returned results
   # @param timeframe [Time] time back to consider recent
+  # @param type [String] type of activity to query for
   # @return [Relation<PublicActivity::Activity>] activity of the user
-  def recent_activity(timeframe=7.days)
-    range = (Time.now-timeframe)..Time.now
-    PublicActivity::Activity.where(created_at: range, owner_id: id, owner_type: 'User')
+  def recent_activity(limit=10, timeframe=7.days, type=nil)
+    range = (Time.now - timeframe)..Time.now
+    query = {created_at: range, owner_id: id, owner_type: 'User'}
+    query[:trackable_type] = type if type.present?
+    PublicActivity::Activity.where(query).limit(limit)
   end
 
   # Update user metadate to include last login time and log their IP
@@ -742,6 +746,8 @@ class User < OpenCongressModel
   def representative_bookmarks_count
     current_user.bookmarks.count(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", "rep"])
   end
+
+
 
   def recent_actions(limit = 10)
     b = bookmarks.find(:all, :order => "created_at DESC", :limit => limit)

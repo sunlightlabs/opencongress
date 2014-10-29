@@ -18,21 +18,34 @@
 #
 
 class CommitteeReport < OpenCongressModel
+
+  #========== VALIDATORS
+
   validates_uniqueness_of :number,   :scope => [:kind, :congress]
   validates_uniqueness_of :kind,     :scope => [:congress, :number]
   validates_uniqueness_of :congress, :scope => [:number, :kind]
   #validates_uniqueness_of :gpo_id
 
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :bill
   belongs_to :person
   belongs_to :committee
+
+  #========== METHODS
+
+  #----- INSTANCE
+
+  public
 
   def to_param
     "#{id}_#{name}"
   end
 
   def thomas_url
-    "http://thomas.loc.gov/cgi-bin/cpquery/T?&report=%s&dbname=%s&" % [name, congress]
+    'http://thomas.loc.gov/cgi-bin/cpquery/T?&report=%s&dbname=%s&' % [name, congress]
   end
 
   def gpo_url
@@ -40,14 +53,11 @@ class CommitteeReport < OpenCongressModel
   end
 
   def atom_id
-    "tag:opencongress.org,#{reported_at.strftime("%Y-%m-%d")}:/committee_report/#{id}"
+    "tag:opencongress.org,#{reported_at.strftime('%Y-%m-%d')}:/committee_report/#{id}"
   end
 
   def rss_date
-    if self.reported_at
-      self.reported_at
-    else
-      nil
-    end
+    self.reported_at.present? ? self.reported_at : nil
   end
+
 end

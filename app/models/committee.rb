@@ -12,18 +12,94 @@
 #  thomas_id         :string(255)
 #  chamber           :string(255)
 #  parent_id         :integer
+#  homepage_url      :string(255)
 #
 
 require_dependency 'viewable_object'
+
 class Committee < Bookmarkable
+
+  #========== INCLUDES
+
   include ViewableObject
+
+  #========== CONSTANTS
+
+  @@DISPLAY_OBJECT_NAME = 'Committee'
+
+  #I think this is unfortunately the best way to do this.
+  # TODO: deprecate me and populate homepage_url
+  @@HOMEPAGES = {
+      "house administration" => "http://www.house.gov/cha/",
+      "house agriculture" => "http://agriculture.house.gov/",
+      "house appropriations" => "http://www.house.gov/appropriations/",
+      "house armed services" => "http://www.house.gov/hasc/",
+      "house budget" => "http://www.house.gov/budget/",
+      "house education and the workforce" => "http://edworkforce.house.gov",
+      "house energy and commerce" => "http://www.house.gov/commerce/",
+      "house financial services" => "http://www.house.gov/financialservices/",
+      "house government reform" => "http://www.house.gov/reform/",
+      "house homeland security" => "http://hsc.house.gov/",
+      "house international relations" => "http://www.house.gov/international_relations/",
+      "house judiciary" => "http://www.house.gov/judiciary/",
+      "house resources" => "http://resourcescommittee.house.gov",
+      "house rules" => "http://www.house.gov/rules/",
+      "house science" => "http://www.house.gov/science/",
+      "house small business" => "http://www.house.gov/smbiz/",
+      "house standards of official conduct" => "http://www.house.gov/ethics/",
+      "house transportation and infrastructure" => "http://www.house.gov/transportation/",
+      "house veterans' affairs" => "http://veterans.house.gov",
+      "house ways and means " => "http://waysandmeans.house.gov",
+      "house intelligence (permanent select)" => "http://intelligence.house.gov",
+      "house select bipartisan committee to investigate the preparation for and response to hurricane katrina" => "http://katrina.house.gov",
+      "senate agriculture, nutrition, and forestry" => "http://agriculture.senate.gov/",
+      "senate appropriations" => "http://appropriations.senate.gov/","senate armed services" => "http://armed-services.senate.gov/",
+      "senate banking, housing, and urban affairs" => "http://banking.senate.gov/",
+      "senate budget" => "http://budget.senate.gov/",
+      "senate commerce, science, and transportation" => "http://commerce.senate.gov/",
+      "senate energy and natural resources" => "http://energy.senate.gov/",
+      "senate environment and public works" => "http://epw.senate.gov/",
+      "senate finance" => "http://finance.senate.gov/",
+      "senate foreign relations" => "http://foreign.senate.gov/",
+      "senate health, education, labor, and pensions" => "http://help.senate.gov/",
+      "senate homeland security and governmental affairs" => "http://hsgac.senate.gov/",
+      "senate judiciary" => "http://judiciary.senate.gov/",
+      "senate rules and administration" => "http://rules.senate.gov/",
+      "senate small business and entrepreneurship" => "http://sbc.senate.gov/",
+      "senate veterans' affairs" => "http://veterans.senate.gov/",
+      "senate indian affairs" => "http://indian.senate.gov/",
+      "senate select committee on ethics" => "http://ethics.senate.gov/",
+      "senate select committee on intelligence" => "http://intelligence.senate.gov/",
+      "senate aging (special)" => "http://aging.senate.gov",
+      "senate joint committee on printing" => "http://jcp.senate.gov/",
+      "senate joint committee on taxation" => "http://www.house.gov/jct",
+      "senate joint economic committee" => "http://jec.senate.gov/"
+  }
+
+  @@STOP_WORDS = %w(committee subcommittee)
+
+  #========== VALIDATORS
+
+  validates_uniqueness_of :thomas_id
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
+  belongs_to :parent, :class_name => 'Committee'
+
+  #----- HAS_ONE
+
+  has_one :committee_stats
+  has_one :wiki_link, :as => 'wikiable'
+
+  #----- HAS_MANY
   
   has_many :committee_people
   has_many :people, :through => :committee_people
-  alias :members :people # for convenience, seems to make more sense
 
   has_many :bill_committees
-  has_many :bills, -> { order("bills.lastaction DESC") },
+  has_many :bills, -> { order('bills.lastaction DESC') },
            :through => :bill_committees
 
   has_many :meetings, :class_name => 'CommitteeMeeting'
@@ -31,86 +107,22 @@ class Committee < Bookmarkable
   has_many :committee_reports
   has_many :reports, :class_name => 'CommitteeReport'
 
-  has_one :committee_stats
-
   has_many :comments, :as => :commentable
-  
-  has_one :wiki_link, :as => "wikiable"
 
-  has_many :names, :class_name => "CommitteeName"
+  has_many :names, :class_name => 'CommitteeName'
 
-  has_many :subcommittees, :class_name => "Committee", :foreign_key => "parent_id"
-  belongs_to :parent, :class_name => "Committee"
+  has_many :subcommittees, :class_name => 'Committee', :foreign_key => 'parent_id'
 
-  # validates_uniqueness_of :thomas_id
-  
-  @@DISPLAY_OBJECT_NAME = 'Committee'
-  
-  #I think this is unfortunately the best way to do this.
-  @@HOMEPAGES = {
-    "house administration" => "http://www.house.gov/cha/",
-    "house agriculture" => "http://agriculture.house.gov/",
-    "house appropriations" => "http://www.house.gov/appropriations/",
-    "house armed services" => "http://www.house.gov/hasc/",
-    "house budget" => "http://www.house.gov/budget/",
-    "house education and the workforce" => "http://edworkforce.house.gov",
-    "house energy and commerce" => "http://www.house.gov/commerce/",
-    "house financial services" => "http://www.house.gov/financialservices/",
-    "house government reform" => "http://www.house.gov/reform/",
-    "house homeland security" => "http://hsc.house.gov/",
-    "house international relations" => "http://www.house.gov/international_relations/",
-    "house judiciary" => "http://www.house.gov/judiciary/",
-    "house resources" => "http://resourcescommittee.house.gov",
-    "house rules" => "http://www.house.gov/rules/",
-    "house science" => "http://www.house.gov/science/",
-    "house small business" => "http://www.house.gov/smbiz/",
-    "house standards of official conduct" => "http://www.house.gov/ethics/",
-    "house transportation and infrastructure" => "http://www.house.gov/transportation/",
-    "house veterans' affairs" => "http://veterans.house.gov",
-    "house ways and means " => "http://waysandmeans.house.gov",
-    "house intelligence (permanent select)" => "http://intelligence.house.gov",
-    "house select bipartisan committee to investigate the preparation for and response to hurricane katrina" => "http://katrina.house.gov",
-    "senate agriculture, nutrition, and forestry" => "http://agriculture.senate.gov/",
-    "senate appropriations" => "http://appropriations.senate.gov/","senate armed services" => "http://armed-services.senate.gov/",
-    "senate banking, housing, and urban affairs" => "http://banking.senate.gov/",
-    "senate budget" => "http://budget.senate.gov/",
-    "senate commerce, science, and transportation" => "http://commerce.senate.gov/",
-    "senate energy and natural resources" => "http://energy.senate.gov/",
-    "senate environment and public works" => "http://epw.senate.gov/",
-    "senate finance" => "http://finance.senate.gov/",
-    "senate foreign relations" => "http://foreign.senate.gov/",
-    "senate health, education, labor, and pensions" => "http://help.senate.gov/",
-    "senate homeland security and governmental affairs" => "http://hsgac.senate.gov/",
-    "senate judiciary" => "http://judiciary.senate.gov/",
-    "senate rules and administration" => "http://rules.senate.gov/",
-    "senate small business and entrepreneurship" => "http://sbc.senate.gov/",
-    "senate veterans' affairs" => "http://veterans.senate.gov/",
-    "senate indian affairs" => "http://indian.senate.gov/",
-    "senate select committee on ethics" => "http://ethics.senate.gov/",
-    "senate select committee on intelligence" => "http://intelligence.senate.gov/",
-    "senate aging (special)" => "http://aging.senate.gov",
-    "senate joint committee on printing" => "http://jcp.senate.gov/",
-    "senate joint committee on taxation" => "http://www.house.gov/jct",
-    "senate joint economic committee" => "http://jec.senate.gov/"
-  }
+  #========== ALIASES
 
-  @@STOP_WORDS = ["committee", "subcommittee"]
+  alias :members :people # for convenience, seems to make more sense
 
-  def display_object_name
-    @@DISPLAY_OBJECT_NAME
-  end
-  
-  def atom_id_as_feed
-    "tag:opencongress.org,#{OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]}:/committee_feed/#{id}"
-  end
-  
-  def atom_id_as_entry
-    # dates for committees are weird, so let use the beginning of each congress session
-    "tag:opencongress.org,#{OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]}:/committee/#{id}"
-  end
+  #========== METHODS
+
+  #----- CLASS
 
   def self.random(limit)
-    Committee.find_by_sql ["SELECT * FROM (SELECT random(), committees.* FROM committees ORDER BY 1) as bs LIMIT ?;", limit]
+    Committee.find_by_sql ['SELECT * FROM (SELECT random(), committees.* FROM committees ORDER BY 1) as bs LIMIT ?;', limit]
   end
 
   def self.find_by_query(committee, subcommittee)
@@ -125,42 +137,16 @@ class Committee < Bookmarkable
     cs
   end
 
-
   def self.by_chamber(chamber, opts={})
     opts = {include_joint_committees: true, include_subcommittees: false}.merge(opts)
-    #CAUTION: there is careful string interpolation into SQL in following line 
-    parent_id_clause = opts[:include_subcommittees] ? nil : "AND parent_id IS NULL"
-    Committee.where(
-      "(chamber LIKE ? or chamber LIKE ?) AND active = 't' #{parent_id_clause}",
-      chamber,
-      (opts[:include_joint_committees] ? "joint" : "")
-    )
+    #CAUTION: there is careful string interpolation into SQL in following line
+    parent_id_clause = opts[:include_subcommittees] ? nil : 'AND parent_id IS NULL'
+    Committee.where("(chamber LIKE ? or chamber LIKE ?) AND active = 't' #{parent_id_clause}", chamber, (opts[:include_joint_committees] ? 'joint' : ''))
   end
 
-  def chair
-    membership = CommitteePerson.where(:committee_id => self.id,
-                                       :role => ['Chair', 'Chairman'],
-                                       :session => Settings.default_congress) .first
-    membership and membership.person
-  end
- 
-  def vice_chair
-    membership = CommitteePerson.where(:committee_id => self.id,
-                                       :role => 'Vice Chairman',
-                                       :session => Settings.default_congress) .first
-    membership and membership.person
-  end
-
-  def ranking_member
-    membership = CommitteePerson.where(:committee_id => self.id,
-                                       :role => 'Ranking Member',
-                                       :session => Settings.default_congress) .first
-    membership and membership.person
-  end
-
-  #the following 3 methods are likely broken and also likely not in use
+  # the following 3 methods are likely broken and also likely not in use
   def self.find_by_people_name_ci(name)
-    Committee.where(:first, :conditions => ["lower(people_name) = ?", name.downcase])
+    Committee.where('lower(people_name) = ?', name.downcase).first
   end
 
   def self.find_by_name_ci(name)
@@ -171,8 +157,57 @@ class Committee < Bookmarkable
     Committee.find(:first, :conditions => ["lower(bill_name) = ?", name.downcase])
   end
 
+  def self.top20_viewed
+    comms = ObjectAggregate.popular('Committee')
+
+    (comms.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
+      bv.stats.entered_top_viewed = Time.now
+      bv.save
+    end
+
+    (comms.sort { |c1, c2| c2.stats.entered_top_viewed <=> c1.stats.entered_top_viewed })
+  end
+
+  def self.full_text_search(q, options = {})
+    Committee.find_by_sql(["SELECT *, rank(fti_names, ?, 1) as tsearch_rank FROM committees
+                           WHERE fti_names @@ to_tsquery('english', ?) order by tsearch_rank DESC;", q, q])
+  end
+
+  #----- Instance
+
+  public
+
+  def display_object_name
+    @@DISPLAY_OBJECT_NAME
+  end
+  
+  def atom_id_as_feed
+    "tag:opencongress.org,#{OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]}:/committee_feed/#{id}"
+  end
+  
+  def atom_id_as_entry
+    # dates for committees are weird, so let use the beginning of each congress session
+    "tag:opencongress.org,#{OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]}:/committee/#{id}"
+  end
+
+
+  def chair
+    membership = committee_people.where(role: %w(Chair Chairman), session: Settings.default_congress).first
+    membership and membership.person
+  end
+ 
+  def vice_chair
+    membership = committee_people.where(role: 'Vice Chairman', session: Settings.default_congress).first
+    membership and membership.person
+  end
+
+  def ranking_member
+    membership = committee_people.where(role: 'Ranking Member', session: Settings.default_congress).first
+    membership and membership.person
+  end
+
+  # Returns string concatenating id and url_name to create prettier URLS
   def to_param
-    #For prettier URLS
     "#{id}_#{url_name}"
   end
 
@@ -181,13 +216,12 @@ class Committee < Bookmarkable
   end
 
   def homepage
-    @@HOMEPAGES[name.downcase]
+    self.homepage_url.present? ? self.homepage_url : @@HOMEPAGES[name.downcase]
   end
   
   def bills_sponsored(limit)
     ids = Bill.joins(:bill_committees).select('bills.id').where('bills_committees.committee_id = ? AND session = ?', id, Settings.default_congress).order('lastaction DESC').limit(limit).collect {|b| b.id }
-    bills = (ids.size > 0) ? Bill.includes(:bill_titles).where(id:ids).order('bills.lastaction DESC') : []
-    return bills
+    (ids.size > 0) ? Bill.includes(:bill_titles).where(id:ids).order('bills.lastaction DESC') : []
   end
   
   def latest_major_actions(num)
@@ -205,29 +239,15 @@ class Committee < Bookmarkable
   end
 
   def has_wiki_link?
-    if self.wiki_url.blank?
-      return false
-    else
-      return true
-    end
+    self.wik_url.blank? ? false : true
   end
 
   def wiki_url
-  
-    link = ""
-    
-    unless self.wiki_link
-      link = ""
-    else
-      link = "#{Settings.wiki_base_url}/#{self.wiki_link.name}"
-    end
-    
-    return link
-
+    self.wiki_link.nil? ? '' : "#{Settings.wiki_base_url}/#{self.wiki_link.name}"
   end
 
   def proper_name
-    if name.nil? || name == ''
+    if name.blank?
       pn = subcommittee_name
     else
       pn = name
@@ -245,40 +265,17 @@ class Committee < Bookmarkable
   end
 	
   def main_committee_name
-    if name.nil? || name == ''
-      pn = subcommittee_name
-    else
-      pn = name
-    end
-    pn
+    name.blank? ? subcommittee_name : name
   end
 
   def future_meetings
-    self.meetings.select { |m| m.meeting_at > Time.now }
-  end
-  
-  def self.top20_viewed
-    comms = ObjectAggregate.popular('Committee')
-      
-    (comms.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
-      bv.stats.entered_top_viewed = Time.now
-      bv.save
-    end
-    
-    (comms.sort { |c1, c2| c2.stats.entered_top_viewed <=> c1.stats.entered_top_viewed })
+    #self.meetings.select { |m| m.meeting_at > Time.now } DON'T USE SELECT!!!!!!
+    self.meetings.where('meeting_at > ?', Time.now)
   end
   
   def stats
-    unless self.committee_stats
-      self.committee_stats = CommitteeStats.new :committee => self
-    end
-    
+    self.committee_stats = CommitteeStats.new :committee => self unless self.committee_stats.present?
     self.committee_stats
-  end
-  
-  def self.full_text_search(q, options = {})
-    Committee.find_by_sql(["SELECT *, rank(fti_names, ?, 1) as tsearch_rank FROM committees 
-                           WHERE fti_names @@ to_tsquery('english', ?) order by tsearch_rank DESC;", q, q])
   end
 
   def new_bills_since(current_user, congress = Settings.default_congress)
@@ -286,28 +283,29 @@ class Committee < Bookmarkable
     time_since = 200.days.ago if Rails.env.development?
 
     bills.joins(:actions)
-      .where('bills.session = ? AND actions.datetime > ? AND actions.action_type = ?', congress, time_since, 'introduced')
-      .order("bills.introduced DESC")
-      .limit(20)
+         .where('bills.session = ? AND actions.datetime > ? AND actions.action_type = ?', congress, time_since, 'introduced')
+         .order('bills.introduced DESC')
+         .limit(20)
   end
 
   def latest_reports(limit = 5)
-    self.committee_reports.where("reported_at IS NOT NULL").order("reported_at DESC").limit(limit)
+    self.committee_reports.where('reported_at IS NOT NULL').order('reported_at DESC').limit(limit)
   end
 
   def new_reports_since(current_user, congress = Settings.default_congress)
     time_since = current_user.previous_login_date
     time_since = 200.days.ago if Rails.env.development?
-    committee_reports.where("reported_at > ? ", time_since).limit(20).order("reported_at DESC")
+    committee_reports.where('reported_at > ? ', time_since).limit(20).order('reported_at DESC')
   end
 
-  def comments_since(current_user)
-    self.comments.where("created_at > ?", current_user.previous_login_date).count
+  def comments_since_last_login(current_user)
+    comments.where('created_at > ?', current_user.previous_login_date).count
   end
-
   
   private
+
   def url_name
     proper_name.downcase.gsub(/[\s\-]+/, "_").gsub(/[,\'\(\)]/,"")
   end
+
 end

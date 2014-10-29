@@ -6,6 +6,10 @@ module ImportQueueWorkerJob
       beanstalk = Beanstalk::Pool.new(Settings.beanstalk_servers)
       beanstalk.watch(Settings.unitedstates_import_queue)
     rescue Beanstalk::NotConnected
+      Raven.capture_message "Beanstalk connection failed",
+        tags: {
+          type: 'import'
+        }
       OCLogger.log "Failed to connect to Beanstalk. Check your application settings."
       return
     end
@@ -32,16 +36,33 @@ module ImportQueueWorkerJob
           job.delete
 
         rescue JSON::ParserError => e
+          Raven.capture_message "Failed to parse import job as JSON: '#{import_job}': #{e}",
+            tags: {
+              type: 'import'
+            }
           OCLogger.log "Failed to parse import job as JSON: '#{import_job}': #{e}"
           job.bury
 
         rescue StandardError => e
+          Raven.capture_message "Error while processing import job: '#{import_job}': #{e}",
+            tags: {
+              type: 'import'
+            }
           OCLogger.log "Error while processing import job: '#{import_job}': #{e}"
           job.bury
+        rescue Exception => e
+          Raven.capture_exception e,
+            tags: {
+              type: 'import'
+            }
         end
       end
 
     rescue Beanstalk::NotConnected
+      Raven.capture_message "Lost connection to Beanstalk",
+        tags: {
+          type: 'import'
+        }
       OCLogger.log "Lost connection to Beanstalk. Exiting."
 
     rescue Interrupt

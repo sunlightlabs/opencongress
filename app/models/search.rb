@@ -65,7 +65,7 @@ class Search < OpenCongressModel
     Search.find_by_sql(["SELECT LOWER(search_text) as text, COUNT(id) as count
                          FROM searches
                          WHERE created_at > ? AND LOWER(search_text) <> 'none'
-                         GROUP BY LOWER(search_text) ORDER BY count DESC LIMIT ?", since.days.ago, num])
+                         GROUP BY LOWER(search_text) ORDER BY count DESC LIMIT ?", since.ago, num])
   end
 
   #----- INSTANCE

@@ -1,60 +1,92 @@
-module Authable
-  # Handles authentication-related tasks for a model
+require 'digest/sha1'
 
-  class LoginTakenException < Exception
-  end
+# Handles authentication-related tasks for a model
+module Authable
 
   extend ActiveSupport::Concern
 
-  included do
-    apply_simple_captcha
+  class LoginTakenException < Exception
 
-    attr_accessor :password, :password_confirmation, :current_password, :remember_token_expires_at
-    ##
+  end
+
+  included do
+
+    apply_simple_captcha
+    has_secure_password validations: false
+
+    before_create :make_activation_code
+    before_save   :encrypt_password
+
+    attr_accessor :plaintext_password, :password_confirmation, :current_password, :remember_token_expires_at
     # Further, the following fields should be defined in your AR model
     #
     # attr_accessor :status, :activated_at, :activation_code, :remember_token,
     #               :crypted_password, :password_reset_code, :email
 
-    before_create :make_activation_code
-    before_save   :encrypt_password
-
     scope :unconfirmed, -> { where(status: STATUSES[:unconfirmed]) }
     scope :authorized, -> { where("status > 0 and status < #{STATUSES[:deleted]}") }
     scope :banned, -> { where(status: STATUSES[:banned]) }
     scope :deleted, -> { where(status: STATUSES[:deleted]) }
+
+    # allows user to access the password attribute through a common interface (instead of from has_secure_password)
+    alias_method :bcrypt_password=, :password=
+    def password ; self.plaintext_password ; end
+    def password=(password) ; self.plaintext_password = password ; end
+
   end
+
+  #========== CONSTANTS
+
+  STATUSES = {
+      :unconfirmed => 0,
+      :active => 1,
+      :email_only => 2,
+      :reaccept_tos => 3,
+      :deleted => 5,
+      :banned => 6
+  }
+
+  #========== METHODS
+
+  #----- CLASS
 
   module ClassMethods
 
-    # Authenticates a user by their login name and unecrypted password.
+    # Authenticates a user by their login/email and unencrypted password.
     #
     # @param login [String] user's login or email
     # @param password [String] user's raw password
+    # @return [User, nil] authenticated user or nil
     def authenticate(login, password)
       param = login.match(/^[\w\-_+\.]+@[\w\-_\.]+$/) ? 'email' : 'login'
-      u = User.authorized.where(["lower(#{param}) = ?", login.downcase]).first
-      return u && u.authenticated?(password) ? u : nil
+      user = User.authorized.where(["lower(#{param}) = ?", login.downcase]).first
+      return nil if user.nil?
+      user.has_bcrypt_password? ? user.authenticate(password) : user.sha1_authenticate(password)
     end
 
-    # Encrypts data with the salt.
+    # Encrypts data with the provided salt.
     #
     # @param password [String] the password to encrypt
     # @param salt [String] salt to encrypt password with
-    def encrypt(password, salt)
+    # @return [String] password encrypted with SHA1
+    def sha1_encrypt(password, salt)
       Digest::SHA1.hexdigest("--#{salt}--#{password}--")
     end
 
   end
 
-  STATUSES = {
-    :unconfirmed => 0,
-    :active => 1,
-    :email_only => 2,
-    :reaccept_tos => 3,
-    :deleted => 5,
-    :banned => 6
-  }
+  #----- INSTANCE
+
+  public
+
+  def set_password(password, confirmation)
+    self.plaintext_password = password
+    self.password_confirmation = confirmation
+  end
+
+  def password_matches_confirmation?
+    self.plaintext_password == self.password_confirmation
+  end
 
   def status_display
     STATUSES.invert[status].to_s
@@ -62,11 +94,12 @@ module Authable
 
   def status_explanation
     case status_display
-    when 'deleted'
-      'This user has deleted their account.'
-    when 'banned'
-      'This user has been banned.'
-    else nil
+      when 'deleted'
+        'This user has deleted their account.'
+      when 'banned'
+        'This user has been banned.'
+      else
+        nil
     end
   end
 
@@ -81,6 +114,7 @@ module Authable
   def is_active?
     !is_unconfirmed? && is_authorized?
   end
+
   alias_method :activated?, :is_active?
   alias_method :enabled, :is_active?
 
@@ -150,13 +184,21 @@ module Authable
   alias_method :can_use_site?, :is_active?
 
   # Encrypts the password with the user salt
-  def encrypt(password)
-    self.class.encrypt(password, salt)
+  def sha1_encrypt(password)
+    self.class.sha1_encrypt(password, salt)
+  end
+
+  def has_bcrypt_password?
+    self.password_digest.present?
   end
 
   def authenticated?(password)
-    puts "crypted: #{crypted_password} :: encrypt(password): #{encrypt(password)}"
-    crypted_password == encrypt(password)
+    puts "crypted: #{crypted_password} :: encrypt(password): #{sha1_encrypt(password)}"
+    crypted_password == sha1_encrypt(password)
+  end
+
+  def sha1_authenticate(password)
+    crypted_password == sha1_encrypt(password) ? self : nil
   end
 
   def remember_token?
@@ -166,7 +208,7 @@ module Authable
   # These create and unset the fields required for remembering users between browser closes
   def remember_me
     self.remember_token_expires_at = 8.weeks.from_now.utc
-    self.remember_token            = encrypt("#{email}--#{remember_token_expires_at}")
+    self.remember_token            = sha1_encrypt("#{email}--#{remember_token_expires_at}")
     save(:validate => false)
   end
 
@@ -204,9 +246,12 @@ module Authable
   end
 
   def encrypt_password
-     return if password.blank?
-     self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
-     self.crypted_password = encrypt(password)
+    return if plaintext_password.blank? or not password_matches_confirmation?
+    self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
+    # sha1 password
+    self.crypted_password = sha1_encrypt(plaintext_password)
+    # bcrypt password
+    self.bcrypt_password = plaintext_password
   end
 
   def make_activation_code
@@ -229,7 +274,8 @@ module Authable
     if existing.nil?
       self.login = original_login
     else
-      raise LoginTakenException.new("Login is no longer available")
+      raise LoginTakenException.new('Login is no longer available')
     end
   end
+
 end

@@ -23,11 +23,11 @@
 #  accepted_tos_at       :datetime
 #  authentication_token  :string(255)
 #  facebook_uid          :string(255)
+#  possible_states       :text
+#  possible_districts    :text
 #  state                 :string(2)
 #  district              :integer
 #  district_needs_update :boolean          default(FALSE)
-#  possible_states       :text
-#  possible_districts    :text
 #
 
 jdoe:
@@ -86,10 +86,13 @@ users_002:
   email: enaing@gmail.com
 
 users_003:
+  id: "30"
   status: 1
   login: dan
   email: dan@example.com
-  crypted_password: abcdefg
+  salt: "edfcf603553b174deadfea1600b10dfec4414bf6"
+  crypted_password: "750e02e6421e9466e97d0e92226d13730280c985" # test
+  password_digest: "$2a$10$Jf2yaNVelIsmMuB8F1E9Ke7KYBkCyIgy5uLWUp/VTztRB/vOghWs6" #test
   state: 'VA'
   district: 8
   accepted_tos_at: <%= 10.minutes.ago %>

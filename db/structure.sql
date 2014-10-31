@@ -1012,13 +1012,6 @@ CREATE AGGREGATE rewrite(pg_catalog.tsquery[]) (
 
 
 --
--- Name: tsquery_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
---
-
-CREATE OPERATOR FAMILY tsquery_ops USING btree;
-
-
---
 -- Name: tsquery_ops; Type: OPERATOR CLASS; Schema: public; Owner: -
 --
 
@@ -1030,13 +1023,6 @@ CREATE OPERATOR CLASS tsquery_ops
     OPERATOR 4 >=(pg_catalog.tsquery,pg_catalog.tsquery) ,
     OPERATOR 5 >(pg_catalog.tsquery,pg_catalog.tsquery) ,
     FUNCTION 1 (pg_catalog.tsquery, pg_catalog.tsquery) tsquery_cmp(pg_catalog.tsquery,pg_catalog.tsquery);
-
-
---
--- Name: tsvector_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
---
-
-CREATE OPERATOR FAMILY tsvector_ops USING btree;
 
 
 --
@@ -5321,7 +5307,8 @@ CREATE TABLE users (
     possible_districts text,
     state character varying(2),
     district integer,
-    district_needs_update boolean DEFAULT false
+    district_needs_update boolean DEFAULT false,
+    password_digest character varying(255)
 );
 
 
@@ -9017,4 +9004,6 @@ INSERT INTO schema_migrations (version) VALUES ('20141010192805');
 INSERT INTO schema_migrations (version) VALUES ('20141020171359');
 
 INSERT INTO schema_migrations (version) VALUES ('20141029194043');
+
+INSERT INTO schema_migrations (version) VALUES ('20141030192157');
 

@@ -17,6 +17,9 @@ gem 'pg'
 # documentation generation tool
 gem 'yard'
 
+# password encryption
+gem 'bcrypt'
+
 gem "settingslogic"
 
 # user notification system

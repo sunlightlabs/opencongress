@@ -92,9 +92,9 @@
       <% end %>
 
       <%= field_set_tag "Change Password", {:id => "change_password", :class => "tab-pane"} do %>
-        <%= f.input :current_password, :as => :password %>
-        <%= f.input :password, :as => :password %>
-        <%= f.input :password_confirmation, :as => :password %>
+        <%= f.input :current_password, :as => :plaintext_password %>
+        <%= f.input :plaintext_password, :as => :plaintext_password %>
+        <%= f.input :password_confirmation, :as => :plaintext_password %>
       <% end %>
 
       <div class="form-actions">

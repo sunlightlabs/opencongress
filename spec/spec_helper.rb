@@ -63,7 +63,7 @@ RSpec.configure do |config|
   config.include ApplicationHelper
 
   config.before(:suite) do
-    DatabaseCleaner.clean_with :truncation
+    DatabaseCleaner.clean_with :transaction #:truncation is slow
     DatabaseCleaner.strategy = :truncation
   end
 

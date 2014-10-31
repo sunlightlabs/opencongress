@@ -222,7 +222,7 @@ class AccountController < ApplicationController
     # TODO: This smells, find out how it's hit and refactor
     if request.post? && @new_user.present?
       # TODO: Replace this with assign_attributes once upgraded to Rails 3.2
-      [:password, :accept_tos, :login].each do |attr|
+      [:plaintext_password, :accept_tos, :login].each do |attr|
         @new_user.send("#{attr.to_s}=", params[:user][attr])
       end
 
@@ -371,42 +371,38 @@ class AccountController < ApplicationController
   def reset_password
     redirect_to '/account/forgot_password' and return if params[:id].blank?
     @user = User.find_by_password_reset_code(params[:id])
-    @page_title = "Reset Password"
+    @page_title = 'Reset Password'
 
     if @user.nil?
-      flash[:error] = "Password reset link not recognized.  Please try again."
+      flash[:error] = 'Password reset link not recognized.  Please try again.'
       redirect_to '/account/forgot_password' and return
     else
       return unless request.post?
+      @user.plaintext_password = ''
 
-      @user.password = ''
-    end
+      if params[:user][:password] == params[:user][:password_confirmation]
+        self.current_user = @user
+        current_user.set_password(params[:user][:password], params[:user][:password_confirmation])
+        current_user.reset_password
+        flash[:notice] = current_user.save ? 'Password reset' : 'Password not reset'
+      else
+        flash[:notice] = 'Password mismatch'
+      end
 
-    if (params[:user][:password] == params[:user][:password_confirmation])
-      self.current_user = @user #for the next two lines to work
-      current_user.password_confirmation = params[:user][:password_confirmation]
-      current_user.password = params[:user][:password]
-      @user.reset_password
-      flash[:notice] = current_user.save ? "Password reset" : "Password not reset"
-    else
-      flash[:notice] = "Password mismatch"
+      redirect_back_or_default(:controller => 'account', :action => 'index')
     end
-    redirect_back_or_default(:controller => 'account', :action => 'index')
   end
 
   def profile
     @user = User.find_by_login(params[:user])
-    if @user.nil?
-      render_404 and return
-    end
+    render_404 if @user.nil?
   end
 
   def change_pw
     @user = current_user
-    if (params[:user][:password] == params[:user][:password_confirmation])
+    if params[:user][:password] == params[:user][:password_confirmation]
       self.current_user = @user #for the next two lines to work
-      current_user.password_confirmation = params[:user][:password_confirmation]
-      current_user.password = params[:user][:password]
+      current_user.set_password(params[:user][:password], params[:user][:password_confirmation])
       @user.reset_password
       flash[:notice] = current_user.save ? "Password reset" : "Password not reset"
     else

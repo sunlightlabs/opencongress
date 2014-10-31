@@ -22,7 +22,7 @@ class LocationChangedService
     @user.district_needs_update = true
 
     # Get possible district and state for this user
-    @districts = get_districts()
+    @districts = get_districts
 
     # Multiple states can be returned per zcta. "EXAMPLE: 53511"
     @states = @districts.collect(&:state).uniq
@@ -48,17 +48,17 @@ class LocationChangedService
     # Handles setting representative id and saving user.
     if @user.state && @user.district
       rep = Person.find_current_representative_by_state_and_district(@user.state, @user.district)
-      @user.representative = rep ? rep : nil
+      @user.representative = rep.present? ? rep : nil
       # TODO log failure of Person lookup by state and district?
     else
       @user.representative = nil
     end
 
     # save and
-    @user.save()
-    join_default_groups()
+    @user.save
+    join_default_groups
     UserProfile.set_callback(:save, :after, :change_location!)
-    return @user.district_tag()
+    return @user.district_tag
   end
 
   protected

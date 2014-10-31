@@ -23,7 +23,7 @@ class <%= class_name %>Test < Test::Unit::TestCase
   def test_should_require_password
     assert_no_difference <%= class_name %>, :count do
       u = create_<%= file_name %>(:password => nil)
-      assert u.errors.on(:password)
+      assert u.errors.on(:plaintext_password)
     end
   end
 
@@ -70,6 +70,6 @@ class <%= class_name %>Test < Test::Unit::TestCase
 
   protected
     def create_<%= file_name %>(options = {})
-      <%= class_name %>.create({ :login => 'quire', :email => 'quire@example.com', :password => 'quire', :password_confirmation => 'quire' }.merge(options))
+      <%= class_name %>.create({ :login => 'quire', :email => 'quire@example.com', :plaintext_password => 'quire', :password_confirmation => 'quire' }.merge(options))
     end
 end

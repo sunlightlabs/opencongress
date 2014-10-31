@@ -20,8 +20,8 @@
               you would like to log into OpenCongress with your new account, you can
               choose a password now:
               </p>
-              <%= f.input :password, :as => :password %>
-              <%= f.input :password_confirmation, :as => :password %>
+              <%= f.input :plaintext_password, :as => :plaintext_password %>
+              <%= f.input :password_confirmation, :as => :plaintext_password %>
               <%= f.input :password_reset_code, :as => :hidden %>
             <% end %>
 

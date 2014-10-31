@@ -23,14 +23,13 @@
 #  accepted_tos_at       :datetime
 #  authentication_token  :string(255)
 #  facebook_uid          :string(255)
+#  possible_states       :text
+#  possible_districts    :text
 #  state                 :string(2)
 #  district              :integer
 #  district_needs_update :boolean          default(FALSE)
-#  possible_states       :text
-#  possible_districts    :text
 #
 
-require 'digest/sha1'
 require_dependency 'authable'
 require_dependency 'email_listable'
 require_dependency 'multi_geocoder'
@@ -82,6 +81,9 @@ class User < OpenCongressModel
     # user_profile.errors.clear() - may need this later for some reason
   }
 
+
+
+  # sets all privacy setting to default values
   after_create -> { set_all_default_privacies(UserPrivacyOptionItem::DEFAULT_PRIVACY) }
 
   update_email_subscription_when_changed :self, [:email]
@@ -257,11 +259,10 @@ class User < OpenCongressModel
   delegate :mailing_address,          :to => :user_profile
   delegate :mailing_address_as_hash,  :to => :user_profile
 
-  # create related class instances on first access
-  %w(user_profile user_options user_privacy_options).each do |meth|
-    alias_method(:"_#{meth}", meth.to_sym)
-    define_method(meth.to_sym){ send(:"_#{meth}") || send(:"build_#{meth}")}
-  end
+  # using metaprogramming for this causes seg fault...
+  def user_profile; super || build_user_profile ;end
+  def user_options; super || build_user_options ;end
+  def user_privacy_options; super || build_user_privacy_options ;end
 
   #========== METHODS
 
@@ -285,7 +286,7 @@ class User < OpenCongressModel
 
   def self.unused_login(stub, max_attempts=100)
     candidate = stub
-    (0..max_attempts).each do |attempt|
+    max_attempts.times do
       user = User.find_by_login(candidate)
       return candidate if user.nil?
       candidate = stub + SecureRandom.random_number(9999).to_s(10)
@@ -299,7 +300,7 @@ class User < OpenCongressModel
         login = unused_login(login_stub_for_profile(profile))
         user = User.new(:login => login,
                         :email => profile.email,
-                        :password => random_password,
+                        :plaintext_password => random_password,
                         :accepted_tos_at => profile.accept_tos && Time.now || nil,
                         :state => profile.state
         )
@@ -779,7 +780,7 @@ class User < OpenCongressModel
   end
 
   def password_required?
-    !openid? && !facebook_connect_user? && (crypted_password.blank? || !password.blank?)
+    !openid? && !facebook_connect_user? && ((password_digest.blank? && crypted_password.blank?) || plaintext_password.present?)
   end
 
   def openid?

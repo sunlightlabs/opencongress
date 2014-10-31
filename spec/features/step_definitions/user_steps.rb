@@ -95,7 +95,7 @@ Given /^an active non-tos user is logged in as "(.*)"$/ do |login|
   VCR.use_cassette('active_non-tos_user') do
     @current_user = User.create!(
       :login => login,
-      :password => 'generic',
+      :plaintext_password => 'generic',
       :password_confirmation => 'generic',
       :email => "dshettler-#{login}@gmail.com",
       :enabled => true,
@@ -118,7 +118,7 @@ Given /^an active user is logged in as "(.*)"$/ do |login|
   VCR.use_cassette('active_user') do
     @current_user = User.create!(
       :login => login,
-      :password => 'generic',
+      :plaintext_password => 'generic',
       :password_confirmation => 'generic',
       :email => "dshettler-#{login}@gmail.com",
       :zipcode => '22204',

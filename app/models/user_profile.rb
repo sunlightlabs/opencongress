@@ -23,24 +23,6 @@ require_dependency 'location_changed_service'
 
 class UserProfile < OpenCongressModel
 
-  #========== RELATIONS
-
-  belongs_to :user
-
-  #========== VALIDATORS
-
-  validates_numericality_of   :zipcode, :only_integer => true, :allow_blank => true, :message => 'should be all numbers'
-  validates_numericality_of   :zip_four, :only_integer => true, :allow_blank => true, :message => 'should be all numbers'
-  validates_length_of         :zipcode, :is => 5, :allow_blank => true, :message => 'should be 5 digits'
-  validates_length_of         :zip_four, :is => 4, :allow_blank => true, :message => 'should be 4 digits'
-
-  #========== DELEGATED ATTRIBUTES / METHODS
-
-  delegate :state,  :to => :user
-  delegate :state=, :to => :user
-  delegate :state_changed?, :to => :user
-  delegate :district_needs_update?, :to => :user, :prefix => true
-
   #========== CONSTANTS
 
   HUMANIZED_ATTRIBUTES = {
@@ -49,7 +31,25 @@ class UserProfile < OpenCongressModel
       :street_address_2 => "Street address 2nd line"
   }
 
-  #========== CALLBACKS
+  #========== VALIDATORS
+
+  validates_numericality_of   :zipcode, :only_integer => true, :allow_blank => true, :message => 'should be all numbers'
+  validates_numericality_of   :zip_four, :only_integer => true, :allow_blank => true, :message => 'should be all numbers'
+  validates_length_of         :zipcode, :is => 5, :allow_blank => true, :message => 'should be 5 digits'
+  validates_length_of         :zip_four, :is => 4, :allow_blank => true, :message => 'should be 4 digits'
+
+  #========== RELATIONS
+
+  belongs_to :user
+
+  #========== DELEGATORS
+
+  delegate :state,  :to => :user, :allow_nil => true
+  delegate :state=, :to => :user, :allow_nil => true
+  delegate :state_changed?, :to => :user, :allow_nil => true
+  delegate :district_needs_update?, :to => :user, :prefix => true, :allow_nil => true
+
+  #========== FILTERS
 
   # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   # 7/15/2014: Clayton discovered that rail's postgresql adapter relies on database primary key designation (index)
@@ -58,8 +58,10 @@ class UserProfile < OpenCongressModel
   # local database wasn't being built fully. Never forget this struggle to discovery.
   after_save :change_location!
 
+  #========== METHODS
 
-  #========== PUBLIC METHODS
+  #----- INSTANCE
+
   public
 
   ##
@@ -77,21 +79,19 @@ class UserProfile < OpenCongressModel
     end
   end
 
-  ##
   # Getter for a concatenation of first and last name
   #
   def full_name
     "#{first_name} #{last_name}"
   end
 
-  ##
   # Setter for first and last name using a sophisticated full name splitter
   #
+  # @param name [String] full name string
   def full_name=(name)
     self.first_name, self.last_name = FullNameSplitter.split name
   end
 
-  ##
   # Getter for location
   #
   def location
@@ -104,11 +104,9 @@ class UserProfile < OpenCongressModel
     end
   end
 
-  ##
   # Getter for mailing address by concatenating various address attributes
   #
-  # @return {String}  representing full mailing address
-  #
+  # @return [String] representing full mailing address
   def mailing_address
     addr = ''
     if street_address.present?
@@ -130,11 +128,9 @@ class UserProfile < OpenCongressModel
     addr
   end
 
-  ##
   # Getter for mailing address by building a Hash
   #
-  # @return {Hash}  representing full mailing address
-  #
+  # @return [Hash] representing full mailing address
   def mailing_address_as_hash
     {
       :street_address => street_address,

@@ -90,14 +90,10 @@ module PrivacyObject
   def set_initial_privacy
 
     if self.class.name == 'User' # set all defaults for new user
-      set_all_default_privacies(:private)
+      set_all_default_privacies
     else # apply default options to new PrivacyObject
-      upoi = user.user_privacy_option_items.where(privacy_object_type: self.class.name,
-                                                  privacy_object_id: nil)
-      upoi.each do |item| # set default privacy for specific instance
-        new_upoi = item.dup
-        new_upoi.privacy_object_id = self.id
-        new_upoi.save
+      user.user_privacy_option_items.where(privacy_object_type: self.class.name, privacy_object_id: nil).each do |item|
+        item.dup.update_attribute('privacy_object_id',self.id)
       end
     end
 

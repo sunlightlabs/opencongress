@@ -1280,7 +1280,7 @@ CREATE TABLE articles (
     render_type character varying(255),
     frontpage_image_url character varying(255),
     excerpt text,
-    fti_names tsvector
+    fti_names pg_catalog.tsvector
 );
 
 
@@ -1886,7 +1886,7 @@ CREATE TABLE commentaries (
     scraped_from character varying(255),
     status character varying(255),
     contains_term character varying(255),
-    fti_names tsvector,
+    fti_names pg_catalog.tsvector,
     created_at timestamp without time zone,
     is_news boolean,
     is_ok boolean DEFAULT false,
@@ -1971,7 +1971,7 @@ CREATE TABLE comments (
     rgt integer,
     lft integer,
     root_id integer,
-    fti_names tsvector,
+    fti_names pg_catalog.tsvector,
     flagged boolean DEFAULT false,
     ip_address character varying(255),
     plus_score_count integer DEFAULT 0 NOT NULL,
@@ -2157,7 +2157,7 @@ CREATE TABLE committees (
     id integer NOT NULL,
     name character varying(255),
     subcommittee_name character varying(255),
-    fti_names tsvector,
+    fti_names pg_catalog.tsvector,
     active boolean DEFAULT true,
     code character varying(255),
     page_views_count integer,
@@ -2332,7 +2332,8 @@ CREATE TABLE contact_congress_letters (
     receive_replies boolean DEFAULT true,
     contactable_id integer,
     contactable_type character varying(255),
-    is_public boolean DEFAULT false
+    is_public boolean DEFAULT false,
+    source integer
 );
 
 
@@ -3997,7 +3998,7 @@ CREATE TABLE people (
     district character varying(255),
     name character varying(255),
     email character varying(255),
-    fti_names tsvector,
+    fti_names pg_catalog.tsvector,
     user_approval double precision DEFAULT 5,
     biography text,
     unaccented_name character varying(255),
@@ -4726,7 +4727,7 @@ CREATE TABLE subjects (
     id integer NOT NULL,
     term character varying(255),
     bill_count integer,
-    fti_names tsvector,
+    fti_names pg_catalog.tsvector,
     page_views_count integer,
     parent_id integer
 );
@@ -4898,7 +4899,7 @@ CREATE TABLE upcoming_bills (
     summary text,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    fti_names tsvector
+    fti_names pg_catalog.tsvector
 );
 
 
@@ -9006,4 +9007,6 @@ INSERT INTO schema_migrations (version) VALUES ('20141020171359');
 INSERT INTO schema_migrations (version) VALUES ('20141029194043');
 
 INSERT INTO schema_migrations (version) VALUES ('20141030192157');
+
+INSERT INTO schema_migrations (version) VALUES ('20141104201412');
 

@@ -28,6 +28,7 @@
 #  state                 :string(2)
 #  district              :integer
 #  district_needs_update :boolean          default(FALSE)
+#  password_digest       :string(255)
 #
 
 require_dependency 'authable'
@@ -437,7 +438,7 @@ class User < OpenCongressModel
   # user selects their default privacy settings.
   #
   # @param privacy [Symbol] privacy options - :public, :private, :friend
-  def set_all_default_privacies(privacy)
+  def set_all_default_privacies(privacy=:private)
     UserPrivacyOptionItem.set_all_default_privacies_for(self, privacy)
   end
 
@@ -461,7 +462,12 @@ class User < OpenCongressModel
   # @param method [String] method to determine privacy of
   # @return [Boolean] true if this user can view, false otherwise
   def can_show_item_to?(viewer, item, method=nil)
-    privacy_option_for({item:item, method:method}).can_show_to?(viewer)
+    begin
+      return false if item.user != self
+      privacy_option_for({item:item, method:method}).can_show_to?(viewer)
+    rescue
+      false
+    end
   end
 
   # Retrieves user's unseen notifications

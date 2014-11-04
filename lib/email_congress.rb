@@ -459,6 +459,7 @@ module EmailCongress
         ccl_letter.disposition = ''   # Leave blank for now. Do sentiment analysis in the future?
         ccl_letter.contactable = nil  # Don't associate with a contactable topic, e.g. Bill.
         ccl_letter.is_public = false  # Private because we cannot provide an up-front warning before the user sends an email.
+        ccl_letter.source = :email
         ccl_letter.save!
 
         recipients.each do |rcpt|

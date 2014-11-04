@@ -19,7 +19,7 @@
 #  district                  :string(255)
 #  name                      :string(255)
 #  email                     :string(255)
-#  fti_names                 :public.tsvector
+#  fti_names                 :tsvector
 #  user_approval             :float            default(5.0)
 #  biography                 :text
 #  unaccented_name           :string(255)
@@ -37,12 +37,12 @@
 #  total_session_votes       :integer
 #  votes_democratic_position :integer
 #  votes_republican_position :integer
-#  death_date                :date
 #  govtrack_id               :integer
 #  fec_id                    :string(255)
 #  thomas_id                 :string(255)
 #  cspan_id                  :integer
 #  lis_id                    :string(255)
+#  death_date                :date
 #  twitter_id                :string(255)
 #
 

@@ -71,6 +71,7 @@ class Friend < OpenCongressModel
   # @param u2 [User] user 2
   # @return [Boolean] true if both users are confirmed friends, false otherwise
   def self.are_confirmed_friends?(u1, u2)
+    return false if u1.nil? or u2.nil?
     Friend.where(user_id: u1.id, friend_id: u2.id, confirmed: true).any? and
         Friend.where(user_id: u2.id, friend_id: u1.id, confirmed: true).any?
   end

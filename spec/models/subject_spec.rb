@@ -5,7 +5,7 @@
 #  id               :integer          not null, primary key
 #  term             :string(255)
 #  bill_count       :integer
-#  fti_names        :public.tsvector
+#  fti_names        :tsvector
 #  page_views_count :integer
 #  parent_id        :integer
 #

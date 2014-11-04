@@ -13,7 +13,7 @@
 #  scraped_from        :string(255)
 #  status              :string(255)
 #  contains_term       :string(255)
-#  fti_names           :public.tsvector
+#  fti_names           :tsvector
 #  created_at          :datetime
 #  is_news             :boolean
 #  is_ok               :boolean          default(FALSE)

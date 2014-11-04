@@ -82,6 +82,22 @@ class UserPrivacyOptionItem < OpenCongressModel
       :private => {
         nil => 2
       }
+    },
+    'ContactCongressLetter' => {
+      :public => {
+        nil => 0
+      },
+      :private => {
+        nil => 0
+      }
+    },
+    'Formageddon::FormageddonThread' => {
+      :public => {
+        nil => 0
+      },
+      :private => {
+        nil => 0
+      }
     }
   }
 
@@ -121,6 +137,7 @@ class UserPrivacyOptionItem < OpenCongressModel
   #        item [PrivacyObject] object which includes the privacy_object module
   #        type [String] type of a PrivacyObject for generic privacy setting
   #        method [String] specific method or attribute privacy
+  # @param privacy [Symbol] for overriding default privacy setting
   # @return [Integer] default privacy setting
   def self.default_privacy_for(args={item:nil,type:nil,method:nil}, privacy=nil)
 
@@ -165,13 +182,14 @@ class UserPrivacyOptionItem < OpenCongressModel
   # @param viewer [User] user to test if they can see this privacy object
   # @return [Boolean] true if user can see privacy object, false otherwise
   def can_show_to?(viewer)
+    return true if viewer == user
     case self.privacy
       when PRIVACY_OPTIONS[:public]
-        return true
+        true
       when PRIVACY_OPTIONS[:friend]
-        return Friend.are_confirmed_friends?(user, viewer)
-      when UserPrivacyOptionItem::PRIVACY_OPTIONS[:private]
-        return false
+        Friend.are_confirmed_friends?(user, viewer)
+      when PRIVACY_OPTIONS[:private]
+        false
       else
         raise KeyError
     end

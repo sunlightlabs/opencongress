@@ -20,7 +20,7 @@
 #  rgt               :integer
 #  lft               :integer
 #  root_id           :integer
-#  fti_names         :public.tsvector
+#  fti_names         :tsvector
 #  flagged           :boolean          default(FALSE)
 #  ip_address        :string(255)
 #  plus_score_count  :integer          default(0), not null

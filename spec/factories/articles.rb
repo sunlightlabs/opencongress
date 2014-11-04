@@ -13,7 +13,7 @@
 #  render_type         :string(255)
 #  frontpage_image_url :string(255)
 #  excerpt             :text
-#  fti_names           :public.tsvector
+#  fti_names           :tsvector
 #
 
 # Read about factories at https://github.com/thoughtbot/factory_girl

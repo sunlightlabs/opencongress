@@ -29,6 +29,7 @@
 #  state                 :string(2)
 #  district              :integer
 #  district_needs_update :boolean          default(FALSE)
+#  password_digest       :string(255)
 #
 
 FactoryGirl.define do

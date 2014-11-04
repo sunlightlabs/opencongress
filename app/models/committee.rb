@@ -5,7 +5,7 @@
 #  id                :integer          not null, primary key
 #  name              :string(255)
 #  subcommittee_name :string(255)
-#  fti_names         :public.tsvector
+#  fti_names         :tsvector
 #  active            :boolean          default(TRUE)
 #  code              :string(255)
 #  page_views_count  :integer

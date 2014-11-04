@@ -19,7 +19,7 @@
 #  district                  :string(255)
 #  name                      :string(255)
 #  email                     :string(255)
-#  fti_names                 :public.tsvector
+#  fti_names                 :tsvector
 #  user_approval             :float            default(5.0)
 #  biography                 :text
 #  unaccented_name           :string(255)

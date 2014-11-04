@@ -90,13 +90,20 @@ module Authable
 
   public
 
+  # Convenience method for setting password and password_confirmation in one method call
+  #
+  # @param password [String] plaintext password
+  # @param confirmation [String] plaintext password confirmation
   def set_password(password, confirmation)
-    self.plaintext_password = password
+    self.password = password
     self.password_confirmation = confirmation
   end
 
+  # Checks if password matches password_confirmation
+  #
+  # @return [Boolean] true if match, false otherwise
   def password_matches_confirmation?
-    self.plaintext_password == self.password_confirmation
+    self.password == self.password_confirmation
   end
 
   # Displays the status of the User as a string
@@ -122,44 +129,64 @@ module Authable
 
   # Checks if user is unconfirmed.
   #
-  # @return [Boolean]
+  # @return [Boolean] true if unconfirmed, false otherwise
   def is_unconfirmed?
     status == STATUSES[:unconfirmed]
   end
 
   # Checks if user is authorized.
   #
-  # @return [Boolean]
+  # @return [Boolean] true if authorized, false otherwise
   def is_authorized?
     status < STATUSES[:deleted]
   end
 
+  # Checks if user is active.
+  #
+  # @return [Boolean] true if active, false otherwise
   def is_active?
     !is_unconfirmed? && is_authorized?
   end
-
   alias_method :activated?, :is_active?
   alias_method :enabled, :is_active?
 
-  # Activates the user in the database.
-  def activate!
-    @activated = true
-    self.activated_at = Time.now
-    self.activation_code = nil
-    self.status = 1
-    self.save
-  end
-
-  # Returns true if the user has just been activated.
-  def recently_activated?
-    @activated
-  end
-
+  # Checks if user is banned.
+  #
+  # @return [Boolean] true if banned, false otherwise
   def is_banned?
     status == STATUSES[:banned]
   end
   alias_method :is_banned, :is_banned?
 
+  # Checks if user is deactivated.
+  #
+  # @return [Boolean] true if deactivated, false otherwise
+  def is_deactivated?
+    status == STATUSES[:deleted]
+  end
+
+  # Checks if a user can log in.
+  #
+  # @return [Boolean] true if user can log in, false otherwise
+  def can_login?
+    status < STATUSES[:deleted]
+  end
+  alias_method :can_use_site?, :is_active?
+
+  # Activates the user in the database.
+  def activate!
+    @activated = true
+    update_attributes(activated_at: Time.now, activation_code: nil, status: 1)
+  end
+
+  # Checks if user has been recently activated
+  #
+  # @return [Boolean] true if recently activated
+  def recently_activated?
+    @activated
+  end
+
+  # Bans this user
   def ban!
     if status < STATUSES[:banned]
       self.login = get_unique_login_for_status(:banned)
@@ -168,22 +195,21 @@ module Authable
     end
   end
 
+  # Unbans this user
   def unban!
-    recover_login!
-    self.status = STATUSES[:active]
-    save
-  rescue Exception => e
-    errors.add :base, e
-    false
+    begin
+      recover_login!
+      self.status = STATUSES[:active]
+      save
+    rescue Exception => e
+      errors.add :base, e
+      false
+    end
   end
 
-  # for legacy compat
+  # for legacy compatibility
   def is_banned=(val)
     !!val ? ban! : unban!
-  end
-
-  def is_deactivated?
-    status == STATUSES[:deleted]
   end
 
   def deactivate!
@@ -193,14 +219,7 @@ module Authable
       save :validate => false
     end
   end
-
   alias_method :reactivate!, :unban!
-
-  def can_login?
-    status < STATUSES[:deleted]
-  end
-
-  alias_method :can_use_site?, :is_active?
 
   # Encrypts the password with the User's salt
   #

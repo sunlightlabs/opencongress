@@ -18,13 +18,13 @@ class <%= controller_class_name %>ControllerTest < Test::Unit::TestCase
   end
 
   def test_should_login_and_redirect
-    post :login, :login => 'quentin', :plaintext_password => 'test'
+    post :login, :login => 'quentin', :password => 'test'
     assert session[:<%= file_name %>]
     assert_response :redirect
   end
 
   def test_should_fail_login_and_not_redirect
-    post :login, :login => 'quentin', :plaintext_password => 'bad password'
+    post :login, :login => 'quentin', :password => 'bad password'
     assert_nil session[:<%= file_name %>]
     assert_response :success
   end
@@ -76,12 +76,12 @@ class <%= controller_class_name %>ControllerTest < Test::Unit::TestCase
   end
 
   def test_should_remember_me
-    post :login, :login => 'quentin', :plaintext_password => 'test', :remember_me => "1"
+    post :login, :login => 'quentin', :password => 'test', :remember_me => "1"
     assert_not_nil @response.cookies["auth_token"]
   end
 
   def test_should_not_remember_me
-    post :login, :login => 'quentin', :plaintext_password => 'test', :remember_me => "0"
+    post :login, :login => 'quentin', :password => 'test', :remember_me => "0"
     assert_nil @response.cookies["auth_token"]
   end
   
@@ -116,7 +116,7 @@ class <%= controller_class_name %>ControllerTest < Test::Unit::TestCase
   protected
     def create_<%= file_name %>(options = {})
       post :signup, :<%= file_name %> => { :login => 'quire', :email => 'quire@example.com', 
-        :plaintext_password => 'quire', :password_confirmation => 'quire' }.merge(options)
+        :password => 'quire', :password_confirmation => 'quire' }.merge(options)
     end
     
     def auth_token(token)

@@ -25,16 +25,16 @@ class ProfileController < ApplicationController
 
   def update
     @user = current_user
-    if params[:user][:plaintext_password].present? && params[:user][:password_confirmation].present?
+    if params[:user][:password].present? && params[:user][:password_confirmation].present?
       old_pass = params[:user].delete(:current_password)
-      new_pass = params[:user].delete(:plaintext_password)
+      new_pass = params[:user].delete(:password)
       if new_pass != params[:user].delete(:password_confirmation)
         flash[:error] = "Passwords do not match, your profile was not updated."
         redirect_to :back and return
       end
       if (params[:user][:password_reset_code].present? && (params[:user][:password_reset_code] == @user.password_reset_code)) || User.authenticate(@user.login, old_pass).is_a?(User)
         @user.reset_password
-        @user.plaintext_password = new_pass
+        @user.password = new_pass
         @user.save
         @user.instance_variable_set(:@reset_password, nil)
         flash[:notice] = "Your new password has been set."
@@ -563,7 +563,7 @@ class ProfileController < ApplicationController
   def user_params
     params.require(:user).permit(
       :login,
-      :plaintext_password,
+      :password,
       :password_confirmation,
       :email,
       :zipcode,

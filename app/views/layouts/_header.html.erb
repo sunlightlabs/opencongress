@@ -38,7 +38,7 @@
                                         <fieldset>
                                             <legend>Log into OpenCongress</legend>
                                             <%= f.text_field :login, :placeholder => "username" %>
-                                            <%= f.password_field :plaintext_password, :placeholder => "password" %>
+                                            <%= f.password_field :password, :placeholder => "password" %>
                                             <%= hidden_field_tag('login_action', login_action) if (login_action ||= nil) %>
                                             <button type="submit" class="btn btn-primary">Login</button>
                                         </fieldset>

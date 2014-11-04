@@ -77,7 +77,7 @@ module OpenCongress
     config.active_record.include_root_in_json = false
 
     # Configure sensitive parameters which will be filtered from the log file.
-    config.filter_parameters += [:plaintext_password, :gpasswd]
+    config.filter_parameters += [:password, :gpasswd]
 
     config.assets.enabled = true
     config.assets.version = '1.0'

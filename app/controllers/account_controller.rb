@@ -222,7 +222,7 @@ class AccountController < ApplicationController
     # TODO: This smells, find out how it's hit and refactor
     if request.post? && @new_user.present?
       # TODO: Replace this with assign_attributes once upgraded to Rails 3.2
-      [:plaintext_password, :accept_tos, :login].each do |attr|
+      [:password, :accept_tos, :login].each do |attr|
         @new_user.send("#{attr.to_s}=", params[:user][attr])
       end
 
@@ -378,7 +378,7 @@ class AccountController < ApplicationController
       redirect_to '/account/forgot_password' and return
     else
       return unless request.post?
-      @user.plaintext_password = ''
+      @user.password = ''
 
       if params[:user][:password] == params[:user][:password_confirmation]
         self.current_user = @user

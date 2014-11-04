@@ -293,7 +293,7 @@ class User < OpenCongressModel
         login = unused_login(login_stub_for_profile(profile))
         user = User.new(:login => login,
                         :email => profile.email,
-                        :plaintext_password => random_password,
+                        :password => random_password,
                         :accepted_tos_at => profile.accept_tos && Time.now || nil,
                         :state => profile.state
         )
@@ -782,7 +782,7 @@ class User < OpenCongressModel
   end
 
   def password_required?
-    !openid? && !facebook_connect_user? && ((password_digest.blank? && crypted_password.blank?) || plaintext_password.present?)
+    !openid? && !facebook_connect_user? && ((password_digest.blank? && crypted_password.blank?) || password.present?)
   end
 
   def openid?

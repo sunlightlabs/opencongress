@@ -41,14 +41,17 @@ module PrivacyObject
 
   public
 
+  def has_privacy_settings?
+    true
+  end
+
   # Determines if the input user can see the current object
   #
   # @param viewer [User] viewing user to determine if they can see this
   # @param method [String] granular attribute or method control
   # @return [Boolean] true if input user can see object, false otherwise
   def can_show_to?(viewer, method=nil)
-    po = privacy_options.where(method:method).first ||
-         UserPrivacyOptionItem.default(user,{item:self,method:method})
+    po = privacy_options.where(method:method).first || UserPrivacyOptionItem.default(user,{item:self,method:method})
     po.can_show_to?(viewer)
   end
 
@@ -89,7 +92,6 @@ module PrivacyObject
     if self.class.name == 'User' # set all defaults for new user
       set_all_default_privacies(:private)
     else # apply default options to new PrivacyObject
-      puts self.class.name
       upoi = user.user_privacy_option_items.where(privacy_object_type: self.class.name,
                                                   privacy_object_id: nil)
       upoi.each do |item| # set default privacy for specific instance

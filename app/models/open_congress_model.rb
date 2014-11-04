@@ -13,7 +13,7 @@ class OpenCongressModel < ActiveRecord::Base
   #
   # @return [Array<Model>] array of subclasses
   def self.descendants
-    Dir.glob(Rails.root.join('app/models/**/*.rb').to_s) {|path| require path }
+    # Dir.glob(Rails.root.join('app/models/**/*.rb').to_s) {|path| require path }
     super
   end
 
@@ -24,7 +24,7 @@ class OpenCongressModel < ActiveRecord::Base
     # must eager load all the classes...
     Dir.glob(Rails.root.join('app/models/**/*.rb').to_s) do |model_path|
       begin
-        require model_path
+       # require model_path
       rescue
         # ignore
       end

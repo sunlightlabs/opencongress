@@ -1,4 +1,4 @@
-require 'multi_geocoder'
+# require_dependency 'multi_geocoder'
 
 class LocationChangedService
 

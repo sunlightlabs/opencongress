@@ -32,7 +32,6 @@
 
 require_dependency 'authable'
 require_dependency 'email_listable'
-require_dependency 'multi_geocoder'
 require_dependency 'visible_by_privacy_option_query'
 
 class User < OpenCongressModel
@@ -42,6 +41,7 @@ class User < OpenCongressModel
   include Authable
   include EmailListable
   include PrivacyObject
+  apply_simple_captcha
 
   #========== CONSTANTS
 
@@ -56,32 +56,21 @@ class User < OpenCongressModel
   #========== VALIDATORS
 
   validates_presence_of       :login, :email, :unless => :openid?
-  # validates_confirmation_of   :email, :message => 'should match confirmation'
   validates_acceptance_of     :accept_tos,                 :unless => :openid?
   validates_presence_of       :password,                   :if => :password_required?
   validates_length_of         :password, :within => 4..40, :if => :password_required?
   validates_confirmation_of   :password,                   :if => :password_required?
   validates_length_of         :login,    :within => 3..40, :unless => :openid?
   validates_length_of         :email,    :within => 3..100, :unless => :openid?
-  validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, :message => "is invalid"
-  validates_format_of         :login, :with => /\A\w+\z/, :message => "can only contain letters and numbers (no spaces)."
+  validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, :message => 'is invalid'
+  validates_format_of         :login, :with => /\A\w+\z/, :message => 'can only contain letters and numbers (no spaces).'
   validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
-  validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
+  validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true, :allow_blank => true
 
   #========== FILTERS
 
-  # This filter merges the validation errors in user_profile with user
-  # so that input forms using attributes from user_profile spit have
-  # the validation messages as they appear in user_profile.
-  # Otherwise, the message is prepended by the words User profile.
-  after_validation -> {
-    user_profile.errors.each  { |name, value| errors.add(name.to_sym, value) }
-    errors.to_hash.delete_if { |name, value| name.to_s.include? 'user_profile' }
-    # user_profile.errors.clear() - may need this later for some reason
-  }
-
-
+  after_validation -> { merge_validation_errors_with(:user_profile) }
 
   # sets all privacy setting to default values
   after_create -> { set_all_default_privacies(UserPrivacyOptionItem::DEFAULT_PRIVACY) }
@@ -145,7 +134,8 @@ class User < OpenCongressModel
   has_many :fans, -> { where(confirmed: false) },
            :class_name => 'Friend', :foreign_key => 'friend_id'
   has_many :person_approvals
-  has_many :bookmarks
+  has_many :bookmarks,
+           :dependent => :destroy
   has_many :senator_bookmarks, -> { includes([:person => :roles]).where('roles.role_type = ? and roles.startdate < ? and roles.enddate > ?', 'sen', Time.now, Time.now) },
            :class_name => 'Bookmark', :foreign_key => 'user_id'
   has_many :representative_bookmarks, -> { includes([:person => :roles]).where('roles.role_type = ? and roles.startdate < ? and roles.enddate > ?', 'rep', Time.now, Time.now )},
@@ -181,10 +171,12 @@ class User < OpenCongressModel
   has_many :notebook_items,
            :through => :political_notebook
   has_many :contact_congress_letters
-  has_many :notification_aggregates, -> { includes(:activities) }
+  has_many :notification_aggregates, -> { includes(:activities) },
+           :dependent => :destroy
   has_many :user_notification_option_items, -> { joins(:activity_option) },
            :through => :user_notification_options
-  has_many :user_privacy_option_items
+  has_many :user_privacy_option_items,
+           :dependent => :destroy
 
   #========== ALIASES
 
@@ -259,10 +251,11 @@ class User < OpenCongressModel
   delegate :mailing_address,          :to => :user_profile
   delegate :mailing_address_as_hash,  :to => :user_profile
 
-  # using metaprogramming for this causes seg fault...
-  def user_profile; super || build_user_profile ;end
-  def user_options; super || build_user_options ;end
-  def user_privacy_options; super || build_user_privacy_options ;end
+  # create related class instances on first access
+  %w(user_profile user_options user_privacy_options).each do |meth|
+    alias_method(:"_#{meth}", meth.to_sym)
+    define_method(meth.to_sym){ send(:"_#{meth}") || send(:"build_#{meth}")}
+  end
 
   #========== METHODS
 
@@ -450,6 +443,15 @@ class User < OpenCongressModel
 
   def set_all_privacies(privacy)
     # TODO implement to set all current privacy settings to argument value
+  end
+
+  # Checks if user can view an input item and method
+  #
+  # @param item [PrivacyObject] object to show to viewer
+  # @param method [String] method to determine privacy of
+  # @return [Boolean] true if this user can view item & method, false otherwise
+  def can_view?(item, method=nil)
+    item.respond_to?(:has_privacy_settings?) ? item.can_show_to?(self, method) : true
   end
 
   # Checks if user can show a PrivacyObject (w/ method) to a viewing user

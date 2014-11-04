@@ -18,7 +18,6 @@
 #  mobile_phone     :string(255)
 #
 
-require_dependency 'full-name-splitter'
 require_dependency 'location_changed_service'
 
 class UserProfile < OpenCongressModel
@@ -26,16 +25,16 @@ class UserProfile < OpenCongressModel
   #========== CONSTANTS
 
   HUMANIZED_ATTRIBUTES = {
-      :zip_four => "ZIP code +4 extension",
+      :zip_four => 'ZIP code +4 extension',
       :zipcode => "ZIP code",
-      :street_address_2 => "Street address 2nd line"
+      :street_address_2 => 'Street address 2nd line'
   }
 
   #========== VALIDATORS
 
   validates_numericality_of   :zipcode, :only_integer => true, :allow_blank => true, :message => 'should be all numbers'
   validates_numericality_of   :zip_four, :only_integer => true, :allow_blank => true, :message => 'should be all numbers'
-  validates_length_of         :zipcode, :is => 5, :allow_blank => true, :message => 'should be 5 digits'
+  validates_length_of         :zipcode, :is => 5, :allow_blank => false, :message => 'should be 5 digits'
   validates_length_of         :zip_four, :is => 4, :allow_blank => true, :message => 'should be 4 digits'
 
   #========== RELATIONS

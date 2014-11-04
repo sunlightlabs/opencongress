@@ -11,8 +11,7 @@ module Authable
 
   included do
 
-    apply_simple_captcha
-    has_secure_password validations: false
+    has_secure_password validations: false # because User model is validating password
 
     before_create :make_activation_code
     before_save   :encrypt_password
@@ -28,7 +27,10 @@ module Authable
     scope :banned, -> { where(status: STATUSES[:banned]) }
     scope :deleted, -> { where(status: STATUSES[:deleted]) }
 
-    # allows user to access the password attribute through a common interface (instead of from has_secure_password)
+    # to make the authentication method more clear
+    alias_method :bcrypt_authenticate, :authenticate
+    # allows user to access the password attribute through a
+    # common interface (instead of from has_secure_password)
     alias_method :bcrypt_password=, :password=
     def password ; self.plaintext_password ; end
     def password=(password) ; self.plaintext_password = password ; end
@@ -55,13 +57,22 @@ module Authable
     # Authenticates a user by their login/email and unencrypted password.
     #
     # @param login [String] user's login or email
-    # @param password [String] user's raw password
+    # @param password [String] user's plaintext password
     # @return [User, nil] authenticated user or nil
     def authenticate(login, password)
+      # check if input is an email or login
       param = login.match(/^[\w\-_+\.]+@[\w\-_\.]+$/) ? 'email' : 'login'
+      # check if user exists and is allowed to login
       user = User.authorized.where(["lower(#{param}) = ?", login.downcase]).first
+      # nil if user doesn't eixst
       return nil if user.nil?
-      user.has_bcrypt_password? ? user.authenticate(password) : user.sha1_authenticate(password)
+      # try to authenticate with bcrypt password
+      return user.bcrypt_authenticate(password) if user.has_bcrypt_password?
+      # otherwise try to authenticate with sha1 password
+      sha1u = user.sha1_authenticate(password)
+      # if sha1 authenticated, get a bcrypt password for next login
+      sha1u.update_attribute('password', password) if sha1u.present?
+      sha1u
     end
 
     # Encrypts data with the provided salt.
@@ -88,10 +99,16 @@ module Authable
     self.plaintext_password == self.password_confirmation
   end
 
+  # Displays the status of the User as a string
+  #
+  # @return [String] User status as a string
   def status_display
     STATUSES.invert[status].to_s
   end
 
+  # Humanized explanation of the User's status
+  #
+  # @return [String, nil] humanized explanation of User's status
   def status_explanation
     case status_display
       when 'deleted'
@@ -103,10 +120,16 @@ module Authable
     end
   end
 
+  # Checks if user is unconfirmed.
+  #
+  # @return [Boolean]
   def is_unconfirmed?
     status == STATUSES[:unconfirmed]
   end
 
+  # Checks if user is authorized.
+  #
+  # @return [Boolean]
   def is_authorized?
     status < STATUSES[:deleted]
   end
@@ -156,11 +179,7 @@ module Authable
 
   # for legacy compat
   def is_banned=(val)
-    if !!val
-      ban!
-    else
-      unban!
-    end
+    !!val ? ban! : unban!
   end
 
   def is_deactivated?
@@ -183,22 +202,36 @@ module Authable
 
   alias_method :can_use_site?, :is_active?
 
-  # Encrypts the password with the user salt
+  # Encrypts the password with the User's salt
+  #
+  # @param password [String] encrypt password using SHA1
+  # @return [String] encrypted password
   def sha1_encrypt(password)
     self.class.sha1_encrypt(password, salt)
   end
 
+  # Checks if user has a bcrypted password
+  #
+  # @return [Boolean] true if User has a password_digest, false otherwise
   def has_bcrypt_password?
     self.password_digest.present?
   end
 
-  def authenticated?(password)
+  # Checks if the plaintext password is correct using sha1
+  #
+  # @param password [String] plaintext password
+  # @return [Boolean] true if correct, false otherwise
+  def sha1_authenticated?(password)
     puts "crypted: #{crypted_password} :: encrypt(password): #{sha1_encrypt(password)}"
-    crypted_password == sha1_encrypt(password)
+    self.crypted_password == sha1_encrypt(password)
   end
 
+  # Authenticate with SHA1 password
+  #
+  # @param password [String] plaintext password
+  # @return [User, nil] User if password is correct, false otherwise
   def sha1_authenticate(password)
-    crypted_password == sha1_encrypt(password) ? self : nil
+    self.crypted_password == sha1_encrypt(password) ? self : nil
   end
 
   def remember_token?
@@ -245,13 +278,16 @@ module Authable
     self.password_reset_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
   end
 
+  # Encrypts the plaintext password and stores it in the User model
   def encrypt_password
-    return if plaintext_password.blank? or not password_matches_confirmation?
+    return if password.blank?
     self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
-    # sha1 password
-    self.crypted_password = sha1_encrypt(plaintext_password)
-    # bcrypt password
-    self.bcrypt_password = plaintext_password
+    # sha1 password - TODO deprecate me
+    self.crypted_password = sha1_encrypt(password)
+    # bcrypt password - note this does not store the plaintext_password, see has_secure_password module
+    self.bcrypt_password = password
+    # get rid of plaintext password
+    self.password = nil
   end
 
   def make_activation_code

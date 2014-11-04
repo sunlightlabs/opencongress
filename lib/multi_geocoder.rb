@@ -1,5 +1,5 @@
-require 'geocoder'
-require 'multi_geocoder/explained_geocode'
+require_dependency 'geocoder'
+require_dependency 'multi_geocoder/explained_geocode'
 
 ##
 # This module checks the incoming query and decides which geocoder to dispatch
@@ -8,6 +8,7 @@ require 'multi_geocoder/explained_geocode'
 # In those cases we pass off to ESRI which doesn't require authentication.
 #
 module MultiGeocoder
+
   ZIP_PATTERN = /\A[\d]{5}\Z/                                           # ex: 27948
   ZIP_PLUS_PATTERN = /\A[\d]{5}-?[\d]{4}\Z/                             # ex: 27948-1234
   CITY_STATE_AND_ZIP_PATTERN = /\A[A-Z][a-zA-Z\-, ]+ [\d\-]{5,10}\Z/    # ex:

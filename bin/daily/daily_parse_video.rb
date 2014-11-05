@@ -21,7 +21,7 @@ def metavid_item_to_video(item, person = nil)
   vid_url = item.text('link')
   
   Video.transaction {
-    v = Video.find_or_initialize_by_url(vid_url.strip)
+    v = Video.find_or_initialize_by(url: vid_url.strip)
     v.title = item.text('title')
     v.source = 'metavid'
   
@@ -89,7 +89,7 @@ def youtube_item_to_video(item, person = nil)
   yt_id = nil
   
   Video.transaction {
-    v = Video.find_or_initialize_by_url(vid_url.strip)
+    v = Video.find_or_initialize_by(url: vid_url.strip)
     v.title = item.text('title')
     v.source = 'youtube'
     

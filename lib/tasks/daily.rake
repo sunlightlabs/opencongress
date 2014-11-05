@@ -361,7 +361,7 @@ namespace :update do
     :committee_reports, :committee_meetings,
     :person_voting_similarities, :sponsored_bill_stats,
     :in_session,
-    :expire_cached_bill_fragments, :expire_cached_person_fragments
+    :expire_cached_bill_fragments, :expire_cached_person_fragments, :video
   ]
   task :parse_all => [ :people, "import:bills:current", :amendments, :roll_calls, :committee_reports, :committee_schedule]
   task :govtrack => [ :rsync, :bill_text ]

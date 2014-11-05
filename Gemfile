@@ -136,13 +136,18 @@ gem 'sentry-raven', "0.10.1"
 
 # Mail
 gem 'mechanize'
-gem 'formageddon', '~> 0.0.2', :git => 'git://github.com/sunlightlabs/formageddon.git', :branch => "beta"
+
+# Formageddon: opencongress branch is required for faxing feature
+gem 'formageddon', '~> 0.0.2', :git => 'git://github.com/sunlightlabs/formageddon.git', :branch => "opencongress"
+
 gem 'postmark-rails'
 # Faxing
 gem 'phaxio'
 # apt-get or brew `install xvfb wkhtmltopdf` first!
 # You'll have to build QT yourself on Ubuntu: https://code.google.com/p/wkhtmltopdf/wiki/compilation
+
 gem 'pdfkit'
+gem 'wkhtmltopdf-binary'
 
 gem 'awesome_print'
 

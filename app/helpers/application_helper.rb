@@ -949,6 +949,18 @@ EOT
   end
 
   def git_revision
-    File.exist?(".revision") ? File.read(".revision").strip : "no revision tag found" 
+    File.exist?('.revision') ? File.read('.revision').strip : 'no revision tag found'
   end
+
+  # Renders the topic partial taking into account it may be located in either
+  # the singular or plural path of a model name.
+  #
+  # @param topic [Model] instance of a model to render topic partial for
+  # @return [String] rendered HTML
+  def topic_partial(topic)
+    render :partial => "#{topic.class.name.underscore}/topic", :object => topic
+  rescue ActionView::MissingTemplate
+    render :partial => "#{topic.class.name.pluralize.underscore}/topic", :object => topic
+  end
+
 end

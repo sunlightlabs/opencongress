@@ -24,6 +24,7 @@
 #  title               :string(255)
 #  hot_date            :datetime
 #  page_views_count    :integer
+#  session             :integer
 #
 
 FactoryGirl.define do

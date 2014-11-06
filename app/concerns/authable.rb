@@ -71,7 +71,7 @@ module Authable
       # otherwise try to authenticate with sha1 password
       sha1u = user.sha1_authenticate(password)
       # if sha1 authenticated, get a bcrypt password for next login
-      sha1u.update_attribute('password', password) if sha1u.present?
+      sha1u.update_attribute('bcrypt_password', password) if sha1u.present?
       sha1u
     end
 

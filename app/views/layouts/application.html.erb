@@ -93,7 +93,7 @@
 
           <% if @topic %>
             <div id="topic">
-              <%= render :partial => "#{@topic.class.to_s.underscore}/topic", :object => @topic %>
+              <%= topic_partial(@topic) %>
             </div>
           <% end %>
 

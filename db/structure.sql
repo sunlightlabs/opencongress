@@ -1012,6 +1012,13 @@ CREATE AGGREGATE rewrite(pg_catalog.tsquery[]) (
 
 
 --
+-- Name: tsquery_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
+--
+
+CREATE OPERATOR FAMILY tsquery_ops USING btree;
+
+
+--
 -- Name: tsquery_ops; Type: OPERATOR CLASS; Schema: public; Owner: -
 --
 
@@ -1023,6 +1030,13 @@ CREATE OPERATOR CLASS tsquery_ops
     OPERATOR 4 >=(pg_catalog.tsquery,pg_catalog.tsquery) ,
     OPERATOR 5 >(pg_catalog.tsquery,pg_catalog.tsquery) ,
     FUNCTION 1 (pg_catalog.tsquery, pg_catalog.tsquery) tsquery_cmp(pg_catalog.tsquery,pg_catalog.tsquery);
+
+
+--
+-- Name: tsvector_ops; Type: OPERATOR FAMILY; Schema: public; Owner: -
+--
+
+CREATE OPERATOR FAMILY tsvector_ops USING btree;
 
 
 --
@@ -2317,6 +2331,36 @@ CREATE SEQUENCE congress_sessions_id_seq
 --
 
 ALTER SEQUENCE congress_sessions_id_seq OWNED BY congress_sessions.id;
+
+
+--
+-- Name: congresses; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE congresses (
+    number integer NOT NULL,
+    start_date date,
+    end_date date
+);
+
+
+--
+-- Name: congresses_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE congresses_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: congresses_number_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE congresses_number_seq OWNED BY congresses.number;
 
 
 --
@@ -4171,7 +4215,10 @@ CREATE TABLE person_stats (
     party_votes_percentage_rank integer,
     abstains_percentage double precision,
     abstains integer,
-    abstains_percentage_rank integer
+    abstains_percentage_rank integer,
+    unabstains integer,
+    unabstains_rank integer,
+    party_votes_count integer
 );
 
 
@@ -4460,7 +4507,8 @@ CREATE TABLE roll_calls (
     is_hot boolean DEFAULT false,
     title character varying(255),
     hot_date timestamp without time zone,
-    page_views_count integer
+    page_views_count integer,
+    session integer
 );
 
 
@@ -5780,6 +5828,13 @@ ALTER TABLE ONLY congress_sessions ALTER COLUMN id SET DEFAULT nextval('congress
 
 
 --
+-- Name: number; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY congresses ALTER COLUMN number SET DEFAULT nextval('congresses_number_seq'::regclass);
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6637,6 +6692,14 @@ ALTER TABLE ONLY comparisons
 
 ALTER TABLE ONLY congress_sessions
     ADD CONSTRAINT congress_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: congresses_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY congresses
+    ADD CONSTRAINT congresses_pkey PRIMARY KEY (number);
 
 
 --
@@ -9009,4 +9072,10 @@ INSERT INTO schema_migrations (version) VALUES ('20141029194043');
 INSERT INTO schema_migrations (version) VALUES ('20141030192157');
 
 INSERT INTO schema_migrations (version) VALUES ('20141104201412');
+
+INSERT INTO schema_migrations (version) VALUES ('20141105222001');
+
+INSERT INTO schema_migrations (version) VALUES ('20141105234814');
+
+INSERT INTO schema_migrations (version) VALUES ('20141106010854');
 

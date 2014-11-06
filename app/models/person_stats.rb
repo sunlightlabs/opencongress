@@ -23,9 +23,13 @@
 #  abstains_percentage                     :float
 #  abstains                                :integer
 #  abstains_percentage_rank                :integer
+#  unabstains                              :integer
+#  unabstains_rank                         :integer
+#  party_votes_count                       :integer
 #
 
 class PersonStats < OpenCongressModel
+
   self.primary_key = 'person_id'
   
   belongs_to :person
@@ -35,10 +39,10 @@ class PersonStats < OpenCongressModel
   belongs_to :opposing_party_votes_most_often_with, :class_name => 'Person', :foreign_key => 'opposing_party_votes_most_often_with_id'
   belongs_to :same_party_votes_least_often_with, :class_name => 'Person', :foreign_key => 'same_party_votes_least_often_with_id'
   
-  
   def full_name
     "#{firstname} #{lastname}"
   end
+
   def title_full_name
 		"#{title} " + full_name
 	end

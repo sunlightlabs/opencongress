@@ -129,21 +129,13 @@ class RollCallVote < OpenCongressModel
 
   def with_party?
     case self.person.party
-    when 'Republican'
-      if ( roll_call.republican_position == true && AFFIRMATIVE_VALUES.include?(vote) ) || ( roll_call.republican_position == false && NEGATIVE_VALUES.include?(vote) )
-        true
+      when 'Republican'
+        ( roll_call.republican_position == true && AFFIRMATIVE_VALUES.include?(vote) ) || ( roll_call.republican_position == false && NEGATIVE_VALUES.include?(vote) )
+      when 'Democrat'
+        ( roll_call.democratic_position == true && AFFIRMATIVE_VALUES.include?(vote) ) || ( roll_call.democratic_position == false && NEGATIVE_VALUES.include?(vote) )
       else
-        false
+        nil
       end
-    when 'Democrat'
-      if ( roll_call.democratic_position == true && AFFIRMATIVE_VALUES.include?(vote) ) || ( roll_call.democratic_position == false && NEGATIVE_VALUES.include?(vote) )
-        true
-      else
-        false
-      end
-    else
-      nil
-    end
   end
 
   def is_affirmative?

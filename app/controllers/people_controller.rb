@@ -11,8 +11,7 @@ class PeopleController < ApplicationController
   skip_before_filter :protect_from_forgery, :only => :zipcodelookup
 
   def index
-    @page_title = "Senators and Representatives"
-
+    @page_title = 'Senators and Representatives'
   end
 
   ##
@@ -280,7 +279,7 @@ class PeopleController < ApplicationController
 
       @bio_summary = @person.wiki_bio_summary
       @atom = {'link' => url_for(:only_path => false, :controller => 'people', :action => 'atom', :id => @person), 'title' => "Track " + @person.name}
-    @hide_atom = true
+      @hide_atom = true
       }
      format.xml {
         render :xml => @person.to_xml(:include => [:recent_news, :recent_blogs])
@@ -503,7 +502,7 @@ class PeopleController < ApplicationController
     @title_desc = SiteText.find_explain('voting_history')
 
     @page = params[:page].to_i
-    @page = "1" unless (@page and @page != 0)
+    @page = '1' unless (@page and @page != 0)
 
     @q = params[:q]
     unless @q.nil?
@@ -687,6 +686,7 @@ class PeopleController < ApplicationController
       @meta_description = "Latest votes, sponsored bills, breaking news and blog coverage, and user community for #{@page_title} on OpenCongress"
 
       @sidebar_stats_object = @user_object = @comments = @topic = @person
+      
       @page = params[:page] ||= 1
       if @person.has_wiki_link?
         @wiki_url = @person.wiki_url

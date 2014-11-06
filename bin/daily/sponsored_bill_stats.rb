@@ -10,6 +10,8 @@ def do_stats_for_person(p)
   stats.cosponsored_bills_passed = p.cosponsored_bills_passed.count
   stats.abstains_percentage = p.abstains_percentage
   stats.abstains = p.abstained_roll_calls.count
+  stats.unabstains = p.unabstained_roll_calls.count
+  stats.party_votes_count = %w(Democrat Republican).include?(p.party) ? p.party_votes.count : 0.0
   stats.party_votes_percentage = %w(Democrat Republican).include?(p.party) ? p.with_party_percentage : 0.0
 
   stats.save

@@ -24,12 +24,14 @@
 #  title               :string(255)
 #  hot_date            :datetime
 #  page_views_count    :integer
+#  session             :integer
 #
 
 require_dependency 'united_states'
-require_dependency 'viewable_object'
+# require_dependency 'viewable_object'
 
 class RollCall < OpenCongressModel
+
   include ViewableObject
   belongs_to :bill
   belongs_to :amendment
@@ -289,5 +291,16 @@ class RollCall < OpenCongressModel
                                                        person1.id, person2.id])
     return [together,total]
   end
+
+
+  # Retrieves the congress number for this roll call
+  #
+  # @param number [Boolean] whether to return the number of the object
+  # @return [NthCongress, Integer] NthCongress model or integer representing it
+  def congress(number=true)
+    c = NthCongress.where('end_date > ?', date.to_date).first
+    number ? c.number : c
+  end
+
 
 end

@@ -8,6 +8,12 @@ class CreateCongress < ActiveRecord::Migration
       t.date :end_date
     end
 
+    NthCongress.create(number:109, start_date: Date.new(2005,1,3), end_date: Date.new(2007,1,3))
+    NthCongress.create(number:110, start_date: Date.new(2007,1,3), end_date: Date.new(2009,1,3))
+    NthCongress.create(number:111, start_date: Date.new(2009,1,3), end_date: Date.new(2011,1,3))
+    NthCongress.create(number:112, start_date: Date.new(2011,1,3), end_date: Date.new(2013,1,3))
+    NthCongress.create(number:113, start_date: Date.new(2013,1,3), end_date: Date.new(2015,1,3))
+
   end
 
   def self.down

@@ -603,6 +603,7 @@ DEPENDENCIES
   rake (~> 0.9.1)
   rakismet
   random_data
+  require_all
   rmagick (~> 2.13.1)
   rspec-rails
   ruby-openid

@@ -151,6 +151,8 @@ gem 'wkhtmltopdf-binary'
 
 gem 'awesome_print'
 
+gem 'require_all'
+
 group :deployment do
   gem 'capistrano'
   gem 'capistrano-ext'

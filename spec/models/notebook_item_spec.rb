@@ -45,7 +45,7 @@ describe NotebookItem do
   end
   describe "serialized data column" do
     it "should accept and store a hash" do
-      @item.data[:key].should == "value"
+      expect(@item.data[:key]).to eq "value"
     end
   end
   describe "url attribute" do
@@ -62,7 +62,7 @@ describe NotebookItem do
     it "should return data[:long_url] if url attr value is nil" do
       @item.save
       @item.reload.attributes["url"].should == nil
-      @item.url.should == @item.data[:long_url]
+      expect(@item.url).to eq @item.data[:long_url]
     end
   end
 end

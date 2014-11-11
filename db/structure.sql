@@ -2301,6 +2301,101 @@ ALTER SEQUENCE comparisons_id_seq OWNED BY comparisons.id;
 
 
 --
+-- Name: congress_chamber_committees; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE congress_chamber_committees (
+    id integer NOT NULL,
+    congress_chambers_id integer,
+    committees_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: congress_chamber_committees_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE congress_chamber_committees_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: congress_chamber_committees_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE congress_chamber_committees_id_seq OWNED BY congress_chamber_committees.id;
+
+
+--
+-- Name: congress_chamber_people; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE congress_chamber_people (
+    id integer NOT NULL,
+    congress_chambers_id integer,
+    people_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: congress_chamber_people_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE congress_chamber_people_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: congress_chamber_people_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE congress_chamber_people_id_seq OWNED BY congress_chamber_people.id;
+
+
+--
+-- Name: congress_chambers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE congress_chambers (
+    id integer NOT NULL,
+    chamber character varying(255),
+    size integer,
+    congresses_id integer
+);
+
+
+--
+-- Name: congress_chambers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE congress_chambers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: congress_chambers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE congress_chambers_id_seq OWNED BY congress_chambers.id;
+
+
+--
 -- Name: congress_sessions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -5824,6 +5919,27 @@ ALTER TABLE ONLY comparisons ALTER COLUMN id SET DEFAULT nextval('comparisons_id
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY congress_chamber_committees ALTER COLUMN id SET DEFAULT nextval('congress_chamber_committees_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY congress_chamber_people ALTER COLUMN id SET DEFAULT nextval('congress_chamber_people_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY congress_chambers ALTER COLUMN id SET DEFAULT nextval('congress_chambers_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY congress_sessions ALTER COLUMN id SET DEFAULT nextval('congress_sessions_id_seq'::regclass);
 
 
@@ -6684,6 +6800,30 @@ ALTER TABLE ONLY comparison_data_points
 
 ALTER TABLE ONLY comparisons
     ADD CONSTRAINT comparisons_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: congress_chamber_committees_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY congress_chamber_committees
+    ADD CONSTRAINT congress_chamber_committees_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: congress_chamber_people_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY congress_chamber_people
+    ADD CONSTRAINT congress_chamber_people_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: congress_chambers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY congress_chambers
+    ADD CONSTRAINT congress_chambers_pkey PRIMARY KEY (id);
 
 
 --
@@ -9078,4 +9218,6 @@ INSERT INTO schema_migrations (version) VALUES ('20141105222001');
 INSERT INTO schema_migrations (version) VALUES ('20141105234814');
 
 INSERT INTO schema_migrations (version) VALUES ('20141106010854');
+
+INSERT INTO schema_migrations (version) VALUES ('20141107193945');
 

@@ -167,6 +167,19 @@ GEM
     docile (1.1.5)
     domain_name (0.5.21)
       unf (>= 0.0.5, < 1.0.0)
+    elasticsearch (1.0.6)
+      elasticsearch-api (= 1.0.6)
+      elasticsearch-transport (= 1.0.6)
+    elasticsearch-api (1.0.6)
+      multi_json
+    elasticsearch-model (0.1.6)
+      activesupport (> 3)
+      elasticsearch (> 0.4)
+      hashie
+    elasticsearch-rails (0.1.6)
+    elasticsearch-transport (1.0.6)
+      faraday
+      multi_json
     em-websocket (0.5.1)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
@@ -553,6 +566,8 @@ DEPENDENCIES
   database_cleaner
   delayed_job
   delayed_job_active_record
+  elasticsearch-model
+  elasticsearch-rails
   facebooker2
   factory_girl_rails
   fog

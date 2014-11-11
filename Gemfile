@@ -10,6 +10,10 @@ gem 'thin'
 gem 'dalli'
 gem 'rails-observers'
 
+# better search
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
+
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
 # gem 'mysql2'
@@ -64,7 +68,7 @@ gem 'fog'
 gem 'delayed_job_active_record'
 gem "awesome_nested_set", ">= 2.0"
 
-#Rails transition gems
+# Rails transition gems
 gem "acts_as_tree", "~>2.0.0"
 gem 'prototype_legacy_helper', '0.0.0', :git => 'git://github.com/rails/prototype_legacy_helper.git'
 
@@ -85,7 +89,7 @@ gem "paperclip", "~> 4.1"
 # Deal with unicode strings
 gem 'unicode_utils'
 
-# Geocoding users on create
+# Geocoding users on create to locate congressional district
 gem 'geocoder', :git => 'git://github.com/sunlightlabs/geocoder.git'
 
 # Split names for first/last support
@@ -149,6 +153,7 @@ gem 'phaxio'
 gem 'pdfkit'
 gem 'wkhtmltopdf-binary'
 
+# nice print messages
 gem 'awesome_print'
 
 group :deployment do

@@ -25,11 +25,11 @@ class Committee < Bookmarkable
 
   #========== CONSTANTS
 
-  @@DISPLAY_OBJECT_NAME = 'Committee'
+  DISPLAY_OBJECT_NAME = 'Committee'
 
   #I think this is unfortunately the best way to do this.
   # TODO: deprecate me and populate homepage_url
-  @@HOMEPAGES = {
+  HOMEPAGES = {
       "house administration" => "http://www.house.gov/cha/",
       "house agriculture" => "http://agriculture.house.gov/",
       "house appropriations" => "http://www.house.gov/appropriations/",
@@ -76,7 +76,7 @@ class Committee < Bookmarkable
       "senate joint economic committee" => "http://jec.senate.gov/"
   }
 
-  @@STOP_WORDS = %w(committee subcommittee)
+  STOP_WORDS = %w(committee subcommittee)
 
   #========== VALIDATORS
 
@@ -113,6 +113,8 @@ class Committee < Bookmarkable
 
   has_many :subcommittees, :class_name => 'Committee', :foreign_key => 'parent_id'
 
+  has_many :congress_chambers, :through => :congress_chamber_committees
+
   #========== ALIASES
 
   alias :members :people # for convenience, seems to make more sense
@@ -128,7 +130,7 @@ class Committee < Bookmarkable
   def self.find_by_query(committee, subcommittee)
     terms = committee.split.concat(subcommittee.split).uniq.map { |c| c.match(/\W*(\w+)\W*/).captures[0].downcase }
     sub_terms = subcommittee.split.uniq.map { |c| c.match(/\W*(\w+)\W*/).captures[0].downcase }
-    query = terms.reject { |t| @@STOP_WORDS.include? t }.join " & "
+    query = terms.reject { |t| STOP_WORDS.include? t }.join " & "
     if sub_terms.empty?
       cs = Committee.find_by_sql("SELECT * FROM committees WHERE fti_names @@ to_tsquery('english', '#{query}') AND subcommittee_name is null;")
     else
@@ -178,7 +180,7 @@ class Committee < Bookmarkable
   public
 
   def display_object_name
-    @@DISPLAY_OBJECT_NAME
+    DISPLAY_OBJECT_NAME
   end
   
   def atom_id_as_feed
@@ -216,7 +218,7 @@ class Committee < Bookmarkable
   end
 
   def homepage
-    self.homepage_url.present? ? self.homepage_url : @@HOMEPAGES[name.downcase]
+    self.homepage_url.present? ? self.homepage_url : HOMEPAGES[name.downcase]
   end
   
   def bills_sponsored(limit)

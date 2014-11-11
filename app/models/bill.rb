@@ -44,18 +44,32 @@ class Bill < Bookmarkable
   #========== INCLUDES
 
   include ViewableObject
+  include SearchableObject
 
+  #========== CONFIGURATIONS
+
+  settings index: { number_of_shards: 1 } do
+    mappings dynamic: 'false' do
+      indexes :summary, analyzer: 'english', index_options: 'offsets'
+      indexes :plain_language_summary, analyzer: 'english', index_options: 'offsets'
+      indexes :official_title, analyzer: 'english', index_options: 'offsets'
+      indexes :short_title, analyzer: 'english', index_options: 'offsets'
+      indexes :popular_title, analyzer: 'english', index_options: 'offsets'
+      indexes :default_title, analyzer: 'english', index_options: 'offsets'
+      indexes :billtext_txt, analyzer: 'english', index_options: 'offsets'
+    end
+  end
 
   # acts_as_solr :fields => [{:billtext_txt => :text},:bill_type,:session,{:title_short=>{:boost=>3}}, {:introduced => :integer}],
   #              :facets => [:bill_type, :session], :auto_commit => false
 
   #========== CONSTANTS
 
-  @@DISPLAY_OBJECT_NAME = 'Bill'
+  DISPLAY_OBJECT_NAME = 'Bill'
 
   # Added these back in to make govtrack bill import work
   # to get the bill text that is marked up with the right paragraph ids
-  @@TYPES = {
+  TYPES = {
       'h' => 'H.R.',
       's' => 'S.',
       'hj' => 'H.J.Res.',
@@ -66,9 +80,9 @@ class Bill < Bookmarkable
       'sr' => 'S.Res.'
   }
 
-  @@TYPES_ORDERED = [ 's', 'sj',  'sc',  'sr', 'h', 'hj', 'hc', 'hr' ]
+  TYPES_ORDERED = %w(s sj sc sr h hj hc hr)
 
-  @@GOVTRACK_TYPE_LOOKUP = {
+  GOVTRACK_TYPE_LOOKUP = {
       'hconres' => 'hc',
       'hjres' => 'hj',
       'hr' => 'h',
@@ -79,8 +93,7 @@ class Bill < Bookmarkable
       'sres' => 'sr'
   }
 
-
-  # different ways we may want to serialize json...
+  # Different formats to serialize bills as JSON
   SERIALIZATION_STYLES = {:simple => {:except => [:rolls, :hot_bill_category_id]},
                           :full => {:except => [:rolls, :hot_bill_category_id],
                                     :methods => [:title_full_common, :status],
@@ -189,51 +202,102 @@ class Bill < Bookmarkable
   scope :major, -> { where(:is_major => true) }
   scope :recently_acted, -> { joins(:bill_titles, :actions).order('actions.date DESC') }
   scope :for_session, lambda {|sess| where('bills.session = ?', sess) }
-  scope :senate_bills, -> { where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 's'})) }
-  scope :house_bills, -> { where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'})) }
+  scope :senate_bills, -> { where(:bill_type => (GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 's'})) }
+  scope :house_bills, -> { where(:bill_type => (GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'})) }
 
   #========== METHODS
 
   #----- CLASS
 
-  # This can also be removed when we completely get rid of GovTrack
   def self.get_types_ordered
-    return @@TYPES_ORDERED
+    TYPES_ORDERED
   end
 
   def self.get_types_ordered_new
-    return UnitedStates::Bills::ABBREVIATIONS
+    UnitedStates::Bills::ABBREVIATIONS
   end
 
   def self.govtrack_reverse_lookup(typename)
-    return @@GOVTRACK_TYPE_LOOKUP.invert[typename]
+    GOVTRACK_TYPE_LOOKUP.invert[typename]
   end
 
   def self.govtrack_lookup(typename)
-    return @@GOVTRACK_TYPE_LOOKUP[typename]
+    GOVTRACK_TYPE_LOOKUP[typename]
   end
 
   def self.available_sessions(relation = Bill.all)
-    return relation.select("DISTINCT session").map(&:session).uniq.sort
+    select('session').order('ASC').distinct
   end
 
   def self.all_types
-    return UnitedStates::Bills::ABBREVIATIONS
+    UnitedStates::Bills::ABBREVIATIONS
   end
 
   def self.all_types_ordered
-    sorted_pairs = UnitedStates::Bills::ABBREVIATIONS.sort_by do |k, v|
-      v.length
-    end
-    return Hash[sorted_pairs].keys
+    sorted_pairs = UnitedStates::Bills::ABBREVIATIONS.sort_by {|k, v| v.length}
+    Hash[sorted_pairs].keys
   end
 
   def self.in_senate
-    return UnitedStates::Bills::ABBREVIATIONS.keys[4..7]
+    UnitedStates::Bills::ABBREVIATIONS.keys[4..7]
   end
 
   def self.in_house
     UnitedStates::Bills::ABBREVIATIONS.keys[0..3]
+  end
+
+  # Performs search of bills in database using elasticsearch.
+  # TODO: tweak query until good results found
+  #
+  # @param query [String] what to search bills for
+  # @param limit [Integer] limit number of search results
+  # @return [Relation<Bill>] bills matching the search query
+  def self.search(query,limit=25)
+   super(query: {
+          function_score: {
+            query: {
+              bool: {
+                must: [
+                  {
+                    multi_match: {
+                      query: query,
+                      type: 'most_fields',
+                      fields: %w(_all summary^3 manual_title^10),
+                      analyzer: 'english'
+                    }
+                  },
+                  {
+                    fuzzy_like_this: {
+                      like_text: query,
+                      analyzer: 'english',
+                      fuzziness: 0.25,
+                      ignore_tf: true
+                    }
+                  }
+                ]
+              }
+            },
+            functions: [
+              {
+                field_value_factor: {
+                  field: 'page_views_count',
+                  modifier: 'ln1p',
+                  factor: 10
+                }
+              },
+              {
+                exp: {
+                  updated: {
+                    origin: Date.today,
+                    scale:'90d',
+                    offset: '30d',
+                    decay:0.95
+                  }
+                }
+              }
+            ],
+          },
+        }).records.all.limit(limit)
   end
 
   # return bill actions since last X
@@ -441,22 +505,9 @@ class Bill < Bookmarkable
     end
   end
 
-  # Why are these next two methods in Bill if they just return BillVote stuff?
-  def self.total_votes_last_period(minutes)
-    return BillVote.calculate(:count, :all, :conditions => {:created_at => (Time.new - (minutes*2))..(Time.new - (minutes))})
-  end
-
-  def self.total_votes_this_period(minutes)
-    return BillVote.calculate(:count, :all, :conditions => ['created_at > ?', Time.new - (minutes)])
-  end
-
-  def self.percentage_difference_in_periods(minutes)
-    return (Bill.total_votes_last_period(minutes).to_f) / Bill.total_votes_this_period(minutes).to_f
-  end
-
   def self.find_by_ident(ident_string, find_options = {})
     bill_type, number, session = Bill.ident ident_string
-    Bill.find_by(bill_type: bill_type, number: number, session: session)
+    Bill.where(bill_type: bill_type, number: number, session: session).first
   end
 
   def self.find_all_by_ident(ident_array, find_options = {})
@@ -470,65 +521,43 @@ class Bill < Bookmarkable
       the_bill_params.merge!({"session#{round}".to_sym => session, "bill_type#{round}".to_sym => bill_type, "number#{round}".to_sym => number})
       round = round + 1
     end
-    Bill.find(:all, :conditions => ["#{the_bill_conditions.join(' OR ')}", the_bill_params], :limit => find_options[:limit])
-#    Bill.find_by_session_and_bill_type_and_number(session, bill_type, number, find_options)
+
+    Bill.where("#{the_bill_conditions.join(' OR ')}", the_bill_params).limit(find_options[:limit])
   end
 
   def self.long_type_to_short(type)
-    raise RuntimeError, "long_type_to_short must be killed!"
+    raise RuntimeError, 'long_type_to_short must be killed!'
   end
 
   def self.session_from_date(date)
-    session_a = OpenCongress::Application::CONGRESS_START_DATES.to_a.sort { |a, b| a[0] <=> b[0] }
+    session_a = OpenCongress::Application::CONGRESS_START_DATES.to_a.sort {|a, b| a[0] <=> b[0] }
 
     session_a.each_with_index do |s, i|
       return nil if s == session_a.last
       s_date = Date.parse(s[1])
       e_date = Date.parse(session_a[i+1][1])
-
-      if date >= s_date and date < e_date
-        return s[0]
-      end
+      return s[0] if date >= s_date and date < e_date
     end
+
     return nil
   end
 
   def self.top20_viewed
     bills = ObjectAggregate.popular('Bill')
-
-    (bills.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
-      bv.stats.entered_top_viewed = Time.now
-      bv.save
-    end
-
+    (bills.select {|b| b.stats.entered_top_viewed.nil? }).each {|bv| bv.stats.update_attribute('entered_top_viewed',Time.now) }
     (bills.sort { |b1, b2| b2.stats.entered_top_viewed <=> b1.stats.entered_top_viewed })
   end
 
   def self.top5_viewed
     bills = ObjectAggregate.popular('Bill', Settings.default_count_time, 5)
-
-    (bills.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
-      bv.stats.entered_top_viewed = Time.now
-      bv.save
-    end
-
+    (bills.select {|b| b.stats.entered_top_viewed.nil? }).each {|bv| bv.stats.update_attribute('entered_top_viewed', Time.now) }
     (bills.sort { |b1, b2| b2.stats.entered_top_viewed <=> b1.stats.entered_top_viewed })
   end
 
   def self.top20_commentary(type = 'news')
     bills = Bill.find_by_most_commentary(type, num = 20)
-
-    date_method = :"entered_top_#{type}"
-    (bills.select {|b| b.stats.send(date_method).nil? }).each do |bv|
-      bv.stats.send("#{date_method}=", Time.now)
-      bv.save
-    end
-
+    (bills.select {|b| b.stats.send(date_method).nil? }).each {|bv| bv.stats.update_attribute("entered_top_#{type}", Time.now) }
     (bills.sort { |b1, b2| b2.stats.send(date_method) <=> b1.stats.send(date_method) })
-  end
-
-  def self.random(limit)
-    Bill.find_by_sql ["SELECT * FROM (SELECT random(), bills.* FROM bills ORDER BY 1) as bs LIMIT ?;", limit]
   end
 
   def self.chain_text_versions(versions)
@@ -545,12 +574,16 @@ class Bill < Bookmarkable
     return chain
   end
 
-  def self.sponsor_count
-    Bill.count(:all, :conditions => ["session = ?", Settings.default_congress], :group => "sponsor_id").sort {|a,b| b[1]<=>a[1]}
+  def self.sponsor_count(chamber = nil, congress = Settings.default_congress)
+    bills = where(session: congress).joins(:sponsor)
+    bills = bills.includes(:sponsor => :roles).where('roles.role_type = ? AND roles.enddate > ?', chamber.downcase == 'senate' ? 'sen' : 'rep', Date.today).references(:roles) if chamber.present?
+    bills.group('sponsor_id').order("count_#{chamber.nil? ? 'all' : 'id'} DESC").count
   end
 
-  def self.cosponsor_count
-    Bill.count(:all, :include => [:bill_cosponsors], :conditions => ["bills.session = ?", Settings.default_congress], :group => "bills_cosponsors.person_id").sort {|a,b| b[1]<=>a[1]}
+  def self.cosponsor_count(chamber = nil, congress = Settings.default_congress)
+    bills = where(session: congress).joins(:co_sponsors)
+    bills = bills.includes(:co_sponsors => :roles).where('roles.role_type = ? AND roles.enddate > ?', chamber.downcase == 'senate' ? 'sen' : 'rep', Date.today).references(:roles) if chamber.present?
+    bills.group('bills_cosponsors.person_id').order("count_#{chamber.nil? ? 'all' : 'id'} DESC").count
   end
 
   def self.find_by_most_commentary(type = 'news', num = 5, since = Settings.default_count_time, congress = Settings.default_congress, bill_types = ["h", "hc", "hj", "hr", "s", "sc", "sj", "sr"])
@@ -687,7 +720,6 @@ class Bill < Bookmarkable
   def self.percentage_difference_in_periods(minutes)
     (Bill.total_votes_last_period(minutes).to_f) / Bill.total_votes_this_period(minutes).to_f
   end
-
 
   # return bill actions since last X
   def self.find_changes_since_for_bills_tracked(current_user)
@@ -906,7 +938,7 @@ class Bill < Bookmarkable
   end
 
   def reverse_abbrev_lookup
-    @@GOVTRACK_TYPE_LOOKUP[self.bill_type]
+    GOVTRACK_TYPE_LOOKUP[self.bill_type]
   end
 
   def bill_id
@@ -931,7 +963,7 @@ class Bill < Bookmarkable
   end
 
   def display_object_name
-    @@DISPLAY_OBJECT_NAME
+    DISPLAY_OBJECT_NAME
   end
 
   def organizations_supporting
@@ -1549,19 +1581,19 @@ class Bill < Bookmarkable
 
 
   def billtext_txt
-      begin
-        # open html from file for now
-        path = "#{GOVTRACK_BILLTEXT_PATH}/#{session}/#{bill_type}/"
+    begin
+      # open html from file for now
+      path = "#{GOVTRACK_BILLTEXT_PATH}/#{session}/#{bill_type}/"
 
-        # use the symlink to find the current version of the text
-        realpath = Pathname.new("#{path}/#{bill_type}#{number}.txt").realpath
-        current_file = /\/([a-z0-9]*)\.txt/.match(realpath).captures[0]
+      # use the symlink to find the current version of the text
+      realpath = Pathname.new("#{path}/#{bill_type}#{number}.txt").realpath
+      # current_file = /\/([a-z0-9]*)\.txt/.match(realpath).captures[0]
 
-        @bill_text ||= File.read(realpath)
-      rescue
-        @bill_text = nil
-      end
-      @bill_text
+      @bill_text ||= File.read(realpath)
+    rescue
+      @bill_text = nil
+    end
+    @bill_text
   end
 
   # fragment cache methods
@@ -1571,11 +1603,7 @@ class Bill < Bookmarkable
   end
 
   def expire_govtrack_fragments
-    fragments = []
-
-    fragments << "#{fragment_cache_key}_header"
-
-    FragmentCacheSweeper::expire_fragments(fragments)
+    FragmentCacheSweeper::expire_fragments(["#{fragment_cache_key}_header"])
   end
 
   def expire_commentary_fragments(type)
@@ -1584,19 +1612,15 @@ class Bill < Bookmarkable
 
   # methods about user interaction
   def users_at_position(position = 'support')
-    bill_votes.count(:all, :conditions => ["support = ?", position == 'support' ? 0 : 1])
+    bill_votes.where('support = ?', position == 'support' ? 0 : 1).count
   end
 
   def users_percentage_at_position(position = 'support')
     vt = bill_votes.count
-    if vt == 0
-      result = nil
-    else
-      bs = users_at_position('support')
-      bo = users_at_position('oppose')
-      result = ((position == 'support' ? bs.to_f : bo.to_f) / vt) * 100
-      result = result.round
-    end
+    return nil if vt == 0
+    bs = users_at_position('support')
+    bo = users_at_position('oppose')
+    (((position == 'support' ? bs.to_f : bo.to_f) / vt) * 100).round
   end
 
   def as_json(ops = {})
@@ -1611,28 +1635,36 @@ class Bill < Bookmarkable
     title_full_common
   end
 
+  # Serialization for elasticsearch
+  def as_indexed_json(options={})
+    as_json(
+        include: [:bill_fulltext, :sponsor, :top_subject, :bill_titles, :committees],
+        methods: [:summary, :plain_language_summary, :official_title, :short_title, :popular_title, :default_title, :billtext_txt]
+    )
+  end
+
+  def official_title
+    bill_titles.where(title_type: 'official').first
+  end
+
+  def short_title
+    bill_titles.where(title_type: 'short').first
+  end
+
+  def popular_title
+    bill_titles.where(title_type: 'popular').first
+  end
+
+  def default_title
+    bill_titles.where(is_default: true).first
+  end
+
   private
 
   def stylize_serialization(ops)
    ops ||= {}
    style = ops.delete(:style) || :simple
    SERIALIZATION_STYLES[style].merge(ops)
-  end
-
-  def official_title
-    bill_titles.select { |t| t.title_type == 'official' }.first
-  end
-
-  def short_title
-    bill_titles.select { |t| t.title_type == 'short' }.first
-  end
-
-  def popular_title
-    bill_titles.select { |t| t.title_type == 'popular' }.first
-  end
-
-  def default_title
-    bill_titles.select {|t| t.is_default == true }.first
   end
 
 end

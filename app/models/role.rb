@@ -17,24 +17,55 @@
 #
 
 class Role < OpenCongressModel
-  belongs_to :person
+
+  #========== CONSTANTS
   
   @@TYPES = {
     'sen' => 'Senator',
     'rep' => 'Representative'
   }
 
-  scope :on_date, lambda { |date| where(['startdate <= ? and enddate >= ?', date, date]) }
-  
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
+  belongs_to :person
+
+  #========== SCOPES
+
+  scope :on_date, lambda {|date| where('startdate <= ? and enddate >= ?', date, date) }
+
+  #========== METHODS
+
+  #----- INSTANCE
+
+  # Returns the expanded name for the shorthand type
+  #
+  # @return [String] 'Senator', 'Representative'
   def display_type
     @@TYPES[role_type]
   end
 
+  # Returns the chamber of congress associated with the role title
+  #
+  # @return [String, nil] 'house', 'senate', or nil
   def chamber
     case role_type
-    when 'rep' then 'house'
-    when 'sen' then 'senate'
-    else nil
+      when 'rep'
+        'house'
+      when 'sen'
+        'senate'
+      else
+        nil
     end
   end
+
+  # Determines if role is a member of a certain congress
+  #
+  # @param congress [Integer] congress number
+  # @return [Boolean] true if member, false otherwise
+  def member_of_congress?(congress)
+    NthCongress.where('number = ? AND (start_date >= ? OR end_date >= ?)', congress.nil? ? NthCongress.current : NthCongress.find(congress), self.startdate, self.enddate).any?
+  end
+
 end

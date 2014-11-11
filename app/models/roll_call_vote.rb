@@ -24,11 +24,11 @@ class RollCallVote < OpenCongressModel
   #========== CONSTANTS
 
   AFFIRMATIVE_VALUES = %W(Aye Yea +)
-  NEGATIVE_VALUES = %W(Nay No -)
-  PRESENT_VALUES = %W(Present P)
-  ABSTAIN_VALUES = ['Not Voting', '0']
+  NEGATIVE_VALUES    = %W(Nay No -)
+  PRESENT_VALUES     = %W(Present P)
+  ABSTAIN_VALUES     = ['Not Voting', '0']
 
-  #========== CALLBACKS
+  #========== FILTERS
 
   after_create :recount_party_lines
 
@@ -54,11 +54,9 @@ class RollCallVote < OpenCongressModel
   scope :presents, -> { where('vote IN(?)', PRESENT_VALUES) }
   scope :abstains, -> { where('vote IN(?)', ABSTAIN_VALUES) }
 
-  #==========
+  #========== METHODS
 
-
-
-  #========== CLASS METHODS
+  #----- CLASS
 
   def self.for_duo (p1, p2)
     includes(:roll_call)
@@ -72,36 +70,36 @@ class RollCallVote < OpenCongressModel
   def self.for_duo_in_congress (p1, p2, congress)
     includes(:roll_call)
     .where(['roll_calls.date >= ? AND roll_calls.date <= ? AND (person_id = ? OR person_id = ?)',
-           UnitedStates::Congress.start_datetime(congress),
-           UnitedStates::Congress.end_datetime(congress),
-           p1.id, p2.id])
+            UnitedStates::Congress.start_datetime(congress),
+            UnitedStates::Congress.end_datetime(congress),
+            p1.id, p2.id])
     .group_by(&:roll_call_id)
     .values
     .select{|pair| pair.count == 2}
     .each{|pair| pair.sort_by!(&:person_id)}
   end
 
-  def self.abstain_count
-    cache_key = "roll_call_vote_abstain_by_person_table"
+  def self.abstain_count(chamber = nil, congress = Settings.default_congress)
+    cache_key = 'roll_call_vote_abstain_by_person_table'
     Rails.cache.fetch(cache_key) do
-      RollCallVote.includes(:roll_call => :bill)
-      .where('bills.session' => 113, 'roll_call_votes.vote' => '0')
-      .group(:person_id)
-      .count
-      .to_a
-      .sort_by(&:second)
-      .reverse
+      # TODO: joining to roles table isn't working so grabbing IDs first. Still a step up from before...
+      rcv = chamber.nil? ? RollCallVote : RollCallVote.where(:person_id => (chamber.downcase == 'senate' ? Person.sen : Person.rep).collect{|p| p.id})
+      rcv.joins(:roll_call => :bill)
+         .where('bills.session' => 113, 'roll_call_votes.vote' => ABSTAIN_VALUES)
+         .group(:person_id)
+         .order('count_all DESC')
+         .count
     end
   end
 
-  #========== INSTANCE METHODS
+  #----- INSTANCE
 
   def atom_id
     "tag:opencongress.org,#{roll_call.date.strftime("%Y-%m-%d")}:/roll_call_vote/#{id}"
   end
 
   def to_s
-    @@VOTE_FOR_SYMBOL[vote].nil? ? vote : @@VOTE_FOR_SYMBOL[vote]
+    @@VOTE_FOR_SYMBOL[self.vote].nil? ? self.vote : @@VOTE_FOR_SYMBOL[self.vote]
   end
 
   def sort_date
@@ -139,19 +137,19 @@ class RollCallVote < OpenCongressModel
   end
 
   def is_affirmative?
-    return AFFIRMATIVE_VALUES.include?(vote)
+    AFFIRMATIVE_VALUES.include?(vote)
   end
 
   def is_negative?
-    return NEGATIVE_VALUES.include?(vote)
+    NEGATIVE_VALUES.include?(vote)
   end
 
   def is_present?
-    return PRESENT_VALUES.include?(vote)
+    PRESENT_VALUES.include?(vote)
   end
 
   def is_non_vote?
-    return ABSTAIN_VALUES.include?(vote)
+    ABSTAIN_VALUES.include?(vote)
   end
 
 end

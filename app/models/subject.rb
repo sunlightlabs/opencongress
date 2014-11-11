@@ -11,6 +11,7 @@
 #
 
 require_dependency 'viewable_object'
+
 class Subject < Bookmarkable
 
   #========== INCLUDES
@@ -508,4 +509,5 @@ class Subject < Bookmarkable
   def url_name
     term.gsub(/[\.\(\)]/, "").gsub(/[-\s]+/, "_").downcase
   end
+
 end

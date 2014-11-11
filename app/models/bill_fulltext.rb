@@ -13,4 +13,5 @@ class BillFulltext < OpenCongressModel
   self.table_name = :bill_fulltext
   
   belongs_to :bill
+
 end

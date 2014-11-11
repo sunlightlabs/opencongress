@@ -48,4 +48,5 @@ module Spammable
     end
     save
   end
+
 end

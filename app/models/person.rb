@@ -68,7 +68,7 @@ class Person < Bookmarkable
                            [:oc_user_comments, :oc_users_tracking],
                        :include => [:recent_news, :recent_blogs]}.freeze
 
-  #========== CALLBACKS
+  #========== FILTERS
 
   before_update :set_party
   before_save :set_unaccented_name
@@ -115,6 +115,8 @@ class Person < Bookmarkable
   has_many :videos, -> { order('videos.video_date DESC, videos.id') }
   has_many :person_approvals
   has_many :fundraisers, -> { order('fundraisers.start_time DESC') }
+  has_many :congress_chambers,
+           :through => :congress_chamber_peoples
 
   with_options :class_name => 'RollCall', :through => :roll_call_votes, :source => :roll_call do |rc|
    # rc.has_many :unabstained_roll_calls, -> { joins(:bill).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
@@ -223,7 +225,7 @@ class Person < Bookmarkable
     WHERE roles.role_type = ?
       AND (roles.startdate <= ?
             AND roles.enddate >= ?)
- ORDER BY #{order} #{lim};",
+    ORDER BY #{order} #{lim};",
                         chamber, Date.today, Date.today])
   end
 
@@ -470,7 +472,7 @@ class Person < Bookmarkable
   end
 
   def self.find_all_by_last_name_ci_and_state(name, state)
-    Person.includes(:roles).where(["lower(lastname) = ? AND people.state = ?", name.downcase, state])
+    Person.includes(:roles).where('lower(lastname) = ? AND people.state = ?', name.downcase, state)
   end
 
   def self.find_all_by_first_name_ci_and_last_name_ci_and_state(first, last, state)
@@ -890,89 +892,44 @@ class Person < Bookmarkable
     roles.order(:startdate).first
   end
 
-  def sponsored_bills_rank
-    b = Bill.sponsor_count
-    number = 0
-    rank = 0
-    out_of = 0
-    case self.title
-    when 'Sen.'
-      temp_rank = b.index(b.detect {|x| x[0].to_i == self.id})
-      puts temp_rank
-      if temp_rank
-        number = b.values_at(temp_rank).first.last
-        rank = temp_rank + 1
-      end
-      out_of = 100
-    when 'Rep.'
-      temp_rank = b.index(b.detect {|x| x[0].to_i == self.id})
-      if temp_rank
-        number = b.values_at(temp_rank).first.last
-        rank = temp_rank + 1
-      end
-      out_of = 440
-    end
-    return [number,rank,out_of]
+  # Returns array containing three values: number of sponsored bills, rank, and chamber size
+  #
+  # @param overall [Boolean] true to include all of congress, false otherwise
+  # @return [Array] [0] number of sponsored bills, [1] rank, [2] chamber size
+  def sponsored_bills_rank(overall=false)
+    b = Bill.sponsor_count(overall ? nil : self.chamber)
+    [b[self.id], b.keys.index(self.id)+1 , self.chamber_size]
   end
 
-  def co_sponsored_bills_rank
-    b = Bill.cosponsor_count
-    number = 0
-    rank = 0
-    out_of = 0
-    case self.title
-    when 'Sen.'
-      temp_rank = b.index(b.detect {|x| x[0].to_i == self.id})
-      if temp_rank
-        number = b.values_at(temp_rank).first.last
-        rank = temp_rank + 1
-      end
-      out_of = 100
-    when 'Rep.'
-      temp_rank = b.index(b.detect {|x| x[0].to_i == self.id})
-      if temp_rank
-        number = b.values_at(temp_rank).first.last
-        rank = temp_rank + 1
-      end
-      out_of = 440
-    end
-    return [number,rank,out_of]
+  # Returns array containing three values: number of cosponsored bills, rank, and chamber size
+  #
+  # @param overall [Boolean] true to include all of congress, false otherwise
+  # @return [Array] [0] number of cosponsored bills, [1] rank, [2] chamber size
+  def co_sponsored_bills_rank(overall=false)
+    b = Bill.cosponsor_count(overall ? nil : self.chamber)
+    [b[self.id], b.keys.index(self.id)+1, self.chamber_size]
   end
 
-  def abstain_rank
-    b = RollCallVote.abstain_count
-    number = 0
-    rank = 0
-    out_of = 0
-    case self.title
-    when 'Sen.'
-      temp_rank = b.index(b.detect {|x| x[0].to_i == self.id})
-      if temp_rank
-        number = b.values_at(temp_rank).first.last
-        rank = temp_rank + 1
-      end
-      out_of = 100
-    when 'Rep.'
-      temp_rank = b.index(b.detect {|x| x[0].to_i == self.id})
-      if temp_rank
-        number = b.values_at(temp_rank).first.last
-        rank = temp_rank + 1
-      end
-      out_of = 440
-    end
-    return [number,rank,out_of]
+  # Returns array containing three values: number of abstained bills, rank, and chamber size
+  #
+  # @param overall [Boolean] true to include all of congress, false otherwise
+  # @return [Array] [0] number of abstained bills, [1] rank, [2] chamber size
+  def abstain_rank(overall=false)
+    b = RollCallVote.abstain_count(overall ? nil : self.chamber)
+    [b[self.id], b.keys.index(self.id)+1, self.chamber_size]
   end
 
+  # Determines if this person has a contact webform
+  #
+  # @return [Boolean] true if person does, false otherwise
   def has_contact_webform?
-    (!self.contact_webform.blank? && (self.contact_webform =~ /^http:\/\//)) ? true : false
+    (!self.contact_webform.blank? && (self.contact_webform =~ /^http:\/\//))
   end
 
-  ##
   # This method retrieves metadata of replies sent from
   # a representative or senator person to a user.
   #
-  # @return {Hash} object containing metadata about replies
-  #
+  # @return {Hash} hash containing metadata about replies
   def get_email_reply_summary
     latest = nil
     first = nil
@@ -1010,25 +967,11 @@ class Person < Bookmarkable
   end
 
   def has_wiki_link?
-    if self.wiki_url.blank?
-      return false
-    else
-      return true
-    end
+    self.wiki_url.present?
   end
 
   def wiki_url
-
-    link = ""
-
-    unless self.wiki_link
-      link = "#{Settings.wiki_base_url}/#{firstname}_#{lastname}"
-    else
-      link = "#{Settings.wiki_base_url}/#{self.wiki_link.name}"
-    end
-
-    return link
-
+    "#{Settings.wiki_base_url}/#{self.has_wiki_link? ? self.wiki_link.name : firstname + '_' + lastname}"
   end
 
   def wiki_bio_summary
@@ -1059,15 +1002,14 @@ class Person < Bookmarkable
     summary
   end
 
-
   def last_x_bills(limit = 2)
-     self.bills.find(:all, :limit => limit)
-     #[]
+    self.bills.last(limit)
   end
 
   def recent_activity(since = nil)
     items = []
-    items << bills.find(:all, :include => :bill_titles, :limit => 20).to_a
+
+    items. << bills.includes(:bill_titles).limit(20).to_a
     items.concat(votes(20).to_a)
 
     items.flatten!
@@ -1094,8 +1036,6 @@ class Person < Bookmarkable
     end
     items.group_by{|x| x[:sort_date]}.to_a.sort{|a,b| b[0]<=>a[0]}
   end
-
-
 
   # Returns the number of people tracking this bill, as well as suggestions of what other people
   # tracking this bill are also tracking.
@@ -1268,45 +1208,43 @@ class Person < Bookmarkable
 
   def commentary_count(type = 'news', since = Settings.default_count_time)
     return @attributes['article_count'] if @attributes['article_count']
-
-    if type == 'news'
-      news.where([ "commentaries.date > ?", since.ago]).size
-    else
-      blogs.where([ "commentaries.date > ?", since.ago]).size
-    end
-  end
-
-
-
-  def representative_for_congress?(congress = Settings.default_congress )
-    #may be able to simplify this as >= 400000
-    not (roles.select { |r| r.role_type == 'rep' && r.startdate <= DateTime.parse(OpenCongress::Application::CONGRESS_START_DATES[congress]) && r.enddate >= DateTime.parse(OpenCongress::Application::CONGRESS_START_DATES[congress])  }.empty?)
-  end
-
-  def representative?
-    not (roles.select { |r| r.role_type == 'rep' && r.startdate <= Date.today && r.enddate >= Date.today  }.empty?)
+    send(type).where('commentaries.date > ?', since.ago).size rescue 0
   end
 
   def votes?
     not @@NONVOTING_TERRITORIES.include?(state)
   end
 
-  def senator_for_congress? (congress = Settings.default_congress)
-    #may be able to simplify this as < 400000
-    not (roles.select { |r| r.role_type == 'sen' && r.startdate <= DateTime.parse(OpenCongress::Application::CONGRESS_START_DATES[congress]) && r.enddate >= DateTime.parse(OpenCongress::Application::CONGRESS_START_DATES[congress])  }.empty?)
+  def representative_for_congress?(congress = Settings.default_congress)
+    has_the_title_for_congress?('rep', congress)
+  end
+
+  def representative?
+    has_the_title_for_congress?('rep', nil)
+  end
+
+  def senator_for_congress?(congress = Settings.default_congress)
+    has_the_title_for_congress?('sen', congress)
   end
 
   def senator?
-    not (roles.select { |r| r.role_type == 'sen' && r.startdate <= Date.today && r.enddate >= Date.today  }.empty?)
+    has_the_title_for_congress?('sen', nil)
   end
 
-  def congress? (congress = Settings.default_congress)
-    not (roles.select { |r| r.startdate <= DateTime.parse(OpenCongress::Application::CONGRESS_START_DATES[congress]) && r.enddate >= DateTime.parse(OpenCongress::Application::CONGRESS_START_DATES[congress])  }.empty?)
+  def congress?(congress = Settings.default_congress)
+    has_the_title_for_congress?(nil, congress)
   end
 
-  def congresses? (congresses = [Settings.default_congress])
-    congresses.each {|c| if self.congress?(c) then return true end }
-    return false
+  def congresses?(congresses = [Settings.default_congress])
+    congresses = [congresses] if congresses.is_a? Integer
+    congresses.each {|c| return true if self.congress?(c) }
+    false
+  end
+
+  def all_congresses?(congresses = [Settings.default_congress])
+    congresses = [congresses] if congresses.is_a? Integer
+    congresses.each {|c| return false unless self.congress?(c) }
+    true
   end
 
   def belongs_to_major_party?
@@ -1319,13 +1257,9 @@ class Person < Bookmarkable
 
   def opposing_party
     if belongs_to_major_party?
-      if party == 'Democrat'
-        return 'Republican'
-      else
-        return 'Democrat'
-      end
+      party == 'Democrat' ? 'Republican' : 'Democrat'
     else
-      "N/A"
+      'N/A'
     end
   end
 
@@ -1346,9 +1280,14 @@ class Person < Bookmarkable
   end
 
   def title_common
-    return 'Senator' if senator?
-    return 'Rep.' if representative?
-    return ''
+    case self.title
+      when 'Sen.'
+        'Senator'
+      when 'Rep.'
+        'Rep.'
+      else
+        ''
+    end
   end
 
   def title_long
@@ -1357,6 +1296,8 @@ class Person < Bookmarkable
         'Senator'
       when 'Rep.'
         'Representative'
+      else
+        ''
     end
   end
 
@@ -1377,11 +1318,7 @@ class Person < Bookmarkable
   end
 
   def to_param
-    if unaccented_name
-      "#{id}_#{unaccented_name.gsub(/[^A-Za-z]+/i, '_').gsub(/\s/, '_')}"
-    else
-      "#{id}_#{popular_name.gsub(/[^A-Za-z]+/i, '_').gsub(/\s/, '_')}"
-    end
+    "#{id}_#{(unaccented_name.present? ? unaccented_name : popular_name).gsub(/[^A-Za-z]+/i, '_').gsub(/\s/, '_')}"
   end
 
   def ident
@@ -1389,9 +1326,10 @@ class Person < Bookmarkable
   end
 
   def rep_info
-  foo = /(\[.*\])/.match(name)
-  "#{foo.captures}"
+    foo = /(\[.*\])/.match(name)
+    "#{foo.captures}"
   end
+
   def roles_sorted
     roles.sort { |r1, r2| r2.startdate <=> r1.startdate }
   end
@@ -1420,17 +1358,31 @@ class Person < Bookmarkable
     !latest_role.nil? && latest_role.enddate >= Date.today
   end
 
+  # Returns the chamber name associated with the title of the person
+  #
+  # @return [String] chamber name
   def chamber
-    return 'house' if title == 'Rep.'
-    return 'senate' if title == 'Sen.'
+    case self.title
+      when 'Rep.'
+        'house'
+      when 'Sen.'
+        'senate'
+      when 'Del.'
+        'house'
+      else
+        nil
+    end
+  end
+
+  # Returns the size of the chamber associated with the title of the person
+  #
+  # @return [Integer] chamber size
+  def chamber_size
+    CongressChamber.default_chamber_size(self.chamber)
   end
 
   def votes(num = -1)
-    if num > 0
-      roll_call_votes.limit(num)
-    else
-      roll_call_votes
-    end
+    num > 0 ? roll_call_votes.limit(num) : roll_call_votes
   end
 
   def roll_call_votes_for_congress(congress = Settings.default_congress)
@@ -1442,15 +1394,12 @@ class Person < Bookmarkable
   end
 
   def stats
-    unless person_stats
-      create_person_stats
-    end
-
+    create_person_stats unless person_stats
     person_stats
   end
 
   def users_tracking_from_state_count(state)
-    return 0;
+    return 0
     User.count_by_solr("my_state:\"#{state}\"", :facets => {:browse => ["public_tracking:true", "my_state_f:\"#{state}\"", "my_people_tracked:#{self.id}"]})
   end
 
@@ -1559,13 +1508,13 @@ class Person < Bookmarkable
       person_response = Hpricot.XML(open(api_person_url))
       webform = (person_response/:webform).first.inner_html
       return webform
-    catch Exception
+    rescue Exception
       return false
     end
   end
 
   def office_zip
-    senator? ? "20510" : "20515"
+    senator? ? '20510' : '20515'
   end
 
   # expiring the cache
@@ -1575,9 +1524,7 @@ class Person < Bookmarkable
 
   def expire_govtrack_fragments
     fragments = []
-
     fragments << "#{fragment_cache_key}_header"
-
     FragmentCacheSweeper::expire_fragments(fragments)
   end
 
@@ -1588,7 +1535,6 @@ class Person < Bookmarkable
   def expire_commentary_fragments(type)
     FragmentCacheSweeper::expire_commentary_fragments(self, type)
   end
-
 
   def set_party
      self.party = self.roles.first.party unless self.roles.empty?
@@ -1618,7 +1564,7 @@ class Person < Bookmarkable
   end
 
   def formageddon_display_address
-    addr = ""
+    addr = ''
     addr += "#{title_long} #{firstname} #{lastname}\n"
     addr += "#{congress_office}\n" unless congress_office.blank?
     addr += "Washington, DC #{office_zip}\n"
@@ -1637,23 +1583,26 @@ class Person < Bookmarkable
   end
 
   def fec_ids=(ids=[])
-    raise ArgumentError, "must pass in an array" unless ids.class == Array
+    raise ArgumentError, 'must pass in an array' unless ids.class == Array
     person_identifiers.where(namespace: 'fec').destroy_all #kill existing FEC ids
-    ids.each do |id|
-      person_identifiers.create!(
-        namespace: 'fec',
-        value: id
-      )
-    end
+    ids.each {|id| person_identifiers.create!(namespace: 'fec', value: id )}
   end
 
   def add_fec_id(id)
-    unless fec_ids.include?(id)
-      person_identifiers.create!(
-        namespace: 'fec',
-        value: id
-      )
-    end
+    person_identifiers.create!(namespace: 'fec', value: id) unless fec_ids.include?(id)
+  end
+
+  private
+
+  # Determines if a person with title is in certain congress
+  #
+  # @param title [String] 'sen' or 'rep'
+  # @param congress [Integer] congress number
+  # @return [Boolean] true if person is member of given congress with title, false otherwise
+  def has_the_title_for_congress?(title, congress=nil)
+    query_roles = title.present? ? roles.where('roles.role_type = ?', title) : roles.all
+    query_roles.each {|role|  return true if role.member_of_congress?(congress) }
+    false
   end
 
 end

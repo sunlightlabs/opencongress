@@ -18,6 +18,10 @@ class Subject < Bookmarkable
 
   include ViewableObject
 
+  #========== CONSTANTS
+
+  DISPLAY_OBJECT_NAME = 'Issue'
+
   #========== VALIDATORS
 
   validates_uniqueness_of :term, :case_sensitive => false
@@ -28,6 +32,11 @@ class Subject < Bookmarkable
   after_save :create_default_group, :if => :is_category?
 
   #========== RELATIONS
+
+  #----- BELONGS_TO
+
+  belongs_to :parent,
+             :class_name => 'Subject'
 
   #----- HAS_ONE
 
@@ -55,89 +64,15 @@ class Subject < Bookmarkable
   has_many :pvs_categories,
            :through => :pvs_category_mappings
 
-  #----- BELONGS_TO
-
-  belongs_to :parent,
-             :class_name => 'Subject'
-
   #========== SCOPES
 
-  scope :active, -> { includes(:bills).where("bills.session" => Bill.available_sessions.last) }
-  scope :with_major_bills, includes(:bills).where(:bills => { :is_major => true })
-  scope :top_level, lambda { where(:parent_id => Subject.root_category.id) }
+  scope :active, -> { includes(:bills).where('bills.session' => Bill.available_sessions.last) }
+  scope :with_major_bills, -> { includes(:bills).where(:bills => { :is_major => true }) }
+  scope :top_level, -> { where(:parent_id => Subject.root_category.id) }
 
-  #========== INSTANCE METHODS
+  #========== METHODS
 
-  def is_category?
-    is_child_of(Subject.root_category)
-  end
-
-  def default_group
-    owner = User.find_by_login(Settings.default_group_owner_login)
-    return if owner.nil?
-    groups.where(:user_id => owner.id).first
-  end
-
-  def has_default_group?
-    !default_group.nil?
-  end
-
-  def default_group_description
-    "This is an automatically generated OpenCongress Group for tracking this issue area. Join this group to follow updates on major actions and key votes for related legislation and to connect with others interested."
-  end
-
-  def create_default_group
-    if not has_default_group?
-      owner = User.find_by_login(Settings.default_group_owner_login)
-      return if owner.nil?
-
-      grp = Group.new(:user_id => owner.id,
-                      :name => "OpenCongress #{term} Group",
-                      :description => default_group_description,
-                      :join_type => "INVITE_ONLY",
-                      :invite_type => "MODERATOR",
-                      :post_type => "ANYONE",
-                      :publicly_visible => true,
-                      :subject_id => self.id
-                     )
-      grp.save!
-    end
-  end
-
-  def self.root_category
-    find_by_term("\u22a4")
-  end
-
-  def major_bills
-    bills.where(:is_major => true)
-  end
-
-  @@DISPLAY_OBJECT_NAME = 'Issue'
-
-  def is_child_of (other)
-    parent == other
-  end
-
-  def display_object_name
-    @@DISPLAY_OBJECT_NAME
-  end
-
-  def atom_id_as_feed
-    # dates for issues don't make sense...just use 2007 for now
-    "tag:opencongress.org,2007:/issue_feed/#{id}"
-  end
-
-  def atom_id_as_entry
-    "tag:opencongress.org,2007:/issues/#{id}"
-  end
-
-  def ident
-    "Issue #{id}"
-  end
-
-  def title_for_share
-    term
-  end
+  #----- CLASS
 
   def self.find_by_term_icase (term)
     where('lower(term) = ?', term.downcase).first
@@ -175,7 +110,7 @@ class Subject < Bookmarkable
                      ORDER BY #{order} LIMIT #{limit} OFFSET #{offset}", search, range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago,
                      range.seconds.ago, search])
 
-       else
+      else
         find_by_sql(["select subjects.*, current_period.bookmark_count_1 as bookmark_count_1,
                      comments_total.total_comments as total_comments,
                      previous_period.bookmark_count_2 as bookmark_count_2
@@ -188,11 +123,12 @@ class Subject < Bookmarkable
                      FROM bookmarks where created_at > ? AND created_at <= ? group by subject_id_2) previous_period ON subjects.id=previous_period.subject_id_2
                      WHERE #{not_null_check} is not null order by #{order} LIMIT #{limit} OFFSET #{offset}", range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago,
                      range.seconds.ago])
-        end
-     else
-       return []
-     end
+      end
+    else
+      return []
+    end
   end
+
 
   # TODO: Make me a .count on the above scope
   def self.count_all_by_most_tracked_for_range(range, options)
@@ -222,9 +158,9 @@ class Subject < Bookmarkable
                      FROM bookmarks where created_at > ? AND created_at <= ? group by subject_id_2) previous_period ON subjects.id=previous_period.subject_id_2
                      WHERE #{not_null_check} is not null AND subjects.fti_names @@ to_tsquery('english', ?)
                      LIMIT #{limit} OFFSET #{offset}", range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago,
-                     range.seconds.ago, search])
+                      range.seconds.ago, search])
 
-       else
+      else
         count_by_sql(["select count(subjects.*)
                      FROM subjects
                      INNER JOIN (select bookmarks.bookmarkable_id  as subject_id_1, count(bookmarks.bookmarkable_id) as bookmark_count_1
@@ -234,11 +170,11 @@ class Subject < Bookmarkable
                      LEFT OUTER JOIN (select bookmarks.bookmarkable_id as subject_id_2, count(bookmarks.bookmarkable_id) as bookmark_count_2
                      FROM bookmarks where created_at > ? AND created_at <= ? group by subject_id_2) previous_period ON subjects.id=previous_period.subject_id_2
                      WHERE #{not_null_check} is not null LIMIT #{limit} OFFSET #{offset}", range.seconds.ago, Time.now, range.seconds.ago, (range*2).seconds.ago,
-                     range.seconds.ago])
-        end
-     else
-       return []
-     end
+                      range.seconds.ago])
+      end
+    else
+      return []
+    end
   end
 
   def self.count_all_by_most_tracked_for_range2(range, options)
@@ -265,7 +201,7 @@ class Subject < Bookmarkable
   end
 
   # TODO: Banish all find_by_sql from this project
-  def Subject.find_by_most_comments_for_range(range, order = "total_comments")
+  def self.find_by_most_comments_for_range(range, order = "total_comments")
     not_null_check = "vote_count_1"
     not_null_check = "total_comments" if order == "total_comments"
     Subject.find_by_sql(["select subjects.*, comments_total.comment_count_1 as comment_count FROM subjects
@@ -274,23 +210,19 @@ class Subject < Bookmarkable
                          ORDER BY comment_count DESC LIMIT 30;", range.seconds.ago])
   end
 
-  def Subject.random(limit)
-    Subject.find_by_sql ["SELECT * FROM (SELECT random(), subjects.* FROM subjects ORDER BY 1) as bs LIMIT ?;", limit]
+  def self.find_by_first_letter(letter)
+    where('upper(term) LIKE ?', "#{letter}%").order('term ASC')
   end
 
-  def Subject.find_by_first_letter(letter)
-    Subject.find(:all, :conditions => ["upper(term) LIKE ?", "#{letter}%"], :order => "term asc")
+  def self.by_bill_count
+    order('bill_count DESC', 'term ASC')
   end
 
-  def Subject.by_bill_count
-    Subject.find(:all, :order => "bill_count desc, term asc")
+  def self.alphabetical
+    order('term ASC')
   end
 
-  def Subject.alphabetical
-    Subject.find(:all, :order => "term asc")
-  end
-
-  def Subject.top20_viewed
+  def self.top20_viewed
     issues = ObjectAggregate.popular('Subject')
 
     (issues.select {|b| b.stats.entered_top_viewed.nil? }).each do |bv|
@@ -302,10 +234,104 @@ class Subject < Bookmarkable
   end
 
   # TODO
-  def Subject.top20_tracked
+  def self.top20_tracked
     Subject.find_by_sql("SELECT subjects.id, subjects.term, COUNT(bookmarks.id) as bookmark_count from subjects inner join bookmarks on subjects.id = bookmarks.bookmarkable_id WHERE bookmarks.bookmarkable_type = 'Subject' group by subjects.id, subjects.term ORDER BY bookmark_count desc LIMIT 20")
     #:all, :joins => "INNER JOIN bookmarks on subjects.id = bookmarks.bookmarkable_id", :conditions => "bookmarks.bookmarkable_type = 'Subject'", :select => "COUNT(bookmarks.id) as bookmark_count, subjects.*", :order => "COUNT(bookmarks.id) DESC", :group => "bookmarks.bookmarkable_id HAVING bookmark_count > 5", :limit => 10)
   end
+
+  def self.update_bill_counts (options = Hash.new)
+    congress = options.fetch(:congress, Settings.default_congress)
+    cnt = 0
+    Subject.transaction {
+      Subject.all.each do |subj|
+        subj.save!
+        cnt = cnt + 1
+      end
+    }
+    cnt
+  end
+
+  # TODO
+  def self.full_text_search(q, options = {})
+    subjects = Subject.paginate_by_sql(["SELECT subjects.*, rank(fti_names, ?, 1) as tsearch_rank FROM subjects
+                                 WHERE subjects.fti_names @@ to_tsquery('english', ?)
+                                 ORDER BY tsearch_rank DESC, term ASC", q, q],
+                                       :per_page => options[:per_page].nil? ? Settings.default_search_page_size : options[:per_page],
+                                       :page => options[:page])
+    subjects
+  end
+
+  #----- INSTANCE
+
+  public
+
+  def is_category?
+    is_child_of(Subject.root_category)
+  end
+
+  def default_group
+    owner = User.find_by_login(Settings.default_group_owner_login)
+    owner and groups.where(:user_id => owner.id).first
+  end
+
+  def has_default_group?
+    default_group.present?
+  end
+
+  def default_group_description
+    'This is an automatically generated OpenCongress Group for tracking this issue area. Join this group to follow updates on major actions and key votes for related legislation and to connect with others interested.'
+  end
+
+  def create_default_group
+    if not has_default_group?
+      owner = User.find_by_login(Settings.default_group_owner_login)
+      return if owner.nil?
+
+      Group.create!(:user_id => owner.id,
+                    :name => "OpenCongress #{term} Group",
+                    :description => default_group_description,
+                    :join_type => 'INVITE_ONLY',
+                    :invite_type => 'MODERATOR',
+                    :post_type => 'ANYONE',
+                    :publicly_visible => true,
+                    :subject_id => self.id
+                    )
+    end
+  end
+
+  def self.root_category
+    find_by_term("\u22a4")
+  end
+
+  def major_bills
+    bills.where(:is_major => true)
+  end
+
+  def is_child_of (other)
+    parent == other
+  end
+
+  def display_object_name
+    DISPLAY_OBJECT_NAME
+  end
+
+  def atom_id_as_feed
+    # dates for issues don't make sense...just use 2007 for now
+    "tag:opencongress.org,2007:/issue_feed/#{id}"
+  end
+
+  def atom_id_as_entry
+    "tag:opencongress.org,2007:/issues/#{id}"
+  end
+
+  def ident
+    "Issue #{id}"
+  end
+
+  def title_for_share
+    term
+  end
+
   def stats
     unless issue_stats
       self.issue_stats = IssueStats.new :subject => self
@@ -376,7 +402,7 @@ class Subject < Bookmarkable
     SubjectRelation.related(self, number)
   end
 
-  def all_related_subjects()
+  def all_related_subjects
     SubjectRelation.all_related(self)
   end
 
@@ -406,7 +432,7 @@ class Subject < Bookmarkable
   end
 
   def comments_since(current_user)
-    self.comments.count(:id, :conditions => ["created_at > ?", current_user.previous_login_date])
+    self.comments.where('created_at > ?', current_user.previous_login_date).count
   end
 
   def key_votes(congress = Settings.default_congress)
@@ -415,7 +441,7 @@ class Subject < Bookmarkable
                .where('roll_calls.roll_type' => RollCall.passage_types)
                .first(10)
                .map{ |b| b.roll_calls.last }
-               .select{ |r| r.nil? == false}
+               .select{ |r| r.present? }
   end
 
   # TODO
@@ -441,36 +467,19 @@ class Subject < Bookmarkable
 
   # TODO
   def latest_major_actions(num)
-    Action.find_by_sql( ["SELECT actions.* FROM actions, bill_subjects, bills
-                                    WHERE bill_subjects.subject_id = ? AND
-                                          (actions.action_type = 'introduced' OR
-                                           actions.action_type = 'topresident' OR
-                                           actions.action_type = 'signed' OR
-                                           actions.action_type = 'enacted' OR
-                                           actions.action_type = 'vetoed') AND
-                                           actions.bill_id = bills.id AND
-                                          bill_subjects.bill_id = bills.id
-                                    ORDER BY actions.date DESC
-                                    LIMIT #{num}", id])
-    #logger.info actions.inspect
-    #actions.collect { |a| a.bill }
+    Action.includes(:bill, :bill => :bill_subjects).where("bill_subjects.subject_id = ? AND
+                                                          (actions.action_type = 'introduced' OR
+                                                           actions.action_type = 'topresident' OR
+                                                           actions.action_type = 'signed' OR
+                                                           actions.action_type = 'enacted' OR
+                                                           actions.action_type = 'vetoed')", id)
+                                                    .order('actions.date DESC')
+                                                    .limit(num)
   end
 
   def count_bills (options = Hash.new)
     congress = options.fetch(:congress, Settings.default_congress)
     self.bill_count = id ? bills.where(:session => congress).count : 0
-  end
-
-  def self.update_bill_counts (options = Hash.new)
-    congress = options.fetch(:congress, Settings.default_congress)
-    cnt = 0
-    Subject.transaction {
-      Subject.all.each do |subj|
-        subj.save!
-        cnt = cnt + 1
-      end
-    }
-    cnt
   end
 
   def summary
@@ -479,16 +488,6 @@ class Subject < Bookmarkable
 
   def to_param
     "#{id}_#{url_name}"
-  end
-
-  # TODO
-  def self.full_text_search(q, options = {})
-    subjects = Subject.paginate_by_sql(["SELECT subjects.*, rank(fti_names, ?, 1) as tsearch_rank FROM subjects
-                                 WHERE subjects.fti_names @@ to_tsquery('english', ?)
-                                 ORDER BY tsearch_rank DESC, term ASC", q, q],
-                                :per_page => options[:per_page].nil? ? Settings.default_search_page_size : options[:per_page],
-                                :page => options[:page])
-    subjects
   end
 
   def recent_blogs
@@ -506,6 +505,7 @@ class Subject < Bookmarkable
   end
 
   private
+
   def url_name
     term.gsub(/[\.\(\)]/, "").gsub(/[-\s]+/, "_").downcase
   end

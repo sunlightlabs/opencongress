@@ -55,20 +55,32 @@ class Person < Bookmarkable
   #========== INCLUDES
 
   include ViewableObject
+  include SearchableObject
 
-  #========== CLASS VARIABLES
+  #========== CONFIGURATIONS
 
-  @@DISPLAY_OBJECT_NAME = 'Person'
-
-  @@NONVOTING_TERRITORIES = %w(AS DC GU PR VI)
+  # elasticsearch configuration
+  settings index: { number_of_shards: 1 }, analyzer: 'english', index_options: 'offsets' do
+    mappings dynamic: 'false' do
+      indexes :firstname
+      indexes :middlename
+      indexes :lastname
+      indexes :nickname
+      indexes :state
+      indexes :district
+    end
+  end
 
   #========== CONSTANTS
 
-  SERIALIZATION_OPS = {:methods =>
-                           [:oc_user_comments, :oc_users_tracking],
+  DISPLAY_OBJECT_NAME = 'Person'
+
+  NONVOTING_TERRITORIES = %w(AS DC GU PR VI)
+
+  SERIALIZATION_OPS = {:methods => [:oc_user_comments, :oc_users_tracking],
                        :include => [:recent_news, :recent_blogs]}.freeze
 
-  #========== FILTERS
+  #========== CALLBACKS
 
   before_update :set_party
   before_save :set_unaccented_name
@@ -118,28 +130,6 @@ class Person < Bookmarkable
   has_many :congress_chambers,
            :through => :congress_chamber_peoples
 
-  with_options :class_name => 'RollCall', :through => :roll_call_votes, :source => :roll_call do |rc|
-   # rc.has_many :unabstained_roll_calls, -> { joins(:bill).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
-    #rc.has_many :abstained_roll_calls,  -> { joins(:bill).where("vote IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
-    #rc.has_many :party_votes, -> (party=self.party) { joins(:bill).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}") }
-  end
-
-
-  def abstained_roll_calls(bills=false)
-    q = roll_call_votes.joins(:roll_call).where("vote IN ('Not Voting', '0') AND roll_calls.session = ?", NthCongress.current.number)
-    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
-  end
-
-  def unabstained_roll_calls(bills=false)
-    q = roll_call_votes.joins(:roll_call).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND roll_calls.session = #{NthCongress.current.number}")
-    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
-  end
-
-  def party_votes(bills=false)
-    q = roll_call_votes.joins(:roll_call).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND roll_calls.session = #{NthCongress.current.number}")
-    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
-  end
-
   acts_as_formageddon_recipient # contains has_many relationships
 
   #========== SCOPES
@@ -153,23 +143,96 @@ class Person < Bookmarkable
   scope :rep, -> { includes(:roles).where(["roles.role_type='rep' AND roles.enddate > ?", Date.today]).references(:roles) }
   scope :legislator, -> { includes(:roles).where(["(roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]) }
   
-  scope :on_date, ->(date) {
-    includes(:roles).where(
-      ['roles.startdate <= ? and roles.enddate >= ?', 
-      date.to_s, date.to_s]
-    ).references(:roles)
-  }
+  scope :on_date, ->(date) { includes(:roles).where('roles.startdate <= ? and roles.enddate >= ?',date.to_s, date.to_s).references(:roles) }
 
   #========== ALIASES
 
   alias :blog :blogs
 
+  #========== ACCESSORS
+
   #========== METHODS
 
   #----- CLASS
 
+  # Performs search of bills in database using elasticsearch.
+  # TODO: tweak query until good results found
+  #
+  # @param query [String] what to search bills for
+  # @param limit [Integer] limit number of search results
+  # @return [Relation<Bill>] bills matching the search query
+  def self.search(query, limit=25)
+    __elasticsearch__.search(query: {
+        function_score: {
+            query: {
+                bool: {
+                    should: [
+                        {
+                            match: {
+                                lastname: {
+                                    query: query,
+                                    boost: Float::INFINITY,
+                                    minimum_should_match: '66%'
+                                }
+                            }
+                        },
+                    ],
+                    must: [
+                        {
+                            multi_match: {
+                                query: query,
+                                type: 'most_fields',
+                                fields: %w(_all),
+                                analyzer: 'english'
+                            }
+                        },
+                        {
+                            fuzzy_like_this: {
+                                like_text: query,
+                                analyzer: 'english',
+                                fuzziness: 0.25,
+                                ignore_tf: true
+                            }
+                        }
+                    ]
+                }
+            },
+            functions: [
+                {
+                    field_value_factor: {
+                        field: 'page_views_count',
+                        modifier: 'ln1p',
+                        factor: 10
+                    }
+                },
+                {
+                    field_value_factor: {
+                        field: 'news_article_count',
+                        modifier: 'ln1p',
+                        factor: 10
+                    }
+                },
+                {
+                    field_value_factor: {
+                        field: 'blog_article_count',
+                        modifier: 'ln1p',
+                        factor: 10
+                    }
+                },
+                {
+                    field_value_factor: {
+                        field: 'total_session_votes',
+                        modifier: 'ln1p',
+                        factor: 10
+                    }
+                }
+            ],
+        },
+    })
+  end
+
   def self.custom_index_rebuild
-    ['rep','sen'].each{|title|
+    %w(rep sen).each{|title|
       Person.rebuild_solr_index(30) do |person, options|
         person.find(:all, options.merge({:joins => :roles, :select => "people.*", :conditions => ["roles.person_id = people.id AND roles.role_type='#{title}' AND roles.enddate > ?", Date.today]}))
       end
@@ -487,7 +550,6 @@ class Person < Bookmarkable
     Person.includes(:roles).where(["lower(lastname) = ?", name.downcase])
   end
 
-  ##
   # In this case address is free-form. Can be as simple as a state or
   # zipcode, though those will yield less accurate results.
   def self.find_current_congresspeople_by_address(address)
@@ -517,13 +579,10 @@ class Person < Bookmarkable
       legs = []
     end
 
-    #ap(legs)
-
     return nil if legs.empty?
 
     legs = Person.where(:id => legs.map{ |l| l.govtrack_id })
-    [legs.select{ |l| l.title == 'Sen.' },
-     legs.select{ |l| %w(Del. Rep.).include? l.title }]
+    [legs.select{ |l| l.title == 'Sen.' }, legs.select{ |l| %w(Del. Rep.).include? l.title }]
   end
 
   def self.find_current_senators_by_state(state)
@@ -682,7 +741,7 @@ class Person < Bookmarkable
   def self.voting_representatives
     Person.includes(:roles).where(
       [ "roles.role_type=? AND roles.enddate > ? AND roles.state NOT IN (?)",
-        'rep',  Date.today, @@NONVOTING_TERRITORIES ]).references(:roles).order("people.lastname")
+        'rep',  Date.today, NONVOTING_TERRITORIES ]).references(:roles).order("people.lastname")
   end
 
   def self.senators(congress = Settings.default_congress, order_by = 'name')
@@ -771,6 +830,21 @@ class Person < Bookmarkable
 
   public
 
+  def abstained_roll_calls(bills=false)
+    q = roll_call_votes.joins(:roll_call).where("vote IN ('Not Voting', '0') AND roll_calls.session = ?", NthCongress.current.number)
+    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
+  end
+
+  def unabstained_roll_calls(bills=false)
+    q = roll_call_votes.joins(:roll_call).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND roll_calls.session = #{NthCongress.current.number}")
+    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
+  end
+
+  def party_votes(bills=false)
+    q = roll_call_votes.joins(:roll_call).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND roll_calls.session = #{NthCongress.current.number}")
+    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
+  end
+
   def sponsored_bills_passed
     bills.joins(:actions).where('actions.action_type = ?', 'enacted')
   end
@@ -787,6 +861,7 @@ class Person < Bookmarkable
   end
 
   def photo_path(style = :full, missing = :check_missing)
+
     if style == :thumb
       photo_path = "photos/thumbs_42/#{id}.png"
     elsif style == :medium
@@ -796,9 +871,9 @@ class Person < Bookmarkable
     end
 
     if missing == :ignore_missing || File.exists?(File.join(Rails.root, 'public', 'images', photo_path))
-      return photo_path
+      photo_path
     else
-      return "missing-#{style}.png"
+      "missing-#{style}.png"
     end
   end
 
@@ -807,7 +882,7 @@ class Person < Bookmarkable
   end
 
   def display_object_name
-    @@DISPLAY_OBJECT_NAME
+    DISPLAY_OBJECT_NAME
   end
 
   def atom_id_as_feed
@@ -858,7 +933,7 @@ class Person < Bookmarkable
     if self.unabstained_roll_calls.count > 0
       return self.against_party.to_f / self.unabstained_roll_calls.count.to_f * 100 if self.unabstained_roll_calls.count > 0
     else
-      return 0.0
+      0.0
     end
   end
 
@@ -866,7 +941,7 @@ class Person < Bookmarkable
     if self.unabstained_roll_calls.count > 0
       return ((self.party_votes.count.to_f / self.unabstained_roll_calls.count.to_f) * 100.00) if self.unabstained_roll_calls.count > 0
     else
-      return 0.0
+      0.0
     end
   end
 
@@ -874,7 +949,7 @@ class Person < Bookmarkable
     if ( self.unabstained_roll_calls.count + self.abstained_roll_calls.count ) > 0
       self.abstained_roll_calls.count.to_f / ( self.unabstained_roll_calls.count.to_f + self.abstained_roll_calls.count.to_f )  * 100
     else
-      return 0.0
+      0.0
     end
   end
 
@@ -1024,14 +1099,14 @@ class Person < Bookmarkable
     items = []
     self.recent_activity(since).each do |i|
       case i.class.name
-      when 'Bill'
-        items << {:sort_date => i.sort_date.to_date, :content => "Introduced Bill: #{i.typenumber} - #{i.title_official}", :link => {:host => host, :only_path => false, :controller => 'bill', :action => 'show', :id => i.ident}}
-      when 'RollCallVote'
-        if i.roll_call.bill
-          items << {:sort_date => i.sort_date.to_date, :content => "Vote: '" + i.to_s + "' regarding " + i.roll_call.bill.typenumber, :link => {:host => host, :only_path => false, :controller => 'roll_call', :action => 'show', :id => i.roll_call}}
-        else
-          items << {:sort_date => i.sort_date.to_date, :content => "Vote: '" + i.to_s + "' on the question " + i.roll_call.question, :link => {:host => host, :only_path => false, :controller => 'roll_call', :action => 'show', :id => i.roll_call}}
-        end
+        when 'Bill'
+          items << {:sort_date => i.sort_date.to_date, :content => "Introduced Bill: #{i.typenumber} - #{i.title_official}", :link => {:host => host, :only_path => false, :controller => 'bill', :action => 'show', :id => i.ident}}
+        when 'RollCallVote'
+          if i.roll_call.bill
+            items << {:sort_date => i.sort_date.to_date, :content => "Vote: '" + i.to_s + "' regarding " + i.roll_call.bill.typenumber, :link => {:host => host, :only_path => false, :controller => 'roll_call', :action => 'show', :id => i.roll_call}}
+          else
+            items << {:sort_date => i.sort_date.to_date, :content => "Vote: '" + i.to_s + "' on the question " + i.roll_call.question, :link => {:host => host, :only_path => false, :controller => 'roll_call', :action => 'show', :id => i.roll_call}}
+          end
       end
     end
     items.group_by{|x| x[:sort_date]}.to_a.sort{|a,b| b[0]<=>a[0]}
@@ -1212,7 +1287,7 @@ class Person < Bookmarkable
   end
 
   def votes?
-    not @@NONVOTING_TERRITORIES.include?(state)
+    not NONVOTING_TERRITORIES.include?(state)
   end
 
   def representative_for_congress?(congress = Settings.default_congress)
@@ -1590,6 +1665,13 @@ class Person < Bookmarkable
 
   def add_fec_id(id)
     person_identifiers.create!(namespace: 'fec', value: id) unless fec_ids.include?(id)
+  end
+
+  # Serialization for elasticsearch
+  def as_indexed_json(options={})
+    as_json(
+        include: [:person_identifiers, :bills_cosponsored, :roles, :news, :blogs, :comments, :roll_call_votes]
+    )
   end
 
   private

@@ -14,10 +14,6 @@ module SearchableObject
     true
   end
 
-  module ClassMethods
-
-  end
-
   #----- INSTANCE
 
 end

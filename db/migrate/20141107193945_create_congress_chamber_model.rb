@@ -1,4 +1,5 @@
 class CreateCongressChamberModel < ActiveRecord::Migration
+
   def self.up
 
     create_table :congress_chambers do |t|

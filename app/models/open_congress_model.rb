@@ -4,6 +4,23 @@ class OpenCongressModel < ActiveRecord::Base
 
   self.abstract_class = true
 
+  class_attribute :action_view
+
+  # This block allows for models to use methods such as "render" from controllers
+  begin
+    self.action_view = ActionView::Base.new(Rails.configuration.paths["app/views"])
+    self.action_view.class_eval do
+      include Rails.application.routes.url_helpers
+      include ApplicationHelper
+
+      def protect_against_forgery?
+        false
+      end
+    end
+  rescue Exception => e
+    throw e
+  end
+
   #========== METHODS
 
   #----- CLASS
@@ -37,6 +54,11 @@ class OpenCongressModel < ActiveRecord::Base
   #----- INSTANCE
 
   public
+
+  # Allows model to use render function from controllers
+  def render(*args)
+    action_view.render(*args)
+  end
 
   # Sets default attributes for nil attributes as defined by constant DEFAULT_ATTRIBUTES
   def set_default_attributes_for_nil

@@ -31,18 +31,28 @@ class BillAction < Action
 
   #========== RELATIONS
 
+  #----- BELONGS_TO
+
   belongs_to :bill
+
+  #========== SCOPES
+
+  scope :action_and_vote, -> (action_type, vote_type=nil) { where({:action_type => action_type}.merge(vote_type.nil? ? {} : {:vote_type => vote_type})) }
 
   #========== METHODS
 
+  #----- CLASS
+
   #----- INSTANCE
 
-  def display
-    "<h4>#{bill.title_full_common}</h4>"
-  end
+  public
 
   def rss_date
     Time.at(self.date)
+  end
+
+  def display(title = self.bill.title_full_common)
+    render 'bill_action/display', :title => title
   end
 
   def to_email_body

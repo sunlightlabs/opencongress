@@ -22,13 +22,20 @@ class Search < OpenCongressModel
 
   # The search filters that a user selects are stored in the database as a list of integers corresponding to
   # the order by which they appear in this list. This is done to limit unnecessary space usage.
-  SEARCH_FILTERS_LIST = [
-                          :search_bills, :search_people, :search_committees, :search_industries, :search_issues,
-                          :search_news, :search_blogs, :search_commentary, :search_comments, :search_gossip_blog
-                        ]
+  SEARCH_FILTERS = {
+      0 => :search_bills,
+      1 => :search_people,
+      2 => :search_committees,
+      3 => :search_industries,
+      4 => :search_issues,
+      5 => :search_news,
+      6 => :search_blogs,
+      7 => :search_commentary,
+      8 => :search_comments,
+      9 => :search_gossip_blog
+  }
 
-  SEARCH_FILTER_CODE_MAP = Hash[SEARCH_FILTERS_LIST.collect.with_index {|v,i| [v,i]}]
-  CODE_SEARCH_FILTER_MAP = SEARCH_FILTER_CODE_MAP.invert
+  SEARCH_FILTERS_INVERTED = SEARCH_FILTERS.invert
 
   #========== RELATIONS
 
@@ -36,7 +43,7 @@ class Search < OpenCongressModel
 
   belongs_to :user
 
-  #========== FILTERS
+  #========== CALLBACKS
 
   before_validation :doctor_data_for_save
   after_save :doctor_data_for_load
@@ -51,12 +58,16 @@ class Search < OpenCongressModel
 
   #========== SERIALIZERS
 
-  serialize :search_filters, Array
+  serialize :search_filters, SearchFilterSerializer
   serialize :search_congresses, Array
 
   #========== METHODS
 
   #----- CLASS
+
+  def self.search(query, options = {}, limit = 25)
+
+  end
 
   # Retrieves the top searched terms from the database
   #
@@ -91,8 +102,8 @@ class Search < OpenCongressModel
   def doctor_data_for_save
     self.page = 1 if (self.page.nil? || self.page < 1)
     self.search_text = truncate(self.search_text, :length => 255)
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = SEARCH_FILTER_CODE_MAP[v.to_sym] if v.is_a? String  }
-    unless self.search_congresses.is_a? Array then self.search_congresses = ["#{Settings.default_congress}"] end
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = SEARCH_FILTERS_INVERTED[v.to_sym] if v.is_a? String  }
+    self.search_congresses = ["#{Settings.default_congress}"] unless self.search_congresses.is_a? Array
   end
 
   # This is the reverse operation for :doctor_data_for_save whereby
@@ -100,7 +111,7 @@ class Search < OpenCongressModel
   # representation for each search filter.
   #
   def doctor_data_for_load
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = CODE_SEARCH_FILTER_MAP[v] } rescue false
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = SEARCH_FILTERS[v] } rescue false
   end
 
 end

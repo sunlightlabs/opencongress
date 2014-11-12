@@ -9,32 +9,45 @@
 #
 
 class SubjectRelation < OpenCongressModel
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :subject
   belongs_to :related_subject, :class_name => 'Subject', :foreign_key => :related_subject_id
-  
-  #This is a little tricky, because it represents a relationship that
-  #ought to be symmetric. 
-  def SubjectRelation.related(subject, number)
-    srs = SubjectRelation.find(:all, :include => [:subject, :related_subject], :conditions =>["subject_id = ? OR related_subject_id = ? ", subject.id, subject.id], :order => "relation_count desc", :limit => number)
-    return SubjectRelation.add_up_related_subjects(subject, srs)
+
+  #========== METHODS
+
+  #----- CLASS
+
+  # This is a little tricky, because it represents a relationship that
+  # ought to be symmetric. Retrieves all the related subjects for input subject.
+  #
+  # @param subject [Subject] subject model
+  # @param number [Integer] result limit
+  # @return [Array<Subject>]
+  def self.related(subject, number)
+    srs = SubjectRelation.includes(:subject, :related_subject).where('subject_id = ? OR related_subject_id = ?', subject.id, subject.id).order('relation_count DESC')
+    srs = srs.limit(number) unless number.nil?
+    add_up_related_subjects(subject, srs)
   end
 
-  def SubjectRelation.all_related(subject)
-    srs = SubjectRelation.find(:all, :include => [:subject, :related_subject], :conditions =>["subject_id = ? OR related_subject_id = ? ", subject.id, subject.id], :order => "relation_count desc")
-    return SubjectRelation.add_up_related_subjects(subject, srs)
+  # Returns all the related subjects with no limit
+  #
+  # @param subject [Subject] subject model
+  # @return [Array<Subject>]
+  def self.all_related(subject)
+    related(subject, nil)
   end
 
-  private 
-  def SubjectRelation.add_up_related_subjects(subject, srs)
+  # Gets all the related subject
+  #
+  # @return [Array<Subject>]
+  def self.add_up_related_subjects(subject, srs)
     subjects = []
-    srs.each do |sr|
-      if sr.subject == subject
-        subjects.push sr.related_subject
-      else
-        subjects.push sr.subject
-      end
-    end
-    return subjects
+    srs.each {|sr| subjects.push(sr.subject == subject ? sr.related_subject : sr.subject) }
+    subjects
   end
 
 end

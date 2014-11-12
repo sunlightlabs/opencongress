@@ -48,6 +48,7 @@ class Bill < Bookmarkable
 
   #========== CONFIGURATIONS
 
+  # elasticsearch configuration
   settings index: { number_of_shards: 1 } do
     mappings dynamic: 'false' do
       indexes :summary, analyzer: 'english', index_options: 'offsets'
@@ -103,7 +104,7 @@ class Bill < Bookmarkable
                                                  :most_recent_actions => {}
                                     }}}
 
-  #========== FILTERS
+  #========== CALLBACKS
 
   before_save :update_bill_fulltext_search_table
   after_save -> { @bill_text = nil }
@@ -178,23 +179,10 @@ class Bill < Bookmarkable
   has_many :contact_congress_letters,
            :as => :contactable
 
-  with_options :class_name => 'Commentary' do |c|
-    c.has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC, commentaries.id DESC') },
-               :as => :commentariable
-    c.has_many :blogs,-> { where("commentaries.is_ok = 't' AND commentaries.is_news='f'").order('commentaries.date DESC, commentaries.id DESC') },
-               :as => :commentariable
+  with_options :class_name => 'Commentary', :as => :commentariable  do |c|
+    c.has_many :news, -> { where("commentaries.is_ok = 't' AND commentaries.is_news='t'").order('commentaries.date DESC, commentaries.id DESC') }
+    c.has_many :blogs,-> { where("commentaries.is_ok = 't' AND commentaries.is_news='f'").order('commentaries.date DESC, commentaries.id DESC') }
   end
-
-  #========== ALIASES
-
-  alias :blog :blogs
-  #alias :bill_actions :actions
-
-  #========== ACCESSORS
-
-  attr_accessor :search_relevancy
-  attr_accessor :tmp_search_desc
-  attr_accessor :wiki_summary_holder
 
   #========== SCOPES
 
@@ -204,6 +192,17 @@ class Bill < Bookmarkable
   scope :for_session, lambda {|sess| where('bills.session = ?', sess) }
   scope :senate_bills, -> { where(:bill_type => (GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 's'})) }
   scope :house_bills, -> { where(:bill_type => (GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'})) }
+
+  #========== ACCESSORS
+
+  attr_accessor :search_relevancy
+  attr_accessor :tmp_search_desc
+  attr_accessor :wiki_summary_holder
+
+  #========== ALIASES
+
+  alias :blog :blogs
+  #alias :bill_actions :actions
 
   #========== METHODS
 
@@ -252,52 +251,63 @@ class Bill < Bookmarkable
   # @param query [String] what to search bills for
   # @param limit [Integer] limit number of search results
   # @return [Relation<Bill>] bills matching the search query
-  def self.search(query,limit=25)
-   super(query: {
-          function_score: {
-            query: {
-              bool: {
-                must: [
-                  {
-                    multi_match: {
-                      query: query,
-                      type: 'most_fields',
-                      fields: %w(_all summary^3 manual_title^10),
-                      analyzer: 'english'
-                    }
-                  },
-                  {
-                    fuzzy_like_this: {
-                      like_text: query,
-                      analyzer: 'english',
-                      fuzziness: 0.25,
-                      ignore_tf: true
-                    }
-                  }
-                ]
-              }
-            },
-            functions: [
+  def self.search(query, limit=25)
+    __elasticsearch__.search(query: {
+      function_score: {
+        query: {
+          bool: {
+            should: [
               {
-                field_value_factor: {
-                  field: 'page_views_count',
-                  modifier: 'ln1p',
-                  factor: 10
+                match: {
+                  nickname_title: {
+                    query: query,
+                    boost: Float::INFINITY,
+                    minimum_should_match: '66%'
+                  }
+                }
+              },
+            ],
+            must: [
+              {
+                multi_match: {
+                  query: query,
+                  type: 'most_fields',
+                  fields: %w(_all summary^3 manual_title^10 nickname_title^100),
+                  analyzer: 'english'
                 }
               },
               {
-                exp: {
-                  updated: {
-                    origin: Date.today,
-                    scale:'90d',
-                    offset: '30d',
-                    decay:0.95
-                  }
+                fuzzy_like_this: {
+                  like_text: query,
+                  analyzer: 'english',
+                  fuzziness: 0.25,
+                  ignore_tf: true
                 }
               }
-            ],
+            ]
+          }
+        },
+        functions: [
+          {
+            field_value_factor: {
+              field: 'page_views_count',
+              modifier: 'ln1p',
+              factor: 10
+            }
           },
-        }).records.all.limit(limit)
+          {
+            exp: {
+              updated: {
+                origin: Date.today,
+                scale:'90d',
+                offset: '30d',
+                decay:0.99
+              }
+            }
+          }
+        ],
+      },
+    })
   end
 
   # return bill actions since last X
@@ -1108,8 +1118,6 @@ class Bill < Bookmarkable
       raise
     end
 
-
-
     facet_results_ff = facets['facet_fields']
     if facet_results_ff && facet_results_ff != []
 
@@ -1171,49 +1179,46 @@ class Bill < Bookmarkable
   end
 
   def adjusted_votes_this_period(total,this_period,minutes)
-    return this_period.to_f * total.to_f
+    this_period.to_f * total.to_f
   end
 
   def is_vote_hot?(total,previous_period,this_period,minutes)
     ajvtp = self.adjusted_votes_this_period(total,this_period,minutes)
-    return true if ( ajvtp > 3 && ( (ajvtp  / 6) > previous_period ) )
+    ( ajvtp > 3 && ( (ajvtp  / 6) > previous_period ) )
   end
 
   def is_vote_cold?(total,previous_period,this_period,minutes)
     ajvtp = self.adjusted_votes_this_period(total,this_period,minutes)
-    return true if ( ajvtp > 3 && ( ajvtp < ( previous_period / 1.01) ) )
+    ( ajvtp > 3 && ( ajvtp < ( previous_period / 1.01) ) )
   end
 
   def chamber
-    if bill_type.starts_with? "h"
-      "house"
+    if bill_type.starts_with? 'h'
+      'house'
     else
-      "senate"
+      'senate'
     end
   end
 
   def other_chamber
-    if bill_type.starts_with? "h"
-      "senate"
+    if bill_type.starts_with? 'h'
+      'senate'
     else
-      "house"
+      'house'
     end
   end
 
   def log_referrer(referrer)
-    unless (referrer.blank? || BillReferrer.no_follow?(referrer))
-      self.bill_referrers.find_or_create_by(url:referrer[0..253])
-    end
+    self.bill_referrers.find_or_create_by(url:referrer[0..253]) unless referrer.blank? || BillReferrer.no_follow?(referrer)
   end
 
   def unique_referrers(since = 2.days)
-    ref_views = PageView.find(:all,
-                              :select => "DISTINCT(page_views.referrer)",
-                              :conditions => ["page_views.referrer IS NOT NULL AND
-                                               page_views.viewable_id = ? AND
-                                               page_views.viewable_type = 'Bill' AND
-                                               page_views.created_at > ?", id, since.ago])
-    ref_views.collect { |v| v.referrer }
+    ref_views = PageView.where("page_views.referrer IS NOT NULL AND
+                                page_views.viewable_id = ? AND
+                                page_views.viewable_type = 'Bill' AND
+                                page_views.created_at > ?", id, since.ago)
+                        .select('DISTINCT(page_views.referrer)')
+    ref_views.collect {|v| v.referrer }
   end
 
   def related_articles
@@ -1242,12 +1247,7 @@ class Bill < Bookmarkable
 
   def commentary_count(type = 'news', since = Settings.default_count_time)
     return @attributes['article_count'] if @attributes['article_count']
-
-    if type == 'news'
-      self.news.find(:all, :conditions => [ "commentaries.date > ?", since.ago]).size
-    else
-      self.blogs.find(:all, :conditions => [ "commentaries.date > ?", since.ago]).size
-    end
+    send(type).where('commentaries.date > ?', since.ago).size rescue 0
   end
 
   def stats
@@ -1263,9 +1263,9 @@ class Bill < Bookmarkable
     if (total_news + total_blogs) > 0
       fresh_news = self.news.select { |n| n.date > Settings.default_count_time.ago }
       fresh_blogs = self.blogs.select { |b| b.date > Settings.default_count_time.ago }
-      return ((fresh_news.size.to_f + fresh_blogs.size.to_f) / (total_news.to_f + total_blogs.to_f))
+      ((fresh_news.size.to_f + fresh_blogs.size.to_f) / (total_news.to_f + total_blogs.to_f))
     else
-      return 0
+      0
     end
   end
 
@@ -1304,23 +1304,21 @@ class Bill < Bookmarkable
   end
 
   def bill_position_organizations_support
-    bill_position_organizations.where("bill_position_organizations.disposition='support'")
+    bill_position_organizations_disposition('support')
+    bill_position_organizations.where("bill_position_organizations.disposition = 'support'")
   end
 
   def bill_position_organizations_oppose
-    bill_position_organizations.where("bill_position_organizations.disposition='oppose'")
+    bill_position_organizations_disposition('oppose')
   end
 
   def relevant_industries
-    unless self.hot_bill_category.nil?
-      return self.hot_bill_category.crp_industries
+    if self.hot_bill_category.present?
+      self.hot_bill_category.crp_industries
     else
       ind = []
-      self.subjects.each { |s|
-        ind.concat(s.pvs_categories.collect{ |c| c.crp_industries })
-      }
-
-      return ind.flatten.uniq
+      self.subjects.each {|s| ind.concat(s.pvs_categories.collect{ |c| c.crp_industries }) }
+      ind.flatten.uniq
     end
   end
 
@@ -1344,7 +1342,6 @@ class Bill < Bookmarkable
     "tag:opencongress.org,#{Time.at(introduced).strftime("%Y-%m-%d")}:/bill/#{ident}/last_action"
   end
 
-  # used when sorting with other types of objects
   def sort_date
     Time.at(self.introduced)
   end
@@ -1354,32 +1351,28 @@ class Bill < Bookmarkable
   end
 
   def last_action_at
-    Time.at(self.lastaction) if self.lastaction
+    Time.at(self.lastaction) if self.lastaction.present?
   end
 
   def introduced_at
-    Time.at(self.introduced) if self.introduced
+    Time.at(self.introduced) if self.introduced.present?
   end
 
   def last_5_actions
-    actions.find(:all, :order => "date DESC", :limit => 5)
+    actions.all.order('date DESC').limit(5)
   end
 
   def status(options = {})
-    status_hash = self.bill_status_hash
-    return status_hash['steps'][status_hash['current_step']]['text']
+    self.bill_status_hash['steps'][status_hash['current_step']]['text']
   end
 
   def status_class
-    status_hash = self.bill_status_hash
-    return status_hash['steps'][status_hash['current_step']]['class']
+    self.bill_status_hash['steps'][status_hash['current_step']]['class']
   end
 
 
   def next_step
-    status_hash = self.bill_status_hash
-    return status_hash['steps'][status_hash['current_step'] + 1] ?
-           status_hash['steps'][status_hash['current_step'] + 1]['text'] : nil
+    self.bill_status_hash['steps'][status_hash['current_step'] + 1]['text'] rescue nil
   end
 
   def hours_to_first_attempt_to_pass
@@ -1408,13 +1401,12 @@ class Bill < Bookmarkable
   def title_popular_only # popular or short, returns empty string if one doesn't exist
     title = default_title || popular_title || short_title
 
-    title ? "#{title.title}" : ""
+    title.present? ? "#{title.title}" : ''
   end
 
   def title_common # popular or short or official, returns empty string if one doesn't exist
     title = default_title || popular_title || short_title || official_title
-
-    title ? "#{title.title}" : ""
+    title.present? ? "#{title.title}" : ''
   end
 
   def title_full_common # bill type, number and popular, short or official title
@@ -1423,7 +1415,7 @@ class Bill < Bookmarkable
   end
 
   def title_prefix
-    prefix = UnitedStates::Bills.abbreviation_for bill_type
+    UnitedStates::Bills.abbreviation_for bill_type
   end
 
   def title_for_share
@@ -1432,40 +1424,36 @@ class Bill < Bookmarkable
 
   # methods for progress
   def introduced_action
-    actions.select { |a| a.action_type == 'introduced' }.first
+    action_query('introduced')
   end
 
   def originating_chamber_vote
-    actions.select { |a| (a.action_type == 'vote' and a.vote_type == 'vote') }.last
+    action_query('vote', 'vote')
   end
 
   def other_chamber_vote
-    actions.select { |a| (a.action_type == 'vote' and a.vote_type == 'vote2') }.last
+    action_query('vote', 'vote2')
   end
 
   def presented_to_president_action
-    actions.select { |a| a.action_type == 'topresident' }.first
+    action_query('topresident')
   end
 
   def signed_action
-    actions.select { |a| a.action_type == 'signed' }.first
+    action_query('signed')
   end
 
   def vetoed_action
-    actions.select { |a| a.action_type == 'vetoed' }.first
+    action_query('vetoed')
   end
 
   def override_vote
-    actions.select { |a| (a.action_type == 'vote' and a.vote_type == 'override') }.first
+    action_query('vote', 'override')
   end
 
   def enacted_action
-    actions.where('actions.action_type = ?', 'enacted').last
+    action_query('enacted')
   end
-
- # def enacted_action
- #   actions.select { |a| a.action_type == 'enacted' }.last
- # end
 
   # returns a hash with info on each step of the bill's progress
   def bill_status_hash
@@ -1568,13 +1556,14 @@ class Bill < Bookmarkable
   end
 
   def vote_on_passage(person)
-    if (chamber == 'house' and person.title == 'Rep.') or (chamber == 'senate' and person.title = 'Sen.')
+
+    if (chamber == 'house' and person.title == 'Rep.') or (chamber == 'senate' and person.title == 'Sen.')
       roll = originating_chamber_vote
     else
       roll = other_chamber_vote
     end
 
-    return "Not Voted Yet" if roll.nil? or roll.roll_call.nil?
+    return 'Not Voted Yet' if (roll.nil? or roll.roll_call.nil?)
 
     roll.roll_call.vote_for_person(person)
   end
@@ -1639,24 +1628,28 @@ class Bill < Bookmarkable
   def as_indexed_json(options={})
     as_json(
         include: [:bill_fulltext, :sponsor, :top_subject, :bill_titles, :committees],
-        methods: [:summary, :plain_language_summary, :official_title, :short_title, :popular_title, :default_title, :billtext_txt]
+        methods: [:summary, :plain_language_summary, :official_title, :short_title, :popular_title, :default_title, :billtext_txt, :nickname_title]
     )
   end
 
   def official_title
-    bill_titles.where(title_type: 'official').first
+    bill_titles.official.first
   end
 
   def short_title
-    bill_titles.where(title_type: 'short').first
+    bill_titles.short.first
   end
 
   def popular_title
-    bill_titles.where(title_type: 'popular').first
+    bill_titles.popular.first
   end
 
   def default_title
-    bill_titles.where(is_default: true).first
+    bill_titles.default.first
+  end
+
+  def nickname_title
+    bill_titles.nickname.first
   end
 
   private
@@ -1665,6 +1658,14 @@ class Bill < Bookmarkable
    ops ||= {}
    style = ops.delete(:style) || :simple
    SERIALIZATION_STYLES[style].merge(ops)
+  end
+
+  def action_query(action_type, vote_type = nil)
+    actions.action_and_vote(action_type, vote_type).last
+  end
+
+  def bill_position_organizations_disposition(disposition)
+    bill_position_organizations.where('bill_position_organizations.disposition = ?', disposition)
   end
 
 end

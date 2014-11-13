@@ -16,6 +16,7 @@ class Friend < OpenCongressModel
   #========== INCLUDES
 
   include PublicActivity::Model
+  include PrivacyObject
 
   #========== FILTERS
 
@@ -37,25 +38,42 @@ class Friend < OpenCongressModel
 
   #----- CLASS
 
+  # Create a confirmed friendship (both input users follow one another)
+  #
+  # @param u1 [User] user to follow second user and be followed
+  # @param u2 [User] user to follow first user and be followed
   def self.create_confirmed_friendship(u1, u2)
     Friend.create({:friend_id => u1.id, :user_id => u2.id, :confirmed => true, :confirmed_at => Time.new})
     Friend.create({:friend_id => u2.id, :user_id => u1.id, :confirmed => true, :confirmed_at => Time.new})
   end
 
-  def self.recent_activity(friends)
+  # Retrieves the recent activity for a list of friends
+  #
+  # @param friends [Array, Relation] list of friends
+  # @return [Relation<PublicActivity::Activity>] recent activity of friends
+  def self.recent_activity(friends, timeframe=7.days)
     ra = []
     number_of_friends = friends.length
-    range = [0..3]
     case number_of_friends
       when 1
-        friends.each {|f| ra.concat(f.friend.recent_public_actions(12)[0..11]) }
+        friends.each {|f| ra.concat(f.friend.recent_activity(12, timeframe)) }
       when 2
-        friends.each {|f| ra.concat(f.friend.recent_public_actions(6)[0..5]) }
+        friends.each {|f| ra.concat(f.friend.recent_public_actions(6, timeframe)) }
       else
-        friends.each {|f| ra.concat(f.friend.recent_public_actions(4)[0..3]) }
+        friends.each {|f| ra.concat(f.friend.recent_public_actions(4, timeframe)) }
     end
-
     ra.compact.sort_by{|p| p.created_at}.reverse
+  end
+
+  # Checks to see if both user arguments are confirmed friends
+  #
+  # @param u1 [User] user 1
+  # @param u2 [User] user 2
+  # @return [Boolean] true if both users are confirmed friends, false otherwise
+  def self.are_confirmed_friends?(u1, u2)
+    return false if u1.nil? or u2.nil?
+    Friend.where(user_id: u1.id, friend_id: u2.id, confirmed: true).any? and
+        Friend.where(user_id: u2.id, friend_id: u1.id, confirmed: true).any?
   end
 
   #----- INSTANCE
@@ -74,9 +92,8 @@ class Friend < OpenCongressModel
   end
 
   def defriend
-    if inverse_friend.present?
-      self.inverse_friend.update_attributes!({:confirmed => false, :confirmed_at => nil})
-    end
+    i_f = inverse_friend
+    i_f.update_attributes!({:confirmed => false, :confirmed_at => nil}) if i_f.present?
     self.destroy
   end
 

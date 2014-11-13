@@ -8,7 +8,7 @@ class ContactCongressLettersController < ApplicationController
   include ActionView::Helpers::TextHelper
 
   def new
-    @page_title = "Contact Congress"
+    @page_title = 'Contact Congress'
 
     if !params[:bill].blank?
       @bill = Bill.find_by_ident(params[:bill])
@@ -16,13 +16,12 @@ class ContactCongressLettersController < ApplicationController
       @issue = Subject.find_by_id(params[:issue])
     end
 
-
     if logged_in?
       @sens = current_user.my_sens
       @reps = current_user.my_reps
 
       if @sens.empty? && @reps.empty?
-        flash[:notice] = "In order to contact your representatives in Congress, you must configure your account.  Please enter your zipcode and address in the form below."
+        flash[:notice] = 'In order to contact your representatives in Congress, you must configure your account.  Please enter your zipcode and address in the form below.'
         redirect_to edit_profile_path(:login => current_user.login)
       end
     else
@@ -32,8 +31,7 @@ class ContactCongressLettersController < ApplicationController
     @member_osids = (@sens + @reps).map(&:osid).compact
 
     if @bill and params[:position].nil?
-      render 'select_position'
-      return
+      render 'select_position' and return
     end
 
     formageddon_configured = false
@@ -42,8 +40,8 @@ class ContactCongressLettersController < ApplicationController
 
     if @bill
       if @bill.talking_points.where("talking_points.include_in_message_body='t'").any?
-        message_start = ""
-        @bill.talking_points.where("talking_points.include_in_message_body='t'").order("talking_points.created_at ASC").each do |tp|
+        message_start = ''
+        @bill.talking_points.where("talking_points.include_in_message_body='t'").order('talking_points.created_at ASC').each do |tp|
           message_start += "#{tp.talking_point}\n\n"
         end
       else
@@ -108,7 +106,7 @@ class ContactCongressLettersController < ApplicationController
   def show
     @contact_congress_letter = ContactCongressLetter.find(params[:id])
 
-    unless @contact_congress_letter.can_be_read_by(current_user)
+    unless @contact_congress_letter.can_show_to?(current_user)
       redirect_to '/', :notice => 'You do not have permission to read that letter!'
       return
     end
@@ -145,16 +143,15 @@ class ContactCongressLettersController < ApplicationController
           @contact_congress_letter = ContactCongressLetter.new
           @contact_congress_letter.disposition = params[:disposition]
           @contact_congress_letter.contactable = contactable unless contactable.nil?
+          @contact_congress_letter.source = :browser
           @contact_congress_letter.save
         end
-
         @contact_congress_letter.formageddon_threads << l.formageddon_thread
       else
         @contact_congress_letter = cclft.contact_congress_letter
 
         if current_user == :false or @letters.first.formageddon_thread.formageddon_sender_id != current_user.id
-          redirect_to @contact_congress_letter
-          return
+          redirect_to @contact_congress_letter and return
         end
 
         break

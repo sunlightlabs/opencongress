@@ -23,17 +23,16 @@
 #  accepted_tos_at       :datetime
 #  authentication_token  :string(255)
 #  facebook_uid          :string(255)
+#  possible_states       :text
+#  possible_districts    :text
 #  state                 :string(2)
 #  district              :integer
 #  district_needs_update :boolean          default(FALSE)
-#  possible_states       :text
-#  possible_districts    :text
+#  password_digest       :string(255)
 #
 
-require 'digest/sha1'
 require_dependency 'authable'
 require_dependency 'email_listable'
-require_dependency 'multi_geocoder'
 require_dependency 'visible_by_privacy_option_query'
 
 class User < OpenCongressModel
@@ -42,6 +41,8 @@ class User < OpenCongressModel
 
   include Authable
   include EmailListable
+  include PrivacyObject
+  apply_simple_captcha
 
   #========== CONSTANTS
 
@@ -56,33 +57,27 @@ class User < OpenCongressModel
   #========== VALIDATORS
 
   validates_presence_of       :login, :email, :unless => :openid?
-  # validates_confirmation_of   :email, :message => 'should match confirmation'
   validates_acceptance_of     :accept_tos,                 :unless => :openid?
   validates_presence_of       :password,                   :if => :password_required?
   validates_length_of         :password, :within => 4..40, :if => :password_required?
   validates_confirmation_of   :password,                   :if => :password_required?
   validates_length_of         :login,    :within => 3..40, :unless => :openid?
   validates_length_of         :email,    :within => 3..100, :unless => :openid?
-  validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, :message => "is invalid"
-  validates_format_of         :login, :with => /\A\w+\z/, :message => "can only contain letters and numbers (no spaces)."
+  validates_format_of         :email, :with => /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i, :message => 'is invalid'
+  validates_format_of         :login, :with => /\A\w+\z/, :message => 'can only contain letters and numbers (no spaces).'
   validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
-  validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
-  validates_presence_of       :user_notification_options
+  validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true, :allow_blank => true
 
   #========== FILTERS
 
-  # This filter merges the validation errors in user_profile with user
-  # so that input forms using attributes from user_profile spit have
-  # the validation messages as they appear in user_profile.
-  # Otherwise, the message is prepended by the words User profile.
-  after_validation -> {
-    user_profile.errors.each  { |name, value| errors.add(name.to_sym(), value) }
-    errors.to_hash.delete_if { |name, value| name.to_s().include? 'user_profile' }
-    # user_profile.errors.clear() - may need this later for some reason
-  }
+  after_validation -> { merge_validation_errors_with(:user_profile) }
+
+  # sets all privacy setting to default values
+  after_create -> { set_all_default_privacies(UserPrivacyOptionItem::DEFAULT_PRIVACY) }
 
   update_email_subscription_when_changed :self, [:email]
+
   # on ban or delete, clean up this user's associations with various parts of the site
   after_save -> {
     privatize!
@@ -99,6 +94,12 @@ class User < OpenCongressModel
   }, :if => -> { (is_banned? || is_deactivated?) && status_changed? }
 
   #========== RELATIONS
+
+  #----- BELONGS_TO
+
+  belongs_to :representative,
+             :class_name => 'Person', :foreign_key => 'representative_id'
+  belongs_to :user_role
 
   #----- HAS_ONE
 
@@ -134,7 +135,8 @@ class User < OpenCongressModel
   has_many :fans, -> { where(confirmed: false) },
            :class_name => 'Friend', :foreign_key => 'friend_id'
   has_many :person_approvals
-  has_many :bookmarks
+  has_many :bookmarks,
+           :dependent => :destroy
   has_many :senator_bookmarks, -> { includes([:person => :roles]).where('roles.role_type = ? and roles.startdate < ? and roles.enddate > ?', 'sen', Time.now, Time.now) },
            :class_name => 'Bookmark', :foreign_key => 'user_id'
   has_many :representative_bookmarks, -> { includes([:person => :roles]).where('roles.role_type = ? and roles.startdate < ? and roles.enddate > ?', 'rep', Time.now, Time.now )},
@@ -170,23 +172,16 @@ class User < OpenCongressModel
   has_many :notebook_items,
            :through => :political_notebook
   has_many :contact_congress_letters
-  has_many :notification_aggregates, -> { includes(:activities) }
+  has_many :notification_aggregates, -> { includes(:activities) },
+           :dependent => :destroy
   has_many :user_notification_option_items, -> { joins(:activity_option) },
            :through => :user_notification_options
-
-  #----- BELONGS_TO
-
-  belongs_to :representative,
-             :class_name => 'Person', :foreign_key => 'representative_id'
-  belongs_to :user_role
+  has_many :user_privacy_option_items,
+           :dependent => :destroy
 
   #========== ALIASES
 
-  #----- ATTRIBUTES
-
   alias_attribute :username, :login
-
-  #----- METHODS
 
   # These are just here for some consistency in naming patterns
   alias_method :voted_bills, :bills_voted_on
@@ -197,20 +192,20 @@ class User < OpenCongressModel
 
   #========== SCOPES
 
-  scope :for_state, lambda {|state| where("state = ?", state.upcase) }
-  scope :for_district, lambda {|state, district| for_state(state).where("district = ?", district.to_i) }
-  scope :active, lambda { where("previous_login_date >= ?", 1.months.ago) }
-  scope :inactive, lambda { where("previous_login_date < ? OR previous_login_date IS NULL", 3.months.ago)}
-  scope :tracking_bill, lambda {|bill| includes(:bookmarked_bills).where("bills.id" => bill.id) }
-  scope :voted_on_bill, lambda {|bill| includes(:bills_voted_on).where("bills.id" => bill.id) }
-  scope :supporting_bill, lambda {|bill| includes(:bills_supported).where("bills.id" => bill.id) }
-  scope :opposing_bill, lambda {|bill| includes(:bills_opposed).where("bills.id" => bill.id) }
-  scope :supporting_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
-  scope :opposing_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating > 5")}
-  scope :ranking_person, lambda{|person| includes(:person_approvals).where("person_approvals.person_id" => person.id).where("rating is not null")}
-  scope :tracking_person, lambda {|person| includes(:bookmarked_people).where("people.id" => person.id) }
-  scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where("subjects.id" => subject.id) }
-  scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where("committees.id" => committee.id) }
+  scope :for_state, lambda {|state| where('state = ?', state.upcase) }
+  scope :for_district, lambda {|state, district| for_state(state).where('district = ?', district.to_i) }
+  scope :active, lambda { where('previous_login_date >= ?', 1.months.ago) }
+  scope :inactive, lambda { where('previous_login_date < ? OR previous_login_date IS NULL', 3.months.ago)}
+  scope :tracking_bill, lambda {|bill| includes(:bookmarked_bills).where('bills.id' => bill.id) }
+  scope :voted_on_bill, lambda {|bill| includes(:bills_voted_on).where('bills.id' => bill.id) }
+  scope :supporting_bill, lambda {|bill| includes(:bills_supported).where('bills.id' => bill.id) }
+  scope :opposing_bill, lambda {|bill| includes(:bills_opposed).where('bills.id' => bill.id) }
+  scope :supporting_person, lambda{|person| includes(:person_approvals).where('person_approvals.person_id' => person.id).where('rating > 5')}
+  scope :opposing_person, lambda{|person| includes(:person_approvals).where('person_approvals.person_id' => person.id).where('rating > 5')}
+  scope :ranking_person, lambda{|person| includes(:person_approvals).where('person_approvals.person_id' => person.id).where('rating is not null')}
+  scope :tracking_person, lambda {|person| includes(:bookmarked_people).where('people.id' => person.id) }
+  scope :tracking_issue, lambda {|subject| includes(:bookmarked_issues).where('subjects.id' => subject.id) }
+  scope :tracking_committee, lambda {|committee| includes(:bookmarked_committees).where('committees.id' => committee.id) }
   scope :mypn_spammers, lambda{includes(:political_notebook => [:notebook_items]).where('notebook_items.spam = ?', true).order('users.login ASC')}
 
   # These are LoD helpers that just pass on AR relations from Person
@@ -228,10 +223,10 @@ class User < OpenCongressModel
 
   #========== SERIALIZERS
 
-  serialize :possible_states     # List serialization
-  serialize :possible_districts  # List serialization
+  serialize :possible_states, Array
+  serialize :possible_districts, Array
 
-  #========== DELEGATED ATTRIBUTES / METHODS
+  #========== DELEGATERS
 
   delegate :zipcode=, :to => :user_profile
   delegate :street_address=, :to => :user_profile
@@ -267,6 +262,9 @@ class User < OpenCongressModel
 
   #----- CLASS
 
+  # Generate a random hex string of an input length
+  #
+  # @return [String] hex string of input length
   def self.random_password(length=40)
     return SecureRandom.hex(length/2)
   end
@@ -282,7 +280,7 @@ class User < OpenCongressModel
 
   def self.unused_login(stub, max_attempts=100)
     candidate = stub
-    (0..max_attempts).each do |attempt|
+    max_attempts.times do
       user = User.find_by_login(candidate)
       return candidate if user.nil?
       candidate = stub + SecureRandom.random_number(9999).to_s(10)
@@ -332,23 +330,61 @@ class User < OpenCongressModel
   end
 
   def self.find_all_by_ip(address)
-    ip = UserIpAddress.int_form(address)
-    return self.includes(:user_ip_addresses).where('user_ip_addresses.addr = ?', ip)
+    includes(:user_ip_addresses).where('user_ip_addresses.addr = ?', UserIpAddress.int_form(address))
   end
 
   def self.find_by_feed_key_option(key)
-    self.includes(:user_options).where("user_options.feed_key = ?", key).first
+    includes(:user_options).where('user_options.feed_key = ?', key).first
+  end
+
+  def self.fix_duplicate_users
+    User.find_by_sql('select login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
+      puts k.login
+      number = k.r1_tally.to_i
+      User.where(login: k.login).order('created_at DESC').each do |j|
+        number = number - 1
+        j.destroy unless number == 1
+      end
+    end
+
+    User.find_by_sql('select email, COUNT(*) as r1_tally FROM users GROUP BY email HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
+      puts k.email
+      number = k.r1_tally.to_i
+      User.where(email: k.email).order('created_at DESC')
+      User.find_all_by_email(k.email, :order => "created_at desc").each do |j|
+        number = number - 1
+        j.destroy unless number == 1
+      end
+    end
+
+    User.find_by_sql('select lower(login) as login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
+      next if k.nil?
+      puts k.login
+      number = k.r1_tally.to_i
+      k.destroy if k.activated_at.nil?
+    end
   end
 
   #----- INSTANCE
 
   public
 
-  def recent_activity(timeframe=7.days)
-    range = (Time.now-timeframe)..Time.now
-    PublicActivity::Activity.where(created_at: range, owner_id: id, owner_type: 'User')
+  # Retrieves recent activity for the current user for a given timeframe
+  #
+  # @param limit [Integer] limit number of returned results
+  # @param timeframe [Time] time back to consider recent
+  # @param type [String] type of activity to query for
+  # @return [Relation<PublicActivity::Activity>] activity of the user
+  def recent_activity(limit=10, timeframe=7.days, type=nil)
+    range = (Time.now - timeframe)..Time.now
+    query = {created_at: range, owner_id: id, owner_type: 'User'}
+    query[:trackable_type] = type if type.present?
+    PublicActivity::Activity.where(query).limit(limit)
   end
 
+  # Update user metadate to include last login time and log their IP
+  #
+  # @param ip_addr [String] string representation of IP address
   def update_login_metadate(ip_addr)
     update_attribute(:previous_login_date, last_login ? last_login : Time.now)
     update_attribute(:last_login, Time.now)
@@ -362,10 +398,8 @@ class User < OpenCongressModel
   def follow(user)
     # already following the user so return false
     return false if Friend.where(user: self, friend: user).any?
-
     # check if already being followed by other user
     followed = Friend.where(user: user, friend: self).first
-
     # confirm if being followed, otherwise create one-way friend
     followed.present? ? followed.confirm! : Friend.create({user: self, friend: user, confirmed: false })
   end
@@ -379,34 +413,61 @@ class User < OpenCongressModel
     friend.defriend if friend.present?
   end
 
-  # Retrieves all or specific notification settings for a user
+  # Retrieves specific notification settings for a user
   #
   # @param key [String] activity key for specific settings, nil for all
   # @param bookmark [Bookmark] bookmark object for granular options, nil for all
-  # @return [UserNotificationOptionItem, Relation<UserNotificationOptionItem>] one or all user's notification settings
+  # @return [UserNotificationOptionItem] a user's notification settings
   def notification_option_item(key=nil, bookmark=nil)
 
-    # return all options if no arguments passed
-    return notification_option_items if key.nil? and bookmark.nil?
-
-    # try fine-grain notification option item if both bookmark and key passed
     if key.present? and bookmark.present?
-      n_opt = notification_option_items.where('activity_options.key = ? AND bookmark_id = ?', key, bookmark.id)
-      return n_opt.first if n_opt.any?
+      noi = notification_option_items.where('activity_options.key = ? AND bookmark_id = ?', key, bookmark.id).last
+    elsif key.present?
+      noi = notification_option_items.where('activity_options.key = ?', key).last
+    elsif bookmark.present?
+      noi = notification_option_items.where('bookmark_id = ?', bookmark.id).last
+    else
+      noi = nil
     end
 
-    if key.present?
-      n_opt = notification_option_items.where('activity_options.key = ?', key)
-      return n_opt.first if n_opt.any?
-    end
+    # return notification option if it exists, fall back on unpersisted generic default otherwise
+    noi.present? ? noi : UserNotificationOptionItem.default
+  end
 
-    if bookmark.present?
-      n_opt = notification_option_items.where('bookmark_id = ?', bookmark.id)
-      return n_opt.first if n_opt.any?
-    end
+  # Sets all default privacy options to broad default values. Used when
+  # user selects their default privacy settings.
+  #
+  # @param privacy [Symbol] privacy options - :public, :private, :friend
+  def set_all_default_privacies(privacy=:private)
+    UserPrivacyOptionItem.set_all_default_privacies_for(self, privacy)
+  end
 
-    # otherwise use default settings
-    UserNotificationOptionItem.new(UserNotificationOptionItem::DEFAULT_ATTRIBUTES)
+  def set_all_privacies(privacy)
+    # TODO implement to set all current privacy settings to argument value
+  end
+
+  # Checks if user can view an input item and method
+  #
+  # @param item [PrivacyObject] object to show to viewer
+  # @param method [String] method to determine privacy of
+  # @return [Boolean] true if this user can view item & method, false otherwise
+  def can_view?(item, method=nil)
+    item.respond_to?(:has_privacy_settings?) ? item.can_show_to?(self, method) : true
+  end
+
+  # Checks if user can show a PrivacyObject (w/ method) to a viewing user
+  #
+  # @param viewer [User] viewing user
+  # @param item [PrivacyObject] object to show to viewer
+  # @param method [String] method to determine privacy of
+  # @return [Boolean] true if this user can view, false otherwise
+  def can_show_item_to?(viewer, item, method=nil)
+    begin
+      return false if item.user != self
+      privacy_option_for({item:item, method:method}).can_show_to?(viewer)
+    rescue
+      false
+    end
   end
 
   # Retrieves user's unseen notifications
@@ -695,6 +756,8 @@ class User < OpenCongressModel
     current_user.bookmarks.count(:all, :include => [{:person => :roles}], :conditions => ["roles.role_type = ?", "rep"])
   end
 
+
+
   def recent_actions(limit = 10)
     b = bookmarks.find(:all, :order => "created_at DESC", :limit => limit)
     c = comments.find(:all, :order => "created_at DESC", :limit => limit)
@@ -724,36 +787,8 @@ class User < OpenCongressModel
     UserNotifier.comment_warning(self, comment).deliver
   end
 
-  def self.fix_duplicate_users
-    User.find_by_sql('select login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
-      puts k.login
-      number = k.r1_tally.to_i
-      User.where(login: k.login).order('created_at DESC').each do |j|
-        number = number - 1
-        j.destroy unless number == 1
-      end
-    end
-
-    User.find_by_sql('select email, COUNT(*) as r1_tally FROM users GROUP BY email HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
-      puts k.email
-      number = k.r1_tally.to_i
-      User.where(email: k.email).order('created_at DESC')
-      User.find_all_by_email(k.email, :order => "created_at desc").each do |j|
-        number = number - 1
-        j.destroy unless number == 1
-      end
-    end
-
-    User.find_by_sql('select lower(login) as login, COUNT(*) as r1_tally FROM users GROUP BY login HAVING COUNT(*) > 1 ORDER BY r1_tally desc;').each do |k|
-      next if k.nil?
-      puts k.login
-      number = k.r1_tally.to_i
-      k.destroy if k.activated_at.nil?
-    end
-  end
-
   def password_required?
-    !openid? && !facebook_connect_user? && (crypted_password.blank? || !password.blank?)
+    !openid? && !facebook_connect_user? && ((password_digest.blank? && crypted_password.blank?) || password.present?)
   end
 
   def openid?
@@ -766,6 +801,45 @@ class User < OpenCongressModel
 
   def should_receive_creation_email?
     !facebook_connect_user? && !suppress_activation_email
+  end
+
+  # Retrieves specific notification settings for behavior based
+  # on specific item, type, and/or method
+  #
+  # @param args [Hash] arguments containing one or more of the following:
+  #        item [PrivacyObject] object which includes the privacy_object module
+  #        type [String] type of a PrivacyObject for generic privacy setting
+  #        method [String] specific method or attribute privacy
+  # @return [UserPrivacyOptionItem] privacy options (may construct temporary default)
+  def privacy_option_for(args={item:nil,type:nil,method:nil})
+
+    begin
+      args.init_missing_keys(nil, :item, :type, :method)
+
+      query = { :method => args[:method] }
+
+      # check granular item instance first
+      if args[:item].present?
+        query[:privacy_object_type] = args[:item].class.name
+        query[:privacy_object_id] = args[:item].id
+        upoi = user_privacy_option_items.where(query).first
+        return upoi unless upoi.nil?
+      end
+
+      # check general type next
+      if args[:type].present? or args[:item].present?
+        query[:privacy_object_type] = args[:type] || args[:item].class.name
+        query[:privacy_object_id] = nil
+        upoi = user_privacy_option_items.where(query).first
+        return upoi unless upoi.nil?
+      end
+
+      # use default privacy if no privacy option found
+      return UserPrivacyOptionItem.default(self, args)
+    rescue
+      UserPrivacyOptionItem.default(self, nil)
+    end
+
   end
 
   private

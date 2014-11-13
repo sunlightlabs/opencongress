@@ -19,7 +19,7 @@
 #  district                  :string(255)
 #  name                      :string(255)
 #  email                     :string(255)
-#  fti_names                 :public.tsvector
+#  fti_names                 :tsvector
 #  user_approval             :float            default(5.0)
 #  biography                 :text
 #  unaccented_name           :string(255)
@@ -60,7 +60,7 @@ class Person < Bookmarkable
 
   @@DISPLAY_OBJECT_NAME = 'Person'
 
-  @@NONVOTING_TERRITORIES = [ 'AS', 'DC', 'GU', 'PR', 'VI' ]
+  @@NONVOTING_TERRITORIES = %w(AS DC GU PR VI)
 
   #========== CONSTANTS
 
@@ -116,18 +116,34 @@ class Person < Bookmarkable
   has_many :person_approvals
   has_many :fundraisers, -> { order('fundraisers.start_time DESC') }
 
-  with_options :class_name => "RollCall", :through => :roll_call_votes, :source => :roll_call do |rc|
-    rc.has_many :unabstained_roll_calls, -> { joins(:bill).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
-    rc.has_many :abstained_roll_calls,  -> { joins(:bill).where("vote IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
-    rc.has_many :party_votes, ->(party=self.party){ joins(:bill).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}") }
+  with_options :class_name => 'RollCall', :through => :roll_call_votes, :source => :roll_call do |rc|
+   # rc.has_many :unabstained_roll_calls, -> { joins(:bill).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
+    #rc.has_many :abstained_roll_calls,  -> { joins(:bill).where("vote IN ('Not Voting', '0') AND bills.session = ?", Settings.default_congress) }
+    #rc.has_many :party_votes, -> (party=self.party) { joins(:bill).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND bills.session = #{Settings.default_congress}") }
+  end
+
+
+  def abstained_roll_calls(bills=false)
+    q = roll_call_votes.joins(:roll_call).where("vote IN ('Not Voting', '0') AND roll_calls.session = ?", NthCongress.current.number)
+    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
+  end
+
+  def unabstained_roll_calls(bills=false)
+    q = roll_call_votes.joins(:roll_call).where("roll_call_votes.vote NOT IN ('Not Voting', '0') AND roll_calls.session = #{NthCongress.current.number}")
+    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
+  end
+
+  def party_votes(bills=false)
+    q = roll_call_votes.joins(:roll_call).where("((roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 't' AND vote IN ('Yea', 'Aye', '+')) OR (roll_calls.#{party == 'Democrat' ? 'democratic_position' : 'republican_position'} = 'f' AND vote IN ('No', 'Nay', '-'))) AND roll_calls.session = #{NthCongress.current.number}")
+    bills ? q.where('roll_calls.bill_id IS NOT NULL') : q
   end
 
   acts_as_formageddon_recipient # contains has_many relationships
 
   #========== SCOPES
 
-  scope :republican, -> { where(party: "Republican") }
-  scope :democrat, -> { where(party: "Democrat") }
+  scope :republican, -> { where(party: 'Republican') }
+  scope :democrat, -> { where(party: 'Democrat') }
   scope :independent, -> { where("party != 'Republican' AND party != 'Democrat'") }
   scope :in_state, ->(state) { where(state: state.upcase) }
 
@@ -146,7 +162,9 @@ class Person < Bookmarkable
 
   alias :blog :blogs
 
-  #========== CLASS METHODS
+  #========== METHODS
+
+  #----- CLASS
 
   def self.custom_index_rebuild
     ['rep','sen'].each{|title|
@@ -442,80 +460,9 @@ class Person < Bookmarkable
     end
   end
 
-  def self.calculate_and_save_party_votes
-    update_query = ["UPDATE people
-                     SET total_session_votes=votes_agg.total_votes,
-                         votes_democratic_position=votes_agg.votes_democratic_position,
-                         votes_republican_position=votes_agg.votes_republican_position
-                     FROM
-                  (SELECT people.id as person_id,
-                           total_votes.total_votes AS total_votes,
-                           dem_position.votes_democratic_position as votes_democratic_position,
-                           rep_position.votes_republican_position as votes_republican_position
-    FROM people
-    LEFT OUTER JOIN roles on roles.person_id=people.id
-    LEFT OUTER JOIN
-      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS total_votes
-      FROM roll_calls
-      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
-      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
-      WHERE roll_call_votes.vote != '0' AND bills.session = ?
-      GROUP BY roll_call_votes.person_id) total_votes ON total_votes.p_id=people.id
-    LEFT OUTER JOIN
-      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS votes_democratic_position
-      FROM roll_calls
-      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
-      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
-      WHERE ((roll_calls.democratic_position = true AND vote = '+') OR (roll_calls.democratic_position = false AND vote = '-'))
-      AND bills.session = ?
-      GROUP BY roll_call_votes.person_id) dem_position ON dem_position.p_id=people.id
-    LEFT OUTER JOIN
-      (SELECT DISTINCT(roll_call_votes.person_id) as p_id, count(DISTINCT roll_calls.id) AS votes_republican_position
-      FROM roll_calls
-      LEFT OUTER JOIN bills ON bills.id = roll_calls.bill_id
-      INNER JOIN roll_call_votes ON roll_calls.id = roll_call_votes.roll_call_id
-      WHERE ((roll_calls.republican_position = true AND vote = '+') OR (roll_calls.republican_position = false AND vote = '-'))
-      AND bills.session = ?
-      GROUP BY roll_call_votes.person_id) rep_position ON rep_position.p_id=people.id
-    WHERE roles.startdate <= ? AND roles.enddate >= ?) votes_agg
-    WHERE people.id=votes_agg.person_id", Settings.default_congress, Settings.default_congress, Settings.default_congress, Date.today, Date.today]
-
-
-    ActiveRecord::Base.connection.execute(sanitize_sql_array(update_query))
-  end
 
   def self.list_by_votes_with_party_ranking(chamber = 'house', party = 'Democrat')
-    role_type = (chamber == 'house') ? 'Rep.' : 'Sen.'
-
-    # find_by_sql(["SELECT people.*,
-    #                       CASE WHEN people.party = 'Democrat' THEN (people.votes_democratic_position::real/people.total_session_votes::real)::real
-    #                            WHEN people.party = 'Republican' THEN (people.votes_republican_position::real/people.total_session_votes::real)::real
-    #                            ELSE 0
-    #                       END as votes_with_party_percentage::real  FROM people
-    #                    LEFT OUTER JOIN roles on roles.person_id=people.id
-    #                    WHERE people.party = ? AND roles.startdate <= ? AND roles.enddate >= ?
-    #                      AND people.title = ?
-    #                   ORDER BY votes_with_party_percentage DESC", party, Date.today, Date.today, role_type])
-
-    peeps = find_by_sql(["SELECT people.*, 0.0 as votes_with_party_percentage FROM people
-                       LEFT OUTER JOIN roles on roles.person_id=people.id
-                       WHERE people.party = ? AND roles.startdate <= ? AND roles.enddate >= ?
-                         AND people.title = ?
-                      ORDER BY votes_with_party_percentage DESC", party, Date.today, Date.today, role_type])
-
-    if party == 'Democrat'
-      peeps.collect! {|p|
-        p.votes_with_party_percentage = p.total_session_votes ? (p.votes_democratic_position.to_f/p.total_session_votes.to_f) * 100 : 0
-        p
-      }
-    else # TODO this assumes all non-dems are republicans
-      peeps.collect! {|p|
-        p.votes_with_party_percentage = p.total_session_votes ? (p.votes_republican_position.to_f/p.total_session_votes.to_f) * 100 : 0
-        p
-      }
-    end
-
-    peeps.sort {|a,b| b.votes_with_party_percentage <=> a.votes_with_party_percentage}
+    send((chamber == 'house') ? 'rep' : 'sen').send(party.downcase).includes(:person_stats).order('person_stats.party_votes_percentage DESC')
   end
 
   def self.random(role, limit=3, congress=109)
@@ -553,9 +500,6 @@ class Person < Bookmarkable
       ["people.state = ? AND people.district = '?' AND roles.role_type='rep' AND roles.enddate > ?", state, district, Date.today]
     ).references(:roles).first
   end
-
-
-
 
   ##
   # This returns a pair of arrays: [ [sen1, sen2], [rep1, ... repN] ]
@@ -821,8 +765,17 @@ class Person < Bookmarkable
     FragmentCacheSweeper::expire_fragments(fragments)
   end
 
-  #========== INSTANCE METHODS
+  #----- INSTANCE
+
   public
+
+  def sponsored_bills_passed
+    bills.joins(:actions).where('actions.action_type = ?', 'enacted')
+  end
+
+  def cosponsored_bills_passed
+    bills_cosponsored.joins(:actions).where('actions.action_type = ?', 'enacted')
+  end
 
   def congresses_active
     current_congress = UnitedStates::Congress.congress_for_year(Date.today.year)
@@ -909,7 +862,7 @@ class Person < Bookmarkable
 
   def with_party_percentage
     if self.unabstained_roll_calls.count > 0
-      return self.party_votes.count.to_f / self.unabstained_roll_calls.count.to_f * 100 if self.unabstained_roll_calls.count > 0
+      return ((self.party_votes.count.to_f / self.unabstained_roll_calls.count.to_f) * 100.00) if self.unabstained_roll_calls.count > 0
     else
       return 0.0
     end

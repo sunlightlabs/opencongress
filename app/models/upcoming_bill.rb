@@ -7,7 +7,7 @@
 #  summary    :text
 #  created_at :datetime
 #  updated_at :datetime
-#  fti_names  :public.tsvector
+#  fti_names  :tsvector
 #
 
 class UpcomingBill < OpenCongressModel

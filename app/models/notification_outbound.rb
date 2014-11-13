@@ -45,9 +45,11 @@ class NotificationOutbound < OpenCongressModel
   end
 
   def user
-    notification_aggregates.last.user
+    self.notification_aggregates.last.user
   end
 
+  # Queues an outbound for delivery. If delay=true then Sidekiq
+  # will queue the message for delivery at a later time.
   def queue_outbound(delay=false)
     if delay
       self.delay_for(delay_send.present? ? delay_send : DEFAULT_OUTBOUND_TIMEFRAME, :retry => 3).send_notification
@@ -56,15 +58,28 @@ class NotificationOutbound < OpenCongressModel
     end
   end
 
-  # TODO: implement the delivery cases
+  # Sends the notification message by utilizing the method corresponding to the outbound_type
+  # The send_notifications variable is located in application_settings.yml. If it is not specified
+  # then the default is not to send notifications. # TODO: implement all the delivery cases
   def send_notification
-    self.send("send_#{outbound_type}".to_sym) rescue logger.error "Outbound type '#{outbound_type}' not found."
-    self.update_attributes!({sent: 1})
+    begin
+      if Settings.send_notifications?
+        self.send("send_#{outbound_type}".to_sym)
+        self.update_attributes!({sent: 1})
+      end
+    rescue NoMethodError
+      logger.error "Outbound type '#{outbound_type}' not found for send_notification."
+    rescue Settingslogic::MissingSetting
+      logger.error 'config/application_settings.yml is missing send_notifications?'
+    rescue
+      logger.error 'Unknown error in send_notification'
+    end
   end
 
   private
 
   def send_email
+    puts "sending notification email..."
     NotificationMailer.setup_email(self).deliver
   end
 

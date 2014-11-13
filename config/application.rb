@@ -11,7 +11,10 @@ Bundler.require(:default, Rails.env) if defined?(Bundler)
 require File.expand_path('../../lib/faxable', __FILE__)
 
 # Load ActiveRecord extensions
-require File.expand_path('../../lib/active_record/humanized_attributes', __FILE__)
+require_all File.expand_path('lib/active_record')
+
+#require File.expand_path('../../lib/active_record/humanized_attributes', __FILE__)
+#require File.expand_path('../../lib/active_record/humanized_attributes', __FILE__)
 
 module OpenCongress
   class Application < Rails::Application
@@ -19,7 +22,8 @@ module OpenCongress
     # Detect and handle jsonp requests
     require 'rack/contrib'
     config.middleware.use 'Rack::JSONP'
-
+    require 'pdfkit'
+    config.middleware.use PDFKit::Middleware
     config.active_record.schema_format = :sql
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers

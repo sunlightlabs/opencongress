@@ -12,6 +12,10 @@
 
 class CommentaryRating < OpenCongressModel
 
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :commentary
   belongs_to :user
 

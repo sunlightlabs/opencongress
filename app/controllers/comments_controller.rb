@@ -231,7 +231,7 @@ class CommentsController < ApplicationController
     end
 
     if @object
-      @comments = @object.comments.find(:all, :limit => 20)
+      @comments = @object.comments.limit(20)
     end
 
     render :layout => false

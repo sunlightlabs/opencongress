@@ -1,4 +1,4 @@
-require 'geocoder'
+require_dependency 'geocoder'
 
 module MultiGeocoder
   class ExplainedGeocode

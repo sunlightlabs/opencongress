@@ -27,8 +27,8 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: 291e6891866805c5bd303f14f5ca7a2464d1f47a
-  branch: beta
+  revision: 65c7b1eecbc51049e3c13067a07bb04312cd4cf6
+  branch: opencongress
   specs:
     formageddon (0.0.2)
       delayed_job
@@ -87,6 +87,7 @@ GEM
     awesome_nested_set (3.0.1)
       activerecord (>= 4.0.0, < 5)
     awesome_print (1.2.0)
+    bcrypt (3.1.9)
     beanstalk-client (1.1.1)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
@@ -532,6 +533,7 @@ GEM
     websocket (1.2.1)
     websocket-driver (0.3.5)
     will_paginate (3.0.7)
+    wkhtmltopdf-binary (0.9.9.3)
     xpath (2.0.0)
       nokogiri (~> 1.3)
     yard (0.8.7.4)
@@ -548,6 +550,7 @@ DEPENDENCIES
   annotate (>= 2.6.0)
   awesome_nested_set (>= 2.0)
   awesome_print
+  bcrypt
   beanstalk-client
   bluecloth
   bourbon
@@ -616,6 +619,7 @@ DEPENDENCIES
   rake (~> 0.9.1)
   rakismet
   random_data
+  require_all
   rmagick (~> 2.13.1)
   rspec-rails
   ruby-openid
@@ -640,4 +644,5 @@ DEPENDENCIES
   vcr
   webmock (~> 1.9.0)
   will_paginate
+  wkhtmltopdf-binary
   yard

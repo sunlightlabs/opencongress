@@ -273,7 +273,7 @@ class AccountController < ApplicationController
 
     @user.accepted_tos_at = Time.now if @user.accept_tos
 
-    if @user.save_with_captcha() && @user.reload()
+    if @user.save_with_captcha and @user.reload #and #&& @user.reload
 
       # check for an invitation
       if session[:invite]
@@ -371,42 +371,38 @@ class AccountController < ApplicationController
   def reset_password
     redirect_to '/account/forgot_password' and return if params[:id].blank?
     @user = User.find_by_password_reset_code(params[:id])
-    @page_title = "Reset Password"
+    @page_title = 'Reset Password'
 
     if @user.nil?
-      flash[:error] = "Password reset link not recognized.  Please try again."
+      flash[:error] = 'Password reset link not recognized.  Please try again.'
       redirect_to '/account/forgot_password' and return
     else
       return unless request.post?
-
       @user.password = ''
-    end
 
-    if (params[:user][:password] == params[:user][:password_confirmation])
-      self.current_user = @user #for the next two lines to work
-      current_user.password_confirmation = params[:user][:password_confirmation]
-      current_user.password = params[:user][:password]
-      @user.reset_password
-      flash[:notice] = current_user.save ? "Password reset" : "Password not reset"
-    else
-      flash[:notice] = "Password mismatch"
+      if params[:user][:password] == params[:user][:password_confirmation]
+        self.current_user = @user
+        current_user.set_password(params[:user][:password], params[:user][:password_confirmation])
+        current_user.reset_password
+        flash[:notice] = current_user.save ? 'Password reset' : 'Password not reset'
+      else
+        flash[:notice] = 'Password mismatch'
+      end
+
+      redirect_back_or_default(:controller => 'account', :action => 'index')
     end
-    redirect_back_or_default(:controller => 'account', :action => 'index')
   end
 
   def profile
     @user = User.find_by_login(params[:user])
-    if @user.nil?
-      render_404 and return
-    end
+    render_404 if @user.nil?
   end
 
   def change_pw
     @user = current_user
-    if (params[:user][:password] == params[:user][:password_confirmation])
+    if params[:user][:password] == params[:user][:password_confirmation]
       self.current_user = @user #for the next two lines to work
-      current_user.password_confirmation = params[:user][:password_confirmation]
-      current_user.password = params[:user][:password]
+      current_user.set_password(params[:user][:password], params[:user][:password_confirmation])
       @user.reset_password
       flash[:notice] = current_user.save ? "Password reset" : "Password not reset"
     else

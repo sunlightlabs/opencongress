@@ -7,7 +7,15 @@
 #
 
 class CommitteeStats < OpenCongressModel
+
+  #========== VALIDATORS
+
   self.primary_key = :committee_id
-  
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :committee
+
 end

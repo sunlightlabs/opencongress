@@ -12,5 +12,11 @@
 #
 
 class BillTitle < OpenCongressModel
+
+  #========== RELATIONS
+
+  #----- BELONGS TO
+
   belongs_to :bill
+
 end

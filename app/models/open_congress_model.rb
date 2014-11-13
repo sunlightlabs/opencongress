@@ -1,13 +1,19 @@
 class OpenCongressModel < ActiveRecord::Base
 
+  #========== ATTRIBUTES
+
   self.abstract_class = true
+
+  #========== METHODS
+
+  #----- CLASS
 
   # Insures all descendants have been touched
   # so the descendant array is complete
   #
   # @return [Array<Model>] array of subclasses
   def self.descendants
-    Dir.glob(Rails.root.join('app/models/**/*.rb').to_s) {|path| require path }
+    # Dir.glob(Rails.root.join('app/models/**/*.rb').to_s) {|path| require path }
     super
   end
 
@@ -18,7 +24,7 @@ class OpenCongressModel < ActiveRecord::Base
     # must eager load all the classes...
     Dir.glob(Rails.root.join('app/models/**/*.rb').to_s) do |model_path|
       begin
-        require model_path
+       # require model_path
       rescue
         # ignore
       end
@@ -44,8 +50,12 @@ class OpenCongressModel < ActiveRecord::Base
     end)
   end
 
+  #----- INSTANCE
+
+  public
+
   def set_default_attributes_for_nil
-    self.class::DEFAULT_ATTRIBUTES.each {|k,v| self.send("#{k.to_s}=".to_sym, v) if self.send(k).blank? } if defined? self.class::DEFAULT_ATTRIBUTES
+    self.class::DEFAULT_ATTRIBUTES.each {|k,v| self.send("#{k.to_s}=".to_sym, v) if self.respond_to?(k) and self.send(k).blank? } if defined? self.class::DEFAULT_ATTRIBUTES
   end
 
 end

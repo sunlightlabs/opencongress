@@ -13,7 +13,7 @@
 #  scraped_from        :string(255)
 #  status              :string(255)
 #  contains_term       :string(255)
-#  fti_names           :public.tsvector
+#  fti_names           :tsvector
 #  created_at          :datetime
 #  is_news             :boolean
 #  is_ok               :boolean          default(FALSE)
@@ -22,20 +22,62 @@
 #  commentariable_type :string(255)
 #
 
+require 'htmlentities'
+
 class Commentary < OpenCongressModel
 
-  require 'htmlentities'
+  #========== INCLUDES
+
+  #  acts_as_solr :fields => [:title,:excerpt,{:date => :date},:type_f,{:commentariable_id => :range_integer}, {:is_ok => :boolean}, {:commentariable_type => :string},
+  #                          {:is_news => :boolean}, :is_ok_f, :is_news_f],
+  #               :facets => [:type_f, :is_ok_f, :is_news_f], :auto_commit => false
+
+  #========== CONSTANTS
+
+  @@per_page = 30
+
+  @@USERAGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.1) Gecko/20060111 Firefox/1.5.0.1'
+  @@VALIDATING_TERMS = ['congress', 'congressman', 'congresswoman', 'congressperson', 'democrat','republican',
+                        'senate', 'house of representatives', 'senator', 'representative', 'sen\\.', 'rep\\.',
+                        'introduced bill', 'roll call', 'legislation', 'legislative' ]
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :commentariable, :polymorphic => true
+
+  #----- HAS_MANY
   
   has_many :commentary_ratings
 
-#  acts_as_solr :fields => [:title,:excerpt,{:date => :date},:type_f,{:commentariable_id => :range_integer}, {:is_ok => :boolean}, {:commentariable_type => :string},
-#                          {:is_news => :boolean}, :is_ok_f, :is_news_f], 
-#               :facets => [:type_f, :is_ok_f, :is_news_f], :auto_commit => false
-
+  #========== ACCESSORS
 
   cattr_reader :per_page
-  @@per_page = 30
+
+  #========== METHODS
+
+  #----- CLASS
+
+  def self.full_text_search(q, options = {})
+    is_news = options[:commentary_type] == 'news' ? 't' : 'f'
+
+    total_commentaries = Commentary.count_by_sql(["SELECT count(*) FROM commentaries
+                                         WHERE commentaries.is_ok = 't' AND
+                                               commentaries.is_news = '#{is_news}' AND
+                                               fti_names @@ to_tsquery('english', ?)", q])
+
+    Commentary.paginate_by_sql(["SELECT commentaries.*, rank(fti_names, ?, 1) as tsearch_rank FROM commentaries
+                                 WHERE commentaries.is_ok = 't' AND
+                                       commentaries.is_news = '#{is_news}' AND
+                                       fti_names @@ to_tsquery('english', ?)
+                                 ORDER BY commentaries.date DESC", q, q],
+                               :per_page => Settings.default_search_page_size, :page => options[:page], :total_entries => total_commentaries)
+  end
+
+  #----- INSTANCE
+
+  public
 
   #decode htmlentities
   def title_d
@@ -74,54 +116,35 @@ class Commentary < OpenCongressModel
     is_news
   end
   
-  def thumbsup_count
-    commentary_ratings.find(:all, :conditions => "commentary_ratings.rating > 5").length
+  def thumbsup_count(count=5)
+    commentary_ratings.where('commentary_ratings.rating > ?',count).count
   end
   
   def score
     if commentary_ratings.count > 0
       score = commentary_ratings.average(:rating)
-      unless score == nil
-        score = score.round
-      end
-    return score
+      score = score.round  unless score == nil
+      score
     else
       nil
     end
   end
   
   def make_bad
-    bc = BadCommentary.new(:url => self.url, :commentariable_id => self.commentariable_id, :commentariable_type => self.commentariable_type, :date => self.date)
-    bc.save
-    
+    BadCommentary.create(:url => self.url,
+                         :commentariable_id => self.commentariable_id,
+                         :commentariable_type => self.commentariable_type,
+                         :date => self.date)
     self.commentariable.decrement!(self.is_news ? :news_article_count : :blog_article_count)
-    
     self.destroy
-  end
-  
-  def self.full_text_search(q, options = {})
-    is_news = options[:commentary_type] == 'news' ? 't' : 'f'
-    
-    total_commentaries = Commentary.count_by_sql(["SELECT count(*) FROM commentaries 
-                                         WHERE commentaries.is_ok = 't' AND
-                                               commentaries.is_news = '#{is_news}' AND
-                                               fti_names @@ to_tsquery('english', ?)", q])
-
-    Commentary.paginate_by_sql(["SELECT commentaries.*, rank(fti_names, ?, 1) as tsearch_rank FROM commentaries 
-                                 WHERE commentaries.is_ok = 't' AND
-                                       commentaries.is_news = '#{is_news}' AND
-                                       fti_names @@ to_tsquery('english', ?)                                       
-                                 ORDER BY commentaries.date DESC", q, q],
-                          :per_page => Settings.default_search_page_size, :page => options[:page], :total_entries => s_count)
   end
   
   def article_valid?
     # first try to match a term in the title or exceprt
     @@VALIDATING_TERMS.each do |t|
-      if ((self.title && self.title.match(/#{t}/i)) || 
-          (self.excerpt && self.excerpt.match(/#{t}/i)))
+      if (self.title && self.title.match(/#{t}/i)) || (self.excerpt && self.excerpt.match(/#{t}/i))
         self.contains_term = t
-        #puts "Matched in title/excerpt.  Not going to external page."
+        # puts "Matched in title/excerpt.  Not going to external page."
         return true
       end
     end
@@ -171,16 +194,16 @@ class Commentary < OpenCongressModel
   
   def senate_bill_strict_validity
     # we don't want 'S.123' to match things like this: "..roadside bombs. 123 more were killed..."
-    if (/\w*['|(&#8217;)]?s(\.)?(\s)*#{self.commentariable.number}/.match("#{self.excerpt} #{self.title}"))
+    if /\w*['|(&#8217;)]?s(\.)?(\s)*#{self.commentariable.number}/.match("#{self.excerpt} #{self.title}")
       #puts "BAD! (#{b.typenumber}) #{c.excerpt} TITLE: #{c.title}"
       return 'FALSE POSITIVE'
     else
       # at least make sure we match 'S.123' or 'S. 123'
-      if (/\s?S\.( )?#{self.commentariable.number}[:\s]/.match("#{self.excerpt} #{self.title}"))
+      if /\s?S\.( )?#{self.commentariable.number}[:\s]/.match("#{self.excerpt} #{self.title}")
         #puts "SEEMS GOOD! (#{b.typenumber}) #{c.excerpt} TITLE: #{c.title}"
         return 'OK'
       # make things that match 'S 123' pending
-      elsif (/S( )?#{self.commentariable.number}/.match("#{self.excerpt} #{self.title}"))
+      elsif /S( )?#{self.commentariable.number}/.match("#{self.excerpt} #{self.title}")
         #puts "POSSIBLE! (#{b.typenumber}) #{c.excerpt} TITLE: #{c.title}"
         return 'PENDING'
       else
@@ -189,24 +212,5 @@ class Commentary < OpenCongressModel
       end
     end
   end
-  
-  @@USERAGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.1) Gecko/20060111 Firefox/1.5.0.1'
-  @@VALIDATING_TERMS = [ 
-    "congress",  
-    "congressman", 
-    "congresswoman", 
-    "congressperson",
-    "democrat",
-    "republican",
-    "senate",
-    "house of representatives", 
-    "senator", 
-    "representative",
-    "sen\\.", 
-    "rep\\.",
-    "introduced bill",
-    "roll call",
-    "legislation",
-    "legislative"
-  ]
+
 end

@@ -13,7 +13,7 @@
 #  render_type         :string(255)
 #  frontpage_image_url :string(255)
 #  excerpt             :text
-#  fti_names           :public.tsvector
+#  fti_names           :tsvector
 #
 
 class Article < OpenCongressModel

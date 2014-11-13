@@ -44,5 +44,5 @@ module UnitedStates
       Time.new(year_for_congress(cong + 1), 1, 3, 11, 59, 59)
     end
   end
-end
 
+end

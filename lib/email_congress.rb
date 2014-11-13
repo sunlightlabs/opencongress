@@ -413,7 +413,7 @@ module EmailCongress
     def reify_as_formageddon_letter (thread, seed)
       # Creates a FormageddonLetter instance, associated with the given FormageddonThread.
       letter = Formageddon::FormageddonLetter.new
-      letter.subject = seed.email_subject.blank?() ? '(no subject)' : seed.email_subject
+      letter.subject = seed.email_subject.blank? ? '(no subject)' : seed.email_subject
       letter.message = seed.email_body
       letter.direction = 'TO_RECIPIENT'
       letter.issue_area = nil   # This will be set if required by the contact form.
@@ -459,6 +459,7 @@ module EmailCongress
         ccl_letter.disposition = ''   # Leave blank for now. Do sentiment analysis in the future?
         ccl_letter.contactable = nil  # Don't associate with a contactable topic, e.g. Bill.
         ccl_letter.is_public = false  # Private because we cannot provide an up-front warning before the user sends an email.
+        ccl_letter.source = :email
         ccl_letter.save!
 
         recipients.each do |rcpt|

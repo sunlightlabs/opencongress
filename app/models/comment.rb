@@ -20,7 +20,7 @@
 #  rgt               :integer
 #  lft               :integer
 #  root_id           :integer
-#  fti_names         :public.tsvector
+#  fti_names         :tsvector
 #  flagged           :boolean          default(FALSE)
 #  ip_address        :string(255)
 #  plus_score_count  :integer          default(0), not null
@@ -36,7 +36,33 @@
 require_dependency 'spammable'
 
 class Comment < OpenCongressModel
+
+  #========== INCLUDES
+
   include Spammable
+  include PrivacyObject
+  acts_as_nested_set :scope => :root
+  rakismet_attrs({
+    :author => :author_name,
+    :author_url => :homepage,
+    :author_email => :author_email,
+    :content => :comment,
+    :user_ip => :ip_address,
+    :user_agent => :user_agent,
+    :referrer => :referrer
+   })
+  # apply_simple_captcha
+
+  #========== VALIDATORS
+
+  validates_presence_of :comment, :message => ' : You must enter a comment.'
+  validates_length_of :comment, :in => 1..1000,
+                      :too_short => ' : Your comment is not verbose enough, write more.',
+                      :too_long => ' : Your comment is too verbose, keep it under 1000 characters.'
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
 
   belongs_to :user
   belongs_to :commentable, :polymorphic => true
@@ -51,41 +77,39 @@ class Comment < OpenCongressModel
     c.belongs_to :notebook_note
     c.belongs_to :notebook_link
   end
+
+  #----- HAS_MANY
+
   has_many :comment_scores
 
-  acts_as_nested_set :scope => :root
-
-  rakismet_attrs({
-    :author => :author_name,
-    :author_url => :homepage,
-    :author_email => :author_email,
-    :content => :comment,
-    :user_ip => :ip_address,
-    :user_agent => :user_agent,
-    :referrer => :referrer
-  })
+  #========== SCOPES
 
   scope :uncensored, -> { where(censored: true) }
-  scope :users_only, -> { uncensored.where("comments.user_id IS NOT NULL") }
+  scope :users_only, -> { uncensored.where('comments.user_id IS NOT NULL') }
   scope :top, -> { uncensored.includes(:user).order('comments.plus_score_count - comments.minus_score_count DESC') }
   scope :spamy, -> { where('comments.spam = ?', true) }
   scope :spammy, -> { spamy }
-  scope :not_spammy, -> { where("comments.spam = ?", false) }
+  scope :not_spammy, -> { where('comments.spam = ?', false) }
   scope :most_useful, -> { top.limit(3) }
 
-  # apply_simple_captcha
-  validates_presence_of :comment, :message => " : You must enter a comment."
-  validates_length_of :comment, :in => 1..1000, :too_short => " : Your comment is not verbose enough, write more.", :too_long => " : Your comment is too verbose, keep it under 1000 characters."
+  #========== METHODS
 
+  #----- CLASS
+
+  # Performs a full text search on comments for the input query
+  #
+  # @param q [String] string to search for in comments
+  # @param options [Hash] optional option hash
+  # @return [Array<Comments>] comments which contain the query
   def self.full_text_search(q, options = {})
     congresses = options[:congresses].nil? ? [Settings.default_congress] : options[:congresses]
 
-    s_count = Comment.count(:all,
-                            :joins => "LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')",
-                            :conditions => ["(comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
-                                             (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill') AND
-                                             comments.commentable_type != 'Person'", q, congresses, q])
+    s_count = Comment.all.count(:joins => "LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')",
+                                :conditions => ["(comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
+                                                 (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill') AND
+                                                 comments.commentable_type != 'Person'", q, congresses, q])
 
+    options[:page] = 1 unless options.has_key?(:page)
 
     # Note: This takes (current_page, per_page, total_entries)
     # We need to do this so we can put LIMIT and OFFSET inside the subquery.
@@ -95,7 +119,7 @@ class Comment < OpenCongressModel
       # See http://www.postgresql.org/docs/8.4/static/textsearch-controls.html
       pager.replace Comment.find_by_sql(["SELECT
           comments.*, ts_headline(comment, ?) as headline
-        FROM (SELECT * from comments LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')
+          FROM (SELECT * from comments LEFT OUTER JOIN bills ON (bills.id = comments.commentable_id AND comments.commentable_type='Bill')
           WHERE ((comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type='Bill' AND bills.session IN (?)) OR
                  (comments.fti_names @@ to_tsquery('english', ?) AND comments.commentable_type != 'Bill'))
           AND comments.commentable_type != 'Person'
@@ -103,7 +127,8 @@ class Comment < OpenCongressModel
     end
   end
 
-  # these methods are for spam detection
+  #----- INSTANCE
+
   def author_name
     user.nil? ? nil : user.login
   end
@@ -121,53 +146,56 @@ class Comment < OpenCongressModel
   end
 
   def commentable_link
+
     return parent.commentable_link if commentable_type.nil?
+
     case commentable_type
-    when 'Person', 'Committee', 'Article'
-      {:controller => commentable_type.pluralize.downcase, :action => 'show', :id => commentable.to_param}
-    when 'Bill'
-      {:controller => 'bill', :action => 'show', :id => commentable.ident}
-    when 'Subject'
-      {:controller => 'issue', :action => 'show', :id => commentable.to_param}
-    when 'BillTextNode'
-      {:controller => 'bill', :action => 'text', :id => commentable.bill_text_version.bill.ident,
-              :version => commentable.bill_text_version.version, :nid => commentable.nid }
-    when 'ContactCongressLetter'
-      {:controller => 'contact_congress_letters', :action => 'show', :id => commentable.to_param}
-    else
-      {:controller => 'index'}
+      when 'Person', 'Committee', 'Article'
+        {:controller => commentable_type.pluralize.downcase, :action => 'show', :id => commentable.to_param}
+      when 'Bill'
+        {:controller => 'bill', :action => 'show', :id => commentable.ident}
+      when 'Subject'
+        {:controller => 'issue', :action => 'show', :id => commentable.to_param}
+      when 'BillTextNode'
+        {:controller => 'bill', :action => 'text', :id => commentable.bill_text_version.bill.ident,
+         :version => commentable.bill_text_version.version, :nid => commentable.nid }
+      when 'ContactCongressLetter'
+        {:controller => 'contact_congress_letters', :action => 'show', :id => commentable.to_param}
+      else
+        {:controller => 'index'}
     end
 
   end
 
   def comment_warn(admin)
-    if self.user
-      self.user.comment_warn(self, admin)
-    end
+    self.user.comment_warn(self, admin) if self.user.present?
   end
 
   def page_link
+
     return self.parent.commentable_link if self.commentable_type.nil?
 
     obj = Object.const_get(self.commentable_type)
     specific_object = obj.find_by_id(self.commentable_id)
 
-    if self.commentable_type == "Bill"
-      return {:controller => 'bill', :action => 'show', :id => specific_object.ident, :goto_comment => self.id}
-    elsif self.commentable_type == "Person"
-      return {:controller => 'people', :action => 'show', :id => specific_object.to_param, :goto_comment => self.id}
-    elsif self.commentable_type == "Subject"
-      return {:controller => 'issue', :action => 'comments', :id => specific_object.to_param, :comment_page => self.page}
-    elsif self.commentable_type == "Article"
-      return {:controller => 'articles', :action => 'view', :id => specific_object.to_param, :goto_comment => self.id}
-    elsif self.commentable_type == "Committee"
-      return {:controller => 'committees', :action => 'show', :id => specific_object.to_param}
-    elsif self.commentable_type == "BillTextNode"
-      return {:controller => 'bill', :action => 'text', :id => specific_object.bill_text_version.bill.ident,
-              :version => self.commentable.bill_text_version.version, :nid => self.commentable.nid }
-    else
-      return {:controller => 'index' }
+    case commentable_type
+      when 'Bill'
+        {:controller => 'bill', :action => 'show', :id => specific_object.ident, :goto_comment => self.id}
+      when 'Person'
+        {:controller => 'people', :action => 'show', :id => specific_object.to_param, :goto_comment => self.id}
+      when 'Subject'
+        {:controller => 'issue', :action => 'comments', :id => specific_object.to_param, :comment_page => self.page}
+      when 'Article'
+        {:controller => 'articles', :action => 'view', :id => specific_object.to_param, :goto_comment => self.id}
+      when 'Committee'
+        {:controller => 'committees', :action => 'show', :id => specific_object.to_param}
+      when 'BillTextNode'
+        {:controller => 'bill', :action => 'text', :id => specific_object.bill_text_version.bill.ident,
+         :version => self.commentable.bill_text_version.version, :nid => self.commentable.nid }
+      else
+        {:controller => 'index' }
     end
+
   end
 
   # /admin is messed up - quick fix by ds
@@ -195,11 +223,8 @@ class Comment < OpenCongressModel
   end
 
   def page
-      if page_result = Comment.find_by_sql(["select comment_page(id, commentable_id, commentable_type, ?) as page_number from comments where id = ?", Comment.per_page, self.id])[0]
-        return page_result.page_number
-      else
-        return 1
-      end
+    page_result = Comment.find_by_sql(["select comment_page(id, commentable_id, commentable_type, ?) as page_number from comments where id = ?", Comment.per_page, self.id])[0]
+    page_result.present? ? page_result.page_number : 1
   end
 
   def commentable_title
@@ -236,4 +261,5 @@ class Comment < OpenCongressModel
     comparison_object.id == id &&
     !comparison_object.new_record?)
   end
+
 end

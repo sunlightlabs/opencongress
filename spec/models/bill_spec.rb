@@ -84,7 +84,7 @@ describe Bill do
         @iteration_count.times do |first_iteration|
           bill = FactoryGirl.create(:bill, id: first_iteration + 1)
           first_iteration.times do |second_iteration|
-            bill.bill_votes.create(support: 0)
+            bill.bill_votes.create(support: 0, user_id: 1)
           end
         end
       end
@@ -96,7 +96,7 @@ describe Bill do
 
       it 'has current_support_pb assigned as order' do
         response = Bill.find_all_by_most_user_votes_for_range(nil, {order: "current_support_pb desc"})
-         expect(response.first.id).to  eq @iteration_count
+        expect(response.first.id).to  eq @iteration_count
       end
 
       it 'has support_count assigned as order' do
@@ -116,7 +116,7 @@ describe Bill do
 
     it 'defauls the range to 30 days if not specified' do
       @bill = FactoryGirl.create(:bill)
-      @bill_vote = @bill.bill_votes.create
+      @bill_vote = @bill.bill_votes.create(user:User.find(13))
 
       response  = Bill.find_all_by_most_user_votes_for_range(nil, {})
       expect(response).to include(@bill)

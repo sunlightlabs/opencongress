@@ -1,5 +1,4 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
-
 # == Schema Information
 #
 # Table name: users
@@ -25,11 +24,12 @@
 #  accepted_tos_at       :datetime
 #  authentication_token  :string(255)
 #  facebook_uid          :string(255)
+#  possible_states       :text
+#  possible_districts    :text
 #  state                 :string(2)
 #  district              :integer
 #  district_needs_update :boolean          default(FALSE)
-#  possible_states       :text
-#  possible_districts    :text
+#  password_digest       :string(255)
 #
 
 FactoryGirl.define do

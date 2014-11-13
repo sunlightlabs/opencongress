@@ -12,6 +12,10 @@
 
 class CommitteeName < OpenCongressModel
 
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :committee
 
 end

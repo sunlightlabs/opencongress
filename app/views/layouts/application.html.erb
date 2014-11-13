@@ -81,6 +81,19 @@
       displayName: 'Email'
     });
     </script>
+      <%= info_box %>
+      <div class="inner">
+
+        <% if @user_object || @related_bills || @related_people || @related_issues ||
+              @related_industries || @related_gossip || @custom_sidebar %>
+          <div id="content-main">
+        <% end %>
+
+          <% if @topic %>
+            <div id="topic">
+              <%= topic_partial(@topic) %>
+            </div>
+          <% end %>
 
     <%= yield :javascripts %>
   </body>

@@ -11,6 +11,12 @@
 #
 
 class CommentScore < OpenCongressModel
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :user
   belongs_to :comment
+
 end

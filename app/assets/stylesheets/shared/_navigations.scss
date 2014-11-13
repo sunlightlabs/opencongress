@@ -1,7 +1,7 @@
 .nav {
   margin: 0;
   list-style: none;
-  padding: $base-spacing-unit * 2 0 0 0;
+  padding: $base-spacing-unit/2 0 $base-spacing-unit/2 0;
 
   @extend .cf;
 

@@ -55,7 +55,7 @@
     <div id="hero" class="container-fluid">
         <div class="row-fluid">
             <div class="span12 centered">
-                <h1>Enter a lawmaker&rsquo;s name, issue area or bill number to search OpenCongress. Discover who represents you, find relevant legislation and learn how to take action.</h1>
+                <p>Enter a lawmaker&rsquo;s name, issue area or bill number to search OpenCongress. Discover who represents you, find relevant legislation and learn how to take action.</p>
                 <form class="form-search" action="/search/result" method="get">
                     <div class="input-append">
                         <input class="search-query" id="main_search" type="text" name="q" placeholder="<%= @popular_legislators.first.full_name rescue "Sheila Jackson-Lee" %>, <%= @popular_bills.first.typenumber rescue "H.R.3261" %>">

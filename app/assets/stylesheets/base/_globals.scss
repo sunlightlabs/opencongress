@@ -35,6 +35,7 @@ a {
 
 h1 {
   font-size: $h1-size;
+  @include rem('margin-bottom', $base-spacing-unit)
 }
 
 h2 {

@@ -394,7 +394,7 @@ module EmailCongress
       seed = EmailCongressLetterSeed.new
       seed.raw_source = email.raw
       seed.sender_email = email.from_email
-      seed.email_subject = email.subject.blank?() ? '(no subject)' : seed.email_subject
+      seed.email_subject = email.subject.blank?() ? '(no subject)' : email.subject
       seed.email_body = ActionController::Base.helpers.sanitize(email.text_body, :tags => [])
       seed.save!
       return seed

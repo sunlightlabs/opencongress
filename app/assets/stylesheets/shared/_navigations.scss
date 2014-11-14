@@ -18,6 +18,11 @@
   > li {
       float: left;
       width: 80px / 5px * 1%;
+      
+      @include media-query('small'){
+        display: block;
+        width: 100%;
+      }
 
     &.active {
       font-weight: 600;

@@ -35,7 +35,6 @@ gem 'coffee-rails', '>= 4.0.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'sass-rails', '>= 4.0.0'
 gem 'bourbon'
-gem 'kss'
 
 gem 'actionpack-page_caching'
 
@@ -181,7 +180,7 @@ group :test, :development do
   gem 'simplecov',            :require => false
   gem 'guard'
   gem 'guard-livereload'
-  gem 'rack-mini-profiler'
+  # gem 'rack-mini-profiler'
   gem 'rspec-rails'
   gem 'random_data'
   gem 'factory_girl_rails'

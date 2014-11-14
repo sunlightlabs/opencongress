@@ -21,6 +21,8 @@ button, .button, .alert {
   padding-right: 1.5em;
   padding-left: 1.5em;
   background: shade(#fff, 1%);
+  text-align: center;
+  margin-bottom: $base-spacing-unit/2;
 
   &:hover {
     color: shade(#A3A3A3, 15%);

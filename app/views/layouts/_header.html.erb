@@ -1,12 +1,14 @@
-<div class="pure-g">
-  <h1 class="pure-u-1-1  pure-u-md-2-3">OpenCongress</h1>
-  <div class="pure-u-1-1  pure-u-md-1-3">
-    <% if logged_in? %>
-      <img src="/cspeisman_ro.jpg" class="icon  float-right">
+<div class='grid'>
+  <h1 class="cell  medium-and-up-two-thirds">OpenCongress</h1>
+  <div class="cell  small-one-whole medium-and-up-one-third">
+    <% if !logged_in? %>
+        <img src="/cspeisman_ro.jpg" class="icon  small-one-half  float-right">
     <% else %>
-      <a href="#" class="button">Create an Account</a>
-      <a href="#" class="button">Sign In</a>
+      <a href="#" class="button  button-blue  small-one-whole">Create an Account</a>
+      <a href="#" class="button  button-blue small-one-whole">Sign In</a>
     <% end %>
   </div>
 </div>
 <hr class="no-margin">
+
+<div></div>

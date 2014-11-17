@@ -84,6 +84,8 @@ GEM
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
     arel (5.0.1.20140414130214)
+    autoprefixer-rails (4.0.0)
+      execjs
     awesome_nested_set (3.0.1)
       activerecord (>= 4.0.0, < 5)
     awesome_print (1.2.0)
@@ -92,6 +94,8 @@ GEM
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
     bluecloth (2.2.0)
+    bootstrap-sass (3.3.1.0)
+      sass (~> 3.2)
     bourbon (3.2.3)
       sass (~> 3.2)
       thor
@@ -545,11 +549,13 @@ DEPENDENCIES
   acts-as-taggable-on
   acts_as_tree (~> 2.0.0)
   annotate (>= 2.6.0)
+  autoprefixer-rails
   awesome_nested_set (>= 2.0)
   awesome_print
   bcrypt
   beanstalk-client
   bluecloth
+  bootstrap-sass (~> 3.3.1)
   bourbon
   byebug
   capistrano

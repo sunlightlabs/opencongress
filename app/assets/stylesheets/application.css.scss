@@ -1,11 +1,9 @@
-/* Using PureCSS as our base layout */
-/* Please consult http://purecss.io/ for more information */
-/* on how to use PureCSS */
+@import "bootstrap-sprockets";
+@import "bootstrap-custom";
 
 @import "bourbon";
 
 @import "base/variables";
-@import "base/purecss_overwrites";
 @import "base/mixins";
 @import "base/globals";
 @import "base/helpers";

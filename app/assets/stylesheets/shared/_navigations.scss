@@ -1,8 +1,7 @@
 .nav {
   margin: 0;
   list-style: none;
-  padding: $base-spacing-unit/2 0 $base-spacing-unit/2 0;
-
+  
   @extend .cf;
 
   a {
@@ -17,7 +16,6 @@
 
   > li {
       float: left;
-      width: 80px / 5px * 1%;
       
       @include media-query('small'){
         display: block;

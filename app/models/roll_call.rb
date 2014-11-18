@@ -32,21 +32,126 @@ require_dependency 'united_states'
 
 class RollCall < OpenCongressModel
 
+  #========== INCLUDES
+
   include ViewableObject
+
+  #========== CONSTANTS
+
+  BILL_PASSAGE_TYPES = [
+      'On Passage', 'On Agreeing to the Resolution'
+  ]
+
+  AMDT_PASSAGE_TYPES = [
+      'On Agreeing to the Amendment'
+  ]
+
+  PASSAGES = [
+      'agreed to',
+      'amendment agreed to',
+      'amendment germane',
+      'bill passed',
+      'cloture motion agreed to',
+      'concurrent resolution agreed to',
+      'conference report agreed to',
+      'decision of chair sustained',
+      'joint resolution passed',
+      'motion agreed to',
+      'motion to proceed agreed to',
+      'motion to reconsider agreed to',
+      'motion to table agreed to',
+      'nomination confirmed',
+      'passed',
+      'resolution agreed to',
+      'veto overridden',
+  ]
+  FAILURES = [
+      'amendment rejected',
+      'bill defeated',
+      'cloture motion rejected',
+      'cloture on the motion to proceed rejected',
+      'failed',
+      'joint resolution defeated',
+      'motion rejected',
+      'motion to recommit rejected',
+      'motion to table failed',
+      'motion to table motion to recommit rejected',
+      'resolution rejected',
+  ]
+
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :bill
   belongs_to :amendment
+
+  #----- HAS_ONE
+
   has_one :action
+
+  #----- HAS_MANY
+
   has_many :roll_call_votes, -> { joins(:person) }
+
+  #========== SCOPES
   
   # TODO: the use of Bill.ident is wrong here. The return value has been re-ordered.
-  scope :for_ident, lambda { |ident|
-    where(["date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?", *RollCall.ident(ident)])
-  }
-
+  scope :for_ident, lambda {|ident| where("date_part('year', roll_calls.date) = ? AND roll_calls.where = case ? when 'h' then 'house' else 'senate' end AND roll_calls.number = ?", *RollCall.ident(ident)) }
   scope :in_year, lambda {|y|  where(["date_part('year', roll_calls.date) = :y", :y => y]) }
   scope :in_congress, lambda {|cong| where(['date >= ? and date <= ?', UnitedStates::Congress.start_datetime(cong),UnitedStates::Congress.end_datetime(cong)]) }
   scope :on_major_bills_for, lambda {|cong| includes(:bill).where(:bills => { :session => cong, :is_major => true }) }
   scope :on_passage, lambda { where("question ILIKE 'On Passage%' OR question ILIKE 'On Motion to Concur in Senate%' OR question ILIKE 'On Concurring%'") }
+
+  #========== METHODS
+
+  #----- CLASS
+
+  def self.passage_types
+    (BILL_PASSAGE_TYPES + AMDT_PASSAGE_TYPES).flatten
+  end
+
+  def self.find_by_ident(ident_string)
+    for_ident(ident_string).find(:first)
+  end
+
+  def self.ident(param_id)
+    md = /(\d+)-([sh]?)(\d+)$/.match(param_id)
+    md ? md.captures : [nil, nil, nil]
+  end
+
+  def self.find_pvs_key_votes(congress = Settings.default_congress)
+    find(:all, :include => [:bill, :amendment], :order => 'roll_calls.date DESC',
+         :conditions => ['roll_calls.date > ? AND
+                                          ((roll_calls.roll_type IN (?) AND bills.key_vote_category_id IS NOT NULL) OR
+                                           (roll_calls.roll_type IN (?) AND amendments.key_vote_category_id IS NOT NULL))',
+                         OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress], BILL_PASSAGE_TYPES, AMDT_PASSAGE_TYPES])
+  end
+
+  def self.latest_votes_for_unique_bills(num = 3)
+    RollCall.find_by_sql("SELECT * FROM roll_calls WHERE id IN
+                          (SELECT max(id) AS roll_id FROM roll_calls
+                           WHERE bill_id IS NOT NULL
+                           GROUP BY bill_id ORDER BY roll_id DESC LIMIT #{num})
+                           AND bill_id IS NOT NULL
+                           ORDER BY date DESC;")
+  end
+
+  def self.latest_roll_call_date_on_govtrack
+    response = nil
+    http = Net::HTTP.new('www.govtrack.us')
+    http.start do |http|
+      request = Net::HTTP::Get.new('/congress/votes.xpd', {'User-Agent' => Settings.scraper_useragent})
+      response = http.request(request)
+    end
+    response.body
+
+    doc = Hpricot(response.body)
+    DateTime.parse((doc/'table[@style="font-size: 90%"]').search('nobr')[1].inner_html)
+  end
+
+  #----- INSTANCE
 
   # All combinations of aye_votes, democrat_votes, democrat_aye_votes, etc.
   %W(aye nay abstain present).each do |vote|
@@ -55,54 +160,10 @@ class RollCall < OpenCongressModel
       define_method("#{party}_#{vote}_votes") { roll_call_votes.send("#{vote}s".to_sym).send("#{party}s".to_sym) }
     end
   end
+
   alias_method :non_votes, :abstain_votes
   %W(democrat republican independent).each do |party|
     define_method("#{party}_votes") { roll_call_votes.send("#{party}s".to_sym)}
-  end
-
-  @@BILL_PASSAGE_TYPES = [
-    'On Passage', 'On Agreeing to the Resolution'
-  ]
-
-  @@AMDT_PASSAGE_TYPES = [
-    'On Agreeing to the Amendment'
-  ]
-
-  @@PASSAGES = [
-    "agreed to",
-    "amendment agreed to",
-    "amendment germane",
-    "bill passed",
-    "cloture motion agreed to",
-    "concurrent resolution agreed to",
-    "conference report agreed to",
-    "decision of chair sustained",
-    "joint resolution passed",
-    "motion agreed to",
-    "motion to proceed agreed to",
-    "motion to reconsider agreed to",
-    "motion to table agreed to",
-    "nomination confirmed",
-    "passed",
-    "resolution agreed to",
-    "veto overridden",
-  ]
-  @@FAILURES = [
-    "amendment rejected",
-    "bill defeated",
-    "cloture motion rejected",
-    "cloture on the motion to proceed rejected",
-    "failed",
-    "joint resolution defeated",
-    "motion rejected",
-    "motion to recommit rejected",
-    "motion to table failed",
-    "motion to table motion to recommit rejected",
-    "resolution rejected",
-  ]
-
-  def self.passage_types
-    (@@BILL_PASSAGE_TYPES + @@AMDT_PASSAGE_TYPES).flatten
   end
 
   #  before_save :set_party_lines
@@ -128,8 +189,13 @@ class RollCall < OpenCongressModel
   end
 
   def boolean_result
-    return true if @@PASSAGES.include? result.downcase or result =~ /passed|agreed to/i
-    return false if @@FAILURES.include? result.downcase or result =~ /rejected|defeated|failed/i
+    if PASSAGES.include? result.downcase or result =~ /passed|agreed to/i
+      true
+    elsif FAILURES.include? result.downcase or result =~ /rejected|defeated|failed/i
+      false
+    else
+      raise 'Unknown result found!'
+    end
   end
 
   def passed?
@@ -144,25 +210,8 @@ class RollCall < OpenCongressModel
     "tag:opencongress.org,#{date.strftime("%Y-%m-%d")}:/roll_call/#{id}"
   end
 
-  def self.find_by_ident(ident_string)
-    for_ident(ident_string).find(:first)
-  end
-
-  def self.ident(param_id)
-    md = /(\d+)-([sh]?)(\d+)$/.match(param_id)
-    md ? md.captures : [nil, nil, nil]
-  end
-
-  def self.find_pvs_key_votes(congress = Settings.default_congress)
-    find(:all, :include => [:bill, :amendment], :order => 'roll_calls.date DESC',
-                           :conditions => ['roll_calls.date > ? AND
-                                          ((roll_calls.roll_type IN (?) AND bills.key_vote_category_id IS NOT NULL) OR
-                                           (roll_calls.roll_type IN (?) AND amendments.key_vote_category_id IS NOT NULL))',
-                  OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress], @@BILL_PASSAGE_TYPES, @@AMDT_PASSAGE_TYPES])
-  end
-
   def vote_for_person(person)
-    RollCallVote.where(["person_id=? AND roll_call_id=?", person.id, self.id]).first
+    roll_call_votes.where(person_id: person.id).first
   end
 
   def vote_url
@@ -170,22 +219,17 @@ class RollCall < OpenCongressModel
   end
 
   def total_votes
-    (ayes + nays + abstains + presents)
+    ayes + nays + abstains + presents
   end
 
   def key_vote?
-    return ((bill and bill.is_major) or (amendment and amendment.bill and amendment.bill.is_major))
+    ((bill and bill.is_major) or (amendment and amendment.bill and amendment.bill.is_major))
   end
 
   def key_vote_category_name
-    if amendment
-      subject_bill = amendment.bill
-    end
-    if subject_bill.nil? and bill
-      subject_bill = bill
-    end
-
-    return '' if subject_bill.nil?
+    subject_bill = amendment.bill if amendment
+    subject_bill = bill if not defined?(subject_bill) and bill
+    return '' unless defined?(subject_bill)
 
     root_category = Subject.root_category
     subjects = subject_bill.subjects.where(:parent_id => root_category.id).to_a
@@ -197,13 +241,12 @@ class RollCall < OpenCongressModel
   end
 
   def vote_counts
-    if @vote_counts.nil?
-      @vote_counts = roll_call_votes.group(:vote).count
-    end
+    @vote_counts = roll_call_votes.group(:vote).count if @vote_counts.nil?
     @vote_counts
   end
 
   def top_vote_categories (n)
+
     vote_counts.to_a.sort_by(&:second).reverse.slice(0, n)
   end
 
@@ -223,36 +266,13 @@ class RollCall < OpenCongressModel
     Set.new(RollCallVote::ABSTAIN_VALUES).intersection(vote_counts.keys).first or 'Not Voting'
   end
 
-  def RollCall.latest_votes_for_unique_bills(num = 3)
-    RollCall.find_by_sql("SELECT * FROM roll_calls WHERE id IN
-                          (SELECT max(id) AS roll_id FROM roll_calls
-                           WHERE bill_id IS NOT NULL
-                           GROUP BY bill_id ORDER BY roll_id DESC LIMIT #{num})
-                          AND bill_id IS NOT NULL
-                          ORDER BY date DESC;" )
-  end
-
-
-  def RollCall.latest_roll_call_date_on_govtrack
-    response = nil;
-    http = Net::HTTP.new("www.govtrack.us")
-    http.start do |http|
-      request = Net::HTTP::Get.new("/congress/votes.xpd", {"User-Agent" => Settings.scraper_useragent})
-      response = http.request(request)
-    end
-    response.body
-
-    doc = Hpricot(response.body)
-    DateTime.parse((doc/'table[@style="font-size: 90%"]').search("nobr")[1].inner_html)
-  end
-
   def display_title
     if bill.present? && (not bill.title_common.empty?)
       bill.title_official
     elsif not question.nil?
       question
     else
-      ""
+      ''
     end
   end
 
@@ -267,11 +287,7 @@ class RollCall < OpenCongressModel
   end
 
   def short_identifier
-    if self.amendment
-       self.amendment.display_number
-    else
-       self.bill.typenumber
-    end
+    self.amendment ? self.amendment.display_number : self.bill.typenumber
   end
 
   def chamber
@@ -292,7 +308,6 @@ class RollCall < OpenCongressModel
     return [together,total]
   end
 
-
   # Retrieves the congress number for this roll call
   #
   # @param number [Boolean] whether to return the number of the object
@@ -301,6 +316,5 @@ class RollCall < OpenCongressModel
     c = NthCongress.where('end_date > ?', date.to_date).first
     number ? c.number : c
   end
-
 
 end

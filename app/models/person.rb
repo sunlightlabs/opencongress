@@ -58,16 +58,42 @@ class Person < Bookmarkable
   include SearchableObject
 
   #========== CONFIGURATIONS
-
   # elasticsearch configuration
-  settings index: { number_of_shards: 1 }, analyzer: 'english', index_options: 'offsets' do
-    mappings dynamic: 'false' do
-      indexes :firstname
-      indexes :middlename
-      indexes :lastname
-      indexes :nickname
-      indexes :state
-      indexes :district
+  settings index: { number_of_shards: 1,
+                    analysis: {
+                        filter: {
+                            tpNGramFilter: {
+                                min_gram: 3,
+                                type: 'nGram',
+                                max_gram: 50
+                            }
+                        },
+                        analyzer: {
+                            tpNGramAnalyzer: {
+                                type: 'custom',
+                                filter: [
+                                    'tpNGramFilter'
+                                ],
+                                tokenizer: 'lowercase'
+                            }
+                        }
+                    },
+
+  } do
+    mappings dynamic: 'false',  suggest: {
+        properties: {
+            proposal: {
+                type: 'string',
+                analyzer: 'tpNGramAnalyzer'
+            }
+        }
+    }, index_options: 'offsets' do
+      indexes :firstname#, analyzer: 'english', index_options: 'offsets'
+      indexes :middlename#, analyzer: 'english', index_options: 'offsets'
+      indexes :lastname#, analyzer: 'english', index_options: 'offsets'
+      indexes :nickname#, analyzer: 'english', index_options: 'offsets'
+      indexes :state#, analyzer: 'english', index_options: 'offsets'
+      indexes :district#, analyzer: 'english', index_options: 'offsets'
     end
   end
 
@@ -77,8 +103,17 @@ class Person < Bookmarkable
 
   NONVOTING_TERRITORIES = %w(AS DC GU PR VI)
 
-  SERIALIZATION_OPS = {:methods => [:oc_user_comments, :oc_users_tracking],
-                       :include => [:recent_news, :recent_blogs]}.freeze
+  # Different formats to serialize as JSON
+  SERIALIZATION_STYLES = {
+      simple: {
+          methods: [:oc_user_comments, :oc_users_tracking],
+          include: [:recent_news, :recent_blogs].freeze
+      },
+      elasticsearch: {
+          methods: [:oc_user_comments, :oc_users_tracking],
+          include: [:person_identifiers, :bills_cosponsored, :committees, :roles]
+      }
+  }
 
   #========== CALLBACKS
 
@@ -155,6 +190,53 @@ class Person < Bookmarkable
 
   #----- CLASS
 
+  def self.should_search(query)
+    {
+        indices: {
+            indices: ['people'],
+            query: {
+                match: {
+                    lastname: {
+                        query: query,
+                        boost: Float::INFINITY,
+                        minimum_should_match: '50%'
+                    }
+                }
+            }
+        }
+    }
+  end
+
+  def self.must_search(query)
+    {
+        indices: {
+            indices: ['people'],
+            query: {
+                bool: {
+                    should: [
+                {
+                    multi_match: {
+                        query: query,
+                        type: 'best_fields',
+                        fields: %w(_all),
+                        analyzer: 'english'
+                    }
+                },
+                {
+                    fuzzy_like_this: {
+                        like_text: query,
+                        analyzer: 'english',
+                        fuzziness: 0.25,
+                        ignore_tf: true
+                    }
+                }
+
+            ]}
+        }
+        }
+    }
+    end
+
   # Performs search of bills in database using elasticsearch.
   # TODO: tweak query until good results found
   #
@@ -163,71 +245,50 @@ class Person < Bookmarkable
   # @return [Relation<Bill>] bills matching the search query
   def self.search(query, limit=25)
     __elasticsearch__.search(query: {
-        function_score: {
-            query: {
-                bool: {
-                    should: [
-                        {
-                            match: {
-                                lastname: {
-                                    query: query,
-                                    boost: Float::INFINITY,
-                                    minimum_should_match: '66%'
-                                }
-                            }
-                        },
-                    ],
-                    must: [
-                        {
-                            multi_match: {
-                                query: query,
-                                type: 'most_fields',
-                                fields: %w(_all),
-                                analyzer: 'english'
-                            }
-                        },
-                        {
-                            fuzzy_like_this: {
-                                like_text: query,
-                                analyzer: 'english',
-                                fuzziness: 0.25,
-                                ignore_tf: true
-                            }
-                        }
-                    ]
+      function_score: {
+        query: {
+          bool: {
+            should: [
+              {
+                match: {
+                  lastname: {
+                    query: query,
+                    boost: Float::INFINITY,
+                    minimum_should_match: '66%'
+                  }
                 }
-            },
-            functions: [
-                {
-                    field_value_factor: {
-                        field: 'page_views_count',
-                        modifier: 'ln1p',
-                        factor: 10
-                    }
-                },
-                {
-                    field_value_factor: {
-                        field: 'news_article_count',
-                        modifier: 'ln1p',
-                        factor: 10
-                    }
-                },
-                {
-                    field_value_factor: {
-                        field: 'blog_article_count',
-                        modifier: 'ln1p',
-                        factor: 10
-                    }
-                },
-                {
-                    field_value_factor: {
-                        field: 'total_session_votes',
-                        modifier: 'ln1p',
-                        factor: 10
-                    }
-                }
+              },
             ],
+            must: [
+              {
+                multi_match: {
+                  query: query,
+                  type: 'best_fields',
+                  fields: %w(_all),
+                  analyzer: 'english'
+                }
+              },
+              {
+                fuzzy_like_this: {
+                  like_text: query,
+                  analyzer: 'english',
+                  fuzziness: 0.25,
+                  ignore_tf: true
+                }
+              }
+            ]
+          }
         },
+        functions: [
+          {
+            field_value_factor: {
+              field: 'page_views_count',
+              modifier: 'ln1p',
+              factor: 1
+            }
+          }
+        ],
+      },
     })
   end
 
@@ -1645,13 +1706,6 @@ class Person < Bookmarkable
     addr += "Washington, DC #{office_zip}\n"
   end
 
-  def as_json(ops = {})
-    super(SERIALIZATION_OPS.merge(ops))
-  end
-
-  def as_xml(ops = {})
-    super(SERIALIZATION_OPS.merge(ops))
-  end
 
   def fec_ids
     person_identifiers.where(namespace: 'fec').map{|id| id.value}
@@ -1667,12 +1721,6 @@ class Person < Bookmarkable
     person_identifiers.create!(namespace: 'fec', value: id) unless fec_ids.include?(id)
   end
 
-  # Serialization for elasticsearch
-  def as_indexed_json(options={})
-    as_json(
-        include: [:person_identifiers, :bills_cosponsored, :roles, :news, :blogs, :comments, :roll_call_votes]
-    )
-  end
 
   private
 
@@ -1683,7 +1731,7 @@ class Person < Bookmarkable
   # @return [Boolean] true if person is member of given congress with title, false otherwise
   def has_the_title_for_congress?(title, congress=nil)
     query_roles = title.present? ? roles.where('roles.role_type = ?', title) : roles.all
-    query_roles.each {|role|  return true if role.member_of_congress?(congress) }
+    query_roles.each {|role| return true if role.member_of_congress?(congress) }
     false
   end
 

@@ -1,4 +1,5 @@
-module EmailCongressHelper	
+module EmailCongressHelper
+
   def at_email_congress (localpart)
     "#{localpart}@#{Settings.email_congress_domain}"
   end
@@ -28,10 +29,11 @@ module EmailCongressHelper
         }
       ]
     }
-    return default_email.merge(options)
+    default_email.merge(options)
   end
 
   def incoming_seed (options=Hash.new)
     EmailCongress.seed_for_postmark_object(incoming_email(options))
   end
+
 end

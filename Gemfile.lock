@@ -564,6 +564,7 @@ DEPENDENCIES
   database_cleaner
   delayed_job
   delayed_job_active_record
+  elasticsearch
   elasticsearch-model
   elasticsearch-rails
   facebooker2

@@ -53,6 +53,7 @@ class ContactCongressLetter < OpenCongressModel
 
   scope :browser, lambda { where('source = ?', 2) }
   scope :email, lambda { where('source = ?', 1) }
+  scope :user_letters, lambda {|user| where(user: user) }
 
   #========== METHODS
 

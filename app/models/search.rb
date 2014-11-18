@@ -17,8 +17,11 @@ class Search < OpenCongressModel
 
   include SearchHelper
   include ActionView::Helpers::TextHelper
+  include Elasticsearch::Model
 
   #========== CONSTANTS
+
+  SEARCHABLE_MODELS = %w(bill person)
 
   # The search filters that a user selects are stored in the database as a list of integers corresponding to
   # the order by which they appear in this list. This is done to limit unnecessary space usage.
@@ -58,15 +61,66 @@ class Search < OpenCongressModel
 
   #========== SERIALIZERS
 
-  serialize :search_filters, SearchFilterSerializer
+  serialize :search_filters, Array
   serialize :search_congresses, Array
 
   #========== METHODS
 
   #----- CLASS
 
-  def self.search(query, options = {}, limit = 25)
+  def self.reset_all_indices
+    drop_all_indices
+    create_all_indices
+  end
 
+  def self.drop_all_indices
+    SEARCHABLE_MODELS.each do |name|
+      model = name.camelize.constantize
+      model.__elasticsearch__.client.indices.delete index: model.index_name rescue nil
+    end
+  end
+
+  def self.create_all_indices
+    SEARCHABLE_MODELS.each do |name|
+      model = name.camelize.constantize
+      model.import_bulk
+    end
+  end
+
+  def self.elasticsearch_body(query, should_array = [], must_array = [])
+    {
+      query: {
+        function_score: {
+          query: {
+            bool: {
+              should: should_array,
+              must: must_array
+           }
+          },
+          functions: [
+            {
+              field_value_factor: {
+                field: 'page_views_count',
+                modifier: 'sqrt',
+                factor: 0.5
+              }
+            }
+          ],
+        },
+      }
+    }
+  end
+
+  def self.search(query, indexes = [], limit = 25)
+    prepare_search(query,indexes,limit).hits.hits.collect{|record| record._type.camelize.constantize.find(record._id) }
+  end
+
+  def self.prepare_search(query, indexes = [], limit = 25)
+    should_part = SEARCHABLE_MODELS.collect{|i| i.camelize.constantize.should_search(query)}
+    must_part = SEARCHABLE_MODELS.collect{|i| i.camelize.constantize.must_search(query)}
+    query = {body: elasticsearch_body(query, should_part, must_part)}
+    query[:indexes] = indexes if indexes.any?
+    Elasticsearch::Model.client.search(query)
   end
 
   # Retrieves the top searched terms from the database
@@ -96,8 +150,7 @@ class Search < OpenCongressModel
 
   private
 
-  # Doctors the input data before saving to the database. This is done to compress the search filters
-  # into a smaller size so we don't needlessly store extraneous information in the database.
+  # Doctors the input data before saving to the database.
   #
   def doctor_data_for_save
     self.page = 1 if (self.page.nil? || self.page < 1)

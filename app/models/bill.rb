@@ -49,15 +49,42 @@ class Bill < Bookmarkable
   #========== CONFIGURATIONS
 
   # elasticsearch configuration
-  settings index: { number_of_shards: 1 } do
-    mappings dynamic: 'false' do
-      indexes :summary, analyzer: 'english', index_options: 'offsets'
-      indexes :plain_language_summary, analyzer: 'english', index_options: 'offsets'
-      indexes :official_title, analyzer: 'english', index_options: 'offsets'
-      indexes :short_title, analyzer: 'english', index_options: 'offsets'
-      indexes :popular_title, analyzer: 'english', index_options: 'offsets'
-      indexes :default_title, analyzer: 'english', index_options: 'offsets'
-      indexes :billtext_txt, analyzer: 'english', index_options: 'offsets'
+  settings index: { number_of_shards: 1,
+                    analysis: {
+                      filter: {
+                        tpNGramFilter: {
+                          min_gram: 3,
+                          type: 'nGram',
+                          max_gram: 50
+                        }
+                      },
+                    analyzer: {
+                      tpNGramAnalyzer: {
+                        type: 'custom',
+                        filter: [
+                        'tpNGramFilter'
+                        ],
+                      tokenizer: 'lowercase'
+                      }
+                    }
+                  },
+
+  } do
+    mappings dynamic: 'false',  suggest: {
+        properties: {
+        proposal: {
+        type: 'string',
+        analyzer: 'tpNGramAnalyzer'
+        }
+        }
+    }, index_options: 'offsets' do
+      indexes :summary #, analyzer: 'english', index_options: 'offsets'
+      indexes :plain_language_summary#, analyzer: 'english', index_options: 'offsets'
+      indexes :official_title#, analyzer: 'english', index_options: 'offsets'
+      indexes :short_title#, analyzer: 'english', index_options: 'offsets'
+      indexes :popular_title#, analyzer: 'english', index_options: 'offsets'
+      indexes :default_title#, analyzer: 'english', index_options: 'offsets'
+      indexes :billtext_txt#, analyzer: 'english', index_options: 'offsets'
     end
   end
 
@@ -95,14 +122,24 @@ class Bill < Bookmarkable
   }
 
   # Different formats to serialize bills as JSON
-  SERIALIZATION_STYLES = {:simple => {:except => [:rolls, :hot_bill_category_id]},
-                          :full => {:except => [:rolls, :hot_bill_category_id],
-                                    :methods => [:title_full_common, :status],
-                                    :include => {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]},
-                                                 :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]},
-                                                 :bill_titles => {},
-                                                 :most_recent_actions => {}
-                                    }}}
+  SERIALIZATION_STYLES = {
+    :simple => {
+      :except => [:rolls, :hot_bill_category_id]
+    },
+    :full => {
+      except:  [:rolls, :hot_bill_category_id],
+      methods: [:title_full_common, :status],
+      include: {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]},
+                   :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]},
+                   :bill_titles => {},
+                   :most_recent_actions => {} }
+    },
+    :elasticsearch => {
+      except:  [:rolls, :hot_bill_category_id],
+      include: [:bill_fulltext, :sponsor, :top_subject, :bill_titles, :committees],
+      methods: [:summary, :plain_language_summary, :official_title, :short_title, :popular_title, :default_title, :billtext_txt, :nickname_title]
+    }
+  }
 
   #========== CALLBACKS
 
@@ -245,6 +282,54 @@ class Bill < Bookmarkable
     UnitedStates::Bills::ABBREVIATIONS.keys[0..3]
   end
 
+  def self.should_search(query)
+    {
+      indices: {
+        indices: ['bills'],
+        query: {
+          match: {
+            nickname_title: {
+              query: query,
+              boost: Float::INFINITY,
+              minimum_should_match: '50%'
+            }
+          }
+        }
+      }
+    }
+  end
+
+  def self.must_search(query)
+    {
+        indices: {
+        indices: ['bills'],
+        query: { bool: { should: [
+            {
+                multi_match: {
+                    query: query,
+                    type: 'best_fields',
+                    fields: %w(_all),
+                    analyzer: 'english'
+                }
+            },
+            {
+                fuzzy_like_this: {
+                    like_text: query,
+                    analyzer: 'english',
+                    fuzziness: 0.25,
+                    ignore_tf: true
+                }
+            }
+
+        ]}}
+    }
+    }
+
+
+
+
+  end
+
   # Performs search of bills in database using elasticsearch.
   # TODO: tweak query until good results found
   #
@@ -271,7 +356,7 @@ class Bill < Bookmarkable
               {
                 multi_match: {
                   query: query,
-                  type: 'most_fields',
+                  type: 'best_fields',
                   fields: %w(_all summary^3 manual_title^10 nickname_title^100),
                   analyzer: 'english'
                 }
@@ -293,16 +378,6 @@ class Bill < Bookmarkable
               field: 'page_views_count',
               modifier: 'ln1p',
               factor: 10
-            }
-          },
-          {
-            exp: {
-              updated: {
-                origin: Date.today,
-                scale:'90d',
-                offset: '30d',
-                decay:0.99
-              }
             }
           }
         ],
@@ -1612,24 +1687,8 @@ class Bill < Bookmarkable
     (((position == 'support' ? bs.to_f : bo.to_f) / vt) * 100).round
   end
 
-  def as_json(ops = {})
-    super(stylize_serialization(ops))
-  end
-
-  def as_xml(ops = {})
-    super(stylize_serialization(ops))
-  end
-
   def to_email_subject
     title_full_common
-  end
-
-  # Serialization for elasticsearch
-  def as_indexed_json(options={})
-    as_json(
-        include: [:bill_fulltext, :sponsor, :top_subject, :bill_titles, :committees],
-        methods: [:summary, :plain_language_summary, :official_title, :short_title, :popular_title, :default_title, :billtext_txt, :nickname_title]
-    )
   end
 
   def official_title
@@ -1653,12 +1712,6 @@ class Bill < Bookmarkable
   end
 
   private
-
-  def stylize_serialization(ops)
-   ops ||= {}
-   style = ops.delete(:style) || :simple
-   SERIALIZATION_STYLES[style].merge(ops)
-  end
 
   def action_query(action_type, vote_type = nil)
     actions.action_and_vote(action_type, vote_type).last

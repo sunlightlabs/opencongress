@@ -1,5 +1,5 @@
-<% @distributors.includes(:notification_aggregate, :notification_aggregate => :activities).each do |d| %>
+<% distributors_with_includes.each do |d| %>
 
-    <%= render "notifications/#{d.notification_aggregate.activity_key.split('.')[0]}/base", :na => d.notification_aggregate %>
+    <%= render_base(d) %>
 
 <% end %>

@@ -6,12 +6,14 @@ RSpec.configure do |c|
 end
 
 describe EmailCongressController, type: :controller do
+
   describe 'Known user' do
+
     before(:each) do
       @user = users(:jdoe)
     end
 
-    it "should bounce for illegitimate recipient" do
+    it 'should bounce for illegitimate recipient' do
 			delivery_count_before = ActionMailer::Base.deliveries.length
       email = incoming_email({
         "To" => "user@example.com",
@@ -44,7 +46,7 @@ describe EmailCongressController, type: :controller do
 	    assert_response :success
     end
 
-    it "should send a confirmation link when user emails myreps@" do
+    it 'should send a confirmation link when user emails myreps@' do
       email = incoming_email({
         "To" => at_email_congress('myreps'),
         "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ],
@@ -59,7 +61,7 @@ describe EmailCongressController, type: :controller do
       expect(message.subject).to include("Please confirm your message to Congress:")
     end
 
-    it "successful_confirmation" do
+    it 'successful_confirmation' do
 	    seed = incoming_seed({
 	      "From" => @user.email,
 	      "FromFull" => { "Name" => "", "Email" => @user.email },
@@ -89,6 +91,7 @@ describe EmailCongressController, type: :controller do
       assert_match(/^Email Congress could not deliver your message/, message.subject)
     end
   end
+
   describe 'New users' do
     it 'no_bounce_for_illegitimate_recipients_for_new_user' do
 	    delivery_count_before = ActionMailer::Base.deliveries.length
@@ -114,10 +117,11 @@ describe EmailCongressController, type: :controller do
       expect(message.subject).not_to include('Could not deliver message')
     end
 
-    it "New seed should redirect to /complete_profile" do
+    it 'New seed should redirect to /complete_profile' do
 	    seed = incoming_seed
 	    get :confirm, {'confirmation_code' => seed.confirmation_code}
 	    assert_redirected_to @controller.url_for(:action => :complete_profile, :confirmation_code => seed.confirmation_code)
     end
   end
+
 end

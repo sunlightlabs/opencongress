@@ -11,6 +11,7 @@ gem 'dalli'
 gem 'rails-observers'
 
 # better search
+gem 'elasticsearch'
 gem 'elasticsearch-model'
 gem 'elasticsearch-rails'
 

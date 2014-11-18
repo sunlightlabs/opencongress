@@ -3,6 +3,7 @@ require 'nanp'
 module EmailCongress
 
   class ProfileProxy
+
     include ActiveModel::Naming
     include ActiveModel::Conversion
     include ActiveModel::Validations
@@ -10,6 +11,7 @@ module EmailCongress
     @@ATTRS = [:email, :accept_tos, :first_name, :last_name,
                :mobile_phone, :street_address, :street_address_2, :city,
                :state, :zipcode, :zip_four]
+
     attr_accessor(*@@ATTRS)
 
     validates_acceptance_of :accept_tos, :allow_nil => true, :accept => true
@@ -39,9 +41,7 @@ module EmailCongress
 
     def initialize (src=nil)
       @errors = ActiveModel::Errors.new(self)
-      unless src.nil?
-        copy_from(src)
-      end
+      copy_from(src) unless src.nil?
     end
 
     def self.build (*sources)
@@ -53,7 +53,7 @@ module EmailCongress
     end
 
     def attributes_hash
-      pairs = @@ATTRS.map{ |attr| [attr, self.send(attr)] }
+      pairs = @@ATTRS.map{|attr| [attr, self.send(attr)] }
       Hash[pairs]
     end
 
@@ -62,11 +62,8 @@ module EmailCongress
       false
     end
 
-    def mobile_phone= (phone_number)
-      if phone_number.blank?
-        return @mobile_phone = phone_number
-      end
-
+    def mobile_phone=(phone_number)
+      return @mobile_phone = phone_number if phone_number.blank?
       nanp_number = NANP::PhoneNumber.new(phone_number)
       if nanp_number.valid? && !nanp_number.local?
         # We won't have to display an error, so reformat it.
@@ -87,15 +84,15 @@ module EmailCongress
     end
 
     def mailing_address
-      addr = ""
+      addr = ''
       if street_address.present?
         addr += "#{street_address}"
         if street_address_2.present?
           addr += " #{street_address_2},"
         else
-          addr += ","
+          addr += ','
         end
-        addr += " " if state.present? || zipcode.present?
+        addr += ' ' if (state.present? || zipcode.present?)
       end
       if state.present?
         addr += "#{city}, " if city.present?
@@ -107,8 +104,9 @@ module EmailCongress
       addr
     end
 
-    def copy_from (src)
+    def copy_from(src)
       init_method = "copy_from_#{src.class.name.split(/::/).last.downcase}"
+
       if self.respond_to?(init_method)
         self.send(init_method, src)
       else
@@ -116,7 +114,7 @@ module EmailCongress
       end
     end
 
-    def copy_to (dst)
+    def copy_to(dst)
       persist_method = "copy_to_#{dst.class.name.split(/::/).last.downcase}"
       if self.respond_to?(persist_method)
         self.send(persist_method, dst)
@@ -125,10 +123,8 @@ module EmailCongress
       end
     end
 
-    def merge (other)
-      unless other.is_a?(ProfileProxy)
-        other = ProfileProxy.new(other)
-      end
+    def merge(other)
+      other = ProfileProxy.new(other) unless other.is_a?(ProfileProxy)
       merged = ProfileProxy.new
       # Existing values take precedence, so copy in reverse order.
       other.copy_to_generic_dest(merged)
@@ -138,16 +134,12 @@ module EmailCongress
       merged
     end
 
-    def merge_many (other, *more)
+    def merge_many(other, *more)
       merged = merge(other)
-      if more.empty?
-        return merged
-      else
-        return merged.merge_many(*more)
-      end
+      more.empty? ? merged : merged.merge_many(*more)
     end
 
-    def copy_from_mapped_attributes (attr_map, src)
+    def copy_from_mapped_attributes(attr_map, src)
       attr_map.each do |from_attr, to_attr|
         existing_value = self.send(to_attr)
         new_value = src.send(from_attr)
@@ -157,7 +149,7 @@ module EmailCongress
       end
     end
 
-    def copy_to_mapped_attributes (attr_map, dst)
+    def copy_to_mapped_attributes(attr_map, dst)
       attr_map.each do |from_attr, to_attr|
         value = self.send(from_attr)
         writer = "#{to_attr}="
@@ -180,22 +172,20 @@ module EmailCongress
         :email => :sender_email }
     end
 
-    def copy_to_formageddonthread (dst)
+    def copy_to_formageddonthread(dst)
       copy_to_mapped_attributes(formageddon_attr_map, dst)
     end
 
-    def copy_from_generic_source (src)
+    def copy_from_generic_source(src)
       self.attributes_hash.each do |attr_name, existing_value|
         if existing_value.blank? && src.respond_to?(attr_name)
           value = src.send(attr_name)
-          if !value.nil?
-            self.send("#{attr_name}=", value)
-          end
+          self.send("#{attr_name}=", value) if value.present?
         end
       end
     end
 
-    def copy_to_generic_dest (dst)
+    def copy_to_generic_dest(dst)
       self.attributes_hash.each do |attr_name, value|
         writer = "#{attr_name}="
         if dst.respond_to?(writer) && !value.blank?
@@ -204,7 +194,7 @@ module EmailCongress
       end
     end
 
-    def copy_from_emailcongressletterseed (src)
+    def copy_from_emailcongressletterseed(src)
       @@ATTRS.each do |f|
         reader = "sender_#{f}"
         writer = "#{f}="
@@ -214,7 +204,7 @@ module EmailCongress
       end
     end
 
-    def copy_to_emailcongressletterseed (dst)
+    def copy_to_emailcongressletterseed(dst)
       @@ATTRS.each do |f|
         reader = "#{f}"
         writer = "sender_#{f}="
@@ -259,34 +249,35 @@ module EmailCongress
   end
 
   class << self
+
     def localpart_pattern
       /(Rep|Sen)[.]?([-A-Za-z0-9]+)/i
     end
 
-    def parse_localpart (localpart)
+    def parse_localpart(localpart)
       m = localpart_pattern.match(localpart)
       return nil if m.nil?
       { :title => m.captures[0].downcase,
         :subdomain => m.captures[1].downcase }
     end
 
-    def websites_for_title_and_subdomain (title, subdomain)
-      duplicate_with_trailing_slash = lambda { |url| [url, "#{url}/"] }
+    def websites_for_title_and_subdomain(title, subdomain)
+      duplicate_with_trailing_slash = lambda {|url| [url, "#{url}/"] }
       subdomain = subdomain.downcase
       urls = case title.downcase
-      when "rep"
-        ["http://#{subdomain}.house.gov",
-         "http://www.#{subdomain}.house.gov",
-         "http://www.house.gov/#{subdomain}"]
-      when "sen"
-        ["http://#{subdomain}.senate.gov",
-         "http://www.#{subdomain}.senate.gov",
-         "http://www.senate.gov/#{subdomain}"]
+                when "rep"
+                  ["http://#{subdomain}.house.gov",
+                   "http://www.#{subdomain}.house.gov",
+                   "http://www.house.gov/#{subdomain}"]
+                when "sen"
+                  ["http://#{subdomain}.senate.gov",
+                   "http://www.#{subdomain}.senate.gov",
+                   "http://www.senate.gov/#{subdomain}"]
       end
       urls.flat_map(&duplicate_with_trailing_slash)
     end
 
-    def email_address_for_website (website)
+    def email_address_for_website(website)
       pattern = /^(?:www[.])?([-a-z0-9]+)[.](house|senate)[.]gov$/i
       url = URI.parse(website)
       return nil if url.host.nil?
@@ -297,24 +288,20 @@ module EmailCongress
       return "#{prefix.capitalize}.#{nameish.capitalize}@#{Settings.email_congress_domain}"
     end
 
-    def email_address_for_person (person)
+    def email_address_for_person(person)
       return nil if person.url.blank?
       email_address_for_website(person.url)
     end
 
-    def email_addresses_for_people (people)
+    def email_addresses_for_people(people)
       people.map{ |p| email_address_for_person(p) }.compact
     end
 
-    def expand_special_addresses (sender_user, addresses)
+    def expand_special_addresses(sender_user, addresses)
       inbound_address = Settings.to_hash['email_congress_inbound_address']
       addresses.flat_map do |addr|
         if addr =~ /^myreps@/
-          if sender_user.nil?
-            next []
-          else
-            next EmailCongress.email_addresses_for_people(sender_user.my_congress_members)
-          end
+          next (sender_user.nil? ? [] : EmailCongress.email_addresses_for_people(sender_user.my_congress_members))
         elsif inbound_address.present? && addr.downcase == inbound_address.downcase
           next []
         else
@@ -323,18 +310,18 @@ module EmailCongress
       end
     end
 
-    def resolve_addresses (sender_user, addresses)
+    def resolve_addresses(sender_user, addresses)
       addresses = expand_special_addresses(sender_user, addresses)
-      return addresses.map{ |a| EmailCongress.congressmember_for_address(a) rescue nil }.compact
+      addresses.map{|a| EmailCongress.congressmember_for_address(a) rescue nil }.compact
     end
 
-    def cleaned_recipient_list (sender_user, recipient_addresses)
+    def cleaned_recipient_list(sender_user, recipient_addresses)
       recipients = EmailCongress.resolve_addresses(sender_user, recipient_addresses)
       recipients = EmailCongress.restrict_recipients(sender_user, recipients)
-      return recipients.map{ |rcpt| [EmailCongress.email_address_for_person(rcpt), rcpt] }
+      recipients.map{ |rcpt| [EmailCongress.email_address_for_person(rcpt), rcpt] }
     end
 
-    def congressmembers_for_address (address, date=Date.today)
+    def congressmembers_for_address(address, date=Date.today)
       # Maps the given address to a set of Person models.
       # Not intended to be called from client code.
       begin
@@ -348,13 +335,11 @@ module EmailCongress
 
       roles = Role.on_date(date).where(:url => websites).to_a
       people = roles.map(&:person).to_a
-      if date == Date.today
-        people += Person.on_date(date).where(:website => websites).to_a
-      end
+      people += Person.on_date(date).where(:website => websites).to_a if date == Date.today
       people.uniq
     end
 
-    def congressmember_for_address (address, date=Date.today)
+    def congressmember_for_address(address, date=Date.today)
       # Maps the given address to a single Person model. Raises a
       # RuntimeError in the case of multiple matches. Returns nil
       # in the case of no matches.
@@ -365,20 +350,18 @@ module EmailCongress
       members.first
     end
 
-    def restrict_recipients (sender, recipients)
+    def restrict_recipients(sender, recipients)
       rcpts = Set.new(recipients)
-      unless sender.nil? || sender.district_needs_update?
-        rcpts &= Set.new(sender.my_congress_members)
-      end
-      return rcpts
+      rcpts &= Set.new(sender.my_congress_members) unless (sender.nil? || sender.district_needs_update?)
+      rcpts
     end
 
-    def pending_seeds (user)
+    def pending_seeds(user)
       email = user.is_a?(User) ? user.email : user
       EmailCongressLetterSeed.unresolved.where(:sender_email => email).to_a
     end
 
-    def seed_for_postmark_object (obj)
+    def seed_for_postmark_object(obj)
 
       case obj
         when String
@@ -394,23 +377,21 @@ module EmailCongress
       seed = EmailCongressLetterSeed.new
       seed.raw_source = email.raw
       seed.sender_email = email.from_email
-      seed.email_subject = email.subject.blank?() ? '(no subject)' : seed.email_subject
+      seed.email_subject = email.subject.blank? ? '(no subject)' : email.subject
       seed.email_body = ActionController::Base.helpers.sanitize(email.text_body, :tags => [])
       seed.save!
-      return seed
+      seed
     end
 
-    ##
     # Creates a FormageddonLetter instance, associatedd to a
     # FormageddonThread. This method returns false if it fails to save
     # the thread. Note the dependency Formageddon gem has models and
     # model extensions not defined in this project.
     #
-    # @param   thread   FormageddonThread object
-    # @param   seed     EmailCongressLetterSeed object
-    # @return  FormageddonLetter object if successful, exception if save! fails
-    #
-    def reify_as_formageddon_letter (thread, seed)
+    # @param thread [FormageddonThread] formageddon thread to associate letter with
+    # @param seed [EmailCongressLetterSeed] seed message
+    # @return [FormageddonLetter] instance if successful, exception if save! fails
+    def reify_as_formageddon_letter(thread, seed)
       # Creates a FormageddonLetter instance, associated with the given FormageddonThread.
       letter = Formageddon::FormageddonLetter.new
       letter.subject = seed.email_subject.blank? ? '(no subject)' : seed.email_subject
@@ -421,21 +402,19 @@ module EmailCongress
       letter.fax_id = nil       # This will be set if we fall back to faxing.
       letter.formageddon_thread = thread
       letter.save!
-      return letter
+      letter
     end
 
-    ##
     # Creates a FormageddonThread instance, not yet associated to a
     # ContactCongressFormageddonThread. This method returns false if
     # it fails to save the thread. Note the dependency Formageddon
     # gem has models and model extensions not defined in this project.
     #
-    # @param   sender   User object
-    # @param   seed     EmailCongressLetterSeed object
-    # @param   rcpt     Person object
-    # @return  FormageddonThread object if successful, exception if save! fails
-    #
-    def reify_as_formageddon_thread (sender, seed, rcpt)
+    # @param sender [User] the sending user instance
+    # @param seed [EmailCongressLetterSeed] the email congress seed
+    # @param rcpt [Person] person to send letter to
+    # @return [FormageddonThread] object if successful, exception if save! fails
+    def reify_as_formageddon_thread(sender, seed, rcpt)
       # Creates a FormageddonThread instance, not yet associated to a
       # ContactCongressFormageddonThread
       seed_profile = ProfileProxy.new(seed)
@@ -445,13 +424,17 @@ module EmailCongress
       thread.formageddon_sender = sender
       thread.privacy = 'PRIVATE'
       thread.save!
-      return thread
+      thread
     end
 
-    def reify_for_contact_congress (sender, seed, recipients)
-      # Establishes ContactCongress object graph, returning the
-      # ContactCongressLetter tying it all together.
+    # Establishes ContactCongress object graph, returning the
+    # ContactCongressLetter tying it all together.
 
+    # @param sender [User] sending user instance
+    # @param seed [EmailCongressLetterSeed] seed message
+    # @param recipients [FormageddonRecipient] recipient to send letter to
+    # @return [ContactCongressLetter] instance if successful
+    def reify_for_contact_congress(sender, seed, recipients)
       # This block insures that all SQL statements occur as one atomic action and rollback on validation failure.
       ActiveRecord::Base.transaction do
         ccl_letter = ContactCongressLetter.new

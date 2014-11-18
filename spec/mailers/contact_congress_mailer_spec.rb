@@ -14,7 +14,6 @@ describe ContactCongressMailer do
       allow(contact_congress_letter).to receive_messages(user: FactoryGirl.build(:jdoe))
       allow(contact_congress_letter).to receive_messages(subject: 'letter subject')
       # contact_congress_letter.stub(:to_param).and_return('1')
-      
 
       thread = double('thread')
       allow(thread).to receive_message_chain(:formageddon_recipient, :title).and_return('Mr.')

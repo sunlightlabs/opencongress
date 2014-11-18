@@ -28,7 +28,7 @@ class RollCallVote < OpenCongressModel
   PRESENT_VALUES     = %W(Present P)
   ABSTAIN_VALUES     = ['Not Voting', '0']
 
-  #========== FILTERS
+  #========== CALLBACKS
 
   after_create :recount_party_lines
 

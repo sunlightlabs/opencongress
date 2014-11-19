@@ -679,7 +679,6 @@ class AccountController < ApplicationController
           end
         end
       elsif session[:login_action][:action_result] == 'contact_congress'
-        debugger
         session[:formageddon_unsent_threads].each do |t|
           thread = Formageddon::FormageddonThread.find(t)
 

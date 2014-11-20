@@ -15,7 +15,8 @@ class SearchStatAndCtaTracker < ActiveRecord::Migration
 
     create_table :user_cta_trackers do |t|
       t.belongs_to :user
-      t.text :url
+      t.integer :previous_action_id
+      t.text :url_path
       t.string :controller
       t.string :method
       t.text :params

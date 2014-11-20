@@ -1610,7 +1610,7 @@ CREATE TABLE bill_titles (
     "as" character varying(255),
     bill_id integer,
     title text,
-    fti_titles tsvector,
+    fti_titles pg_catalog.tsvector,
     is_default boolean DEFAULT false
 );
 
@@ -4636,6 +4636,43 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: search_stats; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE search_stats (
+    id integer NOT NULL,
+    search_text character varying(255),
+    total_searches integer,
+    total_avg_per_day integer,
+    total_unique_users integer,
+    recent_total_searches integer,
+    recent_avg_per_day integer,
+    recent_unique_users integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: search_stats_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE search_stats_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: search_stats_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE search_stats_id_seq OWNED BY search_stats.id;
+
+
+--
 -- Name: searches; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -5101,6 +5138,41 @@ CREATE SEQUENCE user_audits_id_seq
 --
 
 ALTER SEQUENCE user_audits_id_seq OWNED BY user_audits.id;
+
+
+--
+-- Name: user_cta_trackers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE user_cta_trackers (
+    id integer NOT NULL,
+    user_id integer,
+    previous_action_id integer,
+    url_path text,
+    controller character varying(255),
+    method character varying(255),
+    params text,
+    created_at timestamp without time zone
+);
+
+
+--
+-- Name: user_cta_trackers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE user_cta_trackers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_cta_trackers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE user_cta_trackers_id_seq OWNED BY user_cta_trackers.id;
 
 
 --
@@ -6332,6 +6404,13 @@ ALTER TABLE ONLY roll_calls ALTER COLUMN id SET DEFAULT nextval('roll_calls_id_s
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY search_stats ALTER COLUMN id SET DEFAULT nextval('search_stats_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY searches ALTER COLUMN id SET DEFAULT nextval('searches_id_seq'::regclass);
 
 
@@ -6424,6 +6503,13 @@ ALTER TABLE ONLY upcoming_bills ALTER COLUMN id SET DEFAULT nextval('upcoming_bi
 --
 
 ALTER TABLE ONLY user_audits ALTER COLUMN id SET DEFAULT nextval('user_audits_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY user_cta_trackers ALTER COLUMN id SET DEFAULT nextval('user_cta_trackers_id_seq'::regclass);
 
 
 --
@@ -7315,6 +7401,14 @@ ALTER TABLE ONLY roll_calls
 
 
 --
+-- Name: search_stats_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY search_stats
+    ADD CONSTRAINT search_stats_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: searches_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -7432,6 +7526,14 @@ ALTER TABLE ONLY upcoming_bills
 
 ALTER TABLE ONLY user_audits
     ADD CONSTRAINT user_audits_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_cta_trackers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY user_cta_trackers
+    ADD CONSTRAINT user_cta_trackers_pkey PRIMARY KEY (id);
 
 
 --
@@ -9220,4 +9322,6 @@ INSERT INTO schema_migrations (version) VALUES ('20141105234814');
 INSERT INTO schema_migrations (version) VALUES ('20141106010854');
 
 INSERT INTO schema_migrations (version) VALUES ('20141107193945');
+
+INSERT INTO schema_migrations (version) VALUES ('20141119204413');
 

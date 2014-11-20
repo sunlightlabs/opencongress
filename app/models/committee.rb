@@ -1,4 +1,4 @@
-# == Schema Information
+''# == Schema Information
 #
 # Table name: committees
 #
@@ -22,6 +22,17 @@ class Committee < Bookmarkable
   #========== INCLUDES
 
   include ViewableObject
+  include SearchableObject
+
+  #========== CONFIGURATIONS
+
+  # elasticsearch configuration
+  settings ELASTICSEARCH_SETTINGS do
+    mappings ELASTICSEARCH_MAPPINGS do
+      indexes :name
+      indexes :subcommittee_name
+    end
+  end
 
   #========== CONSTANTS
 
@@ -78,6 +89,15 @@ class Committee < Bookmarkable
 
   STOP_WORDS = %w(committee subcommittee)
 
+  # Different formats to serialize as JSON
+  SERIALIZATION_STYLES = {
+    simple: {},
+    elasticsearch: {
+      methods: [:short_name],
+      include: [:reports, :names]
+    }
+  }
+
   #========== VALIDATORS
 
   validates_uniqueness_of :thomas_id
@@ -123,8 +143,28 @@ class Committee < Bookmarkable
 
   #----- CLASS
 
-  def self.random(limit)
-    Committee.find_by_sql ['SELECT * FROM (SELECT random(), committees.* FROM committees ORDER BY 1) as bs LIMIT ?;', limit]
+  def self.search_query(query)
+    {
+        indices: {
+            index: 'committees',
+            query: {
+                dis_max: {
+                    queries: [
+                        {
+                            match: {
+                                name: {
+                                    query: query,
+                                    boost: Float::INFINITY,
+                                    minimum_should_match: '50%'
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            no_match_query: 'none'
+        }
+    }
   end
 
   def self.find_by_query(committee, subcommittee)
@@ -271,12 +311,11 @@ class Committee < Bookmarkable
   end
 
   def future_meetings
-    #self.meetings.select { |m| m.meeting_at > Time.now } DON'T USE SELECT!!!!!!
     self.meetings.where('meeting_at > ?', Time.now)
   end
   
   def stats
-    self.committee_stats = CommitteeStats.new :committee => self unless self.committee_stats.present?
+    self.committee_stats = CommitteeStats.new(:committee => self) unless self.committee_stats.present?
     self.committee_stats
   end
 

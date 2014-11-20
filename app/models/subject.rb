@@ -17,10 +17,28 @@ class Subject < Bookmarkable
   #========== INCLUDES
 
   include ViewableObject
+  include SearchableObject
+
+  #========== CONFIGURATIONS
+
+  # elasticsearch configuration
+  settings ELASTICSEARCH_SETTINGS do
+    mappings ELASTICSEARCH_MAPPINGS do
+      indexes :term
+    end
+  end
 
   #========== CONSTANTS
 
   DISPLAY_OBJECT_NAME = 'Issue'
+
+  # Different formats to serialize as JSON
+  SERIALIZATION_STYLES = {
+    simple: {},
+    elasticsearch: {
+
+    }
+  }
 
   #========== VALIDATORS
 
@@ -73,6 +91,39 @@ class Subject < Bookmarkable
   #========== METHODS
 
   #----- CLASS
+
+
+  def self.search_query(query)
+    {
+        indices: {
+            index: 'subjects',
+            query: {
+                function_score: {
+                    query: {
+                        dis_max: {
+                            queries: [
+                                {
+                                    term: { term: query }
+                                }
+                            ]
+                        }
+                    },
+                    functions: [
+                        {
+                            field_value_factor: {
+                                field: 'bill_count',
+                                modifier: 'sqrt',
+                                factor: 1
+                            }
+                        }
+                    ],
+                    score_mode: 'avg'
+                }
+            },
+            no_match_query: 'none'
+        }
+    }
+  end
 
   def self.find_by_term_icase (term)
     where('lower(term) = ?', term.downcase).first

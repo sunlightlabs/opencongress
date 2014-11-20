@@ -175,7 +175,7 @@ class Person < Bookmarkable
               {
                 multi_match: {
                   type: 'most_fields',
-                  fields: ['firstname', 'lastname'],
+                  fields: %w(firstname lastname),
                   query: query,
                   minimum_should_match: '80%'
                 }
@@ -184,7 +184,7 @@ class Person < Bookmarkable
                 match: {
                   lastname: {
                     query: query,
-                    boost: Float::INFINITY
+                    boost: 1000
                   }
                 }
               },

@@ -262,7 +262,7 @@ class Bill < Bookmarkable
                 match: {
                   get_nickname_title: {
                     query: query,
-                    boost: Float::INFINITY,
+                    boost: 10000,
                     minimum_should_match: '80%'
                   }
                 }
@@ -280,7 +280,7 @@ class Bill < Bookmarkable
                   'top_subject.term' => {
                     query: query,
                     analyzer: 'english',
-                    boost: Float::INFINITY
+                    boost: 100
                   }
                 }
               }

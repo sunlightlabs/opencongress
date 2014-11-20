@@ -95,33 +95,33 @@ class Subject < Bookmarkable
 
   def self.search_query(query)
     {
-        indices: {
-            index: 'subjects',
+      indices: {
+        index: 'subjects',
+        query: {
+          function_score: {
             query: {
-                function_score: {
-                    query: {
-                        dis_max: {
-                            queries: [
-                                {
-                                    term: { term: query }
-                                }
-                            ]
-                        }
-                    },
-                    functions: [
-                        {
-                            field_value_factor: {
-                                field: 'bill_count',
-                                modifier: 'sqrt',
-                                factor: 1
-                            }
-                        }
-                    ],
-                    score_mode: 'avg'
-                }
+              dis_max: {
+                queries: [
+                  {
+                    term: { term: query }
+                  }
+                ]
+              }
             },
-            no_match_query: 'none'
-        }
+            functions: [
+              {
+                field_value_factor: {
+                  field: 'bill_count',
+                  modifier: 'sqrt',
+                  factor: 1
+                }
+              }
+            ],
+            score_mode: 'avg'
+          }
+        },
+        no_match_query: 'none'
+      }
     }
   end
 

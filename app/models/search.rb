@@ -28,23 +28,23 @@ class Search < OpenCongressModel
     :subjects =>  0.1
   }
 
-  SEARCHABLE_MODELS = SEARCHABLE_MODELS_WITH_BOOSTS.collect{|k,v| k.to_s.singularize}
+  SEARCHABLE_MODELS = SEARCHABLE_MODELS_WITH_BOOSTS.collect{|k,v| k.to_s.singularize }
 
   DEFAULT_SEARCH_SIZE = Settings.default_search_size rescue 25
 
   # The search filters that a user selects are stored in the database as a list of integers corresponding to
   # the order by which they appear in this list. This is done to limit unnecessary space usage.
   SEARCH_FILTERS = {
-      0 => :search_bills,
-      1 => :search_people,
-      2 => :search_committees,
-      3 => :search_industries,
-      4 => :search_issues,
-      5 => :search_news,
-      6 => :search_blogs,
-      7 => :search_commentary,
-      8 => :search_comments,
-      9 => :search_gossip_blog
+    0 => :search_bills,
+    1 => :search_people,
+    2 => :search_committees,
+    3 => :search_industries,
+    4 => :search_issues,
+    5 => :search_news,
+    6 => :search_blogs,
+    7 => :search_commentary,
+    8 => :search_comments,
+    9 => :search_gossip_blog
   }
 
   SEARCH_FILTERS_INVERTED = SEARCH_FILTERS.invert
@@ -77,11 +77,31 @@ class Search < OpenCongressModel
 
   #----- CLASS
 
+  # Common access method for search filters which directs key to correct hash
+  #
+  # @param kv [Integer, Symbol] integer for forward lookup, Symbol for reverse
+  # @return [Symbol, Integer]
+  def self.search_filter_map(kv)
+    begin
+      if kv.is_a? Integer
+        SEARCH_FILTERS[kv]
+      elsif kv.is_a? Symbol
+        SEARCH_FILTERS_INVERTED[kv]
+      else
+        nil
+      end
+    rescue KeyError
+      nil
+    end
+  end
+
+  # Drops all indices from elasticsearch and creates them again
   def self.reset_all_indices
     drop_all_indices
     create_all_indices
   end
 
+  # Drops all indices in elasticsearch for searchable models
   def self.drop_all_indices
     SEARCHABLE_MODELS.each do |name|
       model = name.camelize.constantize
@@ -89,6 +109,7 @@ class Search < OpenCongressModel
     end
   end
 
+  # Creates all indices in elasticsearch for searchable models
   def self.create_all_indices
     SEARCHABLE_MODELS.each do |name|
       model = name.camelize.constantize
@@ -179,7 +200,7 @@ class Search < OpenCongressModel
   def doctor_data_for_save
     self.page = 1 if (self.page.nil? || self.page < 1)
     self.search_text = truncate(self.search_text, :length => 255)
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = SEARCH_FILTERS_INVERTED[v.to_sym] if v.is_a? String  }
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = search_filter_map(v.to_sym) if v.is_a? String  }
     self.search_congresses = ["#{Settings.default_congress}"] unless self.search_congresses.is_a? Array
   end
 
@@ -188,7 +209,7 @@ class Search < OpenCongressModel
   # representation for each search filter.
   #
   def doctor_data_for_load
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = SEARCH_FILTERS[v] } rescue false
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = search_filter_map[v] } rescue false
   end
 
 end

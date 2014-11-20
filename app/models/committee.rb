@@ -145,25 +145,25 @@ class Committee < Bookmarkable
 
   def self.search_query(query)
     {
-        indices: {
-            index: 'committees',
-            query: {
-                dis_max: {
-                    queries: [
-                        {
-                            match: {
-                                name: {
-                                    query: query,
-                                    boost: Float::INFINITY,
-                                    minimum_should_match: '50%'
-                                }
-                            }
-                        }
-                    ]
+      indices: {
+        index: 'committees',
+        query: {
+          dis_max: {
+            queries: [
+              {
+                match: {
+                  name: {
+                    query: query,
+                    boost: 10000,
+                    minimum_should_match: '66%'
+                  }
                 }
-            },
-            no_match_query: 'none'
-        }
+              }
+            ]
+            }
+          },
+        no_match_query: 'none'
+      }
     }
   end
 

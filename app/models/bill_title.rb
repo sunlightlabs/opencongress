@@ -7,7 +7,7 @@
 #  as         :string(255)
 #  bill_id    :integer
 #  title      :text
-#  fti_titles :public.tsvector
+#  fti_titles :tsvector
 #  is_default :boolean          default(FALSE)
 #
 

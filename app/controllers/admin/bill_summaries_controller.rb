@@ -76,7 +76,7 @@ class Admin::BillSummariesController < Admin::IndexController
   def updatedefaulttitle
     @bill = Bill.find_by_ident(params[:id])
     
-    if params[:default_title].nil?
+    if params[:get_default_title].nil?
       flash[:error] = "You didn't select anything!"
       redirect_to :action => 'defaulttitle', :id => @bill.ident
       return
@@ -88,10 +88,10 @@ class Admin::BillSummariesController < Admin::IndexController
       t.save
     end
         
-    if params[:default_title][:title_id] == 'none'
+    if params[:get_default_title][:title_id] == 'none'
       flash[:notice] = "No default title set for bill #{@bill.typenumber}"
     else
-      bt = BillTitle.find_by_id(params[:default_title][:title_id])
+      bt = BillTitle.find_by_id(params[:get_default_title][:title_id])
       
       if bt.nil? || (bt.bill != @bill)
         flash[:error] = "An Internal Error Has Occurred!"

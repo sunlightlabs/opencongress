@@ -6,6 +6,31 @@ module SearchableObject
     include Elasticsearch::Model::Callbacks
   end
 
+  ELASTICSEARCH_SETTINGS = {
+    index: { number_of_shards: 1 },
+    analysis: {
+      analyzer: {
+        autocomplete: {
+          type: 'custom',
+          tokenizer:'standard',
+          filter: %w(standard lowercase stop kstem ngram)
+        }
+      },
+      filter: {
+        ngram: {
+          type: 'ngram',
+          min_gram:2,
+          max_gram:15
+        }
+      }
+    },
+  }
+
+  ELASTICSEARCH_MAPPINGS = {
+    dynamic: 'false',
+    index_options: 'offsets'
+  }
+
   #========== METHODS
 
   #----- CLASS
@@ -19,11 +44,6 @@ module SearchableObject
       end
     end
 
-    # Prepares each individual record for indexing
-    def prepare_records(records)
-      records.map {|record| { index: { _id: record.id, data: record.as_indexed_json } } }
-    end
-
     # Handles the actual bulk indexing
     def bulk_index(records)
       self.__elasticsearch__.client.bulk({
@@ -31,6 +51,11 @@ module SearchableObject
         type: self.__elasticsearch__.document_type,
         body: prepare_records(records)
       })
+    end
+
+    # Prepares each individual record for indexing
+    def prepare_records(records)
+      records.map {|record| { index: { _id: record.id, data: record.as_indexed_json } } }
     end
 
   end

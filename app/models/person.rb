@@ -58,44 +58,21 @@ class Person < Bookmarkable
   include SearchableObject
 
   #========== CONFIGURATIONS
-  # elasticsearch configuration
-  settings index: { number_of_shards: 1,
-                    analysis: {
-                        filter: {
-                            tpNGramFilter: {
-                                min_gram: 3,
-                                type: 'nGram',
-                                max_gram: 50
-                            }
-                        },
-                        analyzer: {
-                            tpNGramAnalyzer: {
-                                type: 'custom',
-                                filter: [
-                                    'tpNGramFilter'
-                                ],
-                                tokenizer: 'lowercase'
-                            }
-                        }
-                    },
 
-  } do
-    mappings dynamic: 'false',  suggest: {
-        properties: {
-            proposal: {
-                type: 'string',
-                analyzer: 'tpNGramAnalyzer'
-            }
-        }
-    }, index_options: 'offsets' do
-      indexes :firstname#, analyzer: 'english', index_options: 'offsets'
-      indexes :middlename#, analyzer: 'english', index_options: 'offsets'
-      indexes :lastname#, analyzer: 'english', index_options: 'offsets'
-      indexes :nickname#, analyzer: 'english', index_options: 'offsets'
-      indexes :state#, analyzer: 'english', index_options: 'offsets'
-      indexes :district#, analyzer: 'english', index_options: 'offsets'
+  # elasticsearch configuration
+  settings ELASTICSEARCH_SETTINGS do
+    mappings ELASTICSEARCH_MAPPINGS do
+      indexes :firstname
+      indexes :middlename
+      indexes :lastname
+      indexes :nickname
+      indexes :state
+      indexes :district
     end
   end
+
+  # contains relations
+  acts_as_formageddon_recipient
 
   #========== CONSTANTS
 
@@ -111,7 +88,7 @@ class Person < Bookmarkable
       },
       elasticsearch: {
           methods: [:oc_user_comments, :oc_users_tracking],
-          include: [:person_identifiers, :bills_cosponsored, :committees, :roles]
+          include: [:person_identifiers, :roles, :bills_cosponsored, :committees]
       }
   }
 
@@ -165,8 +142,6 @@ class Person < Bookmarkable
   has_many :congress_chambers,
            :through => :congress_chamber_peoples
 
-  acts_as_formageddon_recipient # contains has_many relationships
-
   #========== SCOPES
 
   scope :republican, -> { where(party: 'Republican') }
@@ -190,52 +165,44 @@ class Person < Bookmarkable
 
   #----- CLASS
 
-  def self.should_search(query)
+  def self.search_query(query)
     {
-        indices: {
-            indices: ['people'],
-            query: {
-                match: {
-                    lastname: {
-                        query: query,
-                        boost: Float::INFINITY,
-                        minimum_should_match: '50%'
-                    }
+      indices: {
+        index: 'people',
+        query: {
+          dis_max: {
+            queries: [
+              {
+                multi_match: {
+                  type: 'most_fields',
+                  fields: ['firstname', 'lastname'],
+                  query: query,
+                  minimum_should_match: '80%'
                 }
-            }
-        }
+              },
+              {
+                match: {
+                  lastname: {
+                    query: query,
+                    boost: Float::INFINITY
+                  }
+                }
+              },
+              {
+                match: {
+                  firstname: {
+                    query: query,
+                    boost: 10
+                  }
+                }
+              }
+            ]
+          }
+        },
+        no_match_query: 'none'
+      }
     }
   end
-
-  def self.must_search(query)
-    {
-        indices: {
-            indices: ['people'],
-            query: {
-                bool: {
-                    should: [
-                {
-                    multi_match: {
-                        query: query,
-                        type: 'best_fields',
-                        fields: %w(_all),
-                        analyzer: 'english'
-                    }
-                },
-                {
-                    fuzzy_like_this: {
-                        like_text: query,
-                        analyzer: 'english',
-                        fuzziness: 0.25,
-                        ignore_tf: true
-                    }
-                }
-
-            ]}
-        }
-        }
-    }
-    end
 
   # Performs search of bills in database using elasticsearch.
   # TODO: tweak query until good results found

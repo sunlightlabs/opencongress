@@ -23,39 +23,13 @@ class PersonIdentifier < ActiveRecord::Base
 
   #========== VALIDATORS
 
-  validates :value,
-            :uniqueness => {
-                :scope => :namespace,
-                :case_sensitive => true,
-                :message => "must be unique within namespace"
-            },
-            :presence => true
-  validates :namespace,
-            :presence => true
+  validates :value, :uniqueness => { :scope => :namespace,
+                                     :case_sensitive => true,
+                                     :message => 'must be unique within namespace'
+                    }, :presence => true
+  validates :namespace, :presence => true
 
-  #========== FILTERS
-
-  before_validation :downcase_namespace
-
-  #========== METHODS
-
-  #----- CLASS
-
-  #----- INSTANCE
-
-  #========== VALIDATIONS
-  
-  validates :value,
-            :uniqueness => {
-                :scope => :namespace,
-                :case_sensitive => true,
-                :message => "must be unique within namespace"
-            },
-            :presence => true
-  validates :namespace,
-            :presence => true
-
-  #========== FILTERS
+  #========== CALLBACKS
 
   before_validation :downcase_namespace
 

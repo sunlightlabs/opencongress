@@ -49,42 +49,11 @@ class Bill < Bookmarkable
   #========== CONFIGURATIONS
 
   # elasticsearch configuration
-  settings index: { number_of_shards: 1,
-                    analysis: {
-                      filter: {
-                        tpNGramFilter: {
-                          min_gram: 3,
-                          type: 'nGram',
-                          max_gram: 50
-                        }
-                      },
-                    analyzer: {
-                      tpNGramAnalyzer: {
-                        type: 'custom',
-                        filter: [
-                        'tpNGramFilter'
-                        ],
-                      tokenizer: 'lowercase'
-                      }
-                    }
-                  },
-
-  } do
-    mappings dynamic: 'false',  suggest: {
-        properties: {
-        proposal: {
-        type: 'string',
-        analyzer: 'tpNGramAnalyzer'
-        }
-        }
-    }, index_options: 'offsets' do
-      indexes :summary #, analyzer: 'english', index_options: 'offsets'
-      indexes :plain_language_summary#, analyzer: 'english', index_options: 'offsets'
-      indexes :official_title#, analyzer: 'english', index_options: 'offsets'
-      indexes :short_title#, analyzer: 'english', index_options: 'offsets'
-      indexes :popular_title#, analyzer: 'english', index_options: 'offsets'
-      indexes :default_title#, analyzer: 'english', index_options: 'offsets'
-      indexes :billtext_txt#, analyzer: 'english', index_options: 'offsets'
+  settings ELASTICSEARCH_SETTINGS do
+    mappings ELASTICSEARCH_MAPPINGS do
+      indexes :summary
+      indexes :plain_language_summary
+      indexes :billtext_txt
     end
   end
 
@@ -98,35 +67,35 @@ class Bill < Bookmarkable
   # Added these back in to make govtrack bill import work
   # to get the bill text that is marked up with the right paragraph ids
   TYPES = {
-      'h' => 'H.R.',
-      's' => 'S.',
-      'hj' => 'H.J.Res.',
-      'sj' => 'S.J.Res.',
-      'hc' => 'H.Con.Res.',
-      'sc' => 'S.Con.Res.',
-      'hr' => 'H.Res.',
-      'sr' => 'S.Res.'
+    'h' => 'H.R.',
+    's' => 'S.',
+    'hj' => 'H.J.Res.',
+    'sj' => 'S.J.Res.',
+    'hc' => 'H.Con.Res.',
+    'sc' => 'S.Con.Res.',
+    'hr' => 'H.Res.',
+    'sr' => 'S.Res.'
   }
 
   TYPES_ORDERED = %w(s sj sc sr h hj hc hr)
 
   GOVTRACK_TYPE_LOOKUP = {
-      'hconres' => 'hc',
-      'hjres' => 'hj',
-      'hr' => 'h',
-      'hres' => 'hr',
-      's' => 's',
-      'sconres' => 'sc',
-      'sjres' => 'sj',
-      'sres' => 'sr'
+    'hconres' => 'hc',
+    'hjres' => 'hj',
+    'hr' => 'h',
+    'hres' => 'hr',
+    's' => 's',
+    'sconres' => 'sc',
+    'sjres' => 'sj',
+    'sres' => 'sr'
   }
 
   # Different formats to serialize bills as JSON
   SERIALIZATION_STYLES = {
-    :simple => {
+    simple: {
       :except => [:rolls, :hot_bill_category_id]
     },
-    :full => {
+    full: {
       except:  [:rolls, :hot_bill_category_id],
       methods: [:title_full_common, :status],
       include: {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]},
@@ -134,10 +103,10 @@ class Bill < Bookmarkable
                    :bill_titles => {},
                    :most_recent_actions => {} }
     },
-    :elasticsearch => {
+    elasticsearch: {
       except:  [:rolls, :hot_bill_category_id],
       include: [:bill_fulltext, :sponsor, :top_subject, :bill_titles, :committees],
-      methods: [:summary, :plain_language_summary, :official_title, :short_title, :popular_title, :default_title, :billtext_txt, :nickname_title]
+      methods: [:summary, :plain_language_summary, :billtext_txt, :get_nickname_title, :get_short_title, :get_official_title, :get_popular_title, :get_default_title]
     }
   }
 
@@ -155,18 +124,18 @@ class Bill < Bookmarkable
   belongs_to :top_subject,
              :class_name => 'Subject', :foreign_key => :top_subject_id
   belongs_to :hot_bill_category,
-             :class_name => "PvsCategory", :foreign_key => :hot_bill_category_id
+             :class_name => 'PvsCategory', :foreign_key => :hot_bill_category_id
   belongs_to :key_vote_category,
-             :class_name => "PvsCategory", :foreign_key => :key_vote_category_id
+             :class_name => 'PvsCategory', :foreign_key => :key_vote_category_id
 
   #----- HAS_ONE
 
   has_one :sidebar_box, :as => :sidebarable
   has_one :bill_stats
   has_one :bill_fulltext
-  has_one :wiki_link, :as => "wikiable"
+  has_one :wiki_link, :as => 'wikiable'
   has_one :last_action, -> { order('actions.date DESC') },
-          :class_name => "Action"
+          :class_name => 'Action'
   has_one :related_bill_session, -> { order("bills_relations.relation='session'") },
           :through => :bill_relations, :source => :related_bill
 
@@ -187,7 +156,7 @@ class Bill < Bookmarkable
   has_many :bill_subjects
   has_many :subjects,
            :through => :bill_subjects
-  has_many :amendments, -> { includes(:roll_calls).order(["offered_datetime DESC", "number DESC"]) }
+  has_many :amendments, -> { includes(:roll_calls).order(['offered_datetime DESC', 'number DESC']) }
   has_many :roll_calls, -> { order('date DESC') }
   has_many :comments,
            :as => :commentable
@@ -200,7 +169,7 @@ class Bill < Bookmarkable
   has_many :talking_points,
            :as => :talking_pointable
   has_many :bill_text_versions
-  has_many :videos, -> { order("videos.video_date DESC, videos.id") }
+  has_many :videos, -> { order('videos.video_date DESC, videos.id') }
   has_many :notebook_links,
            :as => :notebookable
   has_many :committee_meetings_bills
@@ -282,53 +251,47 @@ class Bill < Bookmarkable
     UnitedStates::Bills::ABBREVIATIONS.keys[0..3]
   end
 
-  def self.should_search(query)
+  def self.search_query(query)
     {
       indices: {
-        indices: ['bills'],
+        index: 'bills',
         query: {
-          match: {
-            nickname_title: {
-              query: query,
-              boost: Float::INFINITY,
-              minimum_should_match: '50%'
-            }
+          bool: {
+            should: [
+              {
+                match: {
+                  get_nickname_title: {
+                    query: query,
+                    boost: Float::INFINITY,
+                    minimum_should_match: '80%'
+                  }
+                }
+              },
+              {
+                multi_match: {
+                  query: query,
+                  type: 'most_fields',
+                  fields: %w(_all summary get_manual_title^10 get_nickname_title^1000),
+                  analyzer: 'english'
+                }
+              },
+              {
+                match: {
+                  'top_subject.term' => {
+                    query: query,
+                    analyzer: 'english',
+                    boost: Float::INFINITY
+                  }
+                }
+              }
+            ]
           }
-        }
+        },
+        no_match_query: 'none'
       }
     }
   end
 
-  def self.must_search(query)
-    {
-        indices: {
-        indices: ['bills'],
-        query: { bool: { should: [
-            {
-                multi_match: {
-                    query: query,
-                    type: 'best_fields',
-                    fields: %w(_all),
-                    analyzer: 'english'
-                }
-            },
-            {
-                fuzzy_like_this: {
-                    like_text: query,
-                    analyzer: 'english',
-                    fuzziness: 0.25,
-                    ignore_tf: true
-                }
-            }
-
-        ]}}
-    }
-    }
-
-
-
-
-  end
 
   # Performs search of bills in database using elasticsearch.
   # TODO: tweak query until good results found
@@ -344,7 +307,7 @@ class Bill < Bookmarkable
             should: [
               {
                 match: {
-                  nickname_title: {
+                  get_nickname_title: {
                     query: query,
                     boost: Float::INFINITY,
                     minimum_should_match: '66%'
@@ -1461,7 +1424,7 @@ class Bill < Bookmarkable
   end
 
   def title_short
-    title = short_title
+    title = get_short_title
     title ? "#{title.title}" : "#{type_name}#{number}"
   end
 
@@ -1470,22 +1433,22 @@ class Bill < Bookmarkable
   end
 
   def title_official # just the official title
-    official_title ? "#{official_title.title}" : ""
+    get_official_title ? "#{get_official_title.title}" : ""
   end
 
   def title_popular_only # popular or short, returns empty string if one doesn't exist
-    title = default_title || popular_title || short_title
+    title = get_default_title || get_popular_title || get_short_title
 
     title.present? ? "#{title.title}" : ''
   end
 
   def title_common # popular or short or official, returns empty string if one doesn't exist
-    title = default_title || popular_title || short_title || official_title
+    title = get_default_title || get_popular_title || get_short_title || get_official_title
     title.present? ? "#{title.title}" : ''
   end
 
   def title_full_common # bill type, number and popular, short or official title
-    title = default_title || popular_title || short_title || official_title
+    title = get_default_title || get_popular_title || get_short_title || get_official_title
     title.present? ? "#{title_prefix} #{number}: #{title.title}" : ''
   end
 
@@ -1691,23 +1654,23 @@ class Bill < Bookmarkable
     title_full_common
   end
 
-  def official_title
+  def get_official_title
     bill_titles.official.first
   end
 
-  def short_title
+  def get_short_title
     bill_titles.short.first
   end
 
-  def popular_title
+  def get_popular_title
     bill_titles.popular.first
   end
 
-  def default_title
+  def get_default_title
     bill_titles.default.first
   end
 
-  def nickname_title
+  def get_nickname_title
     bill_titles.nickname.first
   end
 

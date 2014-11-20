@@ -21,7 +21,16 @@ class Search < OpenCongressModel
 
   #========== CONSTANTS
 
-  SEARCHABLE_MODELS = %w(bill person)
+  SEARCHABLE_MODELS_WITH_BOOSTS = {
+    :bills => 100,
+    :committees => 5,
+    :people => 10,
+    :subjects =>  0.1
+  }
+
+  SEARCHABLE_MODELS = SEARCHABLE_MODELS_WITH_BOOSTS.collect{|k,v| k.to_s.singularize}
+
+  DEFAULT_SEARCH_SIZE = Settings.default_search_size rescue 25
 
   # The search filters that a user selects are stored in the database as a list of integers corresponding to
   # the order by which they appear in this list. This is done to limit unnecessary space usage.
@@ -87,40 +96,55 @@ class Search < OpenCongressModel
     end
   end
 
-  def self.elasticsearch_body(query, should_array = [], must_array = [])
+  # Performs search on searchable models using elasticsearch
+  #
+  # @param query [String] what to search for in database
+  # @param indices [String] indices to limit search to
+  # @param limit [Integer] limit on records returned
+  # @return [Relation<SearchableObject>] found records
+  def self.search(query, indices = [], limit = DEFAULT_SEARCH_SIZE)
+    prepare_search(query,indices,limit).hits.hits.collect{|record| record._type.camelize.constantize.find(record._id) }
+  end
+
+  # Prepares and submits search to elasticsearch
+  # @param query [String] what to search for in database
+  # @param indices [String] indices to limit search to
+  # @param limit [Integer] limit on records returned
+  # @return [Hash] hash of elasticsearch return
+  def self.prepare_search(query, indices = [], limit = DEFAULT_SEARCH_SIZE)
+    search_queries = SEARCHABLE_MODELS.collect{|i| i.camelize.constantize.search_query(query)}
+    query = {body: elasticsearch_body(search_queries, limit)}
+    query[:index] = indices if indices.any?
+    Elasticsearch::Model.client.search(query)
+  end
+
+  # Constructs the hash to pass into elasticsearch
+  #
+  # @param search_queries [Array<Hash>] what to query for in elasticsearch
+  # @return [Hash] hash of full elasticsearch query
+  def self.elasticsearch_body(search_queries = [], limit = DEFAULT_SEARCH_SIZE)
     {
+      size: limit,
+      indices_boost: SEARCHABLE_MODELS_WITH_BOOSTS,
       query: {
         function_score: {
           query: {
-            bool: {
-              should: should_array,
-              must: must_array
-           }
+            dis_max: {
+              queries: search_queries
+            }
           },
           functions: [
             {
               field_value_factor: {
                 field: 'page_views_count',
                 modifier: 'sqrt',
-                factor: 0.5
+                factor: 1
               }
             }
-          ],
-        },
+          ]
+        }
       }
     }
-  end
-
-  def self.search(query, indexes = [], limit = 25)
-    prepare_search(query,indexes,limit).hits.hits.collect{|record| record._type.camelize.constantize.find(record._id) }
-  end
-
-  def self.prepare_search(query, indexes = [], limit = 25)
-    should_part = SEARCHABLE_MODELS.collect{|i| i.camelize.constantize.should_search(query)}
-    must_part = SEARCHABLE_MODELS.collect{|i| i.camelize.constantize.must_search(query)}
-    query = {body: elasticsearch_body(query, should_part, must_part)}
-    query[:indexes] = indexes if indexes.any?
-    Elasticsearch::Model.client.search(query)
   end
 
   # Retrieves the top searched terms from the database

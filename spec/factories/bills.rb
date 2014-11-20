@@ -65,9 +65,9 @@ FactoryGirl.define do
     key_vote_category_id nil 
     is_major nil 
     top_subject_id 8580 
-    short_title nil 
-    popular_title nil 
-    official_title nil 
+    get_short_title nil
+    get_popular_title nil
+    get_official_title nil
     manual_title nil
   end
 end

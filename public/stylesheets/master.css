@@ -6490,3 +6490,8 @@ a.logo:hover { background-position: 0px -100px; }
   margin-right: 2%;
   float: left;
 }
+
+.branding-bar_links, .branding-bar_logo{
+  display: inline-block;
+  padding: 0 30px;
+}

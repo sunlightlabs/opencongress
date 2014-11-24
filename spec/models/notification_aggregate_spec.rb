@@ -20,7 +20,7 @@ RSpec.describe NotificationAggregate, :type => :model do
 
   describe "associations" do
     it "has many whatever" do
-      2.class == Number
+      2.class == Fixnum
     end
 
     it "" 

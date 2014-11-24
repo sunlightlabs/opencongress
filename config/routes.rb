@@ -327,6 +327,8 @@ OpenCongress::Application.routes.draw do
 
   match ':controller(/:action(/:id))', :via => [:get,:post,:put,:delete]
   get '/style-guide', to: "index#styleguide"
+  
+  get '/senate', to: 'representatives#senate'
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
 

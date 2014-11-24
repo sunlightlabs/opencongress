@@ -2,7 +2,7 @@
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
-require 'database_cleaner'
+# require 'database_cleaner'
 require 'webmock/rspec'
 require 'vcr'
 
@@ -58,12 +58,12 @@ RSpec.configure do |config|
   # If true, the base class of anonymous controllers will be inferred
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
-  config.infer_base_class_for_anonymous_controllers = false
+  config.infer_base_class_for_anonymous_controllers = true
 
   config.include ApplicationHelper
 
   # config.before(:suite) do
-  #   DatabaseCleaner.clean_with :transaction #:truncation is slow
+  #   DatabaseCleaner.clean_with :truncation #:truncation is slow
   #   DatabaseCleaner.strategy = :truncation
   # end
 

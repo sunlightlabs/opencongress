@@ -41,4 +41,8 @@ class CommitteeMeeting < OpenCongressModel
     after(Date.today)
   end
 
+  def self.meetings_by_chamber(chamber)
+    self.where(where: chamber).where("meeting_at >= ?", Date.today).order(:meeting_at)
+  end
+
 end

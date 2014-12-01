@@ -22,8 +22,7 @@ describe CommitteeMeeting do
 
     it "orders by meeting date ascending" do
       5.times { |n| FactoryGirl.create(:committee_meeting, meeting_at: Date.today + n, where: "h") }
-
-      # expect(CommitteeMeeting.meetings_by_chamber('h').first.meeting_at).to eq Date.today     
+      expect(CommitteeMeeting.meetings_by_chamber('h').first.meeting_at).to eq Date.today.to_time
     end
   end
 end

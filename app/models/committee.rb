@@ -140,6 +140,7 @@ class Committee < Bookmarkable
   def self.by_chamber(chamber, opts={})
     opts = {include_joint_committees: true, include_subcommittees: false}.merge(opts)
     #CAUTION: there is careful string interpolation into SQL in following line
+    
     parent_id_clause = opts[:include_subcommittees] ? nil : 'AND parent_id IS NULL'
     Committee.where("(chamber LIKE ? or chamber LIKE ?) AND active = 't' #{parent_id_clause}", chamber, (opts[:include_joint_committees] ? 'joint' : ''))
   end

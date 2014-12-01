@@ -321,14 +321,16 @@ OpenCongress::Application.routes.draw do
     f.match 'terms' => 'about#terms'
     f.match 'howtouse' => 'about#howtouse'
     f.match '/userguide' => redirect("/howtouse")
+    f.match '/senate', to: 'representatives#senate'
+    f.match '/house', to: 'representatives#house'
   end
 
   resources :contact, :only => [:index, :create]
 
+  
   match ':controller(/:action(/:id))', :via => [:get,:post,:put,:delete]
   get '/style-guide', to: "index#styleguide"
   
-  get '/senate', to: 'representatives#senate'
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
 

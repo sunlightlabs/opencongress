@@ -29,8 +29,9 @@ class Committee < Bookmarkable
   # elasticsearch configuration
   settings ELASTICSEARCH_SETTINGS do
     mappings ELASTICSEARCH_MAPPINGS do
-      indexes :name
-      indexes :subcommittee_name
+      [:name, :subcommittee_name].each do |index|
+        indexes index, ELASTICSEARCH_INDEX_OPTIONS
+      end
     end
   end
 
@@ -342,7 +343,7 @@ class Committee < Bookmarkable
   def comments_since_last_login(current_user)
     comments.where('created_at > ?', current_user.previous_login_date).count
   end
-  
+
   private
 
   def url_name

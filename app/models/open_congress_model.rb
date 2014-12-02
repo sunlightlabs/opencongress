@@ -79,7 +79,7 @@ class OpenCongressModel < ActiveRecord::Base
   end
 
   # Serialization for elasticsearch
-  def as_indexed_json(options = {:style => :elasticsearch})
+  def as_indexed_json(options = {:style => :elasticsearch}, skip_list = [:page_views_count, :bill_count])
     as_json(options)
   end
 

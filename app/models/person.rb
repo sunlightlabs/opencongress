@@ -62,12 +62,9 @@ class Person < Bookmarkable
   # elasticsearch configuration
   settings ELASTICSEARCH_SETTINGS do
     mappings ELASTICSEARCH_MAPPINGS do
-      indexes :firstname
-      indexes :middlename
-      indexes :lastname
-      indexes :nickname
-      indexes :state
-      indexes :district
+      [:firstname, :middlename, :lastname, :nickname, :state, :district].each do |index|
+        indexes index, ELASTICSEARCH_INDEX_OPTIONS
+      end
     end
   end
 

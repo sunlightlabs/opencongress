@@ -95,26 +95,25 @@ class Search < OpenCongressModel
     end
   end
 
-  # Drops all indices from elasticsearch and creates them again
+  # Drops all indices from elasticsearch and creates them again.
+  # USE TO RESET INDICES AND RELOAD DATA
   def self.reset_all_indices
-    drop_all_indices
-    create_all_indices
+    create_all_indices and import_all_indices
   end
 
   # Drops all indices in elasticsearch for searchable models
   def self.drop_all_indices
-    SEARCHABLE_MODELS.each do |name|
-      model = name.camelize.constantize
-      model.__elasticsearch__.client.indices.delete index: model.index_name rescue nil
-    end
+    SEARCHABLE_MODELS.each {|name| name.camelize.constantize.drop_index }
+  end
+
+  # Creates indices, forcing new settings
+  def self.create_all_indices
+    SEARCHABLE_MODELS.each {|name| name.camelize.constantize.create_index }
   end
 
   # Creates all indices in elasticsearch for searchable models
-  def self.create_all_indices
-    SEARCHABLE_MODELS.each do |name|
-      model = name.camelize.constantize
-      model.import_bulk
-    end
+  def self.import_all_indices
+    SEARCHABLE_MODELS.each {|name| name.camelize.constantize.import_bulk }
   end
 
   # Performs search on searchable models using elasticsearch
@@ -124,7 +123,7 @@ class Search < OpenCongressModel
   # @param limit [Integer] limit on records returned
   # @return [Relation<SearchableObject>] found records
   def self.search(query, indices = [], limit = DEFAULT_SEARCH_SIZE)
-    prepare_search(query,indices,limit).hits.hits.collect{|record| record._type.camelize.constantize.find(record._id) }
+    prepare_search(query.strip_punctuation,indices,limit).hits.hits.collect{|record| record._type.camelize.constantize.find(record._id) }
   end
 
   # Prepares and submits search to elasticsearch

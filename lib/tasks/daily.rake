@@ -265,6 +265,16 @@ namespace :update do
     end
   end
 
+  desc 'Calculates and stores statistics for user searches'
+  task :search_stats => :environment do
+    begin
+      require File.expand_path 'bin/daily/search_stats', Rails.root
+    rescue Exception => e
+      Raven.capture_exception(e)
+      throw e
+    end
+  end
+
   desc 'Needs a description.'
   task :project_vote_smart => :environment do
     begin
@@ -381,6 +391,7 @@ namespace :update do
     :committee_reports, :committee_meetings,
     :person_voting_similarities, :sponsored_bill_stats,
     :bill_nicknames,
+    :search_stats,
     :in_session,
     :expire_cached_bill_fragments, :expire_cached_person_fragments, :video
   ]

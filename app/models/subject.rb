@@ -24,7 +24,9 @@ class Subject < Bookmarkable
   # elasticsearch configuration
   settings ELASTICSEARCH_SETTINGS do
     mappings ELASTICSEARCH_MAPPINGS do
-      indexes :term
+      [:term].each do |index|
+        indexes index, ELASTICSEARCH_INDEX_OPTIONS
+      end
     end
   end
 
@@ -35,9 +37,7 @@ class Subject < Bookmarkable
   # Different formats to serialize as JSON
   SERIALIZATION_STYLES = {
     simple: {},
-    elasticsearch: {
-
-    }
+    elasticsearch: {}
   }
 
   #========== VALIDATORS
@@ -91,7 +91,6 @@ class Subject < Bookmarkable
   #========== METHODS
 
   #----- CLASS
-
 
   def self.search_query(query)
     {

@@ -51,9 +51,9 @@ class Bill < Bookmarkable
   # elasticsearch configuration
   settings ELASTICSEARCH_SETTINGS do
     mappings ELASTICSEARCH_MAPPINGS do
-      indexes :summary
-      indexes :plain_language_summary
-      indexes :billtext_txt
+      [:summary, :plain_language_summary, :billtext_txt, :get_nickname_title, :get_short_title, :get_official_title, :get_popular_title, :get_default_title].each do |index|
+        indexes index, ELASTICSEARCH_INDEX_OPTIONS
+      end
     end
   end
 
@@ -93,18 +93,18 @@ class Bill < Bookmarkable
   # Different formats to serialize bills as JSON
   SERIALIZATION_STYLES = {
     simple: {
-      :except => [:rolls, :hot_bill_category_id]
+      except: [:rolls, :hot_bill_category_id]
     },
     full: {
       except:  [:rolls, :hot_bill_category_id],
       methods: [:title_full_common, :status],
       include: {:co_sponsors => {:methods => [:oc_user_comments, :oc_users_tracking]},
-                   :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]},
-                   :bill_titles => {},
-                   :most_recent_actions => {} }
+                 :sponsor => {:methods => [:oc_user_comments, :oc_users_tracking]},
+                 :bill_titles => {},
+                 :most_recent_actions => {} }
     },
     elasticsearch: {
-      except:  [:rolls, :hot_bill_category_id],
+      except:  [:rolls, :hot_bill_category_id, :news_article_count, :sponsor_id, :last_vote_date, :topresident_date, :top_subject_id],
       include: [:bill_fulltext, :sponsor, :top_subject, :bill_titles, :committees],
       methods: [:summary, :plain_language_summary, :billtext_txt, :get_nickname_title, :get_short_title, :get_official_title, :get_popular_title, :get_default_title]
     }
@@ -259,19 +259,10 @@ class Bill < Bookmarkable
           bool: {
             should: [
               {
-                match: {
-                  get_nickname_title: {
-                    query: query,
-                    boost: 10000,
-                    minimum_should_match: '80%'
-                  }
-                }
-              },
-              {
                 multi_match: {
                   query: query,
                   type: 'most_fields',
-                  fields: %w(_all summary get_manual_title^10 get_nickname_title^1000),
+                  fields: %w(summary get_manual_title^10 get_nickname_title^1000),
                   analyzer: 'english'
                 }
               },
@@ -281,6 +272,31 @@ class Bill < Bookmarkable
                     query: query,
                     analyzer: 'english',
                     boost: 100
+                  }
+                }
+              },
+              {
+                match: {
+                  :number => {
+                    query: query.strip_all_except_numbers.to_i,
+                    boost: 100
+                  }
+                }
+              },
+              {
+                match: {
+                  :bill_type => {
+                    query: query,
+                    boost: 100
+                  }
+                }
+              },
+              {
+                match: {
+                  get_nickname_title: {
+                    query: query,
+                    boost: 10000,
+                    minimum_should_match: '80%',
                   }
                 }
               }

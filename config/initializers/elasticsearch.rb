@@ -1,3 +1,4 @@
+# configuration options for elasticsearch
 CONFIG = {
   host: Settings.elasticsearch_host || 'http://localhost:9200/',
   retry_on_failure: true,

@@ -9,26 +9,29 @@ module SearchableObject
   ELASTICSEARCH_SETTINGS = {
     index: { number_of_shards: 1 },
     analysis: {
-      analyzer: {
-        autocomplete: {
-          type: 'custom',
-          tokenizer:'standard',
-          filter: %w(standard lowercase stop kstem ngram)
-        }
-      },
       filter: {
         ngram: {
-          type: 'ngram',
+          type: 'nGram',
           min_gram:2,
-          max_gram:15
+          max_gram:15,
+          token_chars: %w(letter digit punctuation symbol)
+        }
+      },
+      analyzer: {
+        default: {
+          type: 'english'
         }
       }
     },
   }
 
   ELASTICSEARCH_MAPPINGS = {
-    dynamic: 'false',
-    index_options: 'offsets'
+    dynamic: 'true'
+  }
+
+  ELASTICSEARCH_INDEX_OPTIONS = {
+    index_options: 'offsets',
+    analyzer: 'english'
   }
 
   #========== METHODS
@@ -37,7 +40,19 @@ module SearchableObject
 
   module ClassMethods
 
+    # Drops the index from elasticsearch
+    def drop_index
+      self.__elasticsearch__.client.indices.delete index: self.index_name rescue nil
+    end
+
+    # Creates indexes (forcing overwrite by default of old index)
+    # USE THIS TO REFRESH INDEX WITH NEW SETTINGS
+    def create_index(force=true)
+      self.__elasticsearch__.create_index! force: force
+    end
+
     # Entry method for bulk importing of models for elasticsearch indexing.
+    # USE THIS TO IMPORT DATA
     def import_bulk
       self.includes(self::SERIALIZATION_STYLES[:elasticsearch][:include]).find_in_batches do |record|
         bulk_index(record)

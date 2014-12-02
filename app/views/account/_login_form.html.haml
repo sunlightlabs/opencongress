@@ -1,6 +1,6 @@
 - login_action ||= nil
 
-= form_for :user, :url => '/account/login' do |f|
+= form_for :user, :url => 'https://www.opencongress.org/account/login' do |f|
   %p
     %label{ :for => "user_login" } Login
     = f.text_field :login, :class => 'field', :size => 30

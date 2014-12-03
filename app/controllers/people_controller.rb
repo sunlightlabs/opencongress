@@ -41,54 +41,6 @@ class PeopleController < ApplicationController
     end
   end
 
-  def people_list
-    congress = params[:congress] ? params[:congress].to_i : Settings.default_congress
-    person_type = (params[:person_type] == 'senators') ? 'sen' : 'rep'
-    @person_type = (person_type == 'sen') ? :senators : :representatives
-    @sort = (params[:sort] || :state).to_sym
-
-    @sort_by = case @sort
-      when :name
-        'lastname asc'
-      when :popular
-        'view_count desc'
-      when :approval
-        'person_approval_average desc'
-      else
-        'state, lastname'
-      end
-
-    if @sort == :popular || @sort == :approval
-      @days = days_from_params(params[:days])
-    end
-
-    people_cache_key = "Person.list_chamber(#{@person_type.to_s}, #{congress.to_s}, #{@sort_by.to_s})"
-    @people = Rails.cache.fetch(people_cache_key) do
-      Person.list_chamber(person_type, congress, @sort_by)
-    end
-
-    if @sort == :popular
-      @atom = {'link' => url_for(:only_path => false, :controller => 'people', :action => 'atom_top20', :type => person_type), 'title' => "Top 20 Most Viewed #{@person_type.to_s.capitalize}"}
-      @page_title = person_type == 'sen' ? "Most Viewed Senators" : "Most Viewed Representatives"
-    else
-      @page_title = person_type == 'sen' ? "Senators" : "Representatives"
-    end
-
-    @show_tracked_list = true
-    @title_desc = SiteText.find_title_desc(person_type == 'sen' ? 'people_senator_list' : 'people_representative_list')
-    with_random_news = @people.select{|p| p.news_count.to_i > 0}.sample
-    with_random_blogs = @people.select{|p| p.blog_count.to_i > 0}.sample
-    random_news, random_blogs = [[nil,nil],[nil,nil]]
-    random_news = Person.random_commentary(with_random_news.id, "news", 1, Settings.default_count_time) if with_random_news
-    random_blogs = Person.random_commentary(with_random_blogs.id, "blog", 1, Settings.default_count_time) if with_random_blogs
-
-    @carousel = [random_news, random_blogs, @people.sort{|a,b| b.view_count.to_i <=> a.view_count.to_i}[0..9]]
-
-    respond_to do |format|
-      format.html { render :action => 'list' }
-      format.js { render :action => 'update'}
-    end
-  end
 
   def compare
     @title_class = 'sort compare'
@@ -670,7 +622,46 @@ class PeopleController < ApplicationController
     @page_title = "#{@person_type_display} by #{@rankby.humanize.downcase}"
   end
 
+  def people_list
+
+    @days = days_from_params(params[:days]) if sort_people == :popular || sort_people == :approval
+      
+    people_cache_key = "Person.list_chamber(#{person_type.to_s}, #{current_congress.to_s}, #{sort_people.to_s})"
+    @people = Rails.cache.fetch(people_cache_key) do
+      @people = Person.list_chamber(person_type, current_congress, sort_people)
+    end
+
+    if sort_people == :popular
+      @atom = {'link' => url_for(:only_path => false, :controller => 'people', :action => 'atom_top20', :type => person_type), 'title' => "Top 20 Most Viewed #{@person_type.to_s.capitalize}"}
+      @page_title = person_type == 'sen' ? "Most Viewed Senators" : "Most Viewed Representatives"
+    else
+      @page_title = person_type == 'sen' ? "Senators" : "Representatives"
+    end
+
+    @show_tracked_list = true
+    @title_desc = SiteText.find_title_desc(person_type == 'sen' ? 'people_senator_list' : 'people_representative_list')
+    with_random_news = @people.select{|p| p.news_count.to_i > 0}.sample
+    with_random_blogs = @people.select{|p| p.blog_count.to_i > 0}.sample
+    random_news, random_blogs = [[nil,nil],[nil,nil]]
+    random_news = Person.random_commentary(with_random_news.id, "news", 1, Settings.default_count_time) if with_random_news
+    random_blogs = Person.random_commentary(with_random_blogs.id, "blog", 1, Settings.default_count_time) if with_random_blogs
+
+    @carousel = [random_news, random_blogs, @people.sort{|a,b| b.view_count.to_i <=> a.view_count.to_i}[0..9]]
+
+    respond_to do |format|
+      format.html { render :action => 'list' }
+      format.js { render :action => 'update'}
+    end
+  end
   private
+
+  def person_type
+    params[:person_type] == 'senators' ? 'sen' : 'rep'
+  end
+
+  def sort_people
+    (params[:sort] || :state).to_sym
+  end
 
   def person_profile_shared
     if params[:id].blank?

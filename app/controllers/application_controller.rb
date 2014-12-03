@@ -10,6 +10,8 @@ class ApplicationController < ActionController::Base
   include Facebooker2::Rails::Controller
   include UrlHelper
 
+  helper_method :current_congress
+  
   # around_filter :maintenance
 
   before_filter :require_utf8_params
@@ -193,6 +195,10 @@ class ApplicationController < ActionController::Base
 #    if opts.is_a?(::String) then hash['template'] = opts end
 #    super(hash) rescue super(opts)
 #  end
+  
+  def current_congress
+    params[:congress] ? params[:congress].to_i : Settings.default_congress
+  end
 
   private
 

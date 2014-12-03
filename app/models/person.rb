@@ -223,7 +223,7 @@ class Person < Bookmarkable
     WHERE roles.role_type = ?
       AND (roles.startdate <= ?
             AND roles.enddate >= ?)
- ORDER BY #{order} #{lim};",
+ ORDER BY #{order_by_string(order)} #{lim};",
                         chamber, Date.today, Date.today])
   end
 
@@ -1654,6 +1654,19 @@ class Person < Bookmarkable
         value: id
       )
     end
+  end
+
+  def self.order_by_string(order)
+    case order 
+      when :name
+        'lastname asc'
+      when :popular
+        'view_count desc'
+      when :approval
+        'person_approval_average desc'
+      else
+        'state, lastname'
+      end
   end
 
 end

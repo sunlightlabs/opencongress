@@ -16,4 +16,14 @@
 
 class SearchStat < OpenCongressModel
 
+  #========== CONSTANTS
+
+  RECENT_TIMEFRAME = 30 # days
+
+  #========== RELATIONS
+
+  #----- HAS_MANY
+
+  has_many :searches, class_name: 'Search', foreign_key: 'search_text'
+
 end

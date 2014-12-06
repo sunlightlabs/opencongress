@@ -62,7 +62,7 @@ class Person < Bookmarkable
   # elasticsearch configuration
   settings ELASTICSEARCH_SETTINGS do
     mappings ELASTICSEARCH_MAPPINGS do
-      [:firstname, :middlename, :lastname, :nickname, :state, :district].each do |index|
+      [:firstname, :middlename, :lastname, :nickname].each do |index|
         indexes index, ELASTICSEARCH_INDEX_OPTIONS
       end
     end
@@ -84,8 +84,8 @@ class Person < Bookmarkable
           include: [:recent_news, :recent_blogs].freeze
       },
       elasticsearch: {
-          methods: [:oc_user_comments, :oc_users_tracking],
-          include: [:person_identifiers, :roles, :bills_cosponsored, :committees]
+          methods: [:oc_user_comments, :bookmark_count],
+          include: [:person_identifiers, :roles]
       }
   }
 
@@ -178,18 +178,18 @@ class Person < Bookmarkable
                 }
               },
               {
-                match: {
+                fuzzy: {
                   lastname: {
-                    query: query,
-                    boost: 1000
+                    value: query,
+                    boost: ELASTICSEARCH_BOOSTS[:medium]
                   }
                 }
               },
               {
-                match: {
+                fuzzy: {
                   firstname: {
-                    query: query,
-                    boost: 10
+                    value: query,
+                    boost: ELASTICSEARCH_BOOSTS[:low]
                   }
                 }
               }

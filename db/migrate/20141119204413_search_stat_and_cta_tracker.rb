@@ -3,18 +3,19 @@ class SearchStatAndCtaTracker < ActiveRecord::Migration
   def self.up
 
     create_table :search_stats do |t|
-      t.string :search_text
+      t.string :search_text, index:true
       t.integer :total_searches
-      t.integer :total_avg_per_day
+      t.float :total_avg_per_day
       t.integer :total_unique_users
       t.integer :recent_total_searches
-      t.integer :recent_avg_per_day
+      t.float :recent_avg_per_day
       t.integer :recent_unique_users
       t.timestamps
     end
 
     create_table :user_cta_trackers do |t|
       t.belongs_to :user
+      t.string :session_id
       t.integer :previous_action_id
       t.text :url_path
       t.string :controller

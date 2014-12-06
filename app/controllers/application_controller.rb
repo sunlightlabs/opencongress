@@ -25,6 +25,7 @@ class ApplicationController < ActionController::Base
   before_filter :is_authorized?
   before_filter :set_simple_comments
   before_filter :last_updated
+  skip_before_action :capture_cta
   after_filter :cache_control
 
   class InvalidByteSequenceErrorFromParams < Encoding::InvalidByteSequenceError
@@ -268,6 +269,34 @@ class ApplicationController < ActionController::Base
         )
       end
     end
+  end
+
+  def capture_cta
+
+    if not logged_in? and not cookies.has_key?(:tmp_session)
+      cookies[:tmp_session] = session[:session_id]
+      puts 'new cookie session id...'
+    end
+
+    ap(cookies)
+
+    user_id = logged_in? ? current_user.id : nil
+    last_cta = user_id.present? ? UserCtaTracker.where(user_id:user_id).last :
+                                  UserCtaTracker.where(session_id:cookies[:tmp_session]).last
+
+    if last_cta.nil? or (Time.now - last_cta.created_at) > UserCtaTracker::LAST_ACTION_THRESHOLD
+      pa_id = nil
+    else
+      pa_id = last_cta.id
+    end
+
+    UserCtaTracker.create(user_id: user_id,
+                          session_id: cookies[:tmp_session],
+                          previous_action_id: pa_id,
+                          url_path: request.fullpath,
+                          controller: params[:controller],
+                          method: params[:action],
+                          params: params)
   end
 
   def is_authorized?

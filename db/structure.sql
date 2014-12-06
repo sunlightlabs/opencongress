@@ -1861,7 +1861,9 @@ CREATE TABLE comment_scores (
     comment_id integer,
     score integer,
     created_at timestamp without time zone,
-    ip_address character varying(255)
+    ip_address character varying(255),
+    polarity double precision,
+    subjectivity double precision
 );
 
 
@@ -4643,10 +4645,10 @@ CREATE TABLE search_stats (
     id integer NOT NULL,
     search_text character varying(255),
     total_searches integer,
-    total_avg_per_day integer,
+    total_avg_per_day double precision,
     total_unique_users integer,
     recent_total_searches integer,
-    recent_avg_per_day integer,
+    recent_avg_per_day double precision,
     recent_unique_users integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
@@ -5147,6 +5149,7 @@ ALTER SEQUENCE user_audits_id_seq OWNED BY user_audits.id;
 CREATE TABLE user_cta_trackers (
     id integer NOT NULL,
     user_id integer,
+    session_id character varying(255),
     previous_action_id integer,
     url_path text,
     controller character varying(255),
@@ -9324,4 +9327,6 @@ INSERT INTO schema_migrations (version) VALUES ('20141106010854');
 INSERT INTO schema_migrations (version) VALUES ('20141107193945');
 
 INSERT INTO schema_migrations (version) VALUES ('20141119204413');
+
+INSERT INTO schema_migrations (version) VALUES ('20141202214029');
 

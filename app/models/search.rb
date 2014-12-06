@@ -21,14 +21,14 @@ class Search < OpenCongressModel
 
   #========== CONSTANTS
 
-  SEARCHABLE_MODELS_WITH_BOOSTS = {
+  SEARCHABLE_INDICES_WITH_BOOSTS = {
     :bills => 100,
-    :committees => 5,
+    :committees => 25,
     :people => 10,
     :subjects =>  0.1
   }
 
-  SEARCHABLE_MODELS = SEARCHABLE_MODELS_WITH_BOOSTS.collect{|k,v| k.to_s.singularize }
+  SEARCHABLE_INDICES = SEARCHABLE_INDICES_WITH_BOOSTS.collect{|k,v| k.to_s }
 
   DEFAULT_SEARCH_SIZE = Settings.default_search_size rescue 25
 
@@ -103,17 +103,17 @@ class Search < OpenCongressModel
 
   # Drops all indices in elasticsearch for searchable models
   def self.drop_all_indices
-    SEARCHABLE_MODELS.each {|name| name.camelize.constantize.drop_index }
+    SEARCHABLE_INDICES.each {|name| name.singularize.camelize.constantize.drop_index }
   end
 
   # Creates indices, forcing new settings
   def self.create_all_indices
-    SEARCHABLE_MODELS.each {|name| name.camelize.constantize.create_index }
+    SEARCHABLE_INDICES.each {|name| name.singularize.camelize.constantize.create_index }
   end
 
   # Creates all indices in elasticsearch for searchable models
   def self.import_all_indices
-    SEARCHABLE_MODELS.each {|name| name.camelize.constantize.import_bulk }
+    SEARCHABLE_INDICES.each {|name| name.singularize.camelize.constantize.import_bulk }
   end
 
   # Performs search on searchable models using elasticsearch
@@ -122,17 +122,27 @@ class Search < OpenCongressModel
   # @param indices [String] indices to limit search to
   # @param limit [Integer] limit on records returned
   # @return [Relation<SearchableObject>] found records
-  def self.search(query, indices = [], limit = DEFAULT_SEARCH_SIZE)
-    prepare_search(query.strip_punctuation,indices,limit).hits.hits.collect{|record| record._type.camelize.constantize.find(record._id) }
+  def self.search(query, indices = SEARCHABLE_INDICES, limit = DEFAULT_SEARCH_SIZE)
+    prepare_search(query,indices,limit).hits.hits.collect{|record| record._type.camelize.constantize.find(record._id) }
   end
 
   # Prepares and submits search to elasticsearch
+  #
   # @param query [String] what to search for in database
   # @param indices [String] indices to limit search to
   # @param limit [Integer] limit on records returned
   # @return [Hash] hash of elasticsearch return
-  def self.prepare_search(query, indices = [], limit = DEFAULT_SEARCH_SIZE)
-    search_queries = SEARCHABLE_MODELS.collect{|i| i.camelize.constantize.search_query(query)}
+  def self.prepare_search(query, indices = SEARCHABLE_INDICES, limit = DEFAULT_SEARCH_SIZE)
+    # check to see if user is searching for specific index, i.e. "healthcare bills"
+    query.downcase!
+    final_indices = []
+    indices.each {|i| final_indices.push(i) if query.include?(i.to_s) }
+    if final_indices.any?
+      indices = final_indices
+      indices.each {|i| query.gsub!(Regexp.new("(#{i.to_s})|(#{i.to_s.singularize})"),'') }
+    end
+    # construct search queries and initiate search
+    search_queries = indices.collect{|i| i.singularize.camelize.constantize.search_query(query)}
     query = {body: elasticsearch_body(search_queries, limit)}
     query[:index] = indices if indices.any?
     Elasticsearch::Model.client.search(query)
@@ -145,7 +155,7 @@ class Search < OpenCongressModel
   def self.elasticsearch_body(search_queries = [], limit = DEFAULT_SEARCH_SIZE)
     {
       size: limit,
-      indices_boost: SEARCHABLE_MODELS_WITH_BOOSTS,
+      indices_boost: SEARCHABLE_INDICES_WITH_BOOSTS,
       query: {
         function_score: {
           query: {
@@ -160,7 +170,14 @@ class Search < OpenCongressModel
                 modifier: 'sqrt',
                 factor: 1
               }
-            }
+            },
+            {
+              field_value_factor: {
+                field: 'bookmark_count',
+                modifier: 'sqrt',
+                factor: 1
+              }
+            },
           ]
         }
       }
@@ -208,7 +225,7 @@ class Search < OpenCongressModel
   # representation for each search filter.
   #
   def doctor_data_for_load
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = search_filter_map[v] } rescue false
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = search_filter_map(v) } rescue false
   end
 
 end

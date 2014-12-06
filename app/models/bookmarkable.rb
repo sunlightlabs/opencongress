@@ -23,4 +23,11 @@ class Bookmarkable < OpenCongressModel
     User.where(id:Bookmark.where(bookmarkable_id:id).collect{|b|b.user_id})
   end
 
+  # Convenience method for retrieving the number of people bookmarking
+  #
+  # @return [Integer] number bookmarking
+  def bookmark_count
+    bookmarks.count
+  end
+
 end

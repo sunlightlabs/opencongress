@@ -13,8 +13,6 @@
         %a.feed{ :href => link} Feed
         %a.feed.comment_feed{ :href => "/articles/all_comments_atom" }
 
-
-
   - if object.comments.size == 0
     - unless @simple_comments
       %h3#no_comments.no_comments

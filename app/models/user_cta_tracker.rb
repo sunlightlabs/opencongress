@@ -14,11 +14,20 @@
 
 class UserCtaTracker < OpenCongressModel
 
+  #========== CONSTANTS
+
+  LAST_ACTION_THRESHOLD = 3600 # seconds
 
   #========== RELATIONS
 
   belongs_to :previous_action,
              :class_name => 'UserCtaTracker'
+
+  belongs_to :user
+
+  #========== SERIALIZERS
+
+  serialize :params, Hash
 
   #========== METHODS
 

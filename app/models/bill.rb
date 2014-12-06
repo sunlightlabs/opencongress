@@ -51,7 +51,7 @@ class Bill < Bookmarkable
   # elasticsearch configuration
   settings ELASTICSEARCH_SETTINGS do
     mappings ELASTICSEARCH_MAPPINGS do
-      [:summary, :plain_language_summary, :billtext_txt, :get_nickname_title, :get_short_title, :get_official_title, :get_popular_title, :get_default_title].each do |index|
+      [:summary, :plain_language_summary, :billtext_txt].each do |index|
         indexes index, ELASTICSEARCH_INDEX_OPTIONS
       end
     end
@@ -105,8 +105,8 @@ class Bill < Bookmarkable
     },
     elasticsearch: {
       except:  [:rolls, :hot_bill_category_id, :news_article_count, :sponsor_id, :last_vote_date, :topresident_date, :top_subject_id],
-      include: [:bill_fulltext, :sponsor, :top_subject, :bill_titles, :committees],
-      methods: [:summary, :plain_language_summary, :billtext_txt, :get_nickname_title, :get_short_title, :get_official_title, :get_popular_title, :get_default_title]
+      include: [:bill_fulltext, :top_subject, :bill_titles],
+      methods: [:summary, :bookmark_count, :plain_language_summary, :billtext_txt]
     }
   }
 
@@ -259,10 +259,9 @@ class Bill < Bookmarkable
           bool: {
             should: [
               {
-                multi_match: {
-                  query: query,
-                  type: 'most_fields',
-                  fields: %w(summary get_manual_title^10 get_nickname_title^1000),
+                fuzzy_like_this: {
+                  like_text: query,
+                  fields: %w(summary get_manual_title^10 get_nickname_title^100),
                   analyzer: 'english'
                 }
               },
@@ -271,7 +270,7 @@ class Bill < Bookmarkable
                   'top_subject.term' => {
                     query: query,
                     analyzer: 'english',
-                    boost: 100
+                    boost: ELASTICSEARCH_BOOSTS[:small],
                   }
                 }
               },
@@ -279,7 +278,7 @@ class Bill < Bookmarkable
                 match: {
                   :number => {
                     query: query.strip_all_except_numbers.to_i,
-                    boost: 100
+                    boost: ELASTICSEARCH_BOOSTS[:extreme]
                   }
                 }
               },
@@ -287,16 +286,15 @@ class Bill < Bookmarkable
                 match: {
                   :bill_type => {
                     query: query,
-                    boost: 100
+                    boost: ELASTICSEARCH_BOOSTS[:medium]
                   }
                 }
               },
               {
-                match: {
-                  get_nickname_title: {
-                    query: query,
-                    boost: 10000,
-                    minimum_should_match: '80%',
+                fuzzy: {
+                  'bill_titles.title' => {
+                    value: query,
+                    boost: ELASTICSEARCH_BOOSTS[:small]
                   }
                 }
               }

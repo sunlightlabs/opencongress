@@ -275,6 +275,17 @@ namespace :update do
     end
   end
 
+
+  desc 'Calculates and sentiment analysis scores for comments'
+  task :comment_sentiment_analysis => :environment do
+    begin
+      require File.expand_path 'bin/daily/comments_sentiment_analysis', Rails.root
+    rescue Exception => e
+      Raven.capture_exception(e)
+      throw e
+    end
+  end
+
   desc 'Needs a description.'
   task :project_vote_smart => :environment do
     begin
@@ -392,6 +403,7 @@ namespace :update do
     :person_voting_similarities, :sponsored_bill_stats,
     :bill_nicknames,
     :search_stats,
+    :comment_sentiment_analysis,
     :in_session,
     :expire_cached_bill_fragments, :expire_cached_person_fragments, :video
   ]

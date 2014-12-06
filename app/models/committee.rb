@@ -94,7 +94,7 @@ class Committee < Bookmarkable
   SERIALIZATION_STYLES = {
     simple: {},
     elasticsearch: {
-      methods: [:short_name],
+      methods: [:short_name, :bookmark_count, :bills_sponsored_count],
       include: [:reports, :names]
     }
   }
@@ -149,20 +149,34 @@ class Committee < Bookmarkable
       indices: {
         index: 'committees',
         query: {
-          dis_max: {
-            queries: [
-              {
-                match: {
-                  name: {
-                    query: query,
-                    boost: 10000,
-                    minimum_should_match: '66%'
+          function_score: {
+            query: {
+              dis_max: {
+                queries: [
+                  {
+                    fuzzy_like_this_field: {
+                      name: {
+                        like_text: query,
+                        boost: ELASTICSEARCH_BOOSTS[:extreme],
+                        analyzer: 'english'
+                      }
+                    },
                   }
+                ]
+              }
+            },
+            functions: [
+              {
+                field_value_factor: {
+                  field: 'bills_sponsored_count',
+                  modifier: 'sqrt',
+                  factor: 1
                 }
               }
-            ]
-            }
-          },
+            ],
+            score_mode: 'avg'
+          }
+        },
         no_match_query: 'none'
       }
     }
@@ -261,10 +275,22 @@ class Committee < Bookmarkable
   def homepage
     self.homepage_url.present? ? self.homepage_url : HOMEPAGES[name.downcase]
   end
-  
-  def bills_sponsored(limit)
+
+  # Retrieves all the bills this committee sponsored
+  #
+  # @param limit [Integer, nil] max number of bills to return, nil for no limit
+  # @return [Relation<Bill>] return sponsored bills
+  def bills_sponsored(limit=nil)
     ids = Bill.joins(:bill_committees).select('bills.id').where('bills_committees.committee_id = ? AND session = ?', id, Settings.default_congress).order('lastaction DESC').limit(limit).collect {|b| b.id }
-    (ids.size > 0) ? Bill.includes(:bill_titles).where(id:ids).order('bills.lastaction DESC') : []
+    Bill.includes(:bill_titles).where(id:ids).order('bills.lastaction DESC')
+  end
+
+  # Convenience method for obtaining the number of sponsored bills
+  #
+  # @param limit [Integer, nil] max number of bills to return, nil for no limit
+  # @return [Integer] return count of sponsored bills
+  def bills_sponsored_count(limit=nil)
+    bills_sponsored(limit).count
   end
   
   def latest_major_actions(num)

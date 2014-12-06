@@ -6,32 +6,49 @@ module SearchableObject
     include Elasticsearch::Model::Callbacks
   end
 
+  #========== CONSTANTS
+
+  # All constants below starting with ELASTICSEARCH are default options.
+
+  # http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/analysis.html
   ELASTICSEARCH_SETTINGS = {
     index: { number_of_shards: 1 },
     analysis: {
       filter: {
-        ngram: {
-          type: 'nGram',
+        edge_ngram: {
+          type: 'edge_ngram',
           min_gram:2,
-          max_gram:15,
+          max_gram:20,
           token_chars: %w(letter digit punctuation symbol)
         }
       },
       analyzer: {
-        default: {
-          type: 'english'
+        edge_ngram: {
+          type: 'custom',
+          tokenizer: 'standard',
+          filter: %w(standard edge_ngram)
         }
       }
     },
   }
 
+  # http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping.html
   ELASTICSEARCH_MAPPINGS = {
     dynamic: 'true'
   }
 
   ELASTICSEARCH_INDEX_OPTIONS = {
     index_options: 'offsets',
-    analyzer: 'english'
+    analyzer: 'default'
+  }
+
+  ELASTICSEARCH_BOOSTS = {
+    extreme: 1000000,
+    high: 100000,
+    medium: 10000,
+    low: 1000,
+    small: 100,
+    tiny: 10
   }
 
   #========== METHODS

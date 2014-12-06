@@ -37,7 +37,9 @@ class Subject < Bookmarkable
   # Different formats to serialize as JSON
   SERIALIZATION_STYLES = {
     simple: {},
-    elasticsearch: {}
+    elasticsearch: {
+      methods: [:bookmark_count]
+    }
   }
 
   #========== VALIDATORS
@@ -102,7 +104,12 @@ class Subject < Bookmarkable
               dis_max: {
                 queries: [
                   {
-                    term: { term: query }
+                    match: {
+                      :term => {
+                        query: query,
+                        boost: ELASTICSEARCH_BOOSTS[:high]
+                      }
+                    }
                   }
                 ]
               }

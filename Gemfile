@@ -125,7 +125,7 @@ end
 
 group :production, :staging do
   gem 'unicorn'
-  gem 'sentry-raven' #, :git => "git://github.com/getsentry/raven-ruby.git"
+  gem 'sentry-raven', '0.12.2'
 end
 
 group :test, :development do

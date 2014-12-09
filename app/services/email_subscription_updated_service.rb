@@ -9,13 +9,12 @@ class EmailSubscriptionUpdatedService
 
   def initialize(user)
     return nil unless Settings.bsd_perform_updates == true
-
     LISTS.each_pair do |opt, list|
       if user.user_options.send(:"#{opt.to_s}?")
         if user.email_changed? && !user.user_options.send(:"#{opt.to_s}_changed?")
           BlueStateDigital.remove_from_group_by_email(user.email_was, list)
         end
-        BlueStateDigital.add_to_group_by_email(user.email, list)
+        BlueStateDigital.add_to_group_by_email(user.email, list) rescue nil
       elsif user.user_options.send(:"#{opt.to_s}_changed?")
         if user.email_changed?
           BlueStateDigital.remove_from_group_by_email(user.email_was, list)

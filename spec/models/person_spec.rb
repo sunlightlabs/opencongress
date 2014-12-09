@@ -112,5 +112,27 @@ describe Person do
         expect(person.fec_ids.count).to eq(1)
       end
     end
+    describe "#list_chamber" do
+      it "returns senators" do
+        @people = Person.list_chamber('sen', Settings.default_congress, '')
+        @people.each {|person| expect(person.roles.first.role_type).to eq('sen')}
+      end
+      it "returns representatives" do
+        @people = Person.list_chamber('rep', Settings.default_congress, '')
+        @people.each {|person| expect(person.roles.first.role_type).to eq('rep')}
+      end
+      it "orders people by state by default" do 
+        @people = Person.list_chamber('rep', Settings.default_congress, '')
+        expect(@people.first.state).to eq('AK')
+      end
+      it "can order by last name" do 
+        @people = Person.list_chamber('rep', Settings.default_congress, :name)
+        expect(@people.first.lastname.split('').first).to eq('A')
+      end
+      it "limits the list" do
+        @people = Person.list_chamber('rep', Settings.default_congress, '', 1)
+        expect(@people.length).to eq(1)
+      end
+    end
   end
 end

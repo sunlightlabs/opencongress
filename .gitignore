@@ -29,6 +29,7 @@ TAGS
 helium.json
 sendhelium
 .revision
+.branch
 .idea
 .idea/*
 *.bak

@@ -36,6 +36,14 @@ GIT
   specs:
     geocoder (1.1.9)
 
+GIT
+  remote: https://github.com/getsentry/raven-ruby.git
+  revision: d62c61ca836c851847105ef77c61718cac89abb8
+  ref: d62c61ca836c851847105ef77c61718cac89abb8
+  specs:
+    sentry-raven (0.12.1)
+      faraday (>= 0.7.6)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -375,8 +383,6 @@ GEM
     safe_yaml (0.9.4)
     sass (3.2.9)
     selenium-client (1.2.18)
-    sentry-raven (0.12.2)
-      faraday (>= 0.7.6)
     settingslogic (2.0.9)
     sexmachine (0.0.6)
       unicode_utils (>= 1.3.0)
@@ -497,7 +503,7 @@ DEPENDENCIES
   ruby-openid
   sass
   selenium-client
-  sentry-raven (= 0.12.2)
+  sentry-raven!
   settingslogic
   sexmachine
   silent-postgres

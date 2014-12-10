@@ -21,7 +21,8 @@ GIT
 
 GIT
   remote: git://github.com/sunlightlabs/formageddon.git
-  revision: 6593311062e92e0d4795e79ac7417f84821b6f2c
+  revision: 61c4f0dae2c16345d226be8575475e0f3ebd94e3
+  ref: 61c4f0dae2c16345d226be8575475e0f3ebd94e3
   specs:
     formageddon (0.0.2)
       delayed_job (~> 2.1)
@@ -452,7 +453,7 @@ DEPENDENCIES
   delayed_job (~> 2.1)
   facebooker2
   fog
-  formageddon (~> 0.0.2)!
+  formageddon!
   full-name-splitter
   fuubar
   fuubar-cucumber!

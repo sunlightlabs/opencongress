@@ -136,9 +136,6 @@ gem 'acts-as-taggable-on'
 
 gem 'simple_form'
 
-# Report errors to Sentry
-gem 'sentry-raven', "0.12.2"
-
 # Mail
 gem 'mechanize'
 

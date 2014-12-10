@@ -163,6 +163,8 @@ group :production do
   gem 'newrelic_rpm'
 end
 
+gem 'sentry-raven', :git => "https://github.com/getsentry/raven-ruby.git", :ref => "d62c61ca836c851847105ef77c61718cac89abb8"
+
 group :production, :staging do
   gem 'unicorn'
 end

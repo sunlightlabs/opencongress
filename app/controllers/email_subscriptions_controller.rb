@@ -10,11 +10,10 @@ class EmailSubscriptionsController < ApplicationController
     response = submit_to_bsd
     if response.code == "302" && response.body =~ /thanks/
       flash[:info] = "Thanks! We'll keep you up to date."
-      redirect_to "/"
     else
-      flash[:error] = "Oops! Please be sure to fill out all required fields."
-      redirect_to :back
+      flash[:error] = "Something went wrong setting your email preferences. You can view them on your profile page."
     end
+    redirect_to "/"
   end
 
   def adhoc
@@ -40,8 +39,15 @@ class EmailSubscriptionsController < ApplicationController
       params[:firstname], params[:lastname] = params[:name].split(' ', 2)
     end
     params[:zip] = params[:zipcode] if params[:zipcode].present?
-
-    result = BlueStateDigital.subscribe_to_email params
-    return result[:response]
+    begin
+      result = BlueStateDigital.subscribe_to_email params
+    rescue
+      ostruct = OpenStruct.new({
+        :code => "false",
+        :body => "false"
+      })
+      result = false
+    end
+    return result == false ? ostruct : result[:response] 
   end
 end

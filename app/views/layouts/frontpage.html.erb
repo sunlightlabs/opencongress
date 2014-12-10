@@ -33,8 +33,10 @@
     <%= javascript_include_tag 'ie8/IE8' %>
     <![endif]-->
 
-    <%= stylesheet_link_tag 'https://s3.amazonaws.com/sf-icons/css/sf-icons.css' %>
+    <%= stylesheet_link_tag 'https://sunlight-cdn.s3.amazonaws.com/sf-icons/0.2/css/sf-icons.css' %>
 
+    <link rel="stylesheet" href="https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/css/brandingbar.css">
+    
     <%= yield :stylesheets %>
 
     <script type="text/javascript">
@@ -69,6 +71,7 @@
     <%= fb_connect_async_js %>
     <%= javascript_include_tag "https://s3.amazonaws.com/sunlight-cdn/brandingbar/0.2/js/brandingbar.js" %>
     <%= javascript_include_tag "socialite/simple-socialite-pack.js" %>
+    <%= javascript_include_tag "simple-socialite-pack.js" %>
     <script>
       Socialite.setup({
         facebook: {
@@ -87,7 +90,7 @@
       displayName: 'Email'
     });
     </script>
-
+    <%= javascript_include_tag "branding_bar_temp" %>
     <%= yield :javascripts %>
   </body>
 </html>

@@ -19,7 +19,7 @@ module GetFormageddonRepliesJob
             (letter.subject =~ /Newsletter/).nil?)
         notifications_sent += 1
         begin
-          incoming_letters_on_chain = letter.formageddon_thread.formageddon_letters.select{|d| d.direction = "TO_SENDER"}.count
+          incoming_letters_on_chain = letter.formageddon_thread.formageddon_letters.select{|d| d.direction == "TO_SENDER"}.count
         rescue
           incoming_letters_on_chain = 0
         end

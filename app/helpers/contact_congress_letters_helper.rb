@@ -79,7 +79,8 @@ module ContactCongressLettersHelper
 
     if thread.sender_state.present?
       regexp_str += "(\s+)#{Regexp.escape(thread.sender_state)}(\s+)|"
-      regexp_str += "(\s+)#{Regexp.escape(State::ABBREVIATIONS_REVERSE["#{thread.sender_state}"])}(\s+)|"
+      state_regexp = "(\s+)#{Regexp.escape(State::ABBREVIATIONS_REVERSE[thread.sender_state])}(\s+)|" rescue ''
+      regexp_str += state_regexp
     end
 
     regexp_str += "#{Regexp.escape(thread.sender_zip5)}|"                       unless thread.sender_zip5.blank?

@@ -95,6 +95,10 @@ class Search < OpenCongressModel
     end
   end
 
+  def self.search_filter_list
+    SEARCH_FILTERS_INVERTED.keys
+  end
+
   # Drops all indices from elasticsearch and creates them again.
   # USE TO RESET INDICES AND RELOAD DATA
   def self.reset_all_indices
@@ -133,8 +137,9 @@ class Search < OpenCongressModel
   # @param limit [Integer] limit on records returned
   # @return [Hash] hash of elasticsearch return
   def self.prepare_search(query, indices = SEARCHABLE_INDICES, limit = DEFAULT_SEARCH_SIZE)
+    # doctor text for elasticsearch
+    query = prepare_elasticsearch_text(query)
     # check to see if user is searching for specific index, i.e. "healthcare bills"
-    query.downcase!
     final_indices = []
     indices.each {|i| final_indices.push(i) if query.include?(i.to_s) }
     if final_indices.any?
@@ -146,6 +151,18 @@ class Search < OpenCongressModel
     query = {body: elasticsearch_body(search_queries, limit)}
     query[:index] = indices if indices.any?
     Elasticsearch::Model.client.search(query)
+  end
+
+  def self.prepare_elasticsearch_text(query)
+    # we only want lowercase
+    query.downcase!
+    # remove additional spaces
+    query.strip!
+    # remove non alphanumeric
+    query.gsub!(/[^\w\.\s\-_]+/, '')
+    # replace multiple spaces with one space
+    query.gsub!(/\s+/, ' ')
+    query
   end
 
   # Constructs the hash to pass into elasticsearch
@@ -209,6 +226,10 @@ class Search < OpenCongressModel
     prepare_tsearch_query(self.search_text.to_s)
   end
 
+  def initiate_search
+    Search.search(self.search_text)
+  end
+
   private
 
   # Doctors the input data before saving to the database.
@@ -216,7 +237,7 @@ class Search < OpenCongressModel
   def doctor_data_for_save
     self.page = 1 if (self.page.nil? || self.page < 1)
     self.search_text = truncate(self.search_text, :length => 255)
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = search_filter_map(v.to_sym) if v.is_a? String  }
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = Search.search_filter_map(v.to_sym) if v.is_a? String  }
     self.search_congresses = ["#{Settings.default_congress}"] unless self.search_congresses.is_a? Array
   end
 
@@ -225,7 +246,7 @@ class Search < OpenCongressModel
   # representation for each search filter.
   #
   def doctor_data_for_load
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = search_filter_map(v) } rescue false
+    self.search_filters.each_with_index {|v,i| self.search_filters[i] = Search.search_filter_map(v) } rescue false
   end
 
 end

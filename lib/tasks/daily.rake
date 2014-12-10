@@ -402,8 +402,8 @@ namespace :update do
     :committee_reports, :committee_meetings,
     :person_voting_similarities, :sponsored_bill_stats,
     :bill_nicknames,
-    :search_stats,
-    :comment_sentiment_analysis,
+    #:search_stats, add back in soon
+    #:comment_sentiment_analysis, add back in soon
     :in_session,
     :expire_cached_bill_fragments, :expire_cached_person_fragments, :video
   ]

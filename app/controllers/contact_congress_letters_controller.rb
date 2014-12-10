@@ -109,7 +109,7 @@ class ContactCongressLettersController < ApplicationController
     @contact_congress_letter = ContactCongressLetter.find(params[:id])
 
     unless @contact_congress_letter.can_be_read_by(current_user)
-      redirect_to '/', :notice => 'You do not have permission to read that letter!'
+      redirect_to '/', :notice => 'You do not have permission to read that letter! Note: you must log in to view your non-public letters.'
       return
     end
 

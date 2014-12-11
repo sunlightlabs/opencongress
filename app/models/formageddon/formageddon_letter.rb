@@ -85,7 +85,7 @@ class Formageddon::FormageddonLetter
       self.status = "SENT_AS_FAX"
       self.status += ": Error was, #{options[:error_msg]}" if options[:error_msg].present?
       self.save!
-      return @fax # TODO: This sucks, why did I do this?
+      return @fax # @fax _should_ be an HTTParty object with a success boolean 
     else
       return false
     end

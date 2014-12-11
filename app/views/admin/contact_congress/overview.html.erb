@@ -8,17 +8,6 @@
     </tr>
   </thead>
   <tbody>
-    <% if @passed.any? %>
-    <tr>
-      <td colspan="4"><%= @passed.count %> Successes</td>
-    </tr>
-    <tr>
-      <% @passed.each do |p| %>
-      <%= render :partial => 'contact_congress_test', :locals => { :p => p } %>
-      <% end %>
-    </tr>
-    <% end %>
-
     <% if @failed.any? %>
     <tr>
       <td colspan="4"><%= @failed.count %> Failures</td>
@@ -50,6 +39,16 @@
       <%= render :partial => 'contact_congress_test', :locals => { :p => p } %>
       <% end %>
     </tr>
+    <% end %>
+    <% if @passed.any? %>
+      <tr>
+        <td colspan="4"><%= @passed.count %> Successes</td>
+      </tr>
+      <tr>
+        <% @passed.each do |p| %>
+        <%= render :partial => 'contact_congress_test', :locals => { :p => p } %>
+        <% end %>
+      </tr>
     <% end %>
   </tbody>
 </table>

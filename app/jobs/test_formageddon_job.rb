@@ -2,10 +2,17 @@ module TestFormageddonJob
   def self.perform(bioguide)
     ActiveRecord::Base.transaction do
       @person = Person.find_by_bioguideid(bioguide)
-      @details = defaults_for(bioguide).merge(
-        :formageddon_recipient_id => @person.id,
-      )
-      Rails.logger.info("#{bioguide} is not accounted for in /public/formageddon_test_data.json!") and return nil if @details.nil?
+      @details = defaults_for(bioguide)
+      unless @details.nil?
+        @details = @details.merge(
+          :formageddon_recipient_id => @person.id,
+        )
+      else
+        error_message = "#{bioguide} is not accounted for in /public/formageddon_test_data.json!"
+        puts error_message
+        Raven.capture_message(error_message)
+        return false
+      end
       @thread = Formageddon::FormageddonThread.create(@details)
       @thread.formageddon_letters << Formageddon::FormageddonLetter.create(
         :direction => "TO_RECIPIENT",

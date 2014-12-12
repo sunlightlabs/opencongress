@@ -37,13 +37,14 @@
 #  total_session_votes       :integer
 #  votes_democratic_position :integer
 #  votes_republican_position :integer
-#  death_date                :date
 #  govtrack_id               :integer
 #  fec_id                    :string(255)
 #  thomas_id                 :string(255)
 #  cspan_id                  :integer
 #  lis_id                    :string(255)
+#  death_date                :date
 #  twitter_id                :string(255)
+#  contactable               :boolean          default(FALSE), not null
 #
 
 require_dependency 'viewable_object'

@@ -44,6 +44,7 @@
 #  lis_id                    :string(255)
 #  death_date                :date
 #  twitter_id                :string(255)
+#  contactable               :boolean          default(FALSE), not null
 #
 
 require_dependency 'viewable_object'

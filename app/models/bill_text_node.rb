@@ -8,14 +8,33 @@
 #
 
 class BillTextNode < OpenCongressModel
+
+  #========== CONSTANTS
+
+  DISPLAY_OBJECT_NAME = 'Bill Text'
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :bill_text_version
 
+  #----- HAS_MANY
+
   has_many :comments, :as => :commentable
+
+  #========== ACCESSORS
   
   attr_accessor :bill_text_cache
+
+  #========== METHODS
+
+  #----- INSTANCE
+
+  public
   
   def display_object_name
-    "Bill Text"
+    DISPLAY_OBJECT_NAME
   end
 
   def ident
@@ -35,10 +54,9 @@ class BillTextNode < OpenCongressModel
     begin
       doc = Nokogiri::XML(open(path))    
       node = doc.css("p[@id='bill_text_section_#{nid}']")
-    
       @bill_text_cache = node.text.gsub(/CommentsClose CommentsPermalink/, "")
     rescue
-      return ""
+      return ''
     end
   end
 end

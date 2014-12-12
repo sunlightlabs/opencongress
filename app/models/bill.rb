@@ -45,6 +45,7 @@ class Bill < Bookmarkable
 
   include ViewableObject
   include SearchableObject
+  include Nokogiri
 
   #========== CONFIGURATIONS
 
@@ -88,6 +89,17 @@ class Bill < Bookmarkable
     'sconres' => 'sc',
     'sjres' => 'sj',
     'sres' => 'sr'
+  }
+
+  HTML_TO_XML_TAGS = {
+      'article' => ['bill'],
+      'p' => ['distribution-code','congress','session','legis-num','current-chamber', 'legis-type',
+              'official-title', 'header', 'text', 'attestation-date', 'attestor', 'role'],
+      'section' => ['paragraph', 'form','action','legis-body','quoted-block', 'subsection',
+                    'attestation', 'attestation-grou', 'subparagraph', 'section'],
+      'span' => ['enum'],
+      'hr' => ['pagebreak'],
+      nil => ['dublinCore', 'metadata']
   }
 
   # Different formats to serialize bills as JSON
@@ -304,62 +316,6 @@ class Bill < Bookmarkable
         no_match_query: 'none'
       }
     }
-  end
-
-
-  # Performs search of bills in database using elasticsearch.
-  # TODO: tweak query until good results found
-  #
-  # @param query [String] what to search bills for
-  # @param limit [Integer] limit number of search results
-  # @return [Relation<Bill>] bills matching the search query
-  def self.search(query, limit=25)
-    __elasticsearch__.search(query: {
-      function_score: {
-        query: {
-          bool: {
-            should: [
-              {
-                match: {
-                  get_nickname_title: {
-                    query: query,
-                    boost: Float::INFINITY,
-                    minimum_should_match: '66%'
-                  }
-                }
-              },
-            ],
-            must: [
-              {
-                multi_match: {
-                  query: query,
-                  type: 'best_fields',
-                  fields: %w(_all summary^3 manual_title^10 nickname_title^100),
-                  analyzer: 'english'
-                }
-              },
-              {
-                fuzzy_like_this: {
-                  like_text: query,
-                  analyzer: 'english',
-                  fuzziness: 0.25,
-                  ignore_tf: true
-                }
-              }
-            ]
-          }
-        },
-        functions: [
-          {
-            field_value_factor: {
-              field: 'page_views_count',
-              modifier: 'ln1p',
-              factor: 10
-            }
-          }
-        ],
-      },
-    })
   end
 
   # return bill actions since last X
@@ -628,7 +584,7 @@ class Bill < Bookmarkable
     while versions.present? do
       (these_versions, versions) = versions.partition{ |v| current_versions.include?(v.previous_version) }
       if these_versions.empty? and versions.present?
-        raise Exception.new("Incomplete bill text version chain.")
+        raise Exception.new('Incomplete bill text version chain.')
       end
       chain.push(*these_versions)
       current_versions = these_versions.map{ |v| v.version }
@@ -1005,6 +961,70 @@ class Bill < Bookmarkable
 
   def bill_id
     "#{bill_type}#{number}-#{session}"
+  end
+
+  # Gets the text versions of a bill as an Array in the proper chained order, i.e.
+  # the first entry will be the first bill version (usually as introduced), the second
+  # entry will have the 'previous_version' attribute referring to the first entry, and
+  # so forth.
+  #
+  # @return [Array<BillTextVersion>] ordered text versions by chained relationship
+  def chain_text_versions
+    Bill.chain_text_versions(self.bill_text_versions.all)
+  end
+
+  # Gets the specified version of the bill
+  #
+  # @param version [String, nil] nil for current, specified String otherwise
+  # @return [BillTextVersion] version of bill
+  def get_version(version = nil)
+
+    begin
+      versions = self.chain_text_versions
+      return nil if versions.empty?
+    rescue Exception => e
+      logger.warn("Failed to provide bill text for #{self.ident}. Reason: #{e}")
+      return nil
+    end
+
+    version.nil? ? versions.last : versions.select{|v| v.version == version }.first
+  end
+
+  # Retrieves the full text of bill with HTML markup.
+  #
+  # @param version [String, nil] nil for current, specified String otherwise
+  # @return [String] HTML markup of bill text or empty string if file path can't be found
+  def full_text(version = nil)
+    IO.read("#{Settings.oc_billtext_path}/#{self.session}/#{self.reverse_abbrev_lookup}/#{self.reverse_abbrev_lookup}#{self.number}#{get_version(version).version}.gen.html-oc") rescue ''
+  end
+
+  def full_text_as_xml(version = nil)
+    puts "#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml"
+    IO.read("#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml") rescue ''
+  end
+
+  def full_text_as_html(version = nil)
+    doc = Nokogiri::XML(self.full_text_as_xml(version))
+
+    HTML_TO_XML_TAGS.each do |key,value|
+      value.each do |tag|
+        doc.search(tag).each do |node|
+          if key.nil?
+            node.unlink
+          elsif not node.attributes.has_key?('class')
+            node.attributes.each do |k,v|
+              node["data-#{k}"] = v
+              node.remove_attribute(k)
+            end
+            node['id'] = "xml_#{node['id']}" if node.has_attribute?('id')
+            node['class'] = "xml_#{node.name}"
+            node.name = key
+          end
+        end
+      end
+    end
+
+    doc.root.to_s
   end
 
   def update_bill_fulltext_search_table

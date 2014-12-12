@@ -49,9 +49,9 @@ class User < OpenCongressModel
   #========== CONSTANTS
 
   HUMANIZED_ATTRIBUTES = {
-      :email => 'E-mail address',
-      :accept_tos => 'Terms of service',
-      :login => 'Username'
+    :email => 'E-mail address',
+    :accept_tos => 'Terms of service',
+    :login => 'Username'
   }
 
   PROFILE_IMAGE_SIZES = [:main_picture, :small_picture]

@@ -94,6 +94,7 @@ OpenCongress::Application.routes.draw do
         f.match 'news(/:page)', :action => 'news', :as => :news_bill
         f.match 'news/search(/:page)', :action => 'commentary_search', :commentary_type => 'news'
         f.match 'text', :action => 'text', :as => :bill_text
+        f.match 'full_text', :action => 'full_text', :as => :bill_full_text
         f.match 'comments', :action => 'comments', :as => :bill_comments
         f.match 'show', :action => 'show', :as => :bill
         f.match ':action'

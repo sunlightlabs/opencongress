@@ -1,5 +1,15 @@
 require 'o_c_logger'
 
+###################################################################
+# ___   _ _____ _     ___ _  _  ___ ___ ___ _____ ___ ___  _  _   #
+# |   \ /_\_   _/_\   |_ _| \| |/ __| __/ __|_   _|_ _/ _ \| \| | #
+# | |) / _ \| |/ _ \   | || .` | (_ | _|\__ \ | |  | | (_) | .` | #
+# |___/_/ \_\_/_/ \_\ |___|_|\_|\___|___|___/ |_| |___\___/|_|\_| #
+#                                                                 #
+# For more info, visit the link below.                            #
+# https://gitlab.sunlightlabs.com/labs/phantom-planet/blob/master/data_ingestion/oc-data-ingestion.markdown
+###################################################################
+
 namespace :update do
 
   # Creates a directory at the input path if it doesn't exist.
@@ -42,10 +52,11 @@ namespace :update do
     require File.expand_path 'bin/parse_today_in_congress', Rails.root
   end
 
+  # IMPORTANT: this will always fail - opencongress-us-scrapers user is handling this now.
   desc 'Fetches unitedstates scraper output.'
   task :unitedstates_rsync => :environment do
     begin
-      src = Settings.unitedstates_rsync_source
+      src = Settings.unitedstates_rsync_source # will be blank in application_settings.yml
       if src
         dst = Settings.unitedstates_data_path
         cmd = "rsync -avz #{src} #{dst}"

@@ -1,0 +1,18 @@
+<article class="xml_bill" <% doc.root.attributes.each do |k,v|%><%=%Q[data-#{k}=#{v}]%> <% end %>>
+
+  <section class="xml_form">
+
+    <% doc.xpath('//form').children.each do |node| %>
+
+        <% if node.name != 'text' %>
+            <p class="xml_<%= node.name %>"><%= node.text %></p>
+        <% end %>
+
+    <% end %>
+
+  </section>
+
+
+
+
+</article>

@@ -995,6 +995,7 @@ class Bill < Bookmarkable
   # @param version [String, nil] nil for current, specified String otherwise
   # @return [String] HTML markup of bill text or empty string if file path can't be found
   def full_text(version = nil)
+    # example #=> opencongress/bill.text/113/h/h592rfs.gen.html-oc
     IO.read("#{Settings.oc_billtext_path}/#{self.session}/#{self.reverse_abbrev_lookup}/#{self.reverse_abbrev_lookup}#{self.number}#{get_version(version).version}.gen.html-oc") rescue ''
   end
 

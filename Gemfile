@@ -10,7 +10,7 @@ gem 'thin'
 gem 'dalli'
 gem 'rails-observers'
 
-# better search
+# elasticsearch gems for search
 gem 'elasticsearch'
 gem 'elasticsearch-model'
 gem 'elasticsearch-rails'
@@ -18,6 +18,9 @@ gem 'elasticsearch-rails'
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
 # gem 'mysql2'
+
+# for string analysis
+gem 'text'
 
 # documentation generation tool
 gem 'yard'

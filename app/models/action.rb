@@ -24,21 +24,41 @@
 #
 
 class Action < OpenCongressModel
+
+  #========== INCLUDES
+
   include Comparable
+
+  #========== CONSTANTS
+
+  ACTIVITY_PERIODS = ['Today', 'Yesterday', 'Within a week', 'Recently']
+
+  #========== VALIDATORS
  
   validates_presence_of :type
 
-  # has_one :roll # votes?
-  has_many :refers
-  
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :bill
   belongs_to :amendment
-
   belongs_to :roll_call
-  
+
+  #----- HAS_ONE
+
+  # has_one :roll # votes?
+
+  #----- HAS_MANY
+
+  has_many :refers
   has_many :action_references
-  
-  ACTIVITY_PERIODS = ["Today", "Yesterday", "Within a week", "Recently"]
+
+
+  #========== METHODS
+
+  #----- CLASS
+
   def self.classify_by_date(actions)
     def self.today(d)
       d > Time.new.at_beginning_of_day
@@ -74,6 +94,10 @@ class Action < OpenCongressModel
     end
     h
   end
+
+  #----- INSTANCE
+
+  public
 
   def to_s
     # Handle all kinds of actions:

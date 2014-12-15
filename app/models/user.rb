@@ -44,12 +44,14 @@ class User < OpenCongressModel
   include PrivacyObject
   apply_simple_captcha
 
+  #========== CONFIGURATIONS
+
   #========== CONSTANTS
 
   HUMANIZED_ATTRIBUTES = {
-      :email => 'E-mail address',
-      :accept_tos => 'Terms of service',
-      :login => 'Username'
+    :email => 'E-mail address',
+    :accept_tos => 'Terms of service',
+    :login => 'Username'
   }
 
   PROFILE_IMAGE_SIZES = [:main_picture, :small_picture]
@@ -69,7 +71,7 @@ class User < OpenCongressModel
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true, :allow_blank => true
 
-  #========== FILTERS
+  #========== CALLBACKS
 
   after_validation -> { merge_validation_errors_with(:user_profile) }
 
@@ -179,17 +181,6 @@ class User < OpenCongressModel
   has_many :user_privacy_option_items,
            :dependent => :destroy
 
-  #========== ALIASES
-
-  alias_attribute :username, :login
-
-  # These are just here for some consistency in naming patterns
-  alias_method :voted_bills, :bills_voted_on
-  alias_method :supported_bills, :bills_supported
-  alias_method :opposed_bills, :bills_opposed
-  alias_method :notification_options, :user_notification_options
-  alias_method :notification_option_items, :user_notification_option_items
-
   #========== SCOPES
 
   scope :for_state, lambda {|state| where('state = ?', state.upcase) }
@@ -226,7 +217,7 @@ class User < OpenCongressModel
   serialize :possible_states, Array
   serialize :possible_districts, Array
 
-  #========== DELEGATERS
+  #========== DELEGATORS
 
   delegate :zipcode=, :to => :user_profile
   delegate :street_address=, :to => :user_profile
@@ -257,6 +248,17 @@ class User < OpenCongressModel
     alias_method(:"_#{meth}", meth.to_sym)
     define_method(meth.to_sym){ send(:"_#{meth}") || send(:"build_#{meth}")}
   end
+
+  #========== ALIASES
+
+  alias_attribute :username, :login
+
+  # These are just here for some consistency in naming patterns
+  alias_method :voted_bills, :bills_voted_on
+  alias_method :supported_bills, :bills_supported
+  alias_method :opposed_bills, :bills_opposed
+  alias_method :notification_options, :user_notification_options
+  alias_method :notification_option_items, :user_notification_option_items
 
   #========== METHODS
 

@@ -3,12 +3,6 @@ class EmailCongressMailer < ActionMailer::Base
   helper :email_congress
   helper :contact_congress_letters
 
-  def html_body_alert (email)
-    @email = email
-    mail(:to => Settings.contact_us_email,
-         :subject => "Sent #{email.from_email} an error message re: HTML-only email: #{email.subject}")
-  end
-
   def must_send_text_version (email)
     @email = email
     mail(:to => email.from_email,

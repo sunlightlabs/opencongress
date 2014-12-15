@@ -429,40 +429,25 @@ class BillController < ApplicationController
     @letters = @bill.contact_congress_letters.includes(:formageddon_threads).where("formageddon_threads.privacy='PUBLIC'").order("contact_congress_letters.created_at DESC").paginate(:page => params[:page], :per_page => 10)
   end
 
+  # Controller for the full text of a particular bill.
   def text
     @topic = nil
     @meta_description = "Full bill text of #{@bill.title_full_common} on OpenCongress.org"
-
     @versions = @bill.bill_text_versions.all
-   
-    if @versions.empty?
-      return missing_text
-    end
-
-    begin
-      @versions = Bill.chain_text_versions(@versions)
-    rescue Exception => e
-      logger.warn("Failed to provide bill text for #{@bill.ident}. Reason: #{e}")
-      return missing_text
-    end
-    if params[:version]
-      @selected_version = @versions.select{ |v| v.version == params[:version] }.first
-    else
-      @selected_version = @versions.last
-    end
-
+    @selected_version = @bill.get_version(params[:version] || nil)
+    return missing_text if @selected_version.nil?
     @page_title = "Text of #{@bill.typenumber} as #{@selected_version.pretty_version}"
     @commented_nodes = @selected_version.bill_text_nodes.includes(:comments)
     @top_nodes = @selected_version.top_comment_nodes
-    begin
-      # open html from file
-      if !@selected_version.nil?
-        path = "#{Settings.oc_billtext_path}/#{@bill.session}/#{@bill.reverse_abbrev_lookup}/#{@bill.reverse_abbrev_lookup}#{@bill.number}#{@selected_version.version}.gen.html-oc"
-        @bill_text = File.open(path).read
-      end
-    rescue
-      return missing_text
-    end
+    @bill_text = @bill.full_text
+    return missing_text if @bill_text.blank?
+  end
+
+  def full_text
+    ap('what?')
+    bill_type, number, session = Bill.ident params[:id]
+    @bill = bill_from_type_number_session(:bill_titles,params[:id])
+    @bill_as_html = @bill.full_text_as_html
   end
 
   def print_text

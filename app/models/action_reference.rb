@@ -9,5 +9,11 @@
 #
 
 class ActionReference < OpenCongressModel
+
+  #========== RELATIONS
+
+  #----- BELONGS_TO
+
   belongs_to :action
+
 end

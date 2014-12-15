@@ -2,27 +2,27 @@ module BillHelper
 
   def bill_type_name(bill_type)
     case bill_type
-    when 'hres' then '<div>Resolutions</div> <span>House of Representatives</span>'
-    when 'hr' then '<div>Bills</div> <span>House of Representatives</span>'
-    when 'hjres' then '<div>Joint Resolutions</div> <span>House of Representatives</span>'
-    when 'hconres' then '<div>Concurrent Resolution</div> <span>House of Representatives</span>'
-    when 's' then '<div>Bills</div> <span>Senate</span>'
-    when 'sres' then '<div>Resolutions</div> <span>Senate</span>'
-    when 'sjres' then '<div>Joint Resolutions</div> <span>Senate</span>'
-    when 'sconres' then '<div>Concurrent Resolution</div> <span>Senate</span>'
+      when 'hres' then '<div>Resolutions</div> <span>House of Representatives</span>'
+      when 'hr' then '<div>Bills</div> <span>House of Representatives</span>'
+      when 'hjres' then '<div>Joint Resolutions</div> <span>House of Representatives</span>'
+      when 'hconres' then '<div>Concurrent Resolution</div> <span>House of Representatives</span>'
+      when 's' then '<div>Bills</div> <span>Senate</span>'
+      when 'sres' then '<div>Resolutions</div> <span>Senate</span>'
+      when 'sjres' then '<div>Joint Resolutions</div> <span>Senate</span>'
+      when 'sconres' then '<div>Concurrent Resolution</div> <span>Senate</span>'
     end
   end
 
   def bill_type_page_title(bill_type)
     case bill_type
-    when 'hres' then 'Resolutions: House of Representatives'
-    when 'hr' then 'Bills: House of Representatives'
-    when 'hjres' then 'Joint Resolutions: House of Representatives'
-    when 'hconres' then 'Concurrent Resolution: House of Representatives'
-    when 's' then 'Bills: Senate'
-    when 'sres' then 'Resolutions: Senate'
-    when 'sjres' then 'Joint Resolutions: Senate'
-    when 'sconres' then 'Concurrent Resolution: Senate'
+      when 'hres' then 'Resolutions: House of Representatives'
+      when 'hr' then 'Bills: House of Representatives'
+      when 'hjres' then 'Joint Resolutions: House of Representatives'
+      when 'hconres' then 'Concurrent Resolution: House of Representatives'
+      when 's' then 'Bills: Senate'
+      when 'sres' then 'Resolutions: Senate'
+      when 'sjres' then 'Joint Resolutions: Senate'
+      when 'sconres' then 'Concurrent Resolution: Senate'
     end
   end
 

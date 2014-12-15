@@ -1,4 +1,4 @@
-# == Schema Information
+''# == Schema Information
 #
 # Table name: committees
 #
@@ -22,14 +22,26 @@ class Committee < Bookmarkable
   #========== INCLUDES
 
   include ViewableObject
+  include SearchableObject
+
+  #========== CONFIGURATIONS
+
+  # elasticsearch configuration
+  settings ELASTICSEARCH_SETTINGS do
+    mappings ELASTICSEARCH_MAPPINGS do
+      [:name, :subcommittee_name].each do |index|
+        indexes index, ELASTICSEARCH_INDEX_OPTIONS
+      end
+    end
+  end
 
   #========== CONSTANTS
 
-  @@DISPLAY_OBJECT_NAME = 'Committee'
+  DISPLAY_OBJECT_NAME = 'Committee'
 
   #I think this is unfortunately the best way to do this.
   # TODO: deprecate me and populate homepage_url
-  @@HOMEPAGES = {
+  HOMEPAGES = {
       "house administration" => "http://www.house.gov/cha/",
       "house agriculture" => "http://agriculture.house.gov/",
       "house appropriations" => "http://www.house.gov/appropriations/",
@@ -76,7 +88,16 @@ class Committee < Bookmarkable
       "senate joint economic committee" => "http://jec.senate.gov/"
   }
 
-  @@STOP_WORDS = %w(committee subcommittee)
+  STOP_WORDS = %w(committee subcommittee)
+
+  # Different formats to serialize as JSON
+  SERIALIZATION_STYLES = {
+    simple: {},
+    elasticsearch: {
+      methods: [:short_name, :bookmark_count, :bills_sponsored_count],
+      include: [:reports, :names]
+    }
+  }
 
   #========== VALIDATORS
 
@@ -113,6 +134,8 @@ class Committee < Bookmarkable
 
   has_many :subcommittees, :class_name => 'Committee', :foreign_key => 'parent_id'
 
+  has_many :congress_chambers, :through => :congress_chamber_committees
+
   #========== ALIASES
 
   alias :members :people # for convenience, seems to make more sense
@@ -121,14 +144,48 @@ class Committee < Bookmarkable
 
   #----- CLASS
 
-  def self.random(limit)
-    Committee.find_by_sql ['SELECT * FROM (SELECT random(), committees.* FROM committees ORDER BY 1) as bs LIMIT ?;', limit]
+  def self.search_query(query)
+    {
+      indices: {
+        index: 'committees',
+        query: {
+          function_score: {
+            query: {
+              dis_max: {
+                queries: [
+                  {
+                    fuzzy_like_this_field: {
+                      name: {
+                        like_text: query,
+                        boost: ELASTICSEARCH_BOOSTS[:extreme],
+                        analyzer: 'english'
+                      }
+                    },
+                  }
+                ]
+              }
+            },
+            functions: [
+              {
+                field_value_factor: {
+                  field: 'bills_sponsored_count',
+                  modifier: 'sqrt',
+                  factor: 1
+                }
+              }
+            ],
+            score_mode: 'avg'
+          }
+        },
+        no_match_query: 'none'
+      }
+    }
   end
 
   def self.find_by_query(committee, subcommittee)
     terms = committee.split.concat(subcommittee.split).uniq.map { |c| c.match(/\W*(\w+)\W*/).captures[0].downcase }
     sub_terms = subcommittee.split.uniq.map { |c| c.match(/\W*(\w+)\W*/).captures[0].downcase }
-    query = terms.reject { |t| @@STOP_WORDS.include? t }.join " & "
+    query = terms.reject { |t| STOP_WORDS.include? t }.join " & "
     if sub_terms.empty?
       cs = Committee.find_by_sql("SELECT * FROM committees WHERE fti_names @@ to_tsquery('english', '#{query}') AND subcommittee_name is null;")
     else
@@ -179,7 +236,7 @@ class Committee < Bookmarkable
   public
 
   def display_object_name
-    @@DISPLAY_OBJECT_NAME
+    DISPLAY_OBJECT_NAME
   end
   
   def atom_id_as_feed
@@ -217,12 +274,24 @@ class Committee < Bookmarkable
   end
 
   def homepage
-    self.homepage_url.present? ? self.homepage_url : @@HOMEPAGES[name.downcase]
+    self.homepage_url.present? ? self.homepage_url : HOMEPAGES[name.downcase]
   end
-  
-  def bills_sponsored(limit)
+
+  # Retrieves all the bills this committee sponsored
+  #
+  # @param limit [Integer, nil] max number of bills to return, nil for no limit
+  # @return [Relation<Bill>] return sponsored bills
+  def bills_sponsored(limit=nil)
     ids = Bill.joins(:bill_committees).select('bills.id').where('bills_committees.committee_id = ? AND session = ?', id, Settings.default_congress).order('lastaction DESC').limit(limit).collect {|b| b.id }
-    (ids.size > 0) ? Bill.includes(:bill_titles).where(id:ids).order('bills.lastaction DESC') : []
+    Bill.includes(:bill_titles).where(id:ids).order('bills.lastaction DESC')
+  end
+
+  # Convenience method for obtaining the number of sponsored bills
+  #
+  # @param limit [Integer, nil] max number of bills to return, nil for no limit
+  # @return [Integer] return count of sponsored bills
+  def bills_sponsored_count(limit=nil)
+    bills_sponsored(limit).count
   end
   
   def latest_major_actions(num)
@@ -270,12 +339,11 @@ class Committee < Bookmarkable
   end
 
   def future_meetings
-    #self.meetings.select { |m| m.meeting_at > Time.now } DON'T USE SELECT!!!!!!
     self.meetings.where('meeting_at > ?', Time.now)
   end
   
   def stats
-    self.committee_stats = CommitteeStats.new :committee => self unless self.committee_stats.present?
+    self.committee_stats = CommitteeStats.new(:committee => self) unless self.committee_stats.present?
     self.committee_stats
   end
 
@@ -302,7 +370,7 @@ class Committee < Bookmarkable
   def comments_since_last_login(current_user)
     comments.where('created_at > ?', current_user.previous_login_date).count
   end
-  
+
   private
 
   def url_name

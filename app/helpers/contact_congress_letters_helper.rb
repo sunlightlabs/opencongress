@@ -60,32 +60,35 @@ module ContactCongressLettersHelper
   def strip_pii_from_message(thread, message, paranoid=false)
     regexp_str = ''
 
-    # construct regular expression string by appending together non-blank fields in the thread
-    unless (thread.sender_first_name.blank? and thread.sender_last_name.blank?)
-      regexp_str += "#{thread.sender_first_name} #{thread.sender_last_name}\|"
-    end
     if paranoid
-      regexp_str += "#{thread.sender_first_name}\|"               unless thread.sender_first_name.blank?
-      regexp_str += "#{thread.sender_last_name}\|"                unless thread.sender_last_name.blank?
+      # construct regular expression string by appending together non-blank fields in the thread
+      if thread.sender_first_name.present? and thread.sender_last_name.present?
+        regexp_str += "#{Regexp.escape(thread.sender_first_name)} #{Regexp.escape(thread.sender_last_name)}|"
+      end
+      regexp_str += "#{Regexp.escape(thread.sender_first_name)}|"               unless thread.sender_first_name.blank?
+      regexp_str += "#{Regexp.escape(thread.sender_last_name)}|"                unless thread.sender_last_name.blank?
     end
-    unless thread.sender_address1.blank?
-      regexp_str += "#{thread.sender_address1}\|"
-      regexp_str += "#{thread.sender_address1.gsub(/(Apt) (\d+)/,'#\2')}\|"
-    end
-    regexp_str += "#{thread.sender_address2}\|"                   unless thread.sender_address2.blank?
-    regexp_str += "#{thread.sender_city.strip}\(,\)*\|"           unless thread.sender_city.blank?
-    unless thread.sender_state.blank?
-      regexp_str += "(\s+)#{thread.sender_state}(\s+)\|"
-      regexp_str += "(\s+)#{State::ABBREVIATIONS_REVERSE["#{thread.sender_state}"]}(\s+)\|"
-    end
-    regexp_str += "#{thread.sender_zip5}\|"                       unless thread.sender_zip5.blank?
-    regexp_str += "#{thread.sender_zip4}\|"                       unless thread.sender_zip4.blank?
-    regexp_str += "#{thread.sender_phone.gsub(/[^0-9\s]/,'')}\|"  unless thread.sender_phone.blank?
-    regexp_str += "#{thread.sender_email}"                        unless thread.sender_email.blank?
 
-    regexp_str.gsub!(/[^0-9A-Za-z@|,\#\.\-\s+(\()(\))(\|)\*]/, '')
+    if thread.sender_address1.present?
+      regexp_str += "#{Regexp.escape(thread.sender_address1)}|"
+      regexp_str += "#{Regexp.escape(thread.sender_address1.gsub(/(Apt) (\d+)/,'#\2'))}|"
+    end
+
+    regexp_str += "#{Regexp.escape(thread.sender_address2)}|"                   unless thread.sender_address2.blank?
+    regexp_str += "#{Regexp.escape(thread.sender_city.strip)}(,)*|"             unless thread.sender_city.blank?
+
+    if thread.sender_state.present?
+      regexp_str += "(\s+)#{Regexp.escape(thread.sender_state)}(\s+)|"
+      full_state_regexp = "(\s+)#{Regexp.escape(State::ABBREVIATIONS_REVERSE["#{thread.sender_state}"])}(\s+)|" rescue ''
+      regexp_str += full_state_regexp
+    end
+
+    regexp_str += "#{Regexp.escape(thread.sender_zip5)}|"                       unless thread.sender_zip5.blank?
+    regexp_str += "#{Regexp.escape(thread.sender_zip4)}|"                       unless thread.sender_zip4.blank?
+    regexp_str += "#{Regexp.escape(thread.sender_phone.gsub(/[^0-9\s]/,''))}|"  unless thread.sender_phone.blank?
+    regexp_str += "#{Regexp.escape(thread.sender_email)}"                       unless thread.sender_email.blank?
+
     regexp_str = "(#{regexp_str})"
-
     message.gsub(/#{regexp_str}/i,'')
   end
 

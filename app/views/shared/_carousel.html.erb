@@ -42,7 +42,7 @@ $j(document).ready(function() {
 
 				<div class="title">
 					<% unless item[1].title %>
-					<h4><a href="<%= item[1].url %>" target="_blank">RE: <%= truncate(default_title, :length => 37) %></a></h4>
+					<h4><a href="<%= item[1].url %>" target="_blank">RE: <%= truncate(get_default_title, :length => 37) %></a></h4>
 					<% else %>
 					<h4><a href="<%= item[1].url %>" target="_blank"><%= truncate(item[1].title, :length => 40) %></a></h4>
 					<% end %>  

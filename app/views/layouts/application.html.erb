@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="en" class="bb_wrapper">
-  <head>
-    <%= render :partial => 'shared/analytics_head' %>
-
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="content-script-type" content="text/javascript" />
-    <meta name="description" content="OpenCongress brings together official government data with news and blog coverage to give you the real story behind each bill." />
+<head>
+  <%= render :partial => 'shared/analytics_head' %>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <%= meta_description_tag %>
+  <%= meta_keywords_tag %>
+  <%= csrf_meta_tag %>
 
     <% if @meta_keywords %>
       <meta name="keywords" content="<%= @meta_keywords %>" />
@@ -30,11 +30,11 @@
 
     <!--[if IE 7]><style type="text/css">@import url("/stylesheets/ie7.css");</style><![endif]-->
 
-    <!--[if lt IE 7]>
-    <%= javascript_include_tag 'ie8/IE8' %>
-    <![endif]-->
+    <%= stylesheet_link_tag 'https://sunlight-cdn.s3.amazonaws.com/sf-icons/0.2/css/sf-icons.css' %>
 
-    <%= stylesheet_link_tag 'https://s3.amazonaws.com/sf-icons/css/sf-icons.css' %>
+    <link rel="stylesheet" href="https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/css/brandingbar.css">
+
+    <%= yield :stylesheets_extra %>
 
     <%= yield :stylesheets %>
   </head>
@@ -85,6 +85,67 @@
             </div>
           <% end %>
 
-    <%= yield :javascripts %>
-  </body>
+          <% if @profile_nav %>
+            <%= render :partial => "profile/logged_in_profile_nav", :locals => {:user => @profile_nav} %>
+          <% end %>
+
+          <% if @content_for_sortby || @content_for_timeframe %>
+            <%= @content_for_sortby %>
+            <%= @content_for_timeframe %>
+          <% end %>
+
+          <%= yield %>
+
+        <% if @user_object || @related_bills || @related_people || @related_issues ||
+              @related_industries || @related_gossip || @custom_sidebar %>
+          </div> <!-- // content-main -->
+        <% end %>
+
+        <% if @user_object %>
+          <%= render :partial => 'shared/user_content', :locals => {:object => @user_object} %>
+        <% elsif @related_bills %>
+          <%= render :partial => 'bill/related_bills_panel', :locals => { :related_bills => @related_bills }%>
+        <% elsif @related_issues %>
+          <%= render :partial => 'issue/related_issues_panel', :locals => { :related_issues => @related_issues }%>
+        <% elsif @related_industries %>
+          <%= render :partial => 'industry/related_industries_panel', :locals => { :related_industries => @related_industries }%>
+        <% elsif @related_gossip %>
+          <%= render :partial => 'gossip/related_gossip_panel', :locals => { :related_gossip => @related_gossip }%>
+        <% elsif @custom_sidebar %>
+          <%= render :partial => 'shared/custom_sidebar_panel', :locals => { :sidebar => @custom_sidebar }%>
+        <% end %>
+        <div class="clearfix"></div>
+
+      </div> <!-- // inner -->
+    </div> <!-- // content -->
+  </div> <!-- // wrapper -->
+  <div class="clear">&nbsp;</div>
+  <%= render :partial => 'layouts/footer' %>
+  <%= render :partial => 'shared/analytics_foot' %>
+  <%= fb_connect_async_js %>
+
+  <%= javascript_include_tag "socialite/simple-socialite-pack.js" %>
+  <%= javascript_include_tag "simple-socialite-pack.js" %>
+  <%#= javascript_include_tag "https://s3.amazonaws.com/sunlight-cdn/brandingbar/0.2/js/brandingbar.min.js.gz" %>
+  <%= javascript_include_tag "branding_bar_temp" %>
+  <%= javascript_include_tag "socialite/socialite.opencongress.js" %>
+  <script>
+  Socialite.setup({
+    facebook: {
+        lang: 'en_US',
+        appId: <%= ApiKeys.facebook_app_id %>
+    },
+    twitter: {
+        lang: 'en'
+    },
+    googleplus: {
+        lang: 'en-US'
+    }
+  });
+  SimpleSocialite.ShareBar.registerButton({
+    name: 'opencongress-email',
+    displayName: 'Email'
+  });
+  </script>
+</body>
 </html>

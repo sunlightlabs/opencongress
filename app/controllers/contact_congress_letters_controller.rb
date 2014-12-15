@@ -106,8 +106,8 @@ class ContactCongressLettersController < ApplicationController
   def show
     @contact_congress_letter = ContactCongressLetter.find(params[:id])
 
-    unless @contact_congress_letter.can_show_to?(current_user)
-      redirect_to '/', :notice => 'You do not have permission to read that letter!'
+    unless @contact_congress_letter.can_be_read_by(current_user)
+      redirect_to '/', :notice => "You do not have permission to read that letter. Please #{view_context.link_to('login', login_path)} to your account to view your letters.".html_safe
       return
     end
 

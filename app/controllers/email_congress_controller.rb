@@ -58,8 +58,8 @@ class EmailCongressController < ApplicationController
     end
 
     if @email.text_body.blank? && !@email.html_body.blank?
-      EmailCongressMailer.html_body_alert(@email).deliver
       EmailCongressMailer.must_send_text_version(@email).deliver
+      Raven.capture_message "#{@email.from} tried to send an HTML only email"
       return head :ok
     end
 

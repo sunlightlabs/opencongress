@@ -450,7 +450,7 @@ class ApplicationController < ActionController::Base
   def data_notice
     unless cookies[:oc_adn] == "true"
       cookies[:oc_adn] = false
-      flash.now[:new_data] = "A new Congress was recently sworn in. We are working on updating our data as quickly as possible!"
+      flash.now[:new_data] = "114th Congress: We're updating with new data as it becomes available."
     end
   end
 

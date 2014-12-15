@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
   before_filter :is_authorized?
   before_filter :set_simple_comments
   before_filter :last_updated
+  before_filter :data_notice
   after_filter :cache_control
 
   class InvalidByteSequenceErrorFromParams < Encoding::InvalidByteSequenceError
@@ -444,6 +445,13 @@ class ApplicationController < ActionController::Base
 
   def warn_geocode
     flash.now[:error] = "We are currently experiencing geocoding errors; Contacting your reps is unavailable."
+  end
+
+  def data_notice
+    unless cookies[:oc_adn] == "true"
+      cookies[:oc_adn] = false
+      flash.now[:new_data] = "A new Congress was recently sworn in. We are working on updating our data as quickly as possible!"
+    end
   end
 
 end

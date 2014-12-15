@@ -324,6 +324,12 @@ BillText = {
   }
 }
 
+Notice = {
+  dismiss: function() {
+    document.cookie="oc_adn=true; expires=Tue, 03 Jan 2017 12:00:00 UTC";
+  }
+}
+
 // New jQ domready stuff
 ;(function($){
   $(function(){
@@ -350,6 +356,9 @@ BillText = {
     // bind close buttons on groups/mypn *ducks*
     $(document).on('click', '.close_add_notebook', function(){
       NotebookForm.hideAllForms();
+    });
+    $(document).on('click', '.new_data .close', function(){
+      Notice.dismiss();
     });
   });
 })(jQuery);

@@ -103,11 +103,11 @@
         <br />
       <% end %>
 
-      <% unless (email = (EmailCongress.email_address_for_person(object) rescue nil)).blank? %>
-        <div class="email">
-        <strong>Email:</strong> <%= link_to(email, "mailto:#{email}") %>
-        </div>
-        <br />
+      <% unless (email = (EmailCongress.email_address_for_person(object) rescue nil)).blank? || !object.contactable %>
+          <div class="email">
+          <strong>Email:</strong> <%= link_to(email, "mailto:#{email}") %>
+          </div>
+          <br />
       <% end %>
 
       <% if (object.twitter_id.present? rescue false) %>

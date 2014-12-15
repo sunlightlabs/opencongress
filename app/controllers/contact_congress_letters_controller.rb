@@ -74,6 +74,7 @@ class ContactCongressLettersController < ApplicationController
       @contactable_query = "contactable_type=Subject&contactable_id=#{@issue.id}"
     end
 
+    @uncontactable = (@sens + @reps).reject{|eo| eo.contactable == true}
 
     @formageddon_thread = Formageddon::FormageddonThread.new
     @formageddon_thread.prepare(:user => current_user, :subject => @subject, :message => message_start)
@@ -102,6 +103,9 @@ class ContactCongressLettersController < ApplicationController
     else
       @reps = []
     end
+
+    @uncontactable = (@sens + @reps).reject{|eo| eo.contactable == true}
+
     @member_osids = (@sens + @reps).map(&:osid).select{|osid| not osid.nil?}
   end
 

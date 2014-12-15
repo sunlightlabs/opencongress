@@ -375,6 +375,12 @@ padding: 20px;
 min-height: 248px;
 }
 
+.people li span.warning {
+  display: inline;
+  font-weight: bold;
+  padding-left: 0px;
+}
+
 .contact_recipients hr{
 display: none;
 }

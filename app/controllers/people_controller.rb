@@ -623,15 +623,18 @@ class PeopleController < ApplicationController
   end
 
   def people_list
-    people_cache_key = "Person.list_chamber(#{person_type.to_s}, #{current_congress.to_s}, #{sort_people.to_s})"
-    
+    people_cache_key = "Person.list_chamber(#{person_type.to_s}, #{current_congress.to_s}, #{sort_people.to_s})"  
     @people = Rails.cache.fetch(people_cache_key) do
-      @people = Person.list_chamber(person_type, current_congress, sort_people)
+      @people = Person.list_chamber(person_type, current_congress, sort_people, people_filter)
     end
-    
+
   end
   
   private
+
+  def people_filter
+    params[:filter] ? params[:filter] : ''
+  end
 
   def person_type
     params[:person_type] == 'senators' ? 'sen' : 'rep'

@@ -1,0 +1,42 @@
+<h1><%= params[:person_type] == 'senators' ? 'Senate' : 'House of Representatives'%></h1>
+<h2><%= @end_time %></h2>
+<h3>Filer</h3>
+  <%= form_tag "/people/#{params[:person_type]}", method: 'get', class: "base-margin-bottom" do  %>
+    <div>
+      sort by
+      <%= label_tag 'sort_state', 'State'  %>
+      <%= radio_button_tag 'sort', 'state' %>
+      <%= label_tag 'sort_name', 'Alphabetical'  %>
+      <%= radio_button_tag 'sort', 'name' %>
+      <%= label_tag 'sort_party', 'Party'  %>
+      <%= radio_button_tag 'sort', 'party' %>
+      <%= label_tag 'sort_time_in_office', 'Time in office'  %>
+      <%= radio_button_tag 'sort', 'time_in_office' %>
+      <%= label_tag 'sort_sponsored_bills', 'Sponsored Bils'  %>
+      <%= radio_button_tag 'sort',  'sponsored_bills' %>
+    </div>
+
+    filter by
+    <div>
+      Gender
+      <%= label_tag 'male','Male'  %>
+      <%= check_box_tag 'filter[gender[M]]', 'M', false, id: "male" %>
+      <%= label_tag 'female', 'Female'  %>
+      <%= check_box_tag 'filter[gender[F]]', 'F', false, id: "female" %>
+    </div>
+
+    <div>
+      party
+      <%= label_tag 'democrat','Democrat'  %>
+      <%= check_box_tag 'filter[party[Democrat]]', 'Democrat', false, id: "democrat" %>
+      <%= label_tag 'republican','Republican'  %>
+      <%= check_box_tag 'filter[party[Republican]]', 'Republican', false, id: "republican" %>
+    </div>
+    <%= submit_tag 'Submit'  %>
+  <% end %>  
+<ul>
+<% @people.each do |person| %>
+  <li><%=" #{person.full_name}, #{person.state} "%></li>
+  <%= person.party  %>
+<% end %>
+</ul>

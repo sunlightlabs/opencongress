@@ -41,6 +41,7 @@ class EmailCongressController < ApplicationController
     #   User is not activated
     #   User is trying to email a nonexistent address
     #   User is trying to email someone they are not allowed to email
+    #   User is trying to email someone that's been marked as uncontactable
 
     if @sender_user && @sender_user.is_banned?
       OCLogger.log "Sending incoming email (#{@email.message_id}; #{@email.subject}) to a black hole because it was sent from a banned user (#{@sender_user.id}, #{@sender_user.login})."
@@ -61,6 +62,17 @@ class EmailCongressController < ApplicationController
       EmailCongressMailer.must_send_text_version(@email).deliver
       Raven.capture_message "#{@email.from} tried to send an HTML only email"
       return head :ok
+    end
+    
+    if @uncontactable_recipients.any? && @email.to.downcase != "myreps@opencongress.org"
+      @uncontactable_recipients.each do |r|     
+        ContactCongressMailer.will_not_send_email({
+          :elected_official_name => r.name,
+          :message_body => @email.text_body,
+          :recipient_email => @email.from_email
+        }).deliver
+      end
+      return head :ok unless @recipients.any?
     end
 
     seed = EmailCongress.seed_for_postmark_object(@email)
@@ -265,6 +277,8 @@ class EmailCongressController < ApplicationController
     cleaned = EmailCongress.cleaned_recipient_list(@sender_user, recipient_addresses)
     @recipient_addresses = cleaned.map(&:first)
     @recipients = cleaned.map(&:second)
+    @uncontactable_recipients = @recipients.select{|r| r.contactable == false}
+    @recipients = @recipients - @uncontactable_recipients
   end
 
   def find_by_confirmation_code

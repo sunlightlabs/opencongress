@@ -36,10 +36,22 @@ class Formageddon::FormageddonLetter
   def send_letter(options = {})
     recipient = formageddon_thread.formageddon_recipient
 
+    if !recipient.contactable? #shut it down
+      self.status = 'ERROR: noncontactable recipient'
+      OCLogger.log("#{self.status} -- Formageddon::FormageddonThread.find(#{formageddon_thread.id})")
+      ContactCongressMailer.will_not_send_email({
+          :elected_official_name => recipient.name,
+          :message_body => self.message,
+          :recipient_email => self.formageddon_thread.sender_email
+        }).deliver
+      return false
+    end
+
     if recipient.nil? or recipient.formageddon_contact_steps.empty?
       unless status =~ /^(SENT|RECEIVED|ERROR)/  # These statuses don't depend on a proper set of contact steps
         self.status = 'ERROR: Recipient not configured for message delivery!'
         self.save
+        OCLogger.log("#{self.status} -- Formageddon::FormageddonThread.find(#{formageddon_thread.id})")
       end
       return false if recipient.nil?
     end

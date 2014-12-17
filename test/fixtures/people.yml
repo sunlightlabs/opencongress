@@ -1,6 +1,7 @@
 --- 
 person_226043605: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: A000360
   birthday: 1940-07-03
   blog_article_count: 13944
@@ -46,7 +47,8 @@ person_226043605:
   website: http://www.alexander.senate.gov
   youtube_id: lamaralexander
 person_300002: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: A000360
   birthday: 1940-07-03
   blog_article_count: 0
@@ -92,7 +94,8 @@ person_300002:
   website: 
   youtube_id: 
 person_412493: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: A000368
   birthday: 1968-06-27
   blog_article_count: 0
@@ -137,7 +140,8 @@ person_412493:
   website: 
   youtube_id: 
 person_400013: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001230
   birthday: 1962-02-11
   blog_article_count: 0
@@ -183,7 +187,8 @@ person_400013:
   website: 
   youtube_id: 
 person_412251: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001261
   birthday: 1952-07-21
   blog_article_count: 0
@@ -228,7 +233,8 @@ person_412251:
   website: 
   youtube_id: 
 person_412326: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001265
   birthday: 1962-03-30
   blog_article_count: 0
@@ -273,7 +279,8 @@ person_412326:
   website: 
   youtube_id: 
 person_412330: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001267
   birthday: 1964-11-28
   blog_article_count: 0
@@ -318,7 +325,8 @@ person_412330:
   website: 
   youtube_id: 
 person_412490: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001277
   birthday: 1946-02-13
   blog_article_count: 0
@@ -363,7 +371,8 @@ person_412490:
   website: 
   youtube_id: 
 person_400034: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000575
   birthday: 1950-01-10
   blog_article_count: 0
@@ -409,7 +418,8 @@ person_400034:
   website: 
   youtube_id: 
 person_412598: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001288
   birthday: 1969-04-27
   blog_article_count: 0
@@ -454,7 +464,8 @@ person_412598:
   website: 
   youtube_id: 
 person_400040: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001236
   birthday: 1950-12-10
   blog_article_count: 0
@@ -500,7 +511,8 @@ person_400040:
   website: 
   youtube_id: 
 person_300011: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000711
   birthday: 1940-11-11
   blog_article_count: 0
@@ -547,7 +559,8 @@ person_300011:
   website: 
   youtube_id: 
 person_400050: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000944
   birthday: 1952-11-09
   blog_article_count: 0
@@ -593,7 +606,8 @@ person_400050:
   website: 
   youtube_id: 
 person_400054: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001135
   birthday: 1955-11-30
   blog_article_count: 0
@@ -639,7 +653,8 @@ person_400054:
   website: 
   youtube_id: 
 person_300018: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000127
   birthday: 1958-10-13
   blog_article_count: 0
@@ -685,7 +700,8 @@ person_300018:
   website: 
   youtube_id: 
 person_400064: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000141
   birthday: 1943-10-05
   blog_article_count: 0
@@ -731,7 +747,8 @@ person_400064:
   website: 
   youtube_id: 
 person_300019: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000174
   birthday: 1947-01-23
   blog_article_count: 0
@@ -776,7 +793,8 @@ person_300019:
   website: 
   youtube_id: 
 person_412246: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001070
   birthday: 1960-04-13
   blog_article_count: 0
@@ -821,7 +839,8 @@ person_412246:
   website: 
   youtube_id: 
 person_300021: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000286
   birthday: 1943-11-10
   blog_article_count: 0
@@ -867,7 +886,8 @@ person_300021:
   website: 
   youtube_id: 
 person_402675: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000542
   birthday: 1943-05-16
   blog_article_count: 0
@@ -912,7 +932,8 @@ person_402675:
   website: 
   youtube_id: 
 person_400576: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000560
   birthday: 1948-03-14
   blog_article_count: 0
@@ -958,7 +979,8 @@ person_400576:
   website: 
   youtube_id: 
 person_300023: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000567
   birthday: 1937-12-07
   blog_article_count: 0
@@ -1003,7 +1025,8 @@ person_300023:
   website: 
   youtube_id: 
 person_300025: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001035
   birthday: 1952-12-07
   blog_article_count: 0
@@ -1048,7 +1071,8 @@ person_300025:
   website: 
   youtube_id: 
 person_412390: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001088
   birthday: 1963-09-09
   blog_article_count: 0
@@ -1093,7 +1117,8 @@ person_412390:
   website: 
   youtube_id: 
 person_412248: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001071
   birthday: 1952-08-24
   blog_article_count: 0
@@ -1139,7 +1164,8 @@ person_412248:
   website: 
   youtube_id: 
 person_300027: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001056
   birthday: 1952-02-02
   blog_article_count: 0
@@ -1184,7 +1210,8 @@ person_300027:
   website: 
   youtube_id: 
 person_300030: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000880
   birthday: 1951-05-20
   blog_article_count: 0
@@ -1230,7 +1257,8 @@ person_300030:
   website: 
   youtube_id: 
 person_412573: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001098
   birthday: 1970-12-22
   blog_article_count: 0
@@ -1275,7 +1303,8 @@ person_412573:
   website: 
   youtube_id: 
 person_412205: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000607
   birthday: 1955-09-28
   blog_article_count: 0
@@ -1321,7 +1350,8 @@ person_412205:
   website: 
   youtube_id: 
 person_300038: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000563
   birthday: 1944-11-21
   blog_article_count: 0
@@ -1367,7 +1397,8 @@ person_300038:
   website: 
   youtube_id: 
 person_300041: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: E000285
   birthday: 1944-02-01
   blog_article_count: 0
@@ -1412,7 +1443,8 @@ person_300041:
   website: 
   youtube_id: 
 person_300043: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000062
   birthday: 1933-06-22
   blog_article_count: 0
@@ -1457,7 +1489,8 @@ person_300043:
   website: 
   youtube_id: 
 person_412556: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000463
   birthday: 1951-03-01
   blog_article_count: 0
@@ -1502,7 +1535,8 @@ person_412556:
   website: 
   youtube_id: 
 person_400134: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000444
   birthday: 1962-12-31
   blog_article_count: 0
@@ -1548,7 +1582,8 @@ person_400134:
   website: 
   youtube_id: 
 person_412378: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000457
   birthday: 1951-05-21
   blog_article_count: 0
@@ -1593,7 +1628,8 @@ person_412378:
   website: 
   youtube_id: 
 person_412223: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000555
   birthday: 1966-12-09
   blog_article_count: 0
@@ -1639,7 +1675,8 @@ person_412223:
   website: 
   youtube_id: 
 person_300047: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000359
   birthday: 1955-07-09
   blog_article_count: 0
@@ -1685,7 +1722,8 @@ person_300047:
   website: 
   youtube_id: 
 person_300048: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000386
   birthday: 1933-09-17
   blog_article_count: 0
@@ -1730,7 +1768,8 @@ person_300048:
   website: 
   youtube_id: 
 person_412324: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001049
   birthday: 1953-05-26
   blog_article_count: 0
@@ -1775,7 +1814,8 @@ person_412324:
   website: 
   youtube_id: 
 person_300051: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H000206
   birthday: 1939-11-19
   blog_article_count: 0
@@ -1821,7 +1861,8 @@ person_300051:
   website: 
   youtube_id: 
 person_300052: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H000338
   birthday: 1934-03-22
   blog_article_count: 0
@@ -1867,7 +1908,8 @@ person_300052:
   website: 
   youtube_id: 
 person_412281: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001046
   birthday: 1971-10-17
   blog_article_count: 0
@@ -1913,7 +1955,8 @@ person_412281:
   website: 
   youtube_id: 
 person_412554: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001069
   birthday: 1955-10-30
   blog_article_count: 0
@@ -1958,7 +2001,8 @@ person_412554:
   website: 
   youtube_id: 
 person_412218: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001041
   birthday: 1960-05-10
   blog_article_count: 0
@@ -2004,7 +2048,8 @@ person_412218:
   website: 
   youtube_id: 
 person_412200: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001042
   birthday: 1947-11-03
   blog_article_count: 0
@@ -2050,7 +2095,8 @@ person_412200:
   website: 
   youtube_id: 
 person_412494: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001061
   birthday: 1957-03-13
   blog_article_count: 0
@@ -2095,7 +2141,8 @@ person_412494:
   website: 
   youtube_id: 
 person_300055: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: I000024
   birthday: 1934-11-17
   blog_article_count: 0
@@ -2141,7 +2188,8 @@ person_300055:
   website: 
   youtube_id: 
 person_400194: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: I000055
   birthday: 1944-12-28
   blog_article_count: 0
@@ -2187,7 +2235,8 @@ person_400194:
   website: 
   youtube_id: 
 person_412320: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000291
   birthday: 1950-06-18
   blog_article_count: 0
@@ -2232,7 +2281,8 @@ person_412320:
   website: 
   youtube_id: 
 person_412496: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000293
   birthday: 1955-04-08
   blog_article_count: 0
@@ -2277,7 +2327,8 @@ person_412496:
   website: 
   youtube_id: 
 person_300058: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000177
   birthday: 1946-12-28
   blog_article_count: 0
@@ -2323,7 +2374,8 @@ person_300058:
   website: 
   youtube_id: 
 person_412582: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000384
   birthday: 1958-02-26
   blog_article_count: 0
@@ -2368,7 +2420,8 @@ person_412582:
   website: 
   youtube_id: 
 person_412545: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000383
   birthday: 1944-03-31
   blog_article_count: 0
@@ -2413,7 +2466,8 @@ person_412545:
   website: 
   youtube_id: 
 person_400222: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000360
   birthday: 1959-09-15
   blog_article_count: 0
@@ -2459,7 +2513,8 @@ person_400222:
   website: 
   youtube_id: 
 person_412242: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000367
   birthday: 1960-05-25
   blog_article_count: 0
@@ -2504,7 +2559,8 @@ person_412242:
   website: 
   youtube_id: 
 person_300063: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000550
   birthday: 1955-11-23
   blog_article_count: 0
@@ -2550,7 +2606,8 @@ person_300063:
   website: 
   youtube_id: 
 person_300065: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000174
   birthday: 1940-03-31
   blog_article_count: 0
@@ -2595,7 +2652,8 @@ person_300065:
   website: 
   youtube_id: 
 person_412495: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000577
   birthday: 1971-06-04
   blog_article_count: 0
@@ -2640,7 +2698,8 @@ person_412495:
   website: 
   youtube_id: 
 person_300066: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000261
   birthday: 1934-06-28
   blog_article_count: 0
@@ -2685,7 +2744,8 @@ person_300066:
   website: 
   youtube_id: 
 person_412391: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001183
   birthday: 1947-08-24
   blog_article_count: 0
@@ -2730,7 +2790,8 @@ person_412391:
   website: 
   youtube_id: 
 person_400253: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000133
   birthday: 1946-07-11
   blog_article_count: 0
@@ -2776,7 +2837,8 @@ person_400253:
   website: 
   youtube_id: 
 person_300071: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000303
   birthday: 1936-08-29
   blog_article_count: 0
@@ -2822,7 +2884,8 @@ person_300071:
   website: 
   youtube_id: 
 person_412243: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001170
   birthday: 1953-07-24
   blog_article_count: 0
@@ -2868,7 +2931,8 @@ person_412243:
   website: 
   youtube_id: 
 person_300072: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000355
   birthday: 1942-02-20
   blog_article_count: 0
@@ -2913,7 +2977,8 @@ person_300072:
   website: 
   youtube_id: 
 person_400272: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000639
   birthday: 1954-01-01
   blog_article_count: 0
@@ -2959,7 +3024,8 @@ person_400272:
   website: 
   youtube_id: 
 person_412325: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001176
   birthday: 1956-10-24
   blog_article_count: 0
@@ -3004,7 +3070,8 @@ person_412325:
   website: 
   youtube_id: 
 person_300073: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000702
   birthday: 1936-07-20
   blog_article_count: 0
@@ -3049,7 +3116,8 @@ person_300073:
   website: 
   youtube_id: 
 person_400284: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000934
   birthday: 1954-05-29
   blog_article_count: 0
@@ -3095,7 +3163,8 @@ person_400284:
   website: 
   youtube_id: 
 person_300075: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001153
   birthday: 1957-05-22
   blog_article_count: 0
@@ -3140,7 +3209,8 @@ person_300075:
   website: 
   youtube_id: 
 person_412194: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001169
   birthday: 1973-08-03
   blog_article_count: 0
@@ -3186,7 +3256,8 @@ person_412194:
   website: 
   youtube_id: 
 person_300076: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001111
   birthday: 1950-10-11
   blog_article_count: 0
@@ -3231,7 +3302,8 @@ person_300076:
   website: 
   youtube_id: 
 person_300078: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000032
   birthday: 1942-09-29
   blog_article_count: 0
@@ -3276,7 +3348,8 @@ person_300078:
   website: 
   youtube_id: 
 person_412492: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000603
   birthday: 1963-01-07
   blog_article_count: 0
@@ -3321,7 +3394,8 @@ person_412492:
   website: 
   youtube_id: 
 person_400325: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000449
   birthday: 1955-12-19
   blog_article_count: 0
@@ -3367,7 +3441,8 @@ person_400325:
   website: 
   youtube_id: 
 person_300080: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000590
   birthday: 1963-01-10
   blog_article_count: 0
@@ -3412,7 +3487,8 @@ person_300080:
   website: 
   youtube_id: 
 person_300081: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000122
   birthday: 1949-11-12
   blog_article_count: 0
@@ -3458,7 +3534,8 @@ person_300081:
   website: 
   youtube_id: 
 person_300082: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000146
   birthday: 1939-12-02
   blog_article_count: 0
@@ -3503,7 +3580,8 @@ person_300082:
   website: 
   youtube_id: 
 person_412322: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000584
   birthday: 1943-05-03
   blog_article_count: 0
@@ -3548,7 +3626,8 @@ person_412322:
   website: 
   youtube_id: 
 person_300083: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000307
   birthday: 1936-04-20
   blog_article_count: 0
@@ -3594,7 +3673,8 @@ person_300083:
   website: 
   youtube_id: 
 person_300084: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000361
   birthday: 1937-06-18
   blog_article_count: 0
@@ -3639,7 +3719,8 @@ person_300084:
   website: 
   youtube_id: 
 person_412491: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000595
   birthday: 1971-05-28
   blog_article_count: 0
@@ -3684,7 +3765,8 @@ person_412491:
   website: 
   youtube_id: 
 person_400357: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000033
   birthday: 1941-09-08
   blog_article_count: 0
@@ -3730,7 +3812,8 @@ person_400357:
   website: 
   youtube_id: 
 person_412507: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001194
   birthday: 1972-10-20
   blog_article_count: 0
@@ -3776,7 +3859,8 @@ person_412507:
   website: 
   youtube_id: 
 person_300087: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000148
   birthday: 1950-11-23
   blog_article_count: 0
@@ -3822,7 +3906,8 @@ person_300087:
   website: 
   youtube_id: 
 person_412471: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001184
   birthday: 1965-09-19
   blog_article_count: 0
@@ -3868,7 +3953,8 @@ person_412471:
   website: 
   youtube_id: 
 person_300088: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001141
   birthday: 1946-12-24
   blog_article_count: 0
@@ -3913,7 +3999,8 @@ person_300088:
   website: 
   youtube_id: 
 person_412323: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001181
   birthday: 1947-01-28
   blog_article_count: 0
@@ -3958,7 +4045,8 @@ person_412323:
   website: 
   youtube_id: 
 person_300089: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000320
   birthday: 1934-05-06
   blog_article_count: 0
@@ -4003,7 +4091,8 @@ person_300089:
   website: 
   youtube_id: 
 person_300093: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000770
   birthday: 1950-04-29
   blog_article_count: 0
@@ -4049,7 +4138,8 @@ person_300093:
   website: 
   youtube_id: 
 person_412244: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000464
   birthday: 1956-08-21
   blog_article_count: 0
@@ -4094,7 +4184,8 @@ person_412244:
   website: 
   youtube_id: 
 person_400546: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000250
   birthday: 1961-01-07
   blog_article_count: 0
@@ -4140,7 +4231,8 @@ person_400546:
   website: 
   youtube_id: 
 person_400408: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000461
   birthday: 1961-11-17
   blog_article_count: 0
@@ -4186,7 +4278,8 @@ person_400408:
   website: 
   youtube_id: 
 person_400412: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: U000038
   birthday: 1950-07-18
   blog_article_count: 0
@@ -4232,7 +4325,8 @@ person_400412:
   website: 
   youtube_id: 
 person_400413: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: U000039
   birthday: 1948-05-18
   blog_article_count: 0
@@ -4278,7 +4372,8 @@ person_400413:
   website: 
   youtube_id: 
 person_400418: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: V000127
   birthday: 1961-05-03
   blog_article_count: 0
@@ -4324,7 +4419,8 @@ person_400418:
   website: 
   youtube_id: 
 person_412602: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000818
   birthday: 1960-11-03
   blog_article_count: 0
@@ -4366,7 +4462,8 @@ person_412602:
   website: 
   youtube_id: 
 person_412321: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000805
   birthday: 1954-12-15
   blog_article_count: 0
@@ -4412,7 +4509,8 @@ person_412321:
   website: 
   youtube_id: 
 person_412542: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000817
   birthday: 1949-06-22
   blog_article_count: 0
@@ -4457,7 +4555,8 @@ person_412542:
   website: 
   youtube_id: 
 person_412247: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000802
   birthday: 1955-10-20
   blog_article_count: 0
@@ -4502,7 +4601,8 @@ person_412247:
   website: 
   youtube_id: 
 person_400432: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000437
   birthday: 1951-07-05
   blog_article_count: 0
@@ -4548,7 +4648,8 @@ person_400432:
   website: 
   youtube_id: 
 person_300100: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000779
   birthday: 1949-05-03
   blog_article_count: 0
@@ -4594,7 +4695,8 @@ person_300100:
   website: 
   youtube_id: 
 person_400004: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: A000055
   birthday: 1965-07-22
   blog_article_count: 0
@@ -4639,7 +4741,8 @@ person_400004:
   website: 
   youtube_id: 
 person_412438: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: A000367
   birthday: 1980-04-18
   blog_article_count: 0
@@ -4684,7 +4787,8 @@ person_412438:
   website: 
   youtube_id: 
 person_412500: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: A000369
   birthday: 1958-06-12
   blog_article_count: 0
@@ -4731,7 +4835,8 @@ person_412500:
   website: 
   youtube_id: 
 person_412216: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001256
   birthday: 1956-04-06
   blog_article_count: 0
@@ -4777,7 +4882,8 @@ person_412216:
   website: 
   youtube_id: 
 person_400010: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000013
   birthday: 1947-12-28
   blog_article_count: 0
@@ -4822,7 +4928,8 @@ person_400010:
   website: 
   youtube_id: 
 person_412502: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001279
   birthday: 1945-08-25
   blog_article_count: 0
@@ -4867,7 +4974,8 @@ person_412502:
   website: 
   youtube_id: 
 person_412469: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001269
   birthday: 1956-01-28
   blog_article_count: 0
@@ -4912,7 +5020,8 @@ person_412469:
   website: 
   youtube_id: 
 person_412541: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001282
   birthday: 1973-07-24
   blog_article_count: 0
@@ -4957,7 +5066,8 @@ person_412541:
   website: 
   youtube_id: 
 person_400628: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001252
   birthday: 1955-10-31
   blog_article_count: 0
@@ -5002,7 +5112,8 @@ person_400628:
   website: 
   youtube_id: 
 person_400018: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000213
   birthday: 1949-09-15
   blog_article_count: 0
@@ -5048,7 +5159,8 @@ person_400018:
   website: 
   youtube_id: 
 person_412404: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001270
   birthday: 1953-10-03
   blog_article_count: 0
@@ -5093,7 +5205,8 @@ person_412404:
   website: 
   youtube_id: 
 person_412565: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001281
   birthday: 1950-03-12
   blog_article_count: 0
@@ -5138,7 +5251,8 @@ person_412565:
   website: 
   youtube_id: 
 person_400021: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000287
   birthday: 1958-01-26
   blog_article_count: 0
@@ -5183,7 +5297,8 @@ person_400021:
   website: 
   youtube_id: 
 person_412436: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001271
   birthday: 1952-04-20
   blog_article_count: 0
@@ -5228,7 +5343,8 @@ person_412436:
   website: 
   youtube_id: 
 person_412547: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001280
   birthday: 1951-10-06
   blog_article_count: 0
@@ -5273,7 +5389,8 @@ person_412547:
   website: 
   youtube_id: 
 person_412512: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001287
   birthday: 1965-03-02
   blog_article_count: 0
@@ -5318,7 +5435,8 @@ person_412512:
   website: 
   youtube_id: 
 person_412250: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001257
   birthday: 1963-02-08
   blog_article_count: 0
@@ -5363,7 +5481,8 @@ person_412250:
   website: 
   youtube_id: 
 person_400029: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001250
   birthday: 1951-07-13
   blog_article_count: 0
@@ -5408,7 +5527,8 @@ person_400029:
   website: 
   youtube_id: 
 person_400031: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001242
   birthday: 1950-06-01
   blog_article_count: 0
@@ -5453,7 +5573,8 @@ person_400031:
   website: 
   youtube_id: 
 person_400030: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000490
   birthday: 1947-02-04
   blog_article_count: 0
@@ -5498,7 +5619,8 @@ person_400030:
   website: 
   youtube_id: 
 person_412478: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001273
   birthday: 1951-01-16
   blog_article_count: 0
@@ -5543,7 +5665,8 @@ person_412478:
   website: 
   youtube_id: 
 person_400032: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001243
   birthday: 1952-06-06
   blog_article_count: 0
@@ -5588,7 +5711,8 @@ person_400032:
   website: 
   youtube_id: 
 person_400033: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000574
   birthday: 1948-08-16
   blog_article_count: 0
@@ -5633,7 +5757,8 @@ person_400033:
   website: 
   youtube_id: 
 person_400036: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000589
   birthday: 1949-11-17
   blog_article_count: 0
@@ -5678,7 +5803,8 @@ person_400036:
   website: 
   youtube_id: 
 person_412501: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001278
   birthday: 1954-10-14
   blog_article_count: 0
@@ -5723,7 +5849,8 @@ person_412501:
   website: 
   youtube_id: 
 person_400041: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001245
   birthday: 1933-05-31
   blog_article_count: 0
@@ -5768,7 +5895,8 @@ person_400041:
   website: 
   youtube_id: 
 person_400636: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001255
   birthday: 1956-02-21
   blog_article_count: 0
@@ -5813,7 +5941,8 @@ person_400636:
   website: 
   youtube_id: 
 person_400047: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001227
   birthday: 1945-04-07
   blog_article_count: 0
@@ -5858,7 +5987,8 @@ person_400047:
   website: 
   youtube_id: 
 person_400046: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000755
   birthday: 1955-04-11
   blog_article_count: 0
@@ -5903,7 +6033,8 @@ person_400046:
   website: 
   youtube_id: 
 person_412208: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001259
   birthday: 1957-10-30
   blog_article_count: 0
@@ -5948,7 +6079,8 @@ person_412208:
   website: 
   youtube_id: 
 person_412567: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001283
   birthday: 1975-06-15
   blog_article_count: 0
@@ -5993,7 +6125,8 @@ person_412567:
   website: 
   youtube_id: 
 person_412395: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001274
   birthday: 1954-04-29
   blog_article_count: 0
@@ -6038,7 +6171,8 @@ person_412395:
   website: 
   youtube_id: 
 person_412539: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001284
   birthday: 1960-08-25
   blog_article_count: 0
@@ -6083,7 +6217,8 @@ person_412539:
   website: 
   youtube_id: 
 person_412252: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001262
   birthday: 1946-05-14
   blog_article_count: 0
@@ -6130,7 +6265,8 @@ person_412252:
   website: 
   youtube_id: 
 person_400048: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B000911
   birthday: 1946-11-11
   blog_article_count: 0
@@ -6176,7 +6312,8 @@ person_400048:
   website: 
   youtube_id: 
 person_412516: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001285
   birthday: 1952-08-28
   blog_article_count: 0
@@ -6221,7 +6358,8 @@ person_412516:
   website: 
   youtube_id: 
 person_412196: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001260
   birthday: 1951-05-08
   blog_article_count: 0
@@ -6266,7 +6404,8 @@ person_412196:
   website: 
   youtube_id: 
 person_412427: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001275
   birthday: 1962-05-31
   blog_article_count: 0
@@ -6311,7 +6450,8 @@ person_412427:
   website: 
   youtube_id: 
 person_400052: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001248
   birthday: 1950-12-23
   blog_article_count: 0
@@ -6356,7 +6496,8 @@ person_400052:
   website: 
   youtube_id: 
 person_412537: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001286
   birthday: 1961-10-17
   blog_article_count: 0
@@ -6401,7 +6542,8 @@ person_412537:
   website: 
   youtube_id: 
 person_400616: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001251
   birthday: 1947-04-27
   blog_article_count: 0
@@ -6446,7 +6588,8 @@ person_400616:
   website: 
   youtube_id: 
 person_412601: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: B001289
   birthday: 1955-02-16
   blog_article_count: 0
@@ -6491,7 +6634,8 @@ person_412601:
   website: 
   youtube_id: 
 person_400057: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000059
   birthday: 1953-06-08
   blog_article_count: 0
@@ -6536,7 +6680,8 @@ person_400057:
   website: 
   youtube_id: 
 person_400058: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000071
   birthday: 1953-07-09
   blog_article_count: 0
@@ -6581,7 +6726,8 @@ person_400058:
   website: 
   youtube_id: 
 person_412011: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001064
   birthday: 1955-07-19
   blog_article_count: 0
@@ -6626,7 +6772,8 @@ person_412011:
   website: 
   youtube_id: 
 person_400060: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001046
   birthday: 1963-06-06
   blog_article_count: 0
@@ -6671,7 +6818,8 @@ person_400060:
   website: 
   youtube_id: 
 person_400061: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001047
   birthday: 1953-11-26
   blog_article_count: 0
@@ -6717,7 +6865,8 @@ person_400061:
   website: 
   youtube_id: 
 person_400062: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001036
   birthday: 1938-01-10
   blog_article_count: 0
@@ -6762,7 +6911,8 @@ person_400062:
   website: 
   youtube_id: 
 person_400063: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001037
   birthday: 1952-01-09
   blog_article_count: 0
@@ -6808,7 +6958,8 @@ person_400063:
   website: 
   youtube_id: 
 person_412407: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001083
   birthday: 1956-05-20
   blog_article_count: 0
@@ -6853,7 +7004,8 @@ person_412407:
   website: 
   youtube_id: 
 person_412258: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001072
   birthday: 1974-10-16
   blog_article_count: 0
@@ -6898,7 +7050,8 @@ person_412258:
   website: 
   youtube_id: 
 person_400068: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001051
   birthday: 1941-11-06
   blog_article_count: 0
@@ -6943,7 +7096,8 @@ person_400068:
   website: 
   youtube_id: 
 person_412571: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001090
   birthday: 1961-05-01
   blog_article_count: 0
@@ -6988,7 +7142,8 @@ person_412571:
   website: 
   youtube_id: 
 person_412269: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001075
   birthday: 1957-09-28
   blog_article_count: 0
@@ -7033,7 +7188,8 @@ person_412269:
   website: 
   youtube_id: 
 person_412195: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001066
   birthday: 1966-08-20
   blog_article_count: 0
@@ -7079,7 +7235,8 @@ person_412195:
   website: 
   youtube_id: 
 person_412576: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001091
   birthday: 1974-09-16
   blog_article_count: 0
@@ -7124,7 +7281,8 @@ person_412576:
   website: 
   youtube_id: 
 person_400071: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000266
   birthday: 1953-01-22
   blog_article_count: 0
@@ -7169,7 +7327,8 @@ person_400071:
   website: 
   youtube_id: 
 person_412270: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001076
   birthday: 1967-03-26
   blog_article_count: 0
@@ -7214,7 +7373,8 @@ person_412270:
   website: 
   youtube_id: 
 person_400073: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000380
   birthday: 1945-09-19
   blog_article_count: 0
@@ -7259,7 +7419,8 @@ person_400073:
   website: 
   youtube_id: 
 person_412379: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001080
   birthday: 1953-07-07
   blog_article_count: 0
@@ -7304,7 +7465,8 @@ person_412379:
   website: 
   youtube_id: 
 person_412470: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001084
   birthday: 1961-07-15
   blog_article_count: 0
@@ -7349,7 +7511,8 @@ person_412470:
   website: 
   youtube_id: 
 person_412600: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001101
   birthday: 1963-07-17
   blog_article_count: 0
@@ -7394,7 +7557,8 @@ person_412600:
   website: 
   youtube_id: 
 person_412221: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001067
   birthday: 1964-11-21
   blog_article_count: 0
@@ -7439,7 +7603,8 @@ person_412221:
   website: 
   youtube_id: 
 person_412604: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001102
   birthday: 1959-09-28
   blog_article_count: 0
@@ -7481,7 +7646,8 @@ person_412604:
   website: 
   youtube_id: 
 person_400074: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001049
   birthday: 1956-07-27
   blog_article_count: 0
@@ -7526,7 +7692,8 @@ person_400074:
   website: 
   youtube_id: 
 person_400639: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001061
   birthday: 1944-10-26
   blog_article_count: 0
@@ -7571,7 +7738,8 @@ person_400639:
   website: 
   youtube_id: 
 person_400075: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000537
   birthday: 1940-07-21
   blog_article_count: 0
@@ -7616,7 +7784,8 @@ person_400075:
   website: 
   youtube_id: 
 person_400076: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000556
   birthday: 1931-03-18
   blog_article_count: 0
@@ -7661,7 +7830,8 @@ person_400076:
   website: 
   youtube_id: 
 person_412271: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001077
   birthday: 1955-03-19
   blog_article_count: 0
@@ -7707,7 +7877,8 @@ person_412271:
   website: 
   youtube_id: 
 person_412236: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001068
   birthday: 1949-05-24
   blog_article_count: 0
@@ -7752,7 +7923,8 @@ person_412236:
   website: 
   youtube_id: 
 person_400077: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001053
   birthday: 1949-04-28
   blog_article_count: 0
@@ -7797,7 +7969,8 @@ person_400077:
   website: 
   youtube_id: 
 person_412531: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001093
   birthday: 1966-08-16
   blog_article_count: 0
@@ -7842,7 +8015,8 @@ person_412531:
   website: 
   youtube_id: 
 person_412563: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001092
   birthday: 1950-05-20
   blog_article_count: 0
@@ -7887,7 +8061,8 @@ person_412563:
   website: 
   youtube_id: 
 person_400655: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001062
   birthday: 1948-06-11
   blog_article_count: 0
@@ -7933,7 +8108,8 @@ person_400655:
   website: 
   youtube_id: 
 person_412272: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001078
   birthday: 1950-03-30
   blog_article_count: 0
@@ -7978,7 +8154,8 @@ person_412272:
   website: 
   youtube_id: 
 person_400080: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000714
   birthday: 1929-05-16
   blog_article_count: 0
@@ -8023,7 +8200,8 @@ person_400080:
   website: 
   youtube_id: 
 person_412513: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001094
   birthday: 1943-03-03
   blog_article_count: 0
@@ -8068,7 +8246,8 @@ person_412513:
   website: 
   youtube_id: 
 person_400081: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000754
   birthday: 1954-06-19
   blog_article_count: 0
@@ -8115,7 +8294,8 @@ person_400081:
   website: 
   youtube_id: 
 person_400618: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001059
   birthday: 1952-04-13
   blog_article_count: 0
@@ -8160,7 +8340,8 @@ person_400618:
   website: 
   youtube_id: 
 person_412508: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001095
   birthday: 1977-05-13
   blog_article_count: 0
@@ -8205,7 +8386,8 @@ person_412508:
   website: 
   youtube_id: 
 person_412193: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001069
   birthday: 1953-04-06
   blog_article_count: 0
@@ -8250,7 +8432,8 @@ person_412193:
   website: 
   youtube_id: 
 person_412555: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001096
   birthday: 1961-01-21
   blog_article_count: 0
@@ -8296,7 +8479,8 @@ person_412555:
   website: 
   youtube_id: 
 person_412400: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001087
   birthday: 1966-01-22
   blog_article_count: 0
@@ -8341,7 +8525,8 @@ person_412400:
   website: 
   youtube_id: 
 person_400086: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001045
   birthday: 1944-09-01
   blog_article_count: 0
@@ -8386,7 +8571,8 @@ person_400086:
   website: 
   youtube_id: 
 person_400087: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001038
   birthday: 1962-03-16
   blog_article_count: 0
@@ -8431,7 +8617,8 @@ person_400087:
   website: 
   youtube_id: 
 person_400657: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001063
   birthday: 1955-09-19
   blog_article_count: 0
@@ -8476,7 +8663,8 @@ person_400657:
   website: 
   youtube_id: 
 person_400089: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001048
   birthday: 1956-08-24
   blog_article_count: 0
@@ -8521,7 +8709,8 @@ person_400089:
   website: 
   youtube_id: 
 person_400090: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C000984
   birthday: 1951-01-18
   blog_article_count: 0
@@ -8566,7 +8755,8 @@ person_400090:
   website: 
   youtube_id: 
 person_412517: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: C001097
   birthday: 1963-03-31
   blog_article_count: 0
@@ -8611,7 +8801,8 @@ person_412517:
   website: 
   youtube_id: 
 person_412549: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000618
   birthday: 1962-08-20
   blog_article_count: 0
@@ -8657,7 +8848,8 @@ person_412549:
   website: 
   youtube_id: 
 person_412536: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000619
   birthday: 1970-01-05
   blog_article_count: 0
@@ -8702,7 +8894,8 @@ person_412536:
   website: 
   youtube_id: 
 person_400093: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000096
   birthday: 1941-09-06
   blog_article_count: 0
@@ -8747,7 +8940,8 @@ person_400093:
   website: 
   youtube_id: 
 person_400097: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000598
   birthday: 1944-04-13
   blog_article_count: 0
@@ -8792,7 +8986,8 @@ person_400097:
   website: 
   youtube_id: 
 person_400100: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000191
   birthday: 1947-05-27
   blog_article_count: 0
@@ -8838,7 +9033,8 @@ person_400100:
   website: 
   youtube_id: 
 person_400101: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000197
   birthday: 1957-07-29
   blog_article_count: 0
@@ -8883,7 +9079,8 @@ person_400101:
   website: 
   youtube_id: 
 person_400103: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000216
   birthday: 1943-03-02
   blog_article_count: 0
@@ -8928,7 +9125,8 @@ person_400103:
   website: 
   youtube_id: 
 person_412526: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000621
   birthday: 1978-09-14
   blog_article_count: 0
@@ -8973,7 +9171,8 @@ person_412526:
   website: 
   youtube_id: 
 person_412505: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000617
   birthday: 1962-02-17
   blog_article_count: 0
@@ -9018,7 +9217,8 @@ person_412505:
   website: 
   youtube_id: 
 person_412544: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000620
   birthday: 1963-04-16
   blog_article_count: 0
@@ -9063,7 +9263,8 @@ person_412544:
   website: 
   youtube_id: 
 person_412403: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000612
   birthday: 1967-07-29
   blog_article_count: 0
@@ -9108,7 +9309,8 @@ person_412403:
   website: 
   youtube_id: 
 person_400648: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000604
   birthday: 1960-05-24
   blog_article_count: 0
@@ -9153,7 +9355,8 @@ person_400648:
   website: 
   youtube_id: 
 person_412477: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000616
   birthday: 1964-02-21
   blog_article_count: 0
@@ -9198,7 +9401,8 @@ person_412477:
   website: 
   youtube_id: 
 person_412385: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000610
   birthday: 1966-05-07
   blog_article_count: 0
@@ -9243,7 +9447,8 @@ person_412385:
   website: 
   youtube_id: 
 person_400108: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000600
   birthday: 1961-09-25
   blog_article_count: 0
@@ -9288,7 +9493,8 @@ person_400108:
   website: 
   youtube_id: 
 person_400110: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000355
   birthday: 1926-07-08
   blog_article_count: 0
@@ -9333,7 +9539,8 @@ person_400110:
   website: 
   youtube_id: 
 person_400111: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000399
   birthday: 1946-10-06
   blog_article_count: 0
@@ -9378,7 +9585,8 @@ person_400111:
   website: 
   youtube_id: 
 person_400114: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000482
   birthday: 1953-08-05
   blog_article_count: 0
@@ -9423,7 +9631,8 @@ person_400114:
   website: 
   youtube_id: 
 person_412533: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000622
   birthday: 1968-03-12
   blog_article_count: 0
@@ -9468,7 +9677,8 @@ person_412533:
   website: 
   youtube_id: 
 person_412488: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000614
   birthday: 1971-10-03
   blog_article_count: 0
@@ -9513,7 +9723,8 @@ person_412488:
   website: 
   youtube_id: 
 person_412472: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000615
   birthday: 1966-01-07
   blog_article_count: 0
@@ -9558,7 +9769,8 @@ person_412472:
   website: 
   youtube_id: 
 person_400116: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: D000533
   birthday: 1947-07-21
   blog_article_count: 0
@@ -9603,7 +9815,8 @@ person_400116:
   website: 
   youtube_id: 
 person_412263: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: E000290
   birthday: 1958-06-28
   blog_article_count: 0
@@ -9648,7 +9861,8 @@ person_412263:
   website: 
   youtube_id: 
 person_412215: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: E000288
   birthday: 1963-08-04
   blog_article_count: 0
@@ -9693,7 +9907,8 @@ person_412215:
   website: 
   youtube_id: 
 person_412457: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: E000291
   birthday: 1964-02-09
   blog_article_count: 0
@@ -9738,7 +9953,8 @@ person_412457:
   website: 
   youtube_id: 
 person_400122: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: E000179
   birthday: 1947-02-18
   blog_article_count: 0
@@ -9783,7 +9999,8 @@ person_400122:
   website: 
   youtube_id: 
 person_412535: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: E000292
   birthday: 1949-09-22
   blog_article_count: 0
@@ -9828,7 +10045,8 @@ person_412535:
   website: 
   youtube_id: 
 person_400124: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: E000215
   birthday: 1942-12-13
   blog_article_count: 0
@@ -9873,7 +10091,8 @@ person_400124:
   website: 
   youtube_id: 
 person_412524: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: E000293
   birthday: 1959-08-25
   blog_article_count: 0
@@ -9918,7 +10137,8 @@ person_412524:
   website: 
   youtube_id: 
 person_400128: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000010
   birthday: 1943-08-15
   blog_article_count: 0
@@ -9963,7 +10183,8 @@ person_400128:
   website: 
   youtube_id: 
 person_412482: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000460
   birthday: 1961-12-12
   blog_article_count: 0
@@ -10008,7 +10229,8 @@ person_412482:
   website: 
   youtube_id: 
 person_400129: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000030
   birthday: 1941-07-04
   blog_article_count: 0
@@ -10053,7 +10275,8 @@ person_400129:
   website: 
   youtube_id: 
 person_400130: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000043
   birthday: 1956-11-21
   blog_article_count: 0
@@ -10098,7 +10321,8 @@ person_400130:
   website: 
   youtube_id: 
 person_412479: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000458
   birthday: 1973-02-07
   blog_article_count: 0
@@ -10143,7 +10367,8 @@ person_412479:
   website: 
   youtube_id: 
 person_400646: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000451
   birthday: 1963-06-28
   blog_article_count: 0
@@ -10188,7 +10413,8 @@ person_400646:
   website: 
   youtube_id: 
 person_412476: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000459
   birthday: 1962-10-11
   blog_article_count: 0
@@ -10233,7 +10459,8 @@ person_412476:
   website: 
   youtube_id: 
 person_412275: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000456
   birthday: 1951-07-05
   blog_article_count: 0
@@ -10278,7 +10505,8 @@ person_412275:
   website: 
   youtube_id: 
 person_412480: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000461
   birthday: 1954-02-25
   blog_article_count: 0
@@ -10323,7 +10551,8 @@ person_412480:
   website: 
   youtube_id: 
 person_400137: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000445
   birthday: 1952-02-17
   blog_article_count: 0
@@ -10368,7 +10597,8 @@ person_400137:
   website: 
   youtube_id: 
 person_400640: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000449
   birthday: 1960-12-27
   blog_article_count: 0
@@ -10413,7 +10643,8 @@ person_400640:
   website: 
   youtube_id: 
 person_412257: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000454
   birthday: 1955-10-07
   blog_article_count: 0
@@ -10459,7 +10690,8 @@ person_412257:
   website: 
   youtube_id: 
 person_400643: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000450
   birthday: 1943-06-29
   blog_article_count: 0
@@ -10504,7 +10736,8 @@ person_400643:
   website: 
   youtube_id: 
 person_412529: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000462
   birthday: 1948-05-16
   blog_article_count: 0
@@ -10550,7 +10783,8 @@ person_412529:
   website: 
   youtube_id: 
 person_400141: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000448
   birthday: 1957-06-19
   blog_article_count: 0
@@ -10595,7 +10829,8 @@ person_400141:
   website: 
   youtube_id: 
 person_400142: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000372
   birthday: 1946-04-29
   blog_article_count: 0
@@ -10640,7 +10875,8 @@ person_400142:
   website: 
   youtube_id: 
 person_412327: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: F000455
   birthday: 1952-10-29
   blog_article_count: 0
@@ -10685,7 +10921,8 @@ person_412327:
   website: 
   youtube_id: 
 person_412532: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000571
   birthday: 1981-04-12
   blog_article_count: 0
@@ -10730,7 +10967,8 @@ person_412532:
   website: 
   youtube_id: 
 person_412577: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000572
   birthday: 1961-12-02
   blog_article_count: 0
@@ -10775,7 +11013,8 @@ person_412577:
   website: 
   youtube_id: 
 person_412382: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000559
   birthday: 1945-01-24
   blog_article_count: 0
@@ -10820,7 +11059,8 @@ person_412382:
   website: 
   youtube_id: 
 person_412530: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000573
   birthday: 1963-10-19
   blog_article_count: 0
@@ -10866,7 +11106,8 @@ person_412530:
   website: 
   youtube_id: 
 person_412406: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000562
   birthday: 1974-08-22
   blog_article_count: 0
@@ -10911,7 +11152,8 @@ person_412406:
   website: 
   youtube_id: 
 person_400145: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000548
   birthday: 1959-07-09
   blog_article_count: 0
@@ -10956,7 +11198,8 @@ person_400145:
   website: 
   youtube_id: 
 person_400147: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000549
   birthday: 1955-02-25
   blog_article_count: 0
@@ -11001,7 +11244,8 @@ person_400147:
   website: 
   youtube_id: 
 person_412463: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000563
   birthday: 1954-06-14
   blog_article_count: 0
@@ -11046,7 +11290,8 @@ person_412463:
   website: 
   youtube_id: 
 person_412453: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000564
   birthday: 1964-05-13
   blog_article_count: 0
@@ -11091,7 +11336,8 @@ person_412453:
   website: 
   youtube_id: 
 person_400151: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000550
   birthday: 1942-07-10
   blog_article_count: 0
@@ -11137,7 +11383,8 @@ person_400151:
   website: 
   youtube_id: 
 person_400651: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000552
   birthday: 1953-08-18
   blog_article_count: 0
@@ -11182,7 +11429,8 @@ person_400651:
   website: 
   youtube_id: 
 person_400154: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000289
   birthday: 1952-09-22
   blog_article_count: 0
@@ -11227,7 +11475,8 @@ person_400154:
   website: 
   youtube_id: 
 person_412397: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000565
   birthday: 1958-11-22
   blog_article_count: 0
@@ -11272,7 +11521,8 @@ person_412397:
   website: 
   youtube_id: 
 person_412473: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000566
   birthday: 1964-08-22
   blog_article_count: 0
@@ -11317,7 +11567,8 @@ person_412473:
   website: 
   youtube_id: 
 person_400157: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000377
   birthday: 1943-01-18
   blog_article_count: 0
@@ -11362,7 +11613,8 @@ person_400157:
   website: 
   youtube_id: 
 person_400158: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000546
   birthday: 1963-11-07
   blog_article_count: 0
@@ -11407,7 +11659,8 @@ person_400158:
   website: 
   youtube_id: 
 person_412388: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000560
   birthday: 1970-02-03
   blog_article_count: 0
@@ -11452,7 +11705,8 @@ person_412388:
   website: 
   youtube_id: 
 person_412276: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000556
   birthday: 1958-03-13
   blog_article_count: 0
@@ -11497,7 +11751,8 @@ person_412276:
   website: 
   youtube_id: 
 person_400160: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000410
   birthday: 1947-10-17
   blog_article_count: 0
@@ -11542,7 +11797,8 @@ person_400160:
   website: 
   youtube_id: 
 person_400653: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000553
   birthday: 1947-09-01
   blog_article_count: 0
@@ -11587,7 +11843,8 @@ person_400653:
   website: 
   youtube_id: 
 person_412401: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000567
   birthday: 1968-08-21
   blog_article_count: 0
@@ -11632,7 +11889,8 @@ person_412401:
   website: 
   youtube_id: 
 person_412485: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000568
   birthday: 1958-03-15
   blog_article_count: 0
@@ -11677,7 +11935,8 @@ person_412485:
   website: 
   youtube_id: 
 person_400162: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000551
   birthday: 1948-02-19
   blog_article_count: 0
@@ -11722,7 +11981,8 @@ person_400162:
   website: 
   youtube_id: 
 person_412451: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000569
   birthday: 1970-02-07
   blog_article_count: 0
@@ -11767,7 +12027,8 @@ person_412451:
   website: 
   youtube_id: 
 person_412278: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000558
   birthday: 1964-02-18
   blog_article_count: 0
@@ -11812,7 +12073,8 @@ person_412278:
   website: 
   youtube_id: 
 person_400163: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: G000535
   birthday: 1953-12-10
   blog_article_count: 0
@@ -11857,7 +12119,8 @@ person_400163:
   website: 
   youtube_id: 
 person_412498: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001063
   birthday: 1952-03-30
   blog_article_count: 0
@@ -11902,7 +12165,8 @@ person_412498:
   website: 
   youtube_id: 
 person_400165: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H000067
   birthday: 1923-05-03
   blog_article_count: 0
@@ -11947,7 +12211,8 @@ person_400165:
   website: 
   youtube_id: 
 person_412418: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001050
   birthday: 1951-05-04
   blog_article_count: 0
@@ -11992,7 +12257,8 @@ person_412418:
   website: 
   youtube_id: 
 person_412454: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001051
   birthday: 1951-01-25
   blog_article_count: 0
@@ -12037,7 +12303,8 @@ person_412454:
   website: 
   youtube_id: 
 person_412280: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001045
   birthday: 1956-06-01
   blog_article_count: 0
@@ -12082,7 +12349,8 @@ person_412280:
   website: 
   youtube_id: 
 person_412434: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001052
   birthday: 1957-01-25
   blog_article_count: 0
@@ -12127,7 +12395,8 @@ person_412434:
   website: 
   youtube_id: 
 person_412444: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001053
   birthday: 1960-10-13
   blog_article_count: 0
@@ -12172,7 +12441,8 @@ person_412444:
   website: 
   youtube_id: 
 person_400170: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H000324
   birthday: 1936-09-05
   blog_article_count: 0
@@ -12217,7 +12487,8 @@ person_400170:
   website: 
   youtube_id: 
 person_400171: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H000329
   birthday: 1941-02-07
   blog_article_count: 0
@@ -12262,7 +12533,8 @@ person_400171:
   website: 
   youtube_id: 
 person_412446: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001055
   birthday: 1961-10-30
   blog_article_count: 0
@@ -12307,7 +12579,8 @@ person_412446:
   website: 
   youtube_id: 
 person_412584: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001064
   birthday: 1952-07-29
   blog_article_count: 0
@@ -12352,7 +12625,8 @@ person_412584:
   website: 
   youtube_id: 
 person_400175: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001036
   birthday: 1957-05-29
   blog_article_count: 0
@@ -12397,7 +12671,8 @@ person_400175:
   website: 
   youtube_id: 
 person_412486: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001056
   birthday: 1978-11-03
   blog_article_count: 0
@@ -12442,7 +12717,8 @@ person_412486:
   website: 
   youtube_id: 
 person_400641: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001038
   birthday: 1959-10-06
   blog_article_count: 0
@@ -12487,7 +12763,8 @@ person_400641:
   website: 
   youtube_id: 
 person_412282: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001047
   birthday: 1966-07-05
   blog_article_count: 0
@@ -12532,7 +12809,8 @@ person_412282:
   website: 
   youtube_id: 
 person_400179: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H000636
   birthday: 1940-08-20
   blog_article_count: 0
@@ -12577,7 +12855,8 @@ person_400179:
   website: 
   youtube_id: 
 person_412553: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001065
   birthday: 1968-04-17
   blog_article_count: 0
@@ -12622,7 +12901,8 @@ person_412553:
   website: 
   youtube_id: 
 person_400184: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001032
   birthday: 1948-10-15
   blog_article_count: 0
@@ -12667,7 +12947,8 @@ person_400184:
   website: 
   youtube_id: 
 person_400185: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001034
   birthday: 1941-06-27
   blog_article_count: 0
@@ -12712,7 +12993,8 @@ person_400185:
   website: 
   youtube_id: 
 person_412559: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001066
   birthday: 1973-04-29
   blog_article_count: 0
@@ -12757,7 +13039,8 @@ person_412559:
   website: 
   youtube_id: 
 person_400189: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H000874
   birthday: 1939-06-14
   blog_article_count: 0
@@ -12802,7 +13085,8 @@ person_400189:
   website: 
   youtube_id: 
 person_412550: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001067
   birthday: 1971-11-04
   blog_article_count: 0
@@ -12847,7 +13131,8 @@ person_412550:
   website: 
   youtube_id: 
 person_412429: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001057
   birthday: 1968-11-11
   blog_article_count: 0
@@ -12892,7 +13177,8 @@ person_412429:
   website: 
   youtube_id: 
 person_412511: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001068
   birthday: 1964-02-18
   blog_article_count: 0
@@ -12937,7 +13223,8 @@ person_412511:
   website: 
   youtube_id: 
 person_412437: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001058
   birthday: 1969-01-31
   blog_article_count: 0
@@ -12982,7 +13269,8 @@ person_412437:
   website: 
   youtube_id: 
 person_412422: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001059
   birthday: 1966-03-01
   blog_article_count: 0
@@ -13027,7 +13315,8 @@ person_412422:
   website: 
   youtube_id: 
 person_412283: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001048
   birthday: 1976-12-07
   blog_article_count: 0
@@ -13072,7 +13361,8 @@ person_412283:
   website: 
   youtube_id: 
 person_412484: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: H001060
   birthday: 1969-06-16
   blog_article_count: 0
@@ -13117,7 +13407,8 @@ person_412484:
   website: 
   youtube_id: 
 person_400195: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: I000057
   birthday: 1958-05-30
   blog_article_count: 0
@@ -13162,7 +13453,8 @@ person_400195:
   website: 
   youtube_id: 
 person_400196: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: I000056
   birthday: 1953-11-01
   blog_article_count: 0
@@ -13208,7 +13500,8 @@ person_400196:
   website: 
   youtube_id: 
 person_400199: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000032
   birthday: 1950-01-12
   blog_article_count: 0
@@ -13253,7 +13546,8 @@ person_400199:
   website: 
   youtube_id: 
 person_412561: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000294
   birthday: 1970-08-04
   blog_article_count: 0
@@ -13298,7 +13592,8 @@ person_412561:
   website: 
   youtube_id: 
 person_412284: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000290
   birthday: 1963-06-10
   blog_article_count: 0
@@ -13343,7 +13638,8 @@ person_412284:
   website: 
   youtube_id: 
 person_412460: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000292
   birthday: 1954-11-10
   blog_article_count: 0
@@ -13388,7 +13684,8 @@ person_412460:
   website: 
   youtube_id: 
 person_400206: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000174
   birthday: 1930-10-11
   blog_article_count: 0
@@ -13433,7 +13730,8 @@ person_400206:
   website: 
   youtube_id: 
 person_412199: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000288
   birthday: 1954-10-02
   blog_article_count: 0
@@ -13478,7 +13776,8 @@ person_412199:
   website: 
   youtube_id: 
 person_400204: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000126
   birthday: 1935-12-03
   blog_article_count: 0
@@ -13523,7 +13822,8 @@ person_400204:
   website: 
   youtube_id: 
 person_412603: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000296
   birthday: 1972-10-31
   blog_article_count: 0
@@ -13565,7 +13865,8 @@ person_412603:
   website: 
   youtube_id: 
 person_400209: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000255
   birthday: 1943-02-10
   blog_article_count: 0
@@ -13610,7 +13911,8 @@ person_400209:
   website: 
   youtube_id: 
 person_412226: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000289
   birthday: 1964-02-17
   blog_article_count: 0
@@ -13655,7 +13957,8 @@ person_412226:
   website: 
   youtube_id: 
 person_412566: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: J000295
   birthday: 1957-03-17
   blog_article_count: 0
@@ -13700,7 +14003,8 @@ person_412566:
   website: 
   youtube_id: 
 person_400211: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000009
   birthday: 1946-06-17
   blog_article_count: 0
@@ -13745,7 +14049,8 @@ person_400211:
   website: 
   youtube_id: 
 person_412435: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000375
   birthday: 1952-09-06
   blog_article_count: 0
@@ -13790,7 +14095,8 @@ person_412435:
   website: 
   youtube_id: 
 person_412595: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000385
   birthday: 1956-04-30
   blog_article_count: 0
@@ -13835,7 +14141,8 @@ person_412595:
   website: 
   youtube_id: 
 person_412465: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000376
   birthday: 1948-05-10
   blog_article_count: 0
@@ -13880,7 +14187,8 @@ person_412465:
   website: 
   youtube_id: 
 person_412543: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000379
   birthday: 1980-10-04
   blog_article_count: 0
@@ -13925,7 +14233,8 @@ person_412543:
   website: 
   youtube_id: 
 person_412546: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000380
   birthday: 1958-08-11
   blog_article_count: 0
@@ -13970,7 +14279,8 @@ person_412546:
   website: 
   youtube_id: 
 person_412583: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000381
   birthday: 1974-01-01
   blog_article_count: 0
@@ -14015,7 +14325,8 @@ person_412583:
   website: 
   youtube_id: 
 person_400218: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000188
   birthday: 1963-03-16
   blog_article_count: 0
@@ -14060,7 +14371,8 @@ person_400218:
   website: 
   youtube_id: 
 person_400220: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000362
   birthday: 1949-05-28
   blog_article_count: 0
@@ -14105,7 +14417,8 @@ person_400220:
   website: 
   youtube_id: 
 person_400219: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000210
   birthday: 1944-04-05
   blog_article_count: 0
@@ -14150,7 +14463,8 @@ person_400219:
   website: 
   youtube_id: 
 person_400221: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000220
   birthday: 1955-04-24
   blog_article_count: 0
@@ -14195,7 +14509,8 @@ person_400221:
   website: 
   youtube_id: 
 person_412421: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000378
   birthday: 1978-02-27
   blog_article_count: 0
@@ -14240,7 +14555,8 @@ person_412421:
   website: 
   youtube_id: 
 person_412286: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000368
   birthday: 1950-03-24
   blog_article_count: 0
@@ -14285,7 +14601,8 @@ person_412286:
   website: 
   youtube_id: 
 person_400224: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000363
   birthday: 1947-09-06
   blog_article_count: 0
@@ -14330,7 +14647,8 @@ person_400224:
   website: 
   youtube_id: 
 person_412557: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: K000382
   birthday: 1956-09-05
   blog_article_count: 0
@@ -14375,7 +14693,8 @@ person_412557:
   website: 
   youtube_id: 
 person_412510: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000578
   birthday: 1960-07-02
   blog_article_count: 0
@@ -14421,7 +14740,8 @@ person_412510:
   website: 
   youtube_id: 
 person_412419: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000573
   birthday: 1967-12-08
   blog_article_count: 0
@@ -14466,7 +14786,8 @@ person_412419:
   website: 
   youtube_id: 
 person_412191: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000564
   birthday: 1954-05-24
   blog_article_count: 0
@@ -14511,7 +14832,8 @@ person_412191:
   website: 
   youtube_id: 
 person_412290: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000567
   birthday: 1952-06-25
   blog_article_count: 0
@@ -14557,7 +14879,8 @@ person_412290:
   website: 
   youtube_id: 
 person_400230: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000559
   birthday: 1964-04-22
   blog_article_count: 0
@@ -14602,7 +14925,8 @@ person_400230:
   website: 
   youtube_id: 
 person_412464: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000575
   birthday: 1968-03-04
   blog_article_count: 0
@@ -14647,7 +14971,8 @@ person_412464:
   website: 
   youtube_id: 
 person_400232: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000560
   birthday: 1965-06-15
   blog_article_count: 0
@@ -14692,7 +15017,8 @@ person_400232:
   website: 
   youtube_id: 
 person_400233: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000557
   birthday: 1948-07-22
   blog_article_count: 0
@@ -14737,7 +15063,8 @@ person_400233:
   website: 
   youtube_id: 
 person_400234: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000111
   birthday: 1948-07-14
   blog_article_count: 0
@@ -14782,7 +15109,8 @@ person_400234:
   website: 
   youtube_id: 
 person_412256: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000566
   birthday: 1956-04-18
   blog_article_count: 0
@@ -14827,7 +15155,8 @@ person_412256:
   website: 
   youtube_id: 
 person_400237: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000551
   birthday: 1946-07-16
   blog_article_count: 0
@@ -14872,7 +15201,8 @@ person_400237:
   website: 
   youtube_id: 
 person_400238: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000263
   birthday: 1931-09-06
   blog_article_count: 0
@@ -14917,7 +15247,8 @@ person_400238:
   website: 
   youtube_id: 
 person_400240: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000287
   birthday: 1940-02-21
   blog_article_count: 0
@@ -14962,7 +15293,8 @@ person_400240:
   website: 
   youtube_id: 
 person_400630: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000563
   birthday: 1966-07-15
   blog_article_count: 0
@@ -15007,7 +15339,8 @@ person_400630:
   website: 
   youtube_id: 
 person_400244: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000554
   birthday: 1946-05-12
   blog_article_count: 0
@@ -15052,7 +15385,8 @@ person_400244:
   website: 
   youtube_id: 
 person_412209: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000565
   birthday: 1952-12-23
   blog_article_count: 0
@@ -15097,7 +15431,8 @@ person_412209:
   website: 
   youtube_id: 
 person_400245: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000397
   birthday: 1947-12-21
   blog_article_count: 0
@@ -15142,7 +15477,8 @@ person_400245:
   website: 
   youtube_id: 
 person_412445: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000576
   birthday: 1955-08-11
   blog_article_count: 0
@@ -15187,7 +15523,8 @@ person_412445:
   website: 
   youtube_id: 
 person_412521: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000579
   birthday: 1941-03-08
   blog_article_count: 0
@@ -15232,7 +15569,8 @@ person_412521:
   website: 
   youtube_id: 
 person_400246: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000480
   birthday: 1937-07-05
   blog_article_count: 0
@@ -15277,7 +15615,8 @@ person_400246:
   website: 
   youtube_id: 
 person_400247: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000491
   birthday: 1960-01-06
   blog_article_count: 0
@@ -15322,7 +15661,8 @@ person_400247:
   website: 
   youtube_id: 
 person_412292: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000569
   birthday: 1952-05-07
   blog_article_count: 0
@@ -15367,7 +15707,8 @@ person_412292:
   website: 
   youtube_id: 
 person_412558: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000580
   birthday: 1959-10-24
   blog_article_count: 0
@@ -15412,7 +15753,8 @@ person_412558:
   website: 
   youtube_id: 
 person_412293: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000570
   birthday: 1972-06-07
   blog_article_count: 0
@@ -15457,7 +15799,8 @@ person_412293:
   website: 
   youtube_id: 
 person_412294: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000571
   birthday: 1954-09-10
   blog_article_count: 0
@@ -15502,7 +15845,8 @@ person_412294:
   website: 
   youtube_id: 
 person_400249: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: L000562
   birthday: 1955-03-31
   blog_article_count: 0
@@ -15548,7 +15892,8 @@ person_400249:
   website: 
   youtube_id: 
 person_412297: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001171
   birthday: 1968-07-04
   blog_article_count: 0
@@ -15593,7 +15938,8 @@ person_412297:
   website: 
   youtube_id: 
 person_412562: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001185
   birthday: 1966-07-30
   blog_article_count: 0
@@ -15638,7 +15984,8 @@ person_412562:
   website: 
   youtube_id: 
 person_400251: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000087
   birthday: 1946-02-19
   blog_article_count: 0
@@ -15683,7 +16030,8 @@ person_400251:
   website: 
   youtube_id: 
 person_400656: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001158
   birthday: 1951-02-23
   blog_article_count: 0
@@ -15728,7 +16076,8 @@ person_400656:
   website: 
   youtube_id: 
 person_412468: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001179
   birthday: 1952-08-15
   blog_article_count: 0
@@ -15773,7 +16122,8 @@ person_412468:
   website: 
   youtube_id: 
 person_412503: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001184
   birthday: 1971-01-13
   blog_article_count: 0
@@ -15818,7 +16168,8 @@ person_412503:
   website: 
   youtube_id: 
 person_400255: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001142
   birthday: 1960-03-21
   blog_article_count: 0
@@ -15863,7 +16214,8 @@ person_400255:
   website: 
   youtube_id: 
 person_400663: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001163
   birthday: 1944-09-25
   blog_article_count: 0
@@ -15908,7 +16260,8 @@ person_400663:
   website: 
   youtube_id: 
 person_412599: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001192
   birthday: 1974-01-07
   blog_article_count: 0
@@ -15953,7 +16306,8 @@ person_412599:
   website: 
   youtube_id: 
 person_412190: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001165
   birthday: 1965-01-26
   blog_article_count: 0
@@ -15999,7 +16353,8 @@ person_412190:
   website: 
   youtube_id: 
 person_400257: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000309
   birthday: 1944-01-05
   blog_article_count: 0
@@ -16044,7 +16399,8 @@ person_400257:
   website: 
   youtube_id: 
 person_400654: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001157
   birthday: 1962-01-14
   blog_article_count: 0
@@ -16089,7 +16445,8 @@ person_400654:
   website: 
   youtube_id: 
 person_412295: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001177
   birthday: 1956-07-10
   blog_article_count: 0
@@ -16135,7 +16492,8 @@ person_412295:
   website: 
   youtube_id: 
 person_400259: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001143
   birthday: 1954-07-12
   blog_article_count: 0
@@ -16180,7 +16538,8 @@ person_400259:
   website: 
   youtube_id: 
 person_400262: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000404
   birthday: 1936-12-28
   blog_article_count: 0
@@ -16225,7 +16584,8 @@ person_400262:
   website: 
   youtube_id: 
 person_400263: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000312
   birthday: 1959-11-20
   blog_article_count: 0
@@ -16270,7 +16630,8 @@ person_400263:
   website: 
   youtube_id: 
 person_400644: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001156
   birthday: 1975-10-22
   blog_article_count: 0
@@ -16315,7 +16676,8 @@ person_400644:
   website: 
   youtube_id: 
 person_400266: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000485
   birthday: 1956-08-06
   blog_article_count: 0
@@ -16360,7 +16722,8 @@ person_400266:
   website: 
   youtube_id: 
 person_400267: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000508
   birthday: 1938-09-09
   blog_article_count: 0
@@ -16405,7 +16768,8 @@ person_400267:
   website: 
   youtube_id: 
 person_412487: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001180
   birthday: 1947-03-28
   blog_article_count: 0
@@ -16450,7 +16814,8 @@ person_412487:
   website: 
   youtube_id: 
 person_400659: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001159
   birthday: 1969-05-22
   blog_article_count: 0
@@ -16495,7 +16860,8 @@ person_400659:
   website: 
   youtube_id: 
 person_412189: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001166
   birthday: 1951-06-18
   blog_article_count: 0
@@ -16540,7 +16906,8 @@ person_412189:
   website: 
   youtube_id: 
 person_412552: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001187
   birthday: 1959-07-28
   blog_article_count: 0
@@ -16585,7 +16952,8 @@ person_412552:
   website: 
   youtube_id: 
 person_412466: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001181
   birthday: 1955-10-20
   blog_article_count: 0
@@ -16630,7 +16998,8 @@ person_412466:
   website: 
   youtube_id: 
 person_400271: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001137
   birthday: 1953-09-25
   blog_article_count: 0
@@ -16675,7 +17044,8 @@ person_400271:
   website: 
   youtube_id: 
 person_412560: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001188
   birthday: 1975-10-01
   blog_article_count: 0
@@ -16720,7 +17090,8 @@ person_412560:
   website: 
   youtube_id: 
 person_412540: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001189
   birthday: 1969-02-27
   blog_article_count: 0
@@ -16766,7 +17137,8 @@ person_412540:
   website: 
   youtube_id: 
 person_400273: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000689
   birthday: 1943-01-27
   blog_article_count: 0
@@ -16811,7 +17183,8 @@ person_400273:
   website: 
   youtube_id: 
 person_400274: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001149
   birthday: 1955-01-18
   blog_article_count: 0
@@ -16856,7 +17229,8 @@ person_400274:
   website: 
   youtube_id: 
 person_400278: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000725
   birthday: 1945-05-17
   blog_article_count: 0
@@ -16901,7 +17275,8 @@ person_400278:
   website: 
   youtube_id: 
 person_400279: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001144
   birthday: 1959-06-27
   blog_article_count: 0
@@ -16946,7 +17321,8 @@ person_400279:
   website: 
   youtube_id: 
 person_400276: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001150
   birthday: 1954-05-07
   blog_article_count: 0
@@ -16991,7 +17367,8 @@ person_400276:
   website: 
   youtube_id: 
 person_400277: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001139
   birthday: 1948-10-16
   blog_article_count: 0
@@ -17036,7 +17413,8 @@ person_400277:
   website: 
   youtube_id: 
 person_400661: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001160
   birthday: 1951-04-18
   blog_article_count: 0
@@ -17081,7 +17459,8 @@ person_400661:
   website: 
   youtube_id: 
 person_400283: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M000933
   birthday: 1945-05-16
   blog_article_count: 0
@@ -17126,7 +17505,8 @@ person_400283:
   website: 
   youtube_id: 
 person_412568: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001190
   birthday: 1977-07-26
   blog_article_count: 0
@@ -17171,7 +17551,8 @@ person_412568:
   website: 
   youtube_id: 
 person_412474: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001182
   birthday: 1967-07-21
   blog_article_count: 0
@@ -17216,7 +17597,8 @@ person_412474:
   website: 
   youtube_id: 
 person_400285: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001151
   birthday: 1952-09-11
   blog_article_count: 0
@@ -17261,7 +17643,8 @@ person_400285:
   website: 
   youtube_id: 
 person_412527: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: M001191
   birthday: 1983-03-30
   blog_article_count: 0
@@ -17306,7 +17689,8 @@ person_412527:
   website: 
   youtube_id: 
 person_400289: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000002
   birthday: 1947-06-13
   blog_article_count: 0
@@ -17351,7 +17735,8 @@ person_400289:
   website: 
   youtube_id: 
 person_400290: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000179
   birthday: 1936-12-04
   blog_article_count: 0
@@ -17396,7 +17781,8 @@ person_400290:
   website: 
   youtube_id: 
 person_400291: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000015
   birthday: 1949-02-14
   blog_article_count: 0
@@ -17441,7 +17827,8 @@ person_400291:
   website: 
   youtube_id: 
 person_412518: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000187
   birthday: 1941-09-06
   blog_article_count: 0
@@ -17486,7 +17873,8 @@ person_412518:
   website: 
   youtube_id: 
 person_400441: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000182
   birthday: 1949-12-24
   blog_article_count: 0
@@ -17531,7 +17919,8 @@ person_400441:
   website: 
   youtube_id: 
 person_412475: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000184
   birthday: 1971-11-30
   blog_article_count: 0
@@ -17576,7 +17965,8 @@ person_412475:
   website: 
   youtube_id: 
 person_408211: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000127
   birthday: 1943-12-17
   blog_article_count: 0
@@ -17621,7 +18011,8 @@ person_408211:
   website: 
   youtube_id: 
 person_400295: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000147
   birthday: 1937-06-13
   blog_article_count: 0
@@ -17666,7 +18057,8 @@ person_400295:
   website: 
   youtube_id: 
 person_412409: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000185
   birthday: 1951-05-26
   blog_article_count: 0
@@ -17711,7 +18103,8 @@ person_412409:
   website: 
   youtube_id: 
 person_400297: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000181
   birthday: 1973-10-01
   blog_article_count: 0
@@ -17756,7 +18149,8 @@ person_400297:
   website: 
   youtube_id: 
 person_412442: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: N000186
   birthday: 1958-10-09
   blog_article_count: 0
@@ -17801,7 +18195,8 @@ person_412442:
   website: 
   youtube_id: 
 person_412575: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: O000170
   birthday: 1972-09-26
   blog_article_count: 0
@@ -17846,7 +18241,8 @@ person_412575:
   website: 
   youtube_id: 
 person_412302: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: O000168
   birthday: 1962-12-09
   blog_article_count: 0
@@ -17891,7 +18287,8 @@ person_412302:
   website: 
   youtube_id: 
 person_412383: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: O000169
   birthday: 1949-01-20
   blog_article_count: 0
@@ -17936,7 +18333,8 @@ person_412383:
   website: 
   youtube_id: 
 person_412443: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000601
   birthday: 1970-02-21
   blog_article_count: 0
@@ -17981,7 +18379,8 @@ person_412443:
   website: 
   youtube_id: 
 person_400308: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000034
   birthday: 1951-10-30
   blog_article_count: 0
@@ -18027,7 +18426,8 @@ person_400308:
   website: 
   youtube_id: 
 person_400309: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000096
   birthday: 1937-01-25
   blog_article_count: 0
@@ -18072,7 +18472,8 @@ person_400309:
   website: 
   youtube_id: 
 person_400310: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000099
   birthday: 1943-06-28
   blog_article_count: 0
@@ -18117,7 +18518,8 @@ person_400310:
   website: 
   youtube_id: 
 person_412303: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000594
   birthday: 1965-05-14
   blog_article_count: 0
@@ -18162,7 +18564,8 @@ person_412303:
   website: 
   youtube_id: 
 person_412506: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000604
   birthday: 1958-12-17
   blog_article_count: 0
@@ -18207,7 +18610,8 @@ person_412506:
   website: 
   youtube_id: 
 person_400313: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000588
   birthday: 1947-08-24
   blog_article_count: 0
@@ -18253,7 +18657,8 @@ person_400313:
   website: 
   youtube_id: 
 person_400314: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000197
   birthday: 1940-03-26
   blog_article_count: 0
@@ -18298,7 +18703,8 @@ person_400314:
   website: 
   youtube_id: 
 person_412192: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000593
   birthday: 1953-05-01
   blog_article_count: 0
@@ -18343,7 +18749,8 @@ person_412192:
   website: 
   youtube_id: 
 person_412569: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000605
   birthday: 1962-05-27
   blog_article_count: 0
@@ -18388,7 +18795,8 @@ person_412569:
   website: 
   youtube_id: 
 person_412523: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000608
   birthday: 1958-06-17
   blog_article_count: 0
@@ -18433,7 +18841,8 @@ person_412523:
   website: 
   youtube_id: 
 person_412305: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000595
   birthday: 1958-12-01
   blog_article_count: 0
@@ -18478,7 +18887,8 @@ person_412305:
   website: 
   youtube_id: 
 person_400316: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000258
   birthday: 1944-06-29
   blog_article_count: 0
@@ -18523,7 +18933,8 @@ person_400316:
   website: 
   youtube_id: 
 person_400318: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000265
   birthday: 1940-05-28
   blog_article_count: 0
@@ -18568,7 +18979,8 @@ person_400318:
   website: 
   youtube_id: 
 person_412306: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000596
   birthday: 1959-04-26
   blog_article_count: 0
@@ -18613,7 +19025,8 @@ person_412306:
   website: 
   youtube_id: 
 person_412307: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000597
   birthday: 1955-04-02
   blog_article_count: 0
@@ -18659,7 +19072,8 @@ person_412307:
   website: 
   youtube_id: 
 person_412551: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000606
   birthday: 1948-08-15
   blog_article_count: 0
@@ -18704,7 +19118,8 @@ person_412551:
   website: 
   youtube_id: 
 person_400320: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000373
   birthday: 1939-10-10
   blog_article_count: 0
@@ -18749,7 +19164,8 @@ person_400320:
   website: 
   youtube_id: 
 person_412585: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000607
   birthday: 1964-08-14
   blog_article_count: 0
@@ -18794,7 +19210,8 @@ person_412585:
   website: 
   youtube_id: 
 person_400652: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000592
   birthday: 1948-09-10
   blog_article_count: 0
@@ -18839,7 +19256,8 @@ person_400652:
   website: 
   youtube_id: 
 person_412308: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000598
   birthday: 1975-05-12
   blog_article_count: 0
@@ -18884,7 +19302,8 @@ person_412308:
   website: 
   youtube_id: 
 person_412431: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000602
   birthday: 1963-12-30
   blog_article_count: 0
@@ -18929,7 +19348,8 @@ person_412431:
   website: 
   youtube_id: 
 person_412309: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000599
   birthday: 1947-12-18
   blog_article_count: 0
@@ -18974,7 +19394,8 @@ person_412309:
   website: 
   youtube_id: 
 person_400326: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000523
   birthday: 1940-08-17
   blog_article_count: 0
@@ -19019,7 +19440,8 @@ person_400326:
   website: 
   youtube_id: 
 person_400626: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: P000591
   birthday: 1954-10-08
   blog_article_count: 0
@@ -19064,7 +19486,8 @@ person_400626:
   website: 
   youtube_id: 
 person_412331: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: Q000023
   birthday: 1958-10-17
   blog_article_count: 0
@@ -19109,7 +19532,8 @@ person_412331:
   website: 
   youtube_id: 
 person_400331: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000011
   birthday: 1949-05-20
   blog_article_count: 0
@@ -19154,7 +19578,8 @@ person_400331:
   website: 
   youtube_id: 
 person_400333: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000053
   birthday: 1930-06-11
   blog_article_count: 0
@@ -19199,7 +19624,8 @@ person_400333:
   website: 
   youtube_id: 
 person_412393: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000585
   birthday: 1971-11-18
   blog_article_count: 0
@@ -19244,7 +19670,8 @@ person_412393:
   website: 
   youtube_id: 
 person_400660: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000578
   birthday: 1950-08-29
   blog_article_count: 0
@@ -19289,7 +19716,8 @@ person_400660:
   website: 
   youtube_id: 
 person_412462: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000586
   birthday: 1958-12-03
   blog_article_count: 0
@@ -19334,7 +19762,8 @@ person_412462:
   website: 
   youtube_id: 
 person_412489: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000587
   birthday: 1956-04-05
   blog_article_count: 0
@@ -19379,7 +19808,8 @@ person_412489:
   website: 
   youtube_id: 
 person_412572: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000597
   birthday: 1957-08-04
   blog_article_count: 0
@@ -19424,7 +19854,8 @@ person_412572:
   website: 
   youtube_id: 
 person_412432: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000588
   birthday: 1973-09-13
   blog_article_count: 0
@@ -19469,7 +19900,8 @@ person_412432:
   website: 
   youtube_id: 
 person_412483: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000589
   birthday: 1960-05-28
   blog_article_count: 0
@@ -19514,7 +19946,8 @@ person_412483:
   website: 
   youtube_id: 
 person_412394: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000591
   birthday: 1976-07-27
   blog_article_count: 0
@@ -19559,7 +19992,8 @@ person_412394:
   website: 
   youtube_id: 
 person_412310: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000582
   birthday: 1945-07-21
   blog_article_count: 0
@@ -19604,7 +20038,8 @@ person_412310:
   website: 
   youtube_id: 
 person_400342: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000572
   birthday: 1963-06-02
   blog_article_count: 0
@@ -19649,7 +20084,8 @@ person_400342:
   website: 
   youtube_id: 
 person_400340: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000395
   birthday: 1937-12-31
   blog_article_count: 0
@@ -19694,7 +20130,8 @@ person_400340:
   website: 
   youtube_id: 
 person_400341: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000575
   birthday: 1958-07-16
   blog_article_count: 0
@@ -19739,7 +20176,8 @@ person_400341:
   website: 
   youtube_id: 
 person_400343: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000409
   birthday: 1947-06-21
   blog_article_count: 0
@@ -19784,7 +20222,8 @@ person_400343:
   website: 
   youtube_id: 
 person_412426: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000592
   birthday: 1970-02-09
   blog_article_count: 0
@@ -19829,7 +20268,8 @@ person_412426:
   website: 
   youtube_id: 
 person_412311: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000583
   birthday: 1970-11-21
   blog_article_count: 0
@@ -19874,7 +20314,8 @@ person_412311:
   website: 
   youtube_id: 
 person_400344: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000435
   birthday: 1952-07-15
   blog_article_count: 0
@@ -19919,7 +20360,8 @@ person_400344:
   website: 
   youtube_id: 
 person_412202: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000580
   birthday: 1961-09-13
   blog_article_count: 0
@@ -19965,7 +20407,8 @@ person_412202:
   website: 
   youtube_id: 
 person_412411: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000593
   birthday: 1959-10-18
   blog_article_count: 0
@@ -20010,7 +20453,8 @@ person_412411:
   website: 
   youtube_id: 
 person_412570: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000598
   birthday: 1962-04-25
   blog_article_count: 0
@@ -20055,7 +20499,8 @@ person_412570:
   website: 
   youtube_id: 
 person_400347: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000486
   birthday: 1941-06-12
   blog_article_count: 0
@@ -20100,7 +20545,8 @@ person_400347:
   website: 
   youtube_id: 
 person_400348: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000487
   birthday: 1951-10-12
   blog_article_count: 0
@@ -20145,7 +20591,8 @@ person_400348:
   website: 
   youtube_id: 
 person_412519: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000599
   birthday: 1972-08-25
   blog_article_count: 0
@@ -20190,7 +20637,8 @@ person_412519:
   website: 
   youtube_id: 
 person_412449: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000594
   birthday: 1973-11-27
   blog_article_count: 0
@@ -20235,7 +20683,8 @@ person_412449:
   website: 
   youtube_id: 
 person_400349: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000576
   birthday: 1946-01-31
   blog_article_count: 0
@@ -20280,7 +20729,8 @@ person_400349:
   website: 
   youtube_id: 
 person_400350: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000515
   birthday: 1946-11-23
   blog_article_count: 0
@@ -20325,7 +20775,8 @@ person_400350:
   website: 
   youtube_id: 
 person_400352: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000577
   birthday: 1973-07-16
   blog_article_count: 0
@@ -20370,7 +20821,8 @@ person_400352:
   website: 
   youtube_id: 
 person_400351: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: R000570
   birthday: 1970-01-29
   blog_article_count: 0
@@ -20415,7 +20867,8 @@ person_400351:
   website: 
   youtube_id: 
 person_412312: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001177
   birthday: 1955-01-19
   blog_article_count: 0
@@ -20460,7 +20913,8 @@ person_412312:
   website: 
   youtube_id: 
 person_400606: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000018
   birthday: 1958-01-21
   blog_article_count: 0
@@ -20506,7 +20960,8 @@ person_400606:
   website: 
   youtube_id: 
 person_400356: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000030
   birthday: 1960-01-07
   blog_article_count: 0
@@ -20551,7 +21006,8 @@ person_400356:
   website: 
   youtube_id: 
 person_400607: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000051
   birthday: 1960-05-28
   blog_article_count: 0
@@ -20596,7 +21052,8 @@ person_400607:
   website: 
   youtube_id: 
 person_412212: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001168
   birthday: 1962-05-22
   blog_article_count: 0
@@ -20641,7 +21098,8 @@ person_412212:
   website: 
   youtube_id: 
 person_412261: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001176
   birthday: 1965-10-06
   blog_article_count: 0
@@ -20686,7 +21144,8 @@ person_412261:
   website: 
   youtube_id: 
 person_400360: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001145
   birthday: 1944-05-26
   blog_article_count: 0
@@ -20731,7 +21190,8 @@ person_400360:
   website: 
   youtube_id: 
 person_400361: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001150
   birthday: 1960-06-22
   blog_article_count: 0
@@ -20776,7 +21236,8 @@ person_400361:
   website: 
   youtube_id: 
 person_412534: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001190
   birthday: 1961-08-20
   blog_article_count: 0
@@ -20821,7 +21282,8 @@ person_412534:
   website: 
   youtube_id: 
 person_412314: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001179
   birthday: 1981-05-28
   blog_article_count: 0
@@ -20866,7 +21328,8 @@ person_412314:
   website: 
   youtube_id: 
 person_412315: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001180
   birthday: 1951-10-19
   blog_article_count: 0
@@ -20911,7 +21374,8 @@ person_412315:
   website: 
   youtube_id: 
 person_400647: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001162
   birthday: 1948-10-03
   blog_article_count: 0
@@ -20957,7 +21421,8 @@ person_400647:
   website: 
   youtube_id: 
 person_412399: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001183
   birthday: 1962-03-03
   blog_article_count: 0
@@ -21003,7 +21468,8 @@ person_412399:
   website: 
   youtube_id: 
 person_412417: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001189
   birthday: 1969-12-10
   blog_article_count: 0
@@ -21048,7 +21514,8 @@ person_412417:
   website: 
   youtube_id: 
 person_400364: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000185
   birthday: 1947-04-30
   blog_article_count: 0
@@ -21093,7 +21560,8 @@ person_400364:
   website: 
   youtube_id: 
 person_400363: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001157
   birthday: 1945-06-27
   blog_article_count: 0
@@ -21138,7 +21606,8 @@ person_400363:
   website: 
   youtube_id: 
 person_400365: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000244
   birthday: 1943-06-14
   blog_article_count: 0
@@ -21183,7 +21652,8 @@ person_400365:
   website: 
   youtube_id: 
 person_400366: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000248
   birthday: 1943-10-24
   blog_article_count: 0
@@ -21228,7 +21698,8 @@ person_400366:
   website: 
   youtube_id: 
 person_400367: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000250
   birthday: 1955-03-22
   blog_article_count: 0
@@ -21273,7 +21744,8 @@ person_400367:
   website: 
   youtube_id: 
 person_412396: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001185
   birthday: 1965-01-01
   blog_article_count: 0
@@ -21318,7 +21790,8 @@ person_412396:
   website: 
   youtube_id: 
 person_412219: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001170
   birthday: 1952-12-02
   blog_article_count: 0
@@ -21363,7 +21836,8 @@ person_412219:
   website: 
   youtube_id: 
 person_400371: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000344
   birthday: 1954-10-24
   blog_article_count: 0
@@ -21408,7 +21882,8 @@ person_400371:
   website: 
   youtube_id: 
 person_400373: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000364
   birthday: 1958-02-21
   blog_article_count: 0
@@ -21453,7 +21928,8 @@ person_400373:
   website: 
   youtube_id: 
 person_409888: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001154
   birthday: 1961-01-10
   blog_article_count: 0
@@ -21498,7 +21974,8 @@ person_409888:
   website: 
   youtube_id: 
 person_400376: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001148
   birthday: 1950-09-08
   blog_article_count: 0
@@ -21543,7 +22020,8 @@ person_400376:
   website: 
   youtube_id: 
 person_412509: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001191
   birthday: 1976-07-12
   blog_article_count: 0
@@ -21588,7 +22066,8 @@ person_412509:
   website: 
   youtube_id: 
 person_412186: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001165
   birthday: 1951-01-26
   blog_article_count: 0
@@ -21633,7 +22112,8 @@ person_412186:
   website: 
   youtube_id: 
 person_400378: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000480
   birthday: 1929-08-14
   blog_article_count: 0
@@ -21678,7 +22158,8 @@ person_400378:
   website: 
   youtube_id: 
 person_412217: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001172
   birthday: 1970-12-19
   blog_article_count: 0
@@ -21723,7 +22204,8 @@ person_412217:
   website: 
   youtube_id: 
 person_412596: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001195
   birthday: 1980-06-16
   blog_article_count: 0
@@ -21768,7 +22250,8 @@ person_412596:
   website: 
   youtube_id: 
 person_400381: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000583
   birthday: 1947-11-19
   blog_article_count: 0
@@ -21813,7 +22296,8 @@ person_400381:
   website: 
   youtube_id: 
 person_400380: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000522
   birthday: 1953-03-04
   blog_article_count: 0
@@ -21858,7 +22342,8 @@ person_400380:
   website: 
   youtube_id: 
 person_400379: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000510
   birthday: 1965-06-15
   blog_article_count: 0
@@ -21903,7 +22388,8 @@ person_400379:
   website: 
   youtube_id: 
 person_412408: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001186
   birthday: 1965-10-10
   blog_article_count: 0
@@ -21948,7 +22434,8 @@ person_412408:
   website: 
   youtube_id: 
 person_412259: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001175
   birthday: 1950-05-14
   blog_article_count: 0
@@ -21993,7 +22480,8 @@ person_412259:
   website: 
   youtube_id: 
 person_412581: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001192
   birthday: 1960-07-15
   blog_article_count: 0
@@ -22038,7 +22526,8 @@ person_412581:
   website: 
   youtube_id: 
 person_412461: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001187
   birthday: 1965-03-24
   blog_article_count: 0
@@ -22083,7 +22572,8 @@ person_412461:
   website: 
   youtube_id: 
 person_410396: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S000937
   birthday: 1956-11-14
   blog_article_count: 0
@@ -22129,7 +22619,8 @@ person_410396:
   website: 
   youtube_id: 
 person_412392: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001188
   birthday: 1976-08-31
   blog_article_count: 0
@@ -22175,7 +22666,8 @@ person_412392:
   website: 
   youtube_id: 
 person_412514: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001193
   birthday: 1980-11-16
   blog_article_count: 0
@@ -22220,7 +22712,8 @@ person_412514:
   website: 
   youtube_id: 
 person_400355: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: S001156
   birthday: 1969-01-28
   blog_article_count: 0
@@ -22265,7 +22758,8 @@ person_400355:
   website: 
   youtube_id: 
 person_412520: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000472
   birthday: 1960-12-10
   blog_article_count: 0
@@ -22310,7 +22804,8 @@ person_412520:
   website: 
   youtube_id: 
 person_400400: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000459
   birthday: 1962-01-29
   blog_article_count: 0
@@ -22355,7 +22850,8 @@ person_400400:
   website: 
   youtube_id: 
 person_400402: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000193
   birthday: 1948-01-28
   blog_article_count: 0
@@ -22400,7 +22896,8 @@ person_400402:
   website: 
   youtube_id: 
 person_400403: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000460
   birthday: 1951-01-24
   blog_article_count: 0
@@ -22445,7 +22942,8 @@ person_400403:
   website: 
   youtube_id: 
 person_412317: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000467
   birthday: 1959-07-27
   blog_article_count: 0
@@ -22490,7 +22988,8 @@ person_412317:
   website: 
   youtube_id: 
 person_400404: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000238
   birthday: 1958-07-15
   blog_article_count: 0
@@ -22535,7 +23034,8 @@ person_400404:
   website: 
   youtube_id: 
 person_400406: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000462
   birthday: 1962-10-21
   blog_article_count: 0
@@ -22580,7 +23080,8 @@ person_400406:
   website: 
   youtube_id: 
 person_400407: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000266
   birthday: 1951-09-18
   blog_article_count: 0
@@ -22625,7 +23126,8 @@ person_400407:
   website: 
   youtube_id: 
 person_412405: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000470
   birthday: 1956-11-09
   blog_article_count: 0
@@ -22670,7 +23172,8 @@ person_412405:
   website: 
   youtube_id: 
 person_412318: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000468
   birthday: 1950-05-23
   blog_article_count: 0
@@ -22715,7 +23218,8 @@ person_412318:
   website: 
   youtube_id: 
 person_412319: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000469
   birthday: 1949-06-18
   blog_article_count: 0
@@ -22760,7 +23264,8 @@ person_412319:
   website: 
   youtube_id: 
 person_412254: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000465
   birthday: 1946-04-26
   blog_article_count: 0
@@ -22805,7 +23310,8 @@ person_412254:
   website: 
   youtube_id: 
 person_400411: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: T000463
   birthday: 1960-01-11
   blog_article_count: 0
@@ -22851,7 +23357,8 @@ person_400411:
   website: 
   youtube_id: 
 person_400414: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: U000031
   birthday: 1953-04-23
   blog_article_count: 0
@@ -22896,7 +23403,8 @@ person_400414:
   website: 
   youtube_id: 
 person_412515: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: V000129
   birthday: 1977-04-14
   blog_article_count: 0
@@ -22941,7 +23449,8 @@ person_412515:
   website: 
   youtube_id: 
 person_400415: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: V000128
   birthday: 1959-01-10
   blog_article_count: 0
@@ -22986,7 +23495,8 @@ person_400415:
   website: 
   youtube_id: 
 person_412522: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: V000130
   birthday: 1961-03-07
   blog_article_count: 0
@@ -23031,7 +23541,8 @@ person_412522:
   website: 
   youtube_id: 
 person_412579: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: V000131
   birthday: 1971-01-03
   blog_article_count: 0
@@ -23076,7 +23587,8 @@ person_412579:
   website: 
   youtube_id: 
 person_412580: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: V000132
   birthday: 1963-02-13
   blog_article_count: 0
@@ -23121,7 +23633,8 @@ person_412580:
   website: 
   youtube_id: 
 person_400416: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: V000081
   birthday: 1953-03-28
   blog_article_count: 0
@@ -23166,7 +23679,8 @@ person_400416:
   website: 
   youtube_id: 
 person_400417: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: V000108
   birthday: 1949-08-13
   blog_article_count: 0
@@ -23211,7 +23725,8 @@ person_400417:
   website: 
   youtube_id: 
 person_412548: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000812
   birthday: 1962-09-13
   blog_article_count: 0
@@ -23256,7 +23771,8 @@ person_412548:
   website: 
   youtube_id: 
 person_412213: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000798
   birthday: 1951-04-12
   blog_article_count: 0
@@ -23301,7 +23817,8 @@ person_412213:
   website: 
   youtube_id: 
 person_400419: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000791
   birthday: 1957-01-10
   blog_article_count: 0
@@ -23346,7 +23863,8 @@ person_400419:
   website: 
   youtube_id: 
 person_412538: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000813
   birthday: 1963-08-17
   blog_article_count: 0
@@ -23391,7 +23909,8 @@ person_412538:
   website: 
   youtube_id: 
 person_412214: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000799
   birthday: 1964-04-06
   blog_article_count: 0
@@ -23436,7 +23955,8 @@ person_412214:
   website: 
   youtube_id: 
 person_400623: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000797
   birthday: 1966-09-27
   blog_article_count: 0
@@ -23481,7 +24001,8 @@ person_400623:
   website: 
   youtube_id: 
 person_400422: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000187
   birthday: 1938-08-15
   blog_article_count: 0
@@ -23526,7 +24047,8 @@ person_400422:
   website: 
   youtube_id: 
 person_400425: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000215
   birthday: 1939-09-12
   blog_article_count: 0
@@ -23571,7 +24093,8 @@ person_400425:
   website: 
   youtube_id: 
 person_412574: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000814
   birthday: 1953-07-02
   blog_article_count: 0
@@ -23616,7 +24139,8 @@ person_412574:
   website: 
   youtube_id: 
 person_412410: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000806
   birthday: 1949-04-27
   blog_article_count: 0
@@ -23662,7 +24186,8 @@ person_412410:
   website: 
   youtube_id: 
 person_412239: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000800
   birthday: 1947-05-02
   blog_article_count: 0
@@ -23708,7 +24233,8 @@ person_412239:
   website: 
   youtube_id: 
 person_412564: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000815
   birthday: 1958-06-17
   blog_article_count: 0
@@ -23753,7 +24279,8 @@ person_412564:
   website: 
   youtube_id: 
 person_400627: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000796
   birthday: 1950-04-02
   blog_article_count: 0
@@ -23798,7 +24325,8 @@ person_400627:
   website: 
   youtube_id: 
 person_400431: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000413
   birthday: 1943-05-25
   blog_article_count: 0
@@ -23843,7 +24371,8 @@ person_400431:
   website: 
   youtube_id: 
 person_412578: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000816
   birthday: 1949-09-13
   blog_article_count: 0
@@ -23889,7 +24418,8 @@ person_412578:
   website: 
   youtube_id: 
 person_400433: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000795
   birthday: 1947-07-31
   blog_article_count: 0
@@ -23934,7 +24464,8 @@ person_400433:
   website: 
   youtube_id: 
 person_412412: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000808
   birthday: 1942-11-05
   blog_article_count: 0
@@ -23979,7 +24510,8 @@ person_412412:
   website: 
   youtube_id: 
 person_412255: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000804
   birthday: 1959-02-03
   blog_article_count: 0
@@ -24024,7 +24556,8 @@ person_412255:
   website: 
   youtube_id: 
 person_400435: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000672
   birthday: 1939-01-30
   blog_article_count: 0
@@ -24069,7 +24602,8 @@ person_400435:
   website: 
   youtube_id: 
 person_412402: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000809
   birthday: 1957-02-18
   blog_article_count: 0
@@ -24114,7 +24648,8 @@ person_412402:
   website: 
   youtube_id: 
 person_412416: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: W000810
   birthday: 1970-02-11
   blog_article_count: 0
@@ -24159,7 +24694,8 @@ person_412416:
   website: 
   youtube_id: 
 person_412211: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: Y000062
   birthday: 1947-11-04
   blog_article_count: 0
@@ -24204,7 +24740,8 @@ person_412211:
   website: 
   youtube_id: 
 person_412430: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: Y000063
   birthday: 1976-01-08
   blog_article_count: 0
@@ -24249,7 +24786,8 @@ person_412430:
   website: 
   youtube_id: 
 person_412525: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: Y000065
   birthday: 1955-04-13
   blog_article_count: 0
@@ -24294,7 +24832,8 @@ person_412525:
   website: 
   youtube_id: 
 person_412428: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: Y000064
   birthday: 1972-08-24
   blog_article_count: 0
@@ -24339,7 +24878,8 @@ person_412428:
   website: 
   youtube_id: 
 person_400440: 
-  biography: 
+  biography:
+  contactable: true
   bioguideid: Y000033
   birthday: 1933-06-09
   blog_article_count: 0

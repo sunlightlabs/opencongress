@@ -71,6 +71,7 @@ class EmailCongressController < ApplicationController
           :message_body => @email.text_body,
           :recipient_email => @email.from_email
         }).deliver
+        Raven.capture_message "sent #{@email.from_email} a message about uncontactable recipient #{r.name}"
       end
       return head :ok unless @recipients.any?
     end

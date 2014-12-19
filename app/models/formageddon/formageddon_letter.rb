@@ -44,6 +44,7 @@ class Formageddon::FormageddonLetter
           :message_body => self.message,
           :recipient_email => self.formageddon_thread.sender_email
         }).deliver
+      Raven.capture_message "sent #{self.formageddon_thread.sender_email} a message about uncontactable recipient #{recipient.name}"
       return false
     end
 

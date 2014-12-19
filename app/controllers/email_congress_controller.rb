@@ -63,16 +63,13 @@ class EmailCongressController < ApplicationController
       Raven.capture_message "#{@email.from} tried to send an HTML only email"
       return head :ok
     end
-    
-    if @uncontactable_recipients.any? && @email.to.downcase != "myreps@opencongress.org"
-      @uncontactable_recipients.each do |r|     
-        ContactCongressMailer.will_not_send_email({
-          :elected_official_name => r.name,
-          :message_body => @email.text_body,
-          :recipient_email => @email.from_email
-        }).deliver
-        Raven.capture_message "sent #{@email.from_email} a message about uncontactable recipient #{r.name}"
-      end
+
+    if @uncontactable_recipients.any?
+      send_warning_emails({
+        uncontactable_officials: @uncontactable_recipients,
+        contactable_officials: @recipients,
+        incoming_email: @email
+      })
       return head :ok unless @recipients.any?
     end
 
@@ -122,6 +119,9 @@ class EmailCongressController < ApplicationController
       cc_letter.formageddon_threads.each do |thread|
         letter = thread.formageddon_letters.first
         if letter then letter.delay.send_letter() end
+      end
+      if @uncontactable_recipients.any?
+        flash[:notice] = "Unfortunately, we don't yet have working contacts for #{@uncontactable_recipients.map(&:name).to_sentence}, so we cannot send your message to #{@uncontactable_recipients.count} of your recipients."
       end
       @seed.confirm!
       return redirect_to(:action => :confirmed, :confirmation_code => @seed.confirmation_code)
@@ -295,6 +295,27 @@ class EmailCongressController < ApplicationController
 
   def only_unresolved
     return render_404 if @seed.resolved
+  end
+
+  def send_warning_emails(options={})
+    if options[:incoming_email].to.downcase == "myreps@opencongress.org"
+      ContactCongressMailer.will_not_send_email_to_all_myreps({
+        :uncontactable_officials => options[:uncontactable_officials],
+        :contactable_officials => options[:contactable_officials],
+        :message_body => @email.text_body,
+        :recipient_email => @email.from_email
+      }).deliver
+      Raven.capture_message "sent #{@email.from_email} a message about uncontactable parts of myreps (#{options[:uncontactable_officials].map(&:name)})"
+    else
+      options[:uncontactable_officials].each do |r|
+        ContactCongressMailer.will_not_send_email({
+          :uncontactable_official => r,
+          :message_body => @email.text_body,
+          :recipient_email => @email.from_email
+        }).deliver
+        Raven.capture_message "sent #{@email.from_email} a message about uncontactable recipient #{r.name}"
+      end
+    end
   end
 
   def logout_current_user_and_return

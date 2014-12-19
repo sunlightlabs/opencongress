@@ -40,7 +40,7 @@ class Formageddon::FormageddonLetter
       self.status = 'ERROR: noncontactable recipient'
       OCLogger.log("#{self.status} -- Formageddon::FormageddonThread.find(#{formageddon_thread.id})")
       ContactCongressMailer.will_not_send_email({
-          :elected_official_name => recipient.name,
+          :uncontactable_official => recipient,
           :message_body => self.message,
           :recipient_email => self.formageddon_thread.sender_email
         }).deliver

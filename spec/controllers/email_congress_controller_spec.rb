@@ -104,7 +104,24 @@ describe EmailCongressController do
       message = ActionMailer::Base.deliveries.last
       assert_match(/^Sorry! OpenCongress could not send your message/, message.subject)
     end
+
+    it 'should send a warning email to people that email myreps when one of their reps is uncontactable' do
+      @target = Person.where(firstname: "Richard", lastname: "Shelby").first
+      @target.contactable = false; @target.save!
+      email = incoming_email({
+        "To" => at_email_congress('myreps'),
+        "ToFull" => [ { "Name" => "", "Email" => at_email_congress('myreps') } ],
+        "From" => @user.email,
+        "FromFull" => {"Name" => @user.full_name, "Email" => @user.email},
+        "TextBody" => "Hello, world!"
+      })
+      request.env['RAW_POST_DATA'] = JSON.dump(email)
+      post(:message_to_members)
+      message = ActionMailer::Base.deliveries[-2]
+      assert_match(/^Sorry! OpenCongress could not send your message to every recipient/, message.subject)
+    end
   end
+
   describe 'New users' do
     it 'no_bounce_for_illegitimate_recipients_for_new_user' do
 	    delivery_count_before = ActionMailer::Base.deliveries.length

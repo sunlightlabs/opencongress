@@ -320,7 +320,7 @@ class Person < Bookmarkable
  #                        chamber, Date.today, Date.today])
  #  end
 
-  def self.list_chamber(chamber, congress, order, limit = nil, filter)
+  def self.list_chamber(chamber, congress, order, limit = nil, filter = '')
     select("people.*, count(bills.id) as bills_count")
     .joins(:bills)
     .where('bills.session = ? AND bills.sponsor_id = people.id', congress)

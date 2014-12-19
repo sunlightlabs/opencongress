@@ -1,4 +1,4 @@
-class RepresentativesController < ApplicationController
+class ChambersController < ApplicationController
   before_filter :committee_meetings, :people_by_chamber, :committees
   
   def senate

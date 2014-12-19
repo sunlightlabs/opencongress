@@ -201,6 +201,10 @@ class ApplicationController < ActionController::Base
     params[:congress] ? params[:congress].to_i : Settings.default_congress
   end
 
+  def congress_in_session
+    CongressSession.
+  end
+
   private
 
   ##

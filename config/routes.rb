@@ -322,8 +322,8 @@ OpenCongress::Application.routes.draw do
     f.match 'terms' => 'about#terms'
     f.match 'howtouse' => 'about#howtouse'
     f.match '/userguide' => redirect("/howtouse")
-    f.match '/senate', to: 'representatives#senate'
-    f.match '/house', to: 'representatives#house'
+    f.match '/senate', to: 'chambers#senate'
+    f.match '/house', to: 'chambers#house'
   end
 
   resources :contact, :only => [:index, :create]

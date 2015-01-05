@@ -305,10 +305,9 @@ class Person < ActiveRecord::Base
                              ORDER BY view_count DESC) aggregates
                             ON people.id=aggregates.aggregatable_id
     WHERE roles.role_type = ?
-      AND (roles.startdate <= ?
-            AND roles.enddate >= ?)
+      AND (roles.enddate >= ?)
  ORDER BY #{order} #{lim};",
-   chamber, Date.today, Date.today])
+   chamber, Date.today])
   end
 
   def Person.rep_random_news(limit = 1, since = Settings.default_count_time)

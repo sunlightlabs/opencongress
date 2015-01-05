@@ -1,2 +1,5 @@
 <h1>Senate</h1>
-<%= current_congress %>
+<p>
+  Currently <%= in_session?('senate') ? "" : "not" %> in session
+  <%= current_congress %>
+</p>

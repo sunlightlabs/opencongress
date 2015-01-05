@@ -963,11 +963,15 @@ EOT
     render :partial => "#{topic.class.name.pluralize.underscore}/topic", :object => topic
   end
 
-  def senate_in_session?
-    !CongressSession.senate_session.nil?
-  end
-
-  def house_in_session?
-    !CongressSession.house_session.nil?
+  def in_session?(chamber)
+    begin
+      if chamber == 'senate'
+        CongressSession.senate_session(Date.today).today?
+      else
+        CongressSession.house_session(Date.today).today? 
+      end
+    rescue
+      false
+    end
   end
 end

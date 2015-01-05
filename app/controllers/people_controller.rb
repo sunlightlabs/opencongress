@@ -77,11 +77,11 @@ class PeopleController < ApplicationController
 
     @show_tracked_list = true
     @title_desc = SiteText.find_title_desc(person_type == 'sen' ? 'people_senator_list' : 'people_representative_list')
-    with_random_news = @people.select{|p| p.news_count.to_i > 0}.sample
-    with_random_blogs = @people.select{|p| p.blog_count.to_i > 0}.sample
+    #with_random_news = @people.select{|p| p.news_count.to_i > 0}.sample
+    #with_random_blogs = @people.select{|p| p.blog_count.to_i > 0}.sample
     random_news, random_blogs = [[nil,nil],[nil,nil]]
-    random_news = Person.random_commentary(with_random_news.id, "news", 1, Settings.default_count_time) if with_random_news
-    random_blogs = Person.random_commentary(with_random_blogs.id, "blog", 1, Settings.default_count_time) if with_random_blogs
+    #random_news = Person.random_commentary(with_random_news.id, "news", 1, Settings.default_count_time) if with_random_news
+    #random_blogs = Person.random_commentary(with_random_blogs.id, "blog", 1, Settings.default_count_time) if with_random_blogs
 
     @carousel = [random_news, random_blogs, @people.sort{|a,b| b.view_count.to_i <=> a.view_count.to_i}[0..9]]
 

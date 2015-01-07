@@ -16,7 +16,7 @@ else
 fi
 
 if [ -z "$congress" ]; then
-  congress=113
+  congress=114
 fi
 
 if [ ! -d "$data/govtrack" ]

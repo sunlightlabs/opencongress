@@ -337,7 +337,7 @@ namespace :update do
     "import:legislators:current", "import:bills:current",
     :amendments,
     :roll_calls,
-    :committees, :committee_memberships,
+    :committees,
     :committee_reports, :committee_meetings,
     :person_voting_similarities, :sponsored_bill_stats,
     :in_session,

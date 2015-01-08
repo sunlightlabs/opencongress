@@ -65,9 +65,9 @@ module UnitedStates
       leg_person.govtrack_id = leg_hash['id']['govtrack']
       leg_person.thomas_id = leg_hash['id']['thomas']
       leg_person.fec_id = leg_hash['id']['fec']
-      unless leg_hash['id']['fec'].nil?
-        leg_hash['id']['fec'].each{|id| leg_person.add_fec_id(id)}
-      end
+      #unless leg_hash['id']['fec'].nil?
+      #  leg_hash['id']['fec'].each{|id| leg_person.add_fec_id(id)}
+      #end
       leg_person.lis_id = leg_hash['id']['lis']
       leg_person.cspan_id = leg_hash['id']['cspan']
       leg_person.bioguideid = leg_hash['id']['bioguide']

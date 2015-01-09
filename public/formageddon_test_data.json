@@ -1,4 +1,23 @@
 {
+    "S001196" : {
+        "example_address": "65 North Main Street",
+        "example_city": "Broadalbin",
+        "example_state": "NY",
+        "zip5": "12025",
+        "zip4": "9999",
+        "example_district": "21",
+        "type": "Rep",
+        "name": "Elise Stefanik"
+    },
+    "A000371": {
+        "example_address": "108 North E Street",
+        "example_city": "San Bernardino",
+        "example_state": "CA",
+        "zip5": "92401",
+        "example_district": "31",
+        "type": "Rep",
+        "name": "Pete Aguilar"
+    }
     "A000055": {
         "example_address": "1011 George Wallace Boulevard",
         "example_city": "Tuscumbia",

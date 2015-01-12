@@ -1,12 +1,13 @@
 require 'o_c_logger'
+require 'system_utils'
 
 namespace :images do
   desc "Fetches legislator photos from unitedstates/images and copies them to legislator_images"
   task :get_unitedstates => :environment do
     begin
-      clone_path = File.join(Settings.data_path, '/unitedstates/images')
+      clone_path = File.join(Settings.data_path, '/unitedstates-images')
       repo_url = 'https://github.com/unitedstates/images.git'
-      clone_or_update(repo_url, clone_path)
+      SystemUtils::clone_or_update(repo_url, clone_path)
       `cp #{clone_path}/congress/original/* #{Settings.data_path}/legislator_images`
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))

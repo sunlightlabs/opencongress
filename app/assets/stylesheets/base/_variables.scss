@@ -3,7 +3,7 @@
 // ------------------------------
 
 // Max width
-$max-width:             60em !default;  // 16px * 60 = 960px
+$max-width:             80em !default;  // 16px * 80 = 1280px
 
 
 // ------------------------------
@@ -11,25 +11,19 @@ $max-width:             60em !default;  // 16px * 60 = 960px
 // ------------------------------
 
 // Type settings
-$base-font-family:      "proxima-nova",sans-serif;
+$base-font-family:      "proxima-nova", sans-serif;
 $base-font-size:        16px !default;
 $base-line-height:      24px !default;
 
 // Headings scale
-$giga-size:             90px !default;
-$mega-size:             72px !default;
-$kilo-size:             60px !default;
-
-$h1-size:               48px !default; // .alpha
-$h2-size:               36px !default; // .beta
-$h3-size:               24px !default; // .gamma
-$h4-size:               21px !default; // .delta
-$h5-size:               18px !default; // .epsilon
-$h6-size:               16px !default; // .zeta
+$alpha:               48px !default; // .alpha
+$beta:               36px !default; // .beta
+$gamma:               24px !default; // .gamma
+$delta:               21px !default; // .delta
+$epsilon:               18px !default; // .epsilon
 
 // Text helpers
-$milli-size:            14px !default;
-$micro-size:            12px !default;
+$micro-size:            11px !default;
 
 
 
@@ -65,7 +59,7 @@ $green:                 #61CE92;
 
 // Roundedness
 $radius:                0.1875rem;
-$round:                 200px;
+$round:                 50%;
 
 
 // -------------------------------

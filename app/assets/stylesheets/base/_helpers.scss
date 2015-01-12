@@ -66,23 +66,23 @@
   margin-bottom: 0 !important;
 }
 .quarter-margin-bottom {
-  @include rem('margin-bottom', $base-spacing-unit/4);
+  margin-bottom: $base-spacing-unit/4;
 }
 .half-margin-bottom {
-  @include rem('margin-bottom', $base-spacing-unit/2);
+  margin-bottom: $base-spacing-unit/2;
 }
 .base-margin-bottom {
-  @include rem('margin-bottom', $base-spacing-unit);
+  margin-bottom: $base-spacing-unit;
 }
 
 .quarter-margin-top {
-  @include rem('margin-top', $base-spacing-unit/4);
+  margin-top: $base-spacing-unit/4;
 }
 .half-margin-top {
-  @include rem('margin-top', $base-spacing-unit/2);
+  margin-top: $base-spacing-unit/2;
 }
 .base-margin-top {
-  @include rem('margin-top', $base-spacing-unit);
+  margin-top: $base-spacing-unit;
 }
 
 // ------------------------------

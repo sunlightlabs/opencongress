@@ -5,6 +5,13 @@ namespace :update do
   def mkdir_guard (path)
     (Dir.mkdir path) unless (Dir.exists? path)
   end
+  
+  desc "Grabs legislator test addresses for sending messages via their webforms"
+  task :congress_zip_plus_four => :environment do
+    clone_path = File.join(Settings.data_path, 'congress-zip-plus-four')
+    repo_url = 'git://github.com/EFForg/congress-zip-plus-four.git'
+    SystemUtils::clone_or_update repo_url, clone_path
+  end
 
   desc "Clones the @unitedstates/congress-legislators repository"
   task :congress_legislators => :environment do

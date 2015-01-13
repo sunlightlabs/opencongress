@@ -74,6 +74,10 @@ button, .button, .alert {
   border-radius: 10px;
 }
 
+///////////////////////////////////
+// creates button color classes  //
+// from the $button-colors list  //
+///////////////////////////////////
 
 @each $fill in $button-colors {
   @each $border in $button-colors{
@@ -81,10 +85,11 @@ button, .button, .alert {
   }
 }
 
+// Extends classes built from loop above
+
 .card-cta-button {
   @extend .transparent-and-yellow;
   font-size: $micro-size;
-
 }
 
 .load-more-button {

@@ -15,4 +15,66 @@ $delta:               21px !default; // .delta
 $epsilon:               18px !default; // .epsilon
 
 // Text helpers
-$micro-size:            11px !default;
+$micro-size:            14px !default;
+$nano-size:            11px !default;
+
+
+// Font Size Classes
+
+.alpha {
+    font-size: $alpha;
+}
+
+.beta {
+    font-size: $beta;
+}
+
+.gamma {
+    font-size: $gamma;
+}
+
+.delta {
+    font-size: $delta;
+}
+
+.epsilon {
+    font-size: $epsilon;
+}
+
+.micro-size {
+    font-size: $micro-size;
+}
+
+
+// Font weight classes
+
+.normal { font-weight: 400;}
+.bold { font-weight: 700;}
+.semibold {font-weight: 500;}
+.light {font-weight: 300;}
+
+// code
+.code {
+  font-family: Courier, "Courier New", monospace;
+}
+
+// Header classes
+
+.overview-heading {
+    @extend .gamma;
+    @extend .bold;
+    text-transform: uppercase;
+}
+
+.section-heading {
+    @extend .beta;
+    @extend .light;
+}
+
+.card-title {
+    @extend .bold;
+}
+
+.rep-card-name {
+    @extend .delta;
+}

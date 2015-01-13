@@ -10,14 +10,15 @@
 
 // Document default styles
 html {
-  font-size: ($base-font-size/16px) * 1em;
-  font-weight: 300;
+  font-size: $base-font-size;
+  // font-weight: 300;
   color: $text-color;
   overflow-y: scroll;
   min-height: 100%;
 }
 
 body {
+  font-size: $base-font-size;
   width: $max-width;
   margin: auto;
   padding: 15px;
@@ -26,25 +27,11 @@ body {
 
 // Default link styles
 a {
-  color: $blue;
+  color: #236cb5;
 
   &:hover {
-    color: shade($blue, 10%)
+    color: shade(#236cb5, 10%)
   }
-}
-
-h1 {
-  font-size: $h1-size;
-  @include rem('margin-bottom', $base-spacing-unit)
-}
-
-h2 {
-  font-family: "ff-tisa-web-pro",serif;
-  font-size: $h2-size;
-}
-
-h3 {
-  font-size: $h3-size;
 }
 
 hr {

@@ -7,3 +7,13 @@
 .margin-left {
     margin-left: 16px;
 }
+.show-grid {
+    background: #ddd;
+    padding: 16px;
+}
+
+.show-grid [class^=col-] div {
+    background: #ccc;
+    padding: 16px;
+
+}

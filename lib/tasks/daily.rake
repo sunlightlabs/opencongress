@@ -1,35 +1,23 @@
 require 'o_c_logger'
+require 'system_utils'
 
 namespace :update do
   def mkdir_guard (path)
     (Dir.mkdir path) unless (Dir.exists? path)
   end
 
-  def clone_or_update (url, dest)
-    if Dir.exist? dest
-      cmd = "cd #{dest} && git pull"
-      OCLogger.log cmd
-      system cmd
-    else
-      mkdir_guard dest
-      cmd = "git clone #{url} #{dest}"
-      OCLogger.log cmd
-      system cmd
-    end
-  end
-
   desc "Clones the @unitedstates/congress-legislators repository"
   task :congress_legislators => :environment do
     clone_path = File.join(Settings.data_path, 'congress-legislators')
     repo_url = 'git://github.com/unitedstates/congress-legislators.git'
-    clone_or_update repo_url, clone_path
+    SystemUtils::clone_or_update repo_url, clone_path
   end
 
   desc "Clones the @unitedstates/contact_congress repository"
   task :contact_congress_data => :environment do
     clone_path = File.join(Settings.data_path, 'contact-congress')
     repo_url = 'git://github.com/unitedstates/contact-congress.git'
-    clone_or_update repo_url, clone_path
+    SystemUtils::clone_or_update repo_url, clone_path
   end
 
   desc "Sets the in-session status of both chambers of congress for today"
@@ -69,21 +57,6 @@ namespace :update do
       OCLogger.log "rsync with govtrack finished.\n\n"
     rescue Exception => e
       Emailer.rake_error(e, "Error rsyncing govtrack data!").deliver
-      throw e
-    end
-  end
-
-  desc "Fetches legislator photos from govtrack"
-  task :photos => :environment do
-    begin
-      system "bash #{Rails.root}/bin/daily/govtrack-photo-rsync.sh #{Settings.data_path}"
-      system "ln -nfsv #{Settings.data_path}/govtrack/photos #{Rails.root}/public/images/photos"
-    rescue Exception => e
-      if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error updating photos!").deliver
-      else
-        puts "Error updating photos!"
-      end
       throw e
     end
   end
@@ -333,7 +306,7 @@ namespace :update do
   task :all => [
     :unitedstates_rsync, :rsync,
     :congress_legislators,
-    :photos,
+    "images:all",
     "import:legislators:current", "import:bills:current",
     :amendments,
     :roll_calls,

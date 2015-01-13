@@ -18,7 +18,7 @@ jpgs.each do |jpg|
   begin
     person = Person.find(id.to_i)
     found_people = found_people + 1
-    `cp -n /#{Settings.data_path}/govtrack/photos/#{id}.jpeg /#{Settings.data_path}/legislator_images/#{bioguideid}.jpeg`
+    `cp -n /#{Settings.data_path}/govtrack/photos/#{id}.jpeg /#{Settings.data_path}/legislator_images/#{person.bioguideid}.jpg`
   rescue
     OCLogger.log "person not found from GovTrack image id: #{id}"
     missing_people = missing_people + 1

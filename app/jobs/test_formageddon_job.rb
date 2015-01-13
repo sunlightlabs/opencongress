@@ -39,9 +39,20 @@ module TestFormageddonJob
 
   private
 
+  def self.get_legislator_address_data(bioguide)
+    sources = ["#{Rails.root}/public/formageddon_test_data.json", 
+              File.join(Settings.data_path, 'congress-zip-plus-four', 'legislators.json')]
+    
+    sources.each do |path|
+      @@legislators = JSON.parse(File.read(path))
+      return @@legislators[bioguide] if @@legislators.has_key?(bioguide)
+    end
+    
+    nil
+  end
+
   def self.defaults_for(bioguide)
-    @@legislators ||= JSON.parse(File.read("#{Rails.root}/public/formageddon_test_data.json"))
-    leg = @@legislators[bioguide]
+    leg = get_legislator_address_data(bioguide)
     return nil if leg.nil?
     inst = Person.find_by_bioguideid(bioguide)
     {

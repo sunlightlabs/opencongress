@@ -1,7 +1,7 @@
 // Sitewide button stylings
-// 
+//
 // .button        - Base button style
-// 
+//
 // Styleguide 1.1
 
 button, .button, .alert {
@@ -16,17 +16,14 @@ button, .button, .alert {
   cursor: pointer;
   border: none;
   line-height: 1;
-  padding-top: 1em;
-  padding-bottom: 1em;
+  padding-top: .5em;
+  padding-bottom: .5em;
   padding-right: 1.5em;
   padding-left: 1.5em;
   background: shade(#fff, 1%);
   text-align: center;
+  border-radius: $radius;
   margin-bottom: $base-spacing-unit/2;
-
-  &:hover {
-    color: shade(#A3A3A3, 15%);
-  }
 }
 
 // Button sizes
@@ -38,41 +35,22 @@ button, .button, .alert {
 }
 
 .button-huge {
-  @include rem('font-size', $h4-size);
 }
 
 .button-large {
-  @include rem('font-size', $h5-size);
 }
 
 .button-small {
-  @include rem('font-size', $milli-size);
 }
 
 .button-tiny {
-  @include rem('font-size', $micro-size);
-}
-
-// Button colors
-.button-dark-blue {
-  @include button($dark-blue);
-}
-
-.button-blue {
-  @include button($blue);
-}
-
-.button-yellow {
-  @include button($yellow) 
-}
-
-.button-light-blue {
-  @include button($light-blue) 
 }
 
 // Alert buttons
 
 .alert {
+  background: $red;
+  color: $white;
   display: block;
   width: 100%;
   margin-bottom: $base-spacing-unit;
@@ -92,3 +70,24 @@ button, .button, .alert {
    @include button($red);
 }
 
+.rounded-btn{
+  border-radius: 10px;
+}
+
+
+@each $fill in $button-colors {
+  @each $border in $button-colors{
+    .#{nth($fill, 1)}-and-#{nth($border, 1)} { @include make-button(nth($fill,2), nth($border,2))}
+  }
+}
+
+.card-cta-button {
+  @extend .transparent-and-yellow;
+  font-size: $micro-size;
+
+}
+
+.load-more-button {
+  @extend .button-full;
+  background: $light-gray;
+}

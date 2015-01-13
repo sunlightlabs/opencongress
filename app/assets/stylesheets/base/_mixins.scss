@@ -12,17 +12,14 @@
 // Buttons
 // ------------------------------
 
-// Button style mixin
-@mixin button($button-color) {
-  background-color: $button-color;
-  color: white !important;
+// Button colors mixin
+
+@mixin make-button($fill, $border){
+  background-color: $fill;
+  border: 1px solid $border;
 
   &:hover,
   &:focus {
-    background: shade($button-color, 15%);
-    color: white;
-  }
-  &:visited {
-    color: white;
+    border-color: shade($border, 15%);
   }
 }

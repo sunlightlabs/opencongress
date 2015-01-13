@@ -16,8 +16,7 @@ $epsilon:               18px !default; // .epsilon
 
 // Text helpers
 $micro-size:            14px !default;
-$nano-size:            11px !default;
-
+$nano-size:             11px !default;
 
 // Font Size Classes
 
@@ -56,6 +55,12 @@ $nano-size:            11px !default;
 // code
 .code {
   font-family: Courier, "Courier New", monospace;
+}
+
+// helpers
+
+.white-text {
+    color: #fff;
 }
 
 // Header classes

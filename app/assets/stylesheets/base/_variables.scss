@@ -31,6 +31,7 @@ $beige:                 #FAF9F3;
 $red:                   #F7675C;
 $green:                 #61CE92;
 
+$button-colors: (transparent rgba(0,0,0,0)), (white $white), (dark-blue $dark-blue), (light-blue $light-blue), (blue $blue), (yellow, $yellow);
 // ------------------------------
 // UI Styles
 // ------------------------------

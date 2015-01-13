@@ -139,11 +139,11 @@ class Person < ActiveRecord::Base
 
   def photo_path(style = :full, missing = :check_missing)
     if style == :thumb
-      photo_path = "photos/thumbs_42/#{id}.png"
+      photo_path = "photos/thumbs_42/#{bioguideid}.png"
     elsif style == :medium
-      photo_path = "photos/thumbs_73/#{id}.png"
+      photo_path = "photos/thumbs_73/#{bioguideid}.png"
     else
-      photo_path = "photos/thumbs_102/#{id}.png" # :full
+      photo_path = "photos/thumbs_102/#{bioguideid}.png" # :full
     end
 
     if missing == :ignore_missing || File.exists?(File.join(Rails.root, 'public', 'images', photo_path))

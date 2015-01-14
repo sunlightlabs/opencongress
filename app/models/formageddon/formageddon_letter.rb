@@ -56,37 +56,55 @@ class Formageddon::FormageddonLetter
       end
       return false if recipient.nil?
     end
+    
+   options = [{user_agent_alias: 'Windows IE 7',follow_meta_refresh: true },
+              {user_agent_alias: 'Windows IE 7',follow_meta_refresh: false }]
 
-    browser = Mechanize.new
-    browser.user_agent_alias = "Windows IE 7"
-    browser.follow_meta_refresh = true
+    options.each.with_index(1) do |opts, index|
+      
+      # try different mechanize configurations
+      browser = Mechanize.new {|config| opts.each {|k,v| config.send(k.to_s + '=',v) } }
 
-    case status
-    when 'START', 'RETRY'
-      return recipient.execute_contact_steps(browser, self)
-    when 'TRYING_CAPTCHA', 'RETRY_STEP'
-      attempt = formageddon_delivery_attempts.last
+      # execute steps for delivery attempts based on status of letter
+      case status
+        when 'START', 'RETRY'
+          steps = recipient.execute_contact_steps(browser, self)
+        when 'TRYING_CAPTCHA', 'RETRY_STEP'
+          attempt = formageddon_delivery_attempts.last
 
-      if status == 'TRYING_CAPTCHA' and ! %w(CAPTCHA_REQUIRED CAPTCHA_WRONG).include? attempt.result
-        # weird state, abort
-        return false
+          if status == 'TRYING_CAPTCHA' and ! %w(CAPTCHA_REQUIRED CAPTCHA_WRONG).include? attempt.result
+            # weird state, abort
+            return false
+          end
+
+          browser = (attempt.result == 'CAPTCHA_WRONG') ? attempt.rebuild_browser(browser, "after") : attempt.rebuild_browser(browser, "before")
+
+          if options[:captcha_solution]
+            @captcha_solution = options[:captcha_solution]
+          end
+
+          steps = recipient.execute_contact_steps(browser, self, attempt.letter_contact_step)
       end
 
-      browser = (attempt.result == 'CAPTCHA_WRONG') ? attempt.rebuild_browser(browser, 'after') : attempt.rebuild_browser(browser, 'before')
-
-      if options[:captcha_solution]
-        @captcha_solution = options[:captcha_solution]
-        @captcha_browser_state = attempt.captcha_browser_state
+      # reload this letter and return the steps if they were successful
+      self.reload
+      if self.status == 'SENT'
+        return steps
+      elsif self.status =~ /(.*ERROR.*|.*WARNING.*)/ and not index == options.size
+        self.status = 'RETRY'
       end
 
-      return recipient.execute_contact_steps(browser, self, attempt.letter_contact_step)
-    when /^ERROR:/
-      if recipient.fax
-        return send_fax :error_msg => status
-      end
     end
-  end
 
+    # fall back effort if everything else fails
+    if recipient.fax.present?
+      send_fax :error_msg => status
+    else
+      steps if defined? steps
+    end
+
+  end
+   
   def send_fax(options={})
     recipient = options.fetch(:recipient, formageddon_thread.formageddon_recipient)
     if recipient.fax.present?

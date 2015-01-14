@@ -334,7 +334,7 @@ OpenCongress::Application.routes.draw do
   
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
-
+  match '/:action(/:id)', :controller => 'styleguide', :via => [:get] , :constraints => { :subdomain => /design/ }  
 
   # root :to => 'index#index', :as => :home
   # Dev homepage

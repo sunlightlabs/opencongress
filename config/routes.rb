@@ -330,11 +330,11 @@ OpenCongress::Application.routes.draw do
 
   
   match ':controller(/:action(/:id))', :via => [:get,:post,:put,:delete]
-  get '/style-guide', to: "index#styleguide"
   
   #match '*path' => 'index#notfound' #unless Rails.application.config.consider_all_requests_local
 
-  match '/:action(/:id)', :controller => 'styleguide', :via => [:get] , :constraints => { :subdomain => /design/ }  
+  get '/', to: 'styleguide#show', :constraints => { :subdomain => /design/ }
+  match '/:action(/:id)', :controller => 'styleguide', :via => [:get], :constraints => { :subdomain => /design/ }
 
   # root :to => 'index#index', :as => :home
   # Dev homepage

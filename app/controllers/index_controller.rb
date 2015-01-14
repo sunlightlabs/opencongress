@@ -120,11 +120,6 @@ class IndexController < ApplicationController
     render :layout => 'application'
   end
 
-  def styleguide
-     @styleguide = Kss::Parser.new("#{Rails.root}/app/assets/stylesheets")
-     render template: "index/buttons"
-  end
-
   protected
 
   def render_popular(type)

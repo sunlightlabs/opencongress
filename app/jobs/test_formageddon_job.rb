@@ -1,8 +1,17 @@
 module TestFormageddonJob
-  def self.perform(bioguide)
+  
+  # Performs test to see if a particular member of congress is contactable via formageddon
+  #
+  # @param identifier [Person, String] person instance or bioguideid
+  # @return [ContactCongressTest] model capturing the results of the test
+  def self.perform(identifier)
+    
     ActiveRecord::Base.transaction do
-      @person = Person.find_by_bioguideid(bioguide)
+      
+      @person = identifier.is_a?(Person) ? identifier : Person.find_by_bioguideid(identifier)
+      bioguide = @person.bioguideid
       @details = defaults_for(bioguide)
+      
       unless @details.nil?
         @details = @details.merge(
           :formageddon_recipient_id => @person.id,
@@ -13,6 +22,7 @@ module TestFormageddonJob
         Raven.capture_message(error_message)
         return false
       end
+      
       @thread = Formageddon::FormageddonThread.create(@details)
       @thread.formageddon_letters << Formageddon::FormageddonLetter.create(
         :direction => "TO_RECIPIENT",
@@ -23,6 +33,7 @@ module TestFormageddonJob
         Thanks for everything you do!
         EOM
       )
+      
       @letter = @thread.formageddon_letters.first
       @letter.send_letter
       @after_html = @letter.formageddon_delivery_attempts.first.after_browser_state.raw_html rescue nil
@@ -39,6 +50,10 @@ module TestFormageddonJob
 
   private
 
+  # Gets address test data for a particular member of congress
+  #
+  # @param bioguide [String] the bioguide identifier for a Person
+  # @return [Hash] address test data
   def self.get_legislator_address_data(bioguide)
     sources = ["#{Rails.root}/public/formageddon_test_data.json", 
               File.join(Settings.data_path, 'congress-zip-plus-four', 'legislators.json')]
@@ -51,6 +66,9 @@ module TestFormageddonJob
     nil
   end
 
+  # Creates Hash for formageddon input defaults for particular Person instance
+  # @param bioguide [String] the bioguide identifier for a Person
+  # @return [Hash] default params to input into formageddon
   def self.defaults_for(bioguide)
     leg = get_legislator_address_data(bioguide)
     return nil if leg.nil?

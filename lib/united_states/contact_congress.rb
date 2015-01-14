@@ -75,9 +75,14 @@ module UnitedStates
     end
 
     # Sets up a person's Formageddon contact environment
-    # person is a Person instance
-    def import_contact_steps_for(person, path)
+    #
+    # @note https://github.com/unitedstates/contact-congress/blob/master/documentation/schema.md
+    # @param person [Person] person instance
+    # @param path [String] path to YAML file defining contact steps
+    # @return [Person, Exception] saved person instance or an exception
+    def import_contact_steps_for(person, path=nil)
       OCLogger.log("Updating steps for #{person.bioguideid}...")
+      path = File.join(Settings.contact_congress_path, 'members', "#{person.bioguideid}.yaml") if path.nil?
       hsh = parse_contact_file(path)
       current_step = nil  # formageddon steps can span multiple directives here, ex. 'fill_in', 'select' and 'click_on'. This acts as a cursor.
       person.formageddon_contact_steps.destroy_all
@@ -85,20 +90,25 @@ module UnitedStates
       steps.each do |step|
 
         step.each do |action, values|
-          next if action == 'find'
+          next if action == 'find' # ignore find for now
 
-          # These steps get grouped together as 'submit_form' in formageddon
-          if ['fill_in', 'select', 'check', 'uncheck', 'choose'].include? action
+          unless ['visit', 'wait'].include? action
+
             # Build a step if it doesn't already exist
             person.formageddon_contact_steps << (current_step = Formageddon::FormageddonContactStep.new(
-              :command => 'submit_form'
+                :command => 'submit_form'
             )) if current_step.nil?
 
             # Build a form if the step doesn't have one, because this is a submit_form step
             current_step.formageddon_form = Formageddon::FormageddonForm.new(
-              :use_field_names => true,
-              :success_string => (hsh['contact_form']['success']['body']['contains'] rescue 'Thank you')
+                :use_field_names => true,
+                :success_string => (hsh['contact_form']['success']['body']['contains'] rescue 'Thank you')
             ) if current_step.formageddon_form.nil?
+
+          end
+
+          # These steps get grouped together as 'submit_form' in formageddon
+          if ['fill_in', 'select', 'check', 'uncheck', 'choose'].include? action
 
             # Map the field values for each item in the step and add a field instance to the form
             form = current_step.formageddon_form

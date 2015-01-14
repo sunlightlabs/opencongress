@@ -12,28 +12,24 @@
 #  submitted_form      :text
 #
 
-class ContactCongressTest < OpenCongressModel
-  scope :latest, -> { select("distinct on (bioguideid) *").order("bioguideid, created_at DESC") }
-  scope :passed, -> { where("status like ?", "SENT") }
-  scope :failed, -> { where("status like ? or status like ?", "%ERROR%", "%SENT_AS_FAX%") }
-  scope :unknown, -> { where("status like ? or status like ?", "%WARNING%", "%START%") }
-  scope :captcha_required, -> { where("status like ?", "%CAPTCHA_REQUIRED%") }
+class ContactCongressTest < ActiveRecord::Base
 
-  class << self
-    def recently_passed
-      latest.to_a.select{|t| t.status =~ /\ASENT\Z/ }
-    end
+  #========== CONSTANTS
 
-    def recently_failed
-      latest.to_a.select{|t| t.status =~ /ERROR|SENT_AS_FAX/ }
-    end
+  STATUSES = {
+    passed: ['SENT'],
+    failed: ['ERROR','SENT_AS_FAX'],
+    unknown: ['WARNING'],
+    captcha_required: ['CAPTCHA_REQUIRED']
+  }
 
-    def recently_unknown
-      latest.to_a.select{|t| t.status =~ /WARNING/ }
-    end
+  #========== SCOPES
 
-    def recently_captcha_required
-      latest.to_a.select{|t| t.status =~ /CAPTCHA_REQUIRED/ }
-    end
+  scope :latest, -> { select('distinct on (bioguideid) *').order('bioguideid, created_at DESC') }
+
+  STATUSES.each do |k,v|
+    scope k, -> { where(v.collect{|i| "status like '%#{i}%'"}.join(' OR ')) }
+    scope ("recently_#{k}".to_sym), -> { latest.send(k) }
   end
+
 end

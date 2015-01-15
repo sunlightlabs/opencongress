@@ -6,10 +6,11 @@ module TestFormageddonJob
   # @return [ContactCongressTest] model capturing the results of the test
   def self.perform(identifier)
     
+    @person = identifier.is_a?(Person) ? identifier : Person.find_by_bioguideid(identifier)
+    bioguide = @person.bioguideid
+    
     ActiveRecord::Base.transaction do
       
-      @person = identifier.is_a?(Person) ? identifier : Person.find_by_bioguideid(identifier)
-      bioguide = @person.bioguideid
       @details = defaults_for(bioguide)
       
       unless @details.nil?

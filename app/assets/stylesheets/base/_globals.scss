@@ -19,7 +19,7 @@ html {
 
 body {
   font-size: $base-font-size;
-  width: $max-width;
+  max-width: $max-width;
   margin: auto;
   padding: 15px;
   background-color: #FFFFFF;

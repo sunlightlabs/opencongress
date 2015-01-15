@@ -1,4 +1,34 @@
 {
+    "C001102": {
+        "example_state": "FL", 
+        "example_address": "804 Nicholas Parkway East Suite 1", 
+        "name": "Curt Clawson", 
+        "example_city": "Cape Coral", 
+        "example_district": "19", 
+        "type": "Rep", 
+        "zip5": "33990", 
+        "zip4": "2811"
+    }, 
+    "N000188": {
+        "example_state": "NJ", 
+        "example_address": "515 Grove Street", 
+        "name": "Donald Norcross", 
+        "example_city": "Haddon Heights", 
+        "example_district": "1", 
+        "type": "Rep", 
+        "zip5": "08035", 
+        "zip4": "1734"
+    }, 
+    "A000370": {
+        "example_state": "NC", 
+        "example_address": "321 West 11th Street", 
+        "name": "Alma Adams", 
+        "example_city": "Charlotte", 
+        "example_district": "12", 
+        "type": "Rep", 
+        "zip5": "28202", 
+        "zip4": "1789"
+    },
     "A000055": {
         "example_address": "1011 George Wallace Boulevard",
         "example_city": "Tuscumbia",

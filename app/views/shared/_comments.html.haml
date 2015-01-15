@@ -25,8 +25,8 @@
 
 - unless logged_in?
   :javascript
-    $j().ready(function() {
-      $j('#login_rate').jqm({ajax:'@href', trigger: 'a.rate_trigger'});
+    $().ready(function() {
+      $('#login_rate').jqm({ajax:'@href', trigger: 'a.rate_trigger'});
     });
 
   #login_rate.jqmWindow

@@ -44,10 +44,10 @@
     %span Close
 
 :javascript
-  var $post_links = $j('.post_tab');
+  var $post_links = $('.post_tab');
   $post_links.click(function() {
     $post_links.removeClass('active');
-    $j(this).addClass('active');
-    var index = $post_links.index($j(this));
-    $j('.post_form').hide().eq(index).show();
+    $(this).addClass('active');
+    var index = $post_links.index($(this));
+    $('.post_form').hide().eq(index).show();
   });

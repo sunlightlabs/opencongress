@@ -20,6 +20,6 @@
         = f.submit 'Add Bill', :class => 'button medium blue'
         = link_to 'Cancel', '#', :class => 'button medium silver', :id => "close_#{position}_#{b.id}"
   :javascript
-    $j().ready(function() {
-      $j('##{position}_#{b.id}').jqm({trigger:'#trigger_#{position}_#{b.id}'}).jqmAddClose('#close_#{position}_#{b.id}');
+    $().ready(function() {
+      $('##{position}_#{b.id}').jqm({trigger:'#trigger_#{position}_#{b.id}'}).jqmAddClose('#close_#{position}_#{b.id}');
     });

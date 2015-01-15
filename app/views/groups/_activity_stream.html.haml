@@ -10,9 +10,9 @@
 
   :javascript
     // this fixes youtube embeds from poking out over modals
-    $j(document).ready(function() {
-      $j('iframe').each(function() {
-        var url = $j(this).attr("src");
-        $j(this).attr("src",url+"?wmode=transparent");
+    $(document).ready(function() {
+      $('iframe').each(function() {
+        var url = $(this).attr("src");
+        $(this).attr("src",url+"?wmode=transparent");
       });
     });

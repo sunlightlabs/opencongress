@@ -1,2 +1,2 @@
-$j(".voting_buttons").html("You voted <%= BillVote::POSITION_CHOICES.invert[@bill_vote.support].to_s %>")
-$j(".voting_buttons").addClass("voted")
+$(".voting_buttons").html("You voted <%= BillVote::POSITION_CHOICES.invert[@bill_vote.support].to_s %>")
+$(".voting_buttons").addClass("voted")

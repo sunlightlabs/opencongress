@@ -8,6 +8,6 @@
     %li.twitter
       %a{ :href => "http://twitter.com/home?status=#{}", :title => "Click to share your letter on Twitter" } Share on Twitter
     :javascript
-      $j().ready(function() {
-        $j('#e_friend').jqm({ajax:'@href', trigger:'a.e_trigger'});
+      $().ready(function() {
+        $('#e_friend').jqm({ajax:'@href', trigger:'a.e_trigger'});
       });

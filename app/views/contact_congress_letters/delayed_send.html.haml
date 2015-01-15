@@ -8,10 +8,10 @@
     = render :partial => 'sending_spinner'
     
 :javascript
-  $j(document).ready(function() {
+  $(document).ready(function() {
     setTimeout(function() {
-      $j('#formageddon_modal').jqm();
-      $j('#formageddon_modal').jqmShow();
+      $('#formageddon_modal').jqm();
+      $('#formageddon_modal').jqmShow();
       $j.ajax({
         url: '#{url_for :controller => "formageddon/delivery_attempts", :action => "show", :format => "js", :letter_ids => @letter_ids}'
       });

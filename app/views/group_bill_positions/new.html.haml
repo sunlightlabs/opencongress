@@ -9,9 +9,9 @@
   #bill_lookup
   
   :javascript
-    $j('#bill_number_button').click(function() {
+    $('#bill_number_button').click(function() {
       $j.ajax({
-        url: '#{new_group_group_bill_position_path(@group, :format => 'js')}?number=' + $j('#bill_number_field').val() + '&congress=#{Settings.default_congress}'
+        url: '#{new_group_group_bill_position_path(@group, :format => 'js')}?number=' + $('#bill_number_field').val() + '&congress=#{Settings.default_congress}'
       });
 
       return false;

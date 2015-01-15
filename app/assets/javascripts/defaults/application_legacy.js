@@ -2,7 +2,7 @@
 // This file is automatically included by javascript_include_tag :defaults
 function openRollCallOverlay(div_id)
 {
-  $j('#'+div_id).jqmShow();
+  $('#'+div_id).jqmShow();
 }
 function replace(new_id, old_id)
 {
@@ -121,10 +121,10 @@ NotebookForm = {
   },
 
   hideAllForms: function(){
-    $j('#add-link').jqmHide();
-    $j('#add-video').jqmHide();
-    $j('#add-note').jqmHide();
-    $j('#add-file').jqmHide();
+    $('#add-link').jqmHide();
+    $('#add-video').jqmHide();
+    $('#add-note').jqmHide();
+    $('#add-file').jqmHide();
   },
 
   hideAllFormsOld: function(){

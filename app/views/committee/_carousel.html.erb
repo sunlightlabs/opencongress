@@ -19,8 +19,8 @@ function mycarousel_initCallback(carousel)
 	});
 };
 
-$j(document).ready(function() {
-	$j('#committee_carousel').jcarousel({
+$(document).ready(function() {
+	$('#committee_carousel').jcarousel({
 		auto: <%= (@carousel.length/2.0).ceil %>,
 		wrap: 'last',
 		initCallback: mycarousel_initCallback

@@ -7,8 +7,8 @@
 <% end %> 
 
 	<script type='text/javascript'>
-	$j().ready(function() {
-		$j('#bill_titles').jqm({trigger:'a.titles_trigger'});
+	$().ready(function() {
+		$('#bill_titles').jqm({trigger:'a.titles_trigger'});
 	});
 	</script>
 	
@@ -94,8 +94,8 @@
 	 <p>This Bill currently has no wiki entry. <a href="<%= @wiki_create_url %>" class="small_button" style="float:right;margin-left:8px;margin-top:-4px;"><span>Create Wiki Page</span></a></p>
 	</div>
 	<script type="text/javascript">
-	$j().ready(function() {
-		$j('#create_wiki_message').jqm({trigger:'#tabs ul li a.Wiki'});
+	$().ready(function() {
+		$('#create_wiki_message').jqm({trigger:'#tabs ul li a.Wiki'});
 	})
 	</script>
 	<% else %>
@@ -107,10 +107,10 @@
 	</div>	
 	
 	<script type="text/javascript">
-		$j().ready(function() {
-			$j('#login_wiki_message').jqm({trigger: '#tabs ul li a.Wiki'});
-			$j('#login_wiki').jqm({ajax:'@href', trigger:'#login_wiki_message a'});
-			$j('#login_wiki_message')
+		$().ready(function() {
+			$('#login_wiki_message').jqm({trigger: '#tabs ul li a.Wiki'});
+			$('#login_wiki').jqm({ajax:'@href', trigger:'#login_wiki_message a'});
+			$('#login_wiki_message')
 			.jqmAddClose('#login_wiki_message a')
 			.jqmAddTrigger('a.wiki_link')
 		});

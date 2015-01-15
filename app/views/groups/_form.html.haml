@@ -57,8 +57,8 @@
     .clear
     
     :javascript
-      $j(document).ready(function() {
-        $j('input#group_captcha').addClass("field");
+      $(document).ready(function() {
+        $('input#group_captcha').addClass("field");
       });
   %p
     - if @group.new_record?

@@ -15,5 +15,5 @@
       = render 'will_add_text_box', :text => "#{p.title} #{p.lastname}, your most-recent roll call vote on this bill was '#{roll_call.vote_for_person(p)}'."
 
 :javascript
-  $j("#roll_call_container .message_builder_clickable").hover(function(){ mbHoverIn(this) }, function(){ mbHoverOut(this) });
-  $j("#roll_call_container .message_builder_clickable").click(function(){ mbAddText(this) });
+  $("#roll_call_container .message_builder_clickable").hover(function(){ mbHoverIn(this) }, function(){ mbHoverOut(this) });
+  $("#roll_call_container .message_builder_clickable").click(function(){ mbAddText(this) });

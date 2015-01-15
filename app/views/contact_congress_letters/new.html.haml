@@ -155,10 +155,10 @@
     = render :partial => 'sending_spinner'
 
   :javascript
-    $j().ready(function() {
-      $j('#formageddon_modal').jqm();
-      $j('.formageddon_submit').click(function() {
-        $j('#formageddon_modal').jqmShow();
+    $().ready(function() {
+      $('#formageddon_modal').jqm();
+      $('.formageddon_submit').click(function() {
+        $('#formageddon_modal').jqmShow();
         return true;
       });
 
@@ -182,8 +182,8 @@
 
 
         :javascript
-          $j(document).ready(function() {
-            $j('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').simplyCountable({
+          $(document).ready(function() {
+            $('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').simplyCountable({
               maxCount:8000,
               countDirection:'down'
             });
@@ -230,27 +230,27 @@
   var sigLength=0;
 
   function mbHoverIn(object) {
-    $j(object).find("div.will_add_text_box:first").fadeIn(.3);
+    $(object).find("div.will_add_text_box:first").fadeIn(.3);
   }
   function mbHoverOut(object) {
-    $j(object).find("div.will_add_text_box:first").fadeOut(.3);
+    $(object).find("div.will_add_text_box:first").fadeOut(.3);
   }
   function mbAddText(object) {
     var insertPoint;
 
-    txt = $j(object).find("div.message_builder_add_text:first").text();
-    msg = $j('div.formageddon_contact_form textarea:first')
+    txt = $(object).find("div.message_builder_add_text:first").text();
+    msg = $('div.formageddon_contact_form textarea:first')
 
     insertPoint = msg.val().length - sigLength;
     msg.val(msg.val().substring(0, insertPoint)+"\n\n"+unescape(txt)+msg.val().substring(insertPoint));
   }
 
   var assemble_address = function () {
-    var street = $j("#formageddon_formageddon_thread_sender_address1").val().toString();
-    var city = $j("#formageddon_formageddon_thread_sender_city").val().toString();
-    var state = $j("#formageddon_formageddon_thread_sender_state").val().toString();
-    var zip5 = $j("#formageddon_formageddon_thread_sender_zip5").val().toString();
-    var zip4 = $j("#formageddon_formageddon_thread_sender_zip4").val().toString();
+    var street = $("#formageddon_formageddon_thread_sender_address1").val().toString();
+    var city = $("#formageddon_formageddon_thread_sender_city").val().toString();
+    var state = $("#formageddon_formageddon_thread_sender_state").val().toString();
+    var zip5 = $("#formageddon_formageddon_thread_sender_zip5").val().toString();
+    var zip4 = $("#formageddon_formageddon_thread_sender_zip4").val().toString();
     var address = "";
     if (street.length > 0) {
       address = street;
@@ -280,44 +280,44 @@
   };
 
   // Look up reps when address-related fields change
-  $j('#formageddon_formageddon_thread_sender_zip5, #formageddon_formageddon_thread_sender_address1, #formageddon_formageddon_thread_sender_address2, #formageddon_formageddon_thread_sender_city, #formageddon_formageddon_thread_sender_state').bind('keydown', function(e){
-    $j(this).data('previous_val', $j(this).val());
+  $('#formageddon_formageddon_thread_sender_zip5, #formageddon_formageddon_thread_sender_address1, #formageddon_formageddon_thread_sender_address2, #formageddon_formageddon_thread_sender_city, #formageddon_formageddon_thread_sender_state').bind('keydown', function(e){
+    $(this).data('previous_val', $(this).val());
   });
   var geocode_request_timeout = null;
-  $j('#formageddon_formageddon_thread_sender_zip5, #formageddon_formageddon_thread_sender_address1, #formageddon_formageddon_thread_sender_address2, #formageddon_formageddon_thread_sender_city, #formageddon_formageddon_thread_sender_state').bind('keyup change', function(e){
-    if($j(this).data('previous_val') == $j(this).val()) return;
-    $j(this).data('previous_val', $j(this).val());
+  $('#formageddon_formageddon_thread_sender_zip5, #formageddon_formageddon_thread_sender_address1, #formageddon_formageddon_thread_sender_address2, #formageddon_formageddon_thread_sender_city, #formageddon_formageddon_thread_sender_state').bind('keyup change', function(e){
+    if($(this).data('previous_val') == $(this).val()) return;
+    $(this).data('previous_val', $(this).val());
     if(geocode_request_timeout) clearTimeout(geocode_request_timeout);
     geocode_request_timeout = setTimeout(function(){
       geocode_request_timeout = null;
       var address = escape(assemble_address()),
-      zip5 = $j("#formageddon_formageddon_thread_sender_zip5").val().toString();
-      $j('#sen_0, #sen_1, #rep').html("<img src='/images/spinner-ovals.gif' />");
+      zip5 = $("#formageddon_formageddon_thread_sender_zip5").val().toString();
+      $('#sen_0, #sen_1, #rep').html("<img src='/images/spinner-ovals.gif' />");
       $j.ajax({
         url: '/contact_congress_letters/get_recipients.js?bill=#{@bill.nil? ? '' : @bill.ident}&issue=#{@issue.nil? ? '' : @issue.id}&address=' + address
       });
     }, 500);
   });
 
-  $j("#formageddon_formageddon_thread_sender_last_name").change(function() {
-    var name = $j("#formageddon_formageddon_thread_sender_first_name").val() + " " +
-               $j("#formageddon_formageddon_thread_sender_last_name").val();
+  $("#formageddon_formageddon_thread_sender_last_name").change(function() {
+    var name = $("#formageddon_formageddon_thread_sender_first_name").val() + " " +
+               $("#formageddon_formageddon_thread_sender_last_name").val();
     var sig = "\n\nSincerely,\n" + name;
 
-    $j('.desk .from').html('From the Desk of ' + name);
+    $('.desk .from').html('From the Desk of ' + name);
     sigLength = sig.length
 
-    $j('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').val(
-       $j('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').val() + sig
+    $('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').val(
+       $('#formageddon_formageddon_thread_formageddon_letters_attributes_0_message').val() + sig
     )
   });
 
 
-  $j(".message_builder_clickable").hover(function(){ mbHoverIn(this) }, function(){ mbHoverOut(this) });
-  $j(".message_builder_clickable").click(function(){ mbAddText(this) });
+  $(".message_builder_clickable").hover(function(){ mbHoverIn(this) }, function(){ mbHoverOut(this) });
+  $(".message_builder_clickable").click(function(){ mbAddText(this) });
 
-  $j(document).ready(function() {
-    $j('.formageddon_submit').addClass("button blue huge");
+  $(document).ready(function() {
+    $('.formageddon_submit').addClass("button blue huge");
   });
 
 

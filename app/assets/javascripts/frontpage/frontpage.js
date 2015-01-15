@@ -8,26 +8,26 @@ function switchBillTab(to, title) {
     Element.show(to);
     $('popular_ul_title').innerHTML = title;
     onMenu = 0;
-    $j('#bill_tab_select').hide().toggleClass('small_heading_hover');
+    $('#bill_tab_select').hide().toggleClass('small_heading_hover');
 }
 
-$j(document).ready(function(){
+$(document).ready(function(){
 
-$j('#popular_ul_title').hover(function(event) {
-    $j('#bill_tab_select').show().toggleClass('small_heading_hover');
+$('#popular_ul_title').hover(function(event) {
+    $('#bill_tab_select').show().toggleClass('small_heading_hover');
 }, function(event) {
     if (onMenu == 0) {
-        $j('#bill_tab_select').hide().toggleClass('small_heading_hover');
+        $('#bill_tab_select').hide().toggleClass('small_heading_hover');
     }
 });
 
-$j('#bill_tab_select').hover(function(event) {
-    $j('#bill_tab_select').show().toggleClass('small_heading_hover');
+$('#bill_tab_select').hover(function(event) {
+    $('#bill_tab_select').show().toggleClass('small_heading_hover');
     onMenu = 1;
 }, function(event) {
    if (onMenu == 1) {
        onMenu = 0;
-       $j('#bill_tab_select').hide().toggleClass('small_heading_hover');
+       $('#bill_tab_select').hide().toggleClass('small_heading_hover');
    }
 });
 

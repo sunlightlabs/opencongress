@@ -27,9 +27,9 @@
         %span.icon
         %div Opposing Letter
 :javascript
-  $j().ready(function() {
-    $j('#group_post').jqm({trigger:'.post_trigger'}).jqmAddClose('.close_add_notebook');
+  $().ready(function() {
+    $('#group_post').jqm({trigger:'.post_trigger'}).jqmAddClose('.close_add_notebook');
   });
-  $j('.post_trigger').click(function() {
-    $j('.post_tab').eq($j('.post_trigger').index($j(this))).click();
+  $('.post_trigger').click(function() {
+    $('.post_tab').eq($('.post_trigger').index($(this))).click();
   });

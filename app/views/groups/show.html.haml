@@ -61,13 +61,13 @@
         %li
           = link_to "Receive Emails From Owner <span id='receive_owner_emails_label' class='inline-count'>#{@group.membership(current_user).receive_owner_emails? ? 'On' : 'Off' }</span>".html_safe, "#", :id => 'notification_trigger'
         :javascript
-          $j('#notification_trigger').click(function() {
-            $j('#receive_owner_emails_label').html('#{image_tag('spinner-arrows.gif').html_safe}');
+          $('#notification_trigger').click(function() {
+            $('#receive_owner_emails_label').html('#{image_tag('spinner-arrows.gif').html_safe}');
             $j.ajax({
               url:'#{url_for group_group_member_path(@group, @group.membership(current_user), :receive_owner_emails => "toggle")}',
               type: 'PUT',
               success: function(data) {
-                $j('#receive_owner_emails_label').html(data);
+                $('#receive_owner_emails_label').html(data);
               }
             });
             return false;
@@ -90,21 +90,21 @@
     = render :partial => 'bill_positions_content'
     
   :javascript
-    var $sidebar_links = $j('.has-main-content a');
+    var $sidebar_links = $('.has-main-content a');
     $sidebar_links.click(function() {
         $sidebar_links.parent().removeClass('active');
-        $j(this).parent().addClass('active');
-        var index = $sidebar_links.index($j(this));
-        $j('.main-content').hide();
+        $(this).parent().addClass('active');
+        var index = $sidebar_links.index($(this));
+        $('.main-content').hide();
         if (index == 0) {
-          $j('.activity_stream li').show();
-          $j('#activity_stream_container').show();
+          $('.activity_stream li').show();
+          $('#activity_stream_container').show();
         } else if (index == 1) {
-          $j('.activity_stream li').hide();
-          $j('.activity_stream li.new').show();
-          $j('#activity_stream_container').show();
+          $('.activity_stream li').hide();
+          $('.activity_stream li.new').show();
+          $('#activity_stream_container').show();
         } else {
-          $j('.main-content').eq(index).show();
+          $('.main-content').eq(index).show();
         }
         return false;
     });

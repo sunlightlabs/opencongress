@@ -107,8 +107,8 @@ module BillHelper
         summary.gsub!(/'/, "&apos;")
 
         out = "<script type='text/javascript'>
-        $j().ready(function() {
-        	$j('#bill_summary_extra').jqm({trigger: 'a.summary_trigger'});
+        $().ready(function() {
+        	$('#bill_summary_extra').jqm({trigger: 'a.summary_trigger'});
         });
         </script>"
 

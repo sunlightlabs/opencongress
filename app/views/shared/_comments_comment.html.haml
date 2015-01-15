@@ -38,8 +38,8 @@
             = image_tag('flag.png', :alt => 'flag')
 
           :javascript
-            $j().ready(function(){
-              $j("#flag_#{comment.id.to_s}").qtip({
+            $().ready(function(){
+              $("#flag_#{comment.id.to_s}").qtip({
                 content: "Click this flag to mark this comment as inappropriate",
                 show: 'mouseover',
                 hide: 'mouseout',
@@ -83,16 +83,16 @@
       - unless comment.plus_score_count == 0  && comment.minus_score_count == 0
         :javascript
           off_#{comment.id.to_s} = false
-          $j(document).ready(function(){
-            $j("#comm_comm_#{comment.id.to_s}").hover(
+          $(document).ready(function(){
+            $("#comm_comm_#{comment.id.to_s}").hover(
               function(){
-                if ( $j("#rates_more_#{comment.id}").is(":hidden")) {
-                  $j("#rates_show_#{comment.id.to_s}").slideDown("normal");
+                if ( $("#rates_more_#{comment.id}").is(":hidden")) {
+                  $("#rates_show_#{comment.id.to_s}").slideDown("normal");
                 }
               },
               function(){
                 t=setTimeout(function(){
-                  $j("#rates_show_#{comment.id.to_s}").slideUp("normal");
+                  $("#rates_show_#{comment.id.to_s}").slideUp("normal");
                 }, 2000);
               }
             );

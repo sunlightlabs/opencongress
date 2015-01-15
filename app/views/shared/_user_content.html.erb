@@ -9,8 +9,8 @@
     <% end %>
 
     <script type="text/javascript">
-    $j().ready(function() {
-        $j('#learn').jqm({trigger:'a.learn_trigger'});
+    $().ready(function() {
+        $('#learn').jqm({trigger:'a.learn_trigger'});
     });
     </script>
 
@@ -34,8 +34,8 @@
       <h2>Vote on This Bill</h2>
       <div class="uc-box constrained">
         <script type="text/javascript">
-          $j().ready(function() {
-              $j('#login_vote').jqm({ajax:'@href', trigger: 'a.vote_trigger'});
+          $().ready(function() {
+              $('#login_vote').jqm({ajax:'@href', trigger: 'a.vote_trigger'});
           });
         </script>
 
@@ -145,8 +145,8 @@
     <% end %>
   <% else %>
     <script type="text/javascript">
-      $j().ready(function() {
-        $j('#login_track').jqm({ajax:'@href', trigger: 'a.track_trigger'});
+      $().ready(function() {
+        $('#login_track').jqm({ajax:'@href', trigger: 'a.track_trigger'});
       });
     </script>
     <%= link_to("<span id='b_myoc_txt'>Track with MyOC</span>".html_safe, login_url(:modal => true, :login_action => 'track'), :class => 'large_track track_trigger', :id => "b_myoc" ) %>

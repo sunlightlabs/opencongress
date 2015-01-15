@@ -634,8 +634,8 @@ EOT
 
   def dbox_trigger(text_name)
     %Q{<script type="text/javascript">
-    $j().ready(function() {
-      $j('##{text_name}')
+    $().ready(function() {
+      $('##{text_name}')
         .jqDrag('##{text_name}_drag')
         .jqResize('##{text_name}_resize')
         .jqm({

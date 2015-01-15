@@ -19,8 +19,8 @@ function mycarousel_initCallback(carousel)
 	});
 };
 
-$j(document).ready(function() {
-	$j('#bill_carousel').jcarousel({
+$(document).ready(function() {
+	$('#bill_carousel').jcarousel({
 		auto: <%= @carousel[0].length %>,
 		wrap: 'last',
 		initCallback: mycarousel_initCallback

@@ -7,9 +7,9 @@
   = render :partial => 'shared/comments', :locals => { :object => item, :master_container => "comments_master_#{item.id}" }
   
 :javascript
-  $j().ready(function() {
-    $j("#item_comment_trigger_#{item.id}").click(function() {
-      $j("#item_comments_#{item.id}").toggle();
+  $().ready(function() {
+    $("#item_comment_trigger_#{item.id}").click(function() {
+      $("#item_comments_#{item.id}").toggle();
       return false;
     });
   });

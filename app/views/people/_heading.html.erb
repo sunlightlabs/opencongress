@@ -11,17 +11,17 @@
 
 <a href="#" id="view_button"><span>Change View</span></a> 
 <script type="text/javascript">
-$j(document).ready(function(){
+$(document).ready(function(){
 
- $j("#view_button").toggle(function(){
- $j(this).addClass("swap");
- $j("#views").fadeOut("fast", function() {
- $j(this).fadeIn("fast").addClass("wide");
+ $("#view_button").toggle(function(){
+ $(this).addClass("swap");
+ $("#views").fadeOut("fast", function() {
+ $(this).fadeIn("fast").addClass("wide");
  });
  }, function () {
- $j(this).removeClass("swap");
- $j("#views").fadeOut("fast", function() {
- $j(this).fadeIn("fast").removeClass("wide");
+ $(this).removeClass("swap");
+ $("#views").fadeOut("fast", function() {
+ $(this).fadeIn("fast").removeClass("wide");
  });
  });
 

@@ -8,15 +8,15 @@
 </div>
 
 <script type='text/javascript'>
-  $j(document).ready(function(){
+  $(document).ready(function(){
     <% @commented_nodes.each do |n| %>
       <% if n.comments.size > 0 %>
         // BillText.setCommentsForNode(<%= @selected_version.id %>, '<%= n.nid %>', <%= n.comments.size %>)
       <% end %>
     <% end %>
 
-    $j('#bill_text_loading').hide();
-    $j('#bill_text').show();
+    $('#bill_text_loading').hide();
+    $('#bill_text').show();
 
     <% if @nid %>
       BillText.highlightNode('<%= @nid %>');
@@ -136,8 +136,8 @@
 
 <% unless logged_in? %>
 <script type="text/javascript">
-$j().ready(function() {
-	$j('#login_rate').jqm({ajax:'@href', trigger: 'a.rate_trigger'});
+$().ready(function() {
+	$('#login_rate').jqm({ajax:'@href', trigger: 'a.rate_trigger'});
 });
 </script>
 <div id="login_rate" class="jqmWindow"></div>

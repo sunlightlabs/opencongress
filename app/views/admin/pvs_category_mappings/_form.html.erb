@@ -48,8 +48,8 @@
   //   $('pvs_category_mapping_pvs_category_mappable_id').update($(this.getValue() + '_options').innerHTML);
   // });
 
-  $j('#pvs_category_mapping_pvs_category_mappable_type').change(function() {
-    $j('#pvs_category_mapping_pvs_category_mappable_id').append($j('#' + $j(this).val() + '_options').html());
+  $('#pvs_category_mapping_pvs_category_mappable_type').change(function() {
+    $('#pvs_category_mapping_pvs_category_mappable_id').append($('#' + $(this).val() + '_options').html());
   });
 </script>
 

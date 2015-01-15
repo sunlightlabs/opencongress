@@ -35,33 +35,33 @@
   :javascript
     var doSearch = function(url) {
       console.log(url);
-      $j('#group_search_spinner').show();
+      $('#group_search_spinner').show();
       $j.ajax({
-        url: url || '#{groups_path(:format => "js")}?q=' + $j('#group_search_field').val() + '&subject=' +  $j('#group_issue').val() + '&sort=' + $j('#group_sort').val()
+        url: url || '#{groups_path(:format => "js")}?q=' + $('#group_search_field').val() + '&subject=' +  $('#group_issue').val() + '&sort=' + $('#group_sort').val()
       });
     }
 
     // if pagination links reference groups.js, ajax their url instead of navigating.
-    $j('.pagination a').live('click', function(e){
-      if ($j(this).attr('href').match('groups.js')) {
+    $('.pagination a').live('click', function(e){
+      if ($(this).attr('href').match('groups.js')) {
         e.preventDefault();
         e.stopPropagation();
-        doSearch($j(this).attr('href'));
+        doSearch($(this).attr('href'));
       };
     });
 
-    $j('#group_search_field').change(function(){ doSearch(); });
-    $j('#group_issue').change(function(){ doSearch(); });
+    $('#group_search_field').change(function(){ doSearch(); });
+    $('#group_issue').change(function(){ doSearch(); });
 
-    $j('.table_header a').live("click", function(e) {
-      if (($j(this).attr('class') == '') || ($j(this).attr('class') == 'down')) {
-        $j('.table_header a').attr('class', '');
-        $j(this).attr('class', 'up');
-        $j('#group_sort').val($j(this).attr('id').concat(' ASC'));
+    $('.table_header a').live("click", function(e) {
+      if (($(this).attr('class') == '') || ($(this).attr('class') == 'down')) {
+        $('.table_header a').attr('class', '');
+        $(this).attr('class', 'up');
+        $('#group_sort').val($(this).attr('id').concat(' ASC'));
       } else {
-        $j('.table_header a').attr('class', '');
-        $j(this).attr('class', 'down');
-        $j('#group_sort').val($j(this).attr('id').concat(' DESC'));
+        $('.table_header a').attr('class', '');
+        $(this).attr('class', 'down');
+        $('#group_sort').val($(this).attr('id').concat(' DESC'));
       }
       doSearch();
       return false;

@@ -37,12 +37,12 @@
   </div>
     
   <script type="text/javascript">
-  $j().ready(function() {
+  $().ready(function() {
     var loadInIframeModal = function(hash){
-      var $trigger = $j(hash.t);
-      var $modal = $j(hash.w);
+      var $trigger = $(hash.t);
+      var $modal = $(hash.w);
       var myUrl = '<%= people[0].contact_webform %>'; //$trigger.attr('href');
-      var $modalContent = $j("iframe", $modal);
+      var $modalContent = $("iframe", $modal);
 
       $modalContent.html('').attr('src', myUrl);
 
@@ -50,7 +50,7 @@
     }
   
     // initialise jqModal
-    $j('#writerep_window').jqm({
+    $('#writerep_window').jqm({
       modal: true,
       trigger: 'a.writeextrigger',
       target: '#writerep_content',

@@ -2,8 +2,8 @@
 <span>Added <%= time_ago_in_words item.created_at %> ago -
 	<% if item.count_times_bookmarked > 1 %>
 	<script type='text/javascript'>
-	$j().ready(function() {
-		$j('#other-bookmarked-<%= item.id %>').jqm({trigger: '.meta-info-<%= item.id %>'});
+	$().ready(function() {
+		$('#other-bookmarked-<%= item.id %>').jqm({trigger: '.meta-info-<%= item.id %>'});
 	});
   </script>
 	Added by <a href="#" class="meta-info-<%= item.id %>"><%= item.count_times_bookmarked - 1 %> other users</a>.
@@ -42,8 +42,8 @@
 	<% end %>
 	<% if current_user == item.political_notebook.user %>
 		<script type='text/javascript'>
-		$j().ready(function() {
-			$j('#edit-link-<%= item.id %>').jqm({trigger: '.meta-edit-<%= item.id %>'});
+		$().ready(function() {
+			$('#edit-link-<%= item.id %>').jqm({trigger: '.meta-edit-<%= item.id %>'});
 		});
 		</script>
 	  <span style="font-style: normal;">

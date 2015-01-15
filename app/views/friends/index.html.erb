@@ -13,8 +13,8 @@
         <% if @user == current_user %>
           <div class="invites">
             <script type='text/javascript'>
-            $j().ready(function() {
-              $j('#invite_form').jqm({ajax:'@href', trigger: 'a.invite_trigger'});
+            $().ready(function() {
+              $('#invite_form').jqm({ajax:'@href', trigger: 'a.invite_trigger'});
             });
             </script>
             <ul>

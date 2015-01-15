@@ -6,8 +6,8 @@
 		Added to MyPN
 	<% else %>
 		<script type='text/javascript'>
-		$j().ready(function() {
-			$j('#add_item').jqm({ajax:'@href', trigger: 'a.mypn'});
+		$().ready(function() {
+			$('#add_item').jqm({ajax:'@href', trigger: 'a.mypn'});
 		});
 		</script>	
 		<%= link_to("Save to Notebook", "/users/" + current_user.login.to_s + "/profile/political_notebook/notebook_links/faceform?id=" + object.id.to_s + "&type=" + object.class.to_s, :class => "mypn") %>

@@ -1,8 +1,8 @@
 if @success
   if @group
     page.replace_html :activity_stream_container, :partial => 'groups/activity_stream'
-    page << "$j('#group_post').jqmHide();"
-    page << "$j('.add-spinner').hide();"
+    page << "$('#group_post').jqmHide();"
+    page << "$('.add-spinner').hide();"
   else
     page.insert_html(:top, "notebook-items", :partial => "#{@item.class.to_s.tableize}/listitem", :object => @item)
     if @from_bookmarklet

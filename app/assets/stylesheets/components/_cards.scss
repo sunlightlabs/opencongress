@@ -1,0 +1,13 @@
+.card {
+    border: 1px solid $dark-gray;
+    padding: 25px;
+}
+
+.card-title {
+    @extend .bold;
+}
+
+.card-time {
+    @extend .micro-size;
+    color: $dark-gray;
+}

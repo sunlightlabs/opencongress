@@ -1,36 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenCongress Design</title>
-  <%= stylesheet_link_tag "application" %>
-  <link rel="stylesheet" type="text/css" href="/static/pattern-library/public/style.css">
-  <%= javascript_include_tag "application" %>
-  <script src="http://use.typekit.net/cuo6nsj.js"></script>
-  <script>try{Typekit.load();}catch(e){}</script>
+    <title>Design | OpenCongress</title>
+    <%= stylesheet_link_tag "application" %>
+    <%= stylesheet_link_tag "styleguide" %>
+    <%= javascript_include_tag "application" %>
+    <script src="http://use.typekit.net/cuo6nsj.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
 </head>
-<body>
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navigation">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/">Pattern Library</a>
-      </div>
 
-      <div class="collapse navbar-collapse" id="main-navigation">
-        <ul class="nav navbar-nav">
-          <li><a href="/globals">Globals</a></li>
-          <li><a href="/forms">Forms</a></li>
-          <li><a href="/cards">Cards</a></li>
-          <li><a href="/navigation">Navigation</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <%= yield %>
+<body>
+
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-navigation">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    p<span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">
+                    <img class="logo" alt="OpenCongress" src="http://placehold.it/200x50">
+                </a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="main-navigation">
+                <ul class="nav navbar-nav">
+                    <li><a href="/globals">Globals</a></li>
+                    <li><a href="/forms">Forms</a></li>
+                    <li><a href="/cards">Cards</a></li>
+                    <li><a href="/navigation">Navigation</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <%= yield %>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            Footer
+        </div>
+    </footer>
+
 </body>
 </html>

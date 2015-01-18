@@ -1,0 +1,36 @@
+body {
+    padding: 0;
+}
+
+.navbar {
+    padding: 15px;
+}
+
+.navbar-brand {
+    padding: 0;
+}
+
+.footer {
+    background: #333;
+    padding: 25px;
+    color: #eee;
+}
+
+.box {
+    width: 100px;
+    height: 100px;
+    color: #fff;
+}
+
+.margin-left {
+    margin-left: 16px;
+}
+.show-grid {
+    background: #ddd;
+    padding: 16px;
+}
+
+.show-grid [class^=col-] div {
+    background: #ccc;
+    padding: 16px;
+}

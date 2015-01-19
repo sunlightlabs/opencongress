@@ -2,66 +2,44 @@
 // Typography
 // ------------------------------
 
-// Type settings
-$base-font-family:      "proxima-nova", sans-serif;
-$base-font-size:        16px !default;
-$base-line-height:      24px !default;
-
-// Headings scale
-$alpha:                 48px !default; // .alpha
-$beta:                  36px !default; // .beta
-$gamma:                 24px !default; // .gamma
-$delta:                 21px !default; // .delta
-$epsilon:               18px !default; // .epsilon
-
-// Text helpers
-$micro-size:            14px !default;
-$nano-size:             11px !default;
-
-// Font Size Classes
-
-.alpha {
-    font-size: $alpha;
-}
-
-.beta {
-    font-size: $beta;
-}
-
-.gamma {
-    font-size: $gamma;
-}
-
-.delta {
-    font-size: $delta;
-}
-
-.epsilon {
-    font-size: $epsilon;
-}
-
-.micro-size {
-    font-size: $micro-size;
-}
 
 
-// Font weight classes
+// Type sizes
+
+$alpha:                 48px; // .alpha
+$beta:                  36px; // .beta
+$gamma:                 24px; // .gamma
+$delta:                 21px; // .delta
+$epsilon:               18px; // .epsilon
+
+$micro-size:            14px;
+$nano-size:             11px;
+
+
+// Font Sizes
+
+.alpha { font-size: $alpha; }
+.beta { font-size: $beta; }
+.gamma { font-size: $gamma; }
+.delta { font-size: $delta; }
+.epsilon { font-size: $epsilon; }
+
+.micro-size { font-size: $micro-size; }
+.nano-size { font-size: $nano-size; }
+
+
+// Font Weight
 
 .normal { font-weight: 400;}
 .bold { font-weight: 700;}
 .semibold {font-weight: 500;}
 .light {font-weight: 300;}
 
-// code
-.code {
-  font-family: Courier, "Courier New", monospace;
-}
 
-// helpers
+// Helpers
 
-.white-text {
-    color: #fff;
-}
+%white-text { color: #fff; }
+
 
 // Header classes
 

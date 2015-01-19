@@ -1,1 +1,37 @@
-$border-radius-base: 2px;
+// ------------------------------
+// Bootstrap Overrides
+// ------------------------------
+
+// Colors
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              lighten($gray-base, 20%) !default;   // #333
+$gray:                   lighten($gray-base, 33.5%) !default; // #555
+$gray-light:             lighten($gray-base, 46.7%) !default; // #777
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
+$brand-primary:          #3B4555;
+
+
+// Scaffolding
+$body-bg:                #F5F5F5;
+$text-color:             $gray-dark;
+
+$link-color:             #236cb5;
+$link-hover-color:       shade($link-color, 20%);
+$link-hover-decoration:  underline;
+
+
+// Typography
+
+$font-family-sans-serif: "proxima-nova", Helvetica, Arial, sans-serif;
+$font-family-serif:      "ff-tisa-web-pro", Georgia, "Times New Roman", Times, serif;
+$font-family-monospace:  Menlo, Monaco, Consolas, "Courier New", monospace;
+
+$font-size-base:         16px;
+$line-height-base:       1.5; // 24/16
+$line-height-computed:   24px;
+
+
+// Components
+
+$border-radius-base:     2px;

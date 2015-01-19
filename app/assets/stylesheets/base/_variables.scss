@@ -1,28 +1,17 @@
 // ------------------------------
-// Grid System
-// ------------------------------
-
-// Max width
-$max-width:             80em !default;  // 16px * 80 = 1280px
-
-// ------------------------------
 // UI Colors
 // ------------------------------
 
-$white:                 #fff;
-// Text colors
-$text-color:            #4D4D4D;
-$heading-color:         #222;
 
 // Base color
-$dark-blue:             #3B4556;
+$dark-blue:             #3B4555;
 $blue:                  #29ABE2;
 $light-blue:            #94D5F0;
 $gray-blue:             #F2F9F9;
-
+$yellow:                #F7CA18;
 
 // Utility colors
-$yellow:                #F7CA18;
+$white:                 #FFF;
 
 // Accent colors
 $dark-gray:             #E6E6E6;
@@ -32,12 +21,15 @@ $red:                   #F7675C;
 $green:                 #61CE92;
 
 $button-colors: (transparent rgba(0,0,0,0)), (white $white), (dark-blue $dark-blue), (light-blue $light-blue), (blue $blue), (yellow, $yellow);
+
+
 // ------------------------------
 // UI Styles
 // ------------------------------
 
+
 // Roundedness
-$radius:                0.1875rem;
+$radius:                $border-radius-base;
 $round:                 50%;
 
 
@@ -45,4 +37,5 @@ $round:                 50%;
 // Spacing
 // -------------------------------
 
-$base-spacing-unit:     $base-line-height !default;
+
+$base-spacing-unit:     $line-height-computed;

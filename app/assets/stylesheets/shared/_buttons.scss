@@ -81,7 +81,11 @@ button, .button, .alert {
 
 @each $fill in $button-colors {
   @each $border in $button-colors{
-    .#{nth($fill, 1)}-and-#{nth($border, 1)} { @include make-button(nth($fill,2), nth($border,2))}
+    .#{nth($fill, 1)}-and-#{nth($border, 1)} { 
+      @include button-variant(nth($border,2), nth($fill,2), nth($border,2));
+      border-style: solid;
+      border-width: 1px;
+    }
   }
 }
 

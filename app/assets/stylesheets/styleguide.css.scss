@@ -1,6 +1,7 @@
 @import "application";
 @import "prism";
 
+
 // Sections
 
 .section {
@@ -18,15 +19,36 @@
         text-align: center;
         text-transform: uppercase;
     }
+    &--sub {
+        @include make-row();
+    }
 }
 
-// Demo Box Template
+
+// Code Block
+
+.codeblock {
+    @extend .section--sub;
+
+    &__example {
+        @include make-md-column(7);
+    }
+
+    &__notes {
+        @include make-md-column(5);
+        font-size: $micro-size;
+    }
+}
+
+
+// Swatch Template
 
 %swatch {
     @include make-xs-column(6);
     @include make-sm-column(3);
     @include make-lg-column(2);
 }
+
 
 // Color Palette
 

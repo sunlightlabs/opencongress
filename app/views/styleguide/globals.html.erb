@@ -83,15 +83,26 @@
     <p class="micro-size">Micro-size</p>
     <p class="nano-size">Nano-size</p>
 
-    <%= example_code do %>
-      <p class="alpha">Alpha</p>
-      <p class="beta">Beta</p>
-      <p class="gamma">Gamma</p>
-      <p class="delta">Delta</p>
-      <p class="epsilon">Epsilon</p>
-      <p class="micro-size">Micro-size</p>
-      <p class="nano-size">Nano-size</p>
-    <% end %>
+    <div class="codeblock">
+
+        <div class="codeblock__example">
+            <%= example_code do %>
+              <p class="alpha">Alpha</p>
+              <p class="beta">Beta</p>
+              <p class="gamma">Gamma</p>
+              <p class="delta">Delta</p>
+              <p class="epsilon">Epsilon</p>
+              <p class="micro-size">Micro-size</p>
+              <p class="nano-size">Nano-size</p>
+            <% end %>
+        </div>
+
+        <div class="codeblock__notes">
+            <h4>Notes</h4>
+            <p>// Some notes about this example code</p>
+        </div>
+
+    </div>
 
     <h2 class="overview-heading">Overview Heading</h2>
     <h2 class="section-heading">Section Heading</h2>

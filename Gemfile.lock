@@ -107,6 +107,9 @@ GEM
     bourbon (3.2.3)
       sass (~> 3.2)
       thor
+    breakpoint (2.5.0)
+      sass (~> 3.3)
+      sassy-maps (< 1.0.0)
     builder (3.2.2)
     byebug (3.5.1)
       columnize (~> 0.8)
@@ -480,6 +483,8 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (~> 1.1)
+    sassy-maps (0.4.0)
+      sass (~> 3.3)
     selenium-webdriver (2.43.0)
       childprocess (~> 0.5)
       multi_json (~> 1.0)
@@ -576,6 +581,7 @@ DEPENDENCIES
   bluecloth
   bootstrap-sass (~> 3.3.1)
   bourbon
+  breakpoint (~> 2.5.0)
   byebug
   capistrano
   capistrano-ext

@@ -47,6 +47,7 @@ gem 'bootstrap-sass', '~> 3.3.1'
 gem 'sass-rails', '>= 5.0.1'
 gem 'autoprefixer-rails'
 gem 'bourbon'
+gem "breakpoint", "~>2.5.0"
 
 gem 'actionpack-page_caching'
 

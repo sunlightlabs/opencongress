@@ -1,6 +1,7 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
+require 'breakpoint'
 require File.expand_path('../../lib/extensions.rb', __FILE__)
 
 # If you have a Gemfile, require the gems listed there, including any gems

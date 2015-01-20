@@ -1,7 +1,8 @@
 .card {
-  @include make-row();
+  @extend .base-margin-bottom;
   border: 1px solid $dark-gray;
   padding: 25px;
+  background: $white;
 
   &__title {
     @extend .bold;
@@ -11,10 +12,28 @@
     @extend .micro-size;
     color: $dark-gray;
     padding-bottom: $base-spacing-unit;
-    border-bottom: 1px dashed #ccc;
   }
 
-  &__button{
-  
+  &__footer {
+    @include make-row();
+    @extend .cf;
+    border-top: 1px dashed #ccc;
+    padding-top: $base-spacing-unit/2;
+  }
+
+  &__button {
+    @extend .pull-right;
+    margin-left: 16px;
+    border: 1px solid $transparent;
+    @include button-variant(shade($dark-gray, 40%), $transparent, $yellow);
+  }
+
+  &__icon {
+    @extend .icon;
+  }
+
+  &__bill-ref {
+    font-size: $epsilon;
+    padding: 0 $base-spacing-unit*2;
   }
 }

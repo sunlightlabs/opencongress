@@ -1,10 +1,69 @@
 <h2>Cards</h2>
 
-<div class="card">
-    <p class="card__title">House Committee on Judiciary Affairs</p>
-    <p>is holding a business meeting to consider pending calendar business</p>
-    <p class="card__time">Scheduled for 10:15am</p>
-    <img src="http://placehold.it/50x50">
-    <button class="card__button">Add to Calendar</button>
-    <button class="card__button">Call Committee</button>
-</div>
+<section class="section">
+  <div class="card">
+      <p class="card__title">House Committee on Judiciary Affairs</p>
+      <p>is holding a business meeting to consider pending calendar business</p>
+      <p class="card__time">Scheduled for 10:15am</p>
+      <div class="card__footer">
+        <img class="card__icon" src="http://placehold.it/50x50">
+        <button class="card__button">Add to Calendar</button>
+        <button class="card__button">Call Committee</button>
+      </div>
+  </div>
+
+  <div class="codeblock">
+    <div class="codeblock__example">
+      <%= example_code do %>
+        <div class="card">
+          <p class="card__title">House Committee on Judiciary Affairs</p>
+          <p>is holding a business meeting to consider pending calendar business</p>
+          <p class="card__time">Scheduled for 10:15am</p>
+          <div class="card__footer">
+            <img class="card__icon" src="http://placehold.it/50x50">
+            <button class="card__button">Add to Calendar</button>
+            <button class="card__button">Call Committee</button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="codeblock__notes">
+      <h4>Floor update</h4>
+      <p>// card for floor update with rep icon</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="card">
+      <p class="card__title">House Committee on Judiciary Affairs</p>
+      <p>is holding a business meeting to consider pending calendar business</p>
+      <p class="card__time">Scheduled for 10:15am</p>
+      <div class="card__footer">
+        <a class="card__bill-ref" href="#">S.465</a>
+        <button class="card__button">Add to Calendar</button>
+        <button class="card__button">Call Committee</button>
+      </div>
+  </div>
+
+  <div class="codeblock">
+    <div class="codeblock__example">
+      <%= example_code do %>
+        <div class="card">
+          <p class="card__title">House Committee on Judiciary Affairs</p>
+          <p>is holding a business meeting to consider pending calendar business</p>
+          <p class="card__time">Scheduled for 10:15am</p>
+          <div class="card__footer">
+            <img class="card__icon" src="http://placehold.it/50x50">
+            <button class="card__button">Add to Calendar</button>
+            <button class="card__button">Call Committee</button>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="codeblock__notes">
+      <h4>Floor update</h4>
+      <p>// card for floor update with rep icon</p>
+    </div>
+  </div>
+</section>

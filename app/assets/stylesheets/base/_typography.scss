@@ -13,7 +13,7 @@ $delta:                 21px; // .delta
 $epsilon:               18px; // .epsilon
 
 $micro-size:            14px;
-$nano-size:             11px;
+$nano-size:             12px;
 
 
 // Font Sizes
@@ -30,10 +30,10 @@ $nano-size:             11px;
 
 // Font Weight
 
+.light {font-weight: 300;}
 .normal { font-weight: 400;}
 .bold { font-weight: 700;}
-.semibold {font-weight: 500;}
-.light {font-weight: 300;}
+.semibold {font-weight: 600;}
 
 
 // Helpers

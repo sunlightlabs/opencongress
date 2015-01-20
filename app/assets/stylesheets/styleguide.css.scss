@@ -1,8 +1,75 @@
+@import "application";
 @import "prism";
 
-body {
-    padding: 0;
+// Sections
+
+.section {
+    @include make-row();
+    @extend .cf;
+    padding-top: $base-spacing-unit;
+    padding-bottom: 50px;
+    margin-top: $base-spacing-unit;
+    margin-bottom: 50px;
+    border-bottom: 1px dashed #ccc;
+
+    &__header {
+        @extend .beta;
+        padding-bottom: $base-spacing-unit;
+        text-align: center;
+        text-transform: uppercase;
+    }
 }
+
+// Demo Box Template
+
+%swatch {
+    @include make-xs-column(6);
+    @include make-sm-column(3);
+    @include make-lg-column(2);
+}
+
+// Color Palette
+
+.palette {
+    @extend %swatch;
+    margin-bottom: 15px;
+    
+    &__color,
+    &__color--light  {
+        @extend .nano-size;
+        color: $white;
+        height: 225px;
+        padding: 20px;
+    }
+
+    &__color--light {
+        color: $gray-dark;
+    }
+
+    &__details {
+        bottom: 15px;
+        position: absolute;
+    }
+
+    &__title {
+        @extend .micro-size;
+        @extend .semibold;
+        display: block;
+        margin-bottom: 15px;
+    }
+
+    &__label {
+        @extend .light;
+        opacity: 0.9;
+    }
+
+    &__label > span {
+        display: inline-block;
+        width: 45px;
+    }
+}
+
+
 
 .logo {
     width: 290px;
@@ -21,12 +88,6 @@ body {
     background: #333;
     padding: 25px;
     color: #eee;
-}
-
-.box {
-    width: 100px;
-    height: 100px;
-    color: #fff;
 }
 
 .margin-left {

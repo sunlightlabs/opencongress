@@ -1,4 +1,4 @@
-.card {
+.info-card {
   a {
     font-size: $epsilon;
   }
@@ -6,6 +6,7 @@
   @extend .base-margin-bottom;
   border: 1px solid $dark-gray;
   padding: $base-spacing-unit;
+  padding-bottom: 0;
   background: $white;
 
   &__title {
@@ -23,6 +24,10 @@
     @extend .cf;
     border-top: 1px dashed #ccc;
     padding-top: $base-spacing-unit/2;
+
+    &--no-border {
+      border: none;
+    }
   }
 
   &__button {
@@ -39,7 +44,7 @@
 
 
   &__icon {
-    @extend .icon;
+    @include icon(50px);
     margin-bottom: $base-spacing-unit/2;
   }
 
@@ -55,5 +60,43 @@
     padding: 0 $base-spacing-unit*2;
     margin-bottom: $base-spacing-unit/2;
     display: inline-block;
+  }
+}
+
+.person-card {
+
+  &__title {
+    @extend .bold;
+    border-bottom: 1px solid $yellow;
+  }
+
+  &__icon {
+    @include icon(70px);
+    @extend .pull-left;
+    display: inline-block;
+    margin-right:$base-spacing-unit/1.5;
+  }
+
+  &__rep{
+    margin: $base-spacing-unit/2 0 0 0;
+  }
+
+  &__name {
+    font-size: $gamma;
+    margin-top: 0;
+    line-height: 1;
+  }
+
+  &__details {
+    color: shade($dark-gray, 40%);
+    float: left;
+    font-size: $nano-size;
+    margin: 0;
+    &--bullet {
+      @extend .person-card__details;
+      &:after { content: " \00b7 "; }
+      content: "\00b7";
+      padding: 1px;
+    }
   }
 }

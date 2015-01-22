@@ -1,71 +1,98 @@
 <h2>Cards</h2>
 
-<section class="section">
-  <div class="card">
-      <p class="card__title">House Committee on Judiciary Affairs</p>
-      <p>is holding a business meeting to consider pending calendar business</p>
-      <p class="card__time">Scheduled for 10:15am</p>
-      <div class="card__footer">
-        <img class="card__icon" src="http://placehold.it/50x50">
-        <button class="card__button">Add to Calendar</button>
-        <button class="card__button">Call Committee</button>
-      </div>
-  </div>
+<hr>
 
-  <div class="codeblock">
-    <div class="codeblock__example">
-      <%= example_code do %>
-        <div class="card">
-          <p class="card__title">House Committee on Judiciary Affairs</p>
+<div class="row">
+  
+  <div class="col-sm-8">
+  
+  <h4>Info Cards</h4>
+    
+    <section class="section">
+      
+      <div class="info-card">
+          <p class="info-card__title">House Committee on Judiciary Affairs</p>
           <p>is holding a business meeting to consider pending calendar business</p>
-          <p class="card__time">Scheduled for 10:15am</p>
-          <div class="card__footer">
-            <img class="card__icon" src="http://placehold.it/50x50">
-            <button class="card__button">Add to Calendar</button>
-            <button class="card__button">Call Committee</button>
+          <p class="info-card__time">Scheduled for 10:15am</p>
+          <div class="info-card__footer">
+            <img class="info-card__icon" src="http://placehold.it/50x50">
+            <button class="info-card__button">Add to Calendar</button>
+            <button class="info-card__button">Call Committee</button>
           </div>
-        </div>
-      <% end %>
-    </div>
-    <div class="codeblock__notes">
-      <h4>Floor update</h4>
-      <p>// card for floor update with rep icon</p>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="card">
-      <p class="card__title">House Committee on Judiciary Affairs</p>
-      <p>is holding a business meeting to consider pending calendar business</p>
-      <p class="card__time">Scheduled for 10:15am</p>
-      <div class="card__footer">
-        <a class="card__bill-ref" href="#">S.465</a>
-        <a class="card__count">3</a>
-        <button class="card__button">Add to Calendar</button>
-        <button class="card__button">Call Committee</button>
       </div>
-  </div>
 
-  <div class="codeblock">
-    <div class="codeblock__example">
-      <%= example_code do %>
-        <div class="card">
-          <p class="card__title">House Committee on Judiciary Affairs</p>
-          <p>is holding a business meeting to consider pending calendar business</p>
-          <p class="card__time">Scheduled for 10:15am</p>
-          <div class="card__footer">
-            <a class="card__bill-ref" href="#">S.465</a>
-            <a class="card__count">3</a>
-            <button class="card__button">Add to Calendar</button>
-            <button class="card__button">Call Committee</button>
-          </div>
+      <div class="codeblock">
+        
+        <div class="codeblock__example">
+          <%= example_code do %>
+            <div class="info-card">
+              <p class="info-card__title">House Committee on Judiciary Affairs</p>
+              <p>is holding a business meeting to consider pending calendar business</p>
+              <p class="info-card__time">Scheduled for 10:15am</p>
+              <div class="info-card__footer">
+                <img class="info-card__icon" src="http://placehold.it/50x50">
+                <button class="info-card__button">Add to Calendar</button>
+                <button class="info-card__button">Call Committee</button>
+              </div>
+            </div>
+          <% end %>
         </div>
-      <% end %>
-    </div>
-    <div class="codeblock__notes">
-      <h4>Floor update</h4>
-      <p>// card for floor update with rep icon</p>
+        
+        <div class="codeblock__notes">
+          <h4>Floor update</h4>
+          <p>// info-card for floor update with rep icon</p>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="section">
+      <div class="info-card">
+          <p class="info-card__title">House Committee on Judiciary Affairs</p>
+          <p>is holding a business meeting to consider pending calendar business</p>
+          <p class="info-card__time">Scheduled for 10:15am</p>
+          <div class="info-card__footer">
+            <a class="info-card__bill-ref" href="#">S.465</a>
+            <a class="info-card__count">3</a>
+            <button class="info-card__button">Add to Calendar</button>
+            <button class="info-card__button">Call Committee</button>
+          </div>
+      </div>
+
+      <div class="codeblock">
+        <div class="codeblock__example">
+          <%= example_code do %>
+            <div class="info-card">
+              <p class="info-card__title">House Committee on Judiciary Affairs</p>
+              <p>is holding a business meeting to consider pending calendar business</p>
+              <p class="info-card__time">Scheduled for 10:15am</p>
+              <div class="info-card__footer">
+                <a class="info-card__bill-ref" href="#">S.465</a>
+                <a class="info-card__count">3</a>
+                <button class="info-card__button">Add to Calendar</button>
+                <button class="info-card__button">Call Committee</button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <div class="codeblock__notes">
+          <h4>Floor update</h4>
+          <p>// info-card for floor update with rep icon</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="col-sm-4">
+    <h4>People Cards</h4>
+    <div class="person-card">
+      <p class="person-card__title">Speaker of the Houser</p>
+      <img class="person-card__icon" src="http://placehold.it/50x50">
+      <p class="person-card__rep">Representative</p>
+      <p class="person-card__name">John Boehner</p>
+      <p class="person-card__details--bullet">Representative</p>
+      <p class="person-card__details--bullet">California</p>
+      <p class="person-card__details--bullet">4th Term</p>
+      <p class="person-card__details">Sworn in 2007</p>
     </div>
   </div>
-</section>
+</div>

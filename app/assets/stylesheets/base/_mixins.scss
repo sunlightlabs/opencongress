@@ -23,3 +23,12 @@
     border-color: shade($border, 15%);
   }
 }
+
+// Sets icon
+
+@mixin icon($size){
+  height: $size;
+  width: $size;
+  border-radius: 50%;
+  margin-bottom: $base-spacing-unit;
+}

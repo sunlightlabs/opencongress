@@ -1,6 +1,8 @@
 .info-card {
+  margin-left: $base-spacing-unit;
   a {
     font-size: $epsilon;
+    text-align: center;
   }
 
   @extend .base-margin-bottom;

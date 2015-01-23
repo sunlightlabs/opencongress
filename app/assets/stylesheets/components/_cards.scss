@@ -1,14 +1,6 @@
 .info-card {
   margin-left: $base-spacing-unit;
-  &:before {
-    top: 65px;
-    bottom: 10px;
-    position: absolute;
-    content: " ";
-    width: 1px;
-    background-color: $yellow;
-    left: 2%;
-  }
+
   a {
     font-size: $epsilon;
     text-align: center;

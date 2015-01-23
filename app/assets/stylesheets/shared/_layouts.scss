@@ -1,0 +1,29 @@
+.top-panel {
+  @include make-row();
+  padding: $base-spacing-unit;
+  background: $white;
+
+  &__section-left {
+    @include make-md-column(8);
+    border-right: 1px solid $dark-gray;
+    @include breakpoint(max-width $screen-md-min){
+      border: none;
+    }
+  }
+
+  &__section-right{
+    @include make-md-column(4);
+  }
+}
+
+.contents {
+  @include make-row();
+  
+  &__main {
+    @include make-md-column(8);
+  }
+
+  &__side {
+    @include make-md-column(4);
+  }
+}

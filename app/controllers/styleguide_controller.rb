@@ -16,4 +16,6 @@ class StyleguideController < ApplicationController
   def navigation
   end
 
+  def layout
+  end
 end

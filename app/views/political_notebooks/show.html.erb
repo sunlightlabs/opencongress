@@ -139,7 +139,7 @@
     <% end %>
 
     <div class="notebook_bottom">
-      <%= will_paginate @items, :params => {:controller => 'notebook_items', :action => '', :login => @user.login } %>
+      <%= will_paginate @items %>
 
       <div class="notebook_top">
 

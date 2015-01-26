@@ -265,14 +265,20 @@ module EmailCongress
       duplicate_with_trailing_slash = lambda {|url| [url, "#{url}/"] }
       subdomain = subdomain.downcase
       urls = case title.downcase
-                when "rep"
-                  ["http://#{subdomain}.house.gov",
-                   "http://www.#{subdomain}.house.gov",
-                   "http://www.house.gov/#{subdomain}"]
-                when "sen"
-                  ["http://#{subdomain}.senate.gov",
-                   "http://www.#{subdomain}.senate.gov",
-                   "http://www.senate.gov/#{subdomain}"]
+      when "rep"
+        ["http://#{subdomain}.house.gov",
+         "http://www.#{subdomain}.house.gov",
+         "http://www.house.gov/#{subdomain}",
+         "https://#{subdomain}.house.gov",
+         "https://www.#{subdomain}.house.gov",
+         "https://www.house.gov/#{subdomain}"]
+      when "sen"
+        ["http://#{subdomain}.senate.gov",
+         "http://www.#{subdomain}.senate.gov",
+         "http://www.senate.gov/#{subdomain}",
+         "https://#{subdomain}.senate.gov",
+         "https://www.#{subdomain}.senate.gov",
+         "https://www.senate.gov/#{subdomain}"]
       end
       urls.flat_map(&duplicate_with_trailing_slash)
     end

@@ -430,40 +430,18 @@ class BillController < ApplicationController
   end
 
   def text
+
     @topic = nil
     @meta_description = "Full bill text of #{@bill.title_full_common} on OpenCongress.org"
-
     @versions = @bill.bill_text_versions.all
-    if @versions.empty?
-      return missing_text
-    end
-
-    begin
-      @versions = Bill.chain_text_versions(@versions)
-    rescue Exception => e
-      logger.warn("Failed to provide bill text for #{@bill.ident}. Reason: #{e}")
-      return missing_text
-    end
-
-    if params[:version]
-      @selected_version = @versions.select{ |v| v.version == params[:version] }.first
-    else
-      @selected_version = @versions.last
-    end
-
+    @selected_version = @bill.get_version(params[:version] || nil)
+    return missing_text if @selected_version.nil?
     @page_title = "Text of #{@bill.typenumber} as #{@selected_version.pretty_version}"
     @commented_nodes = @selected_version.bill_text_nodes.includes(:comments)
     @top_nodes = @selected_version.top_comment_nodes
+    @bill_text = @bill.full_text
+    missing_text if @bill_text.blank?
 
-    begin
-      # open html from file
-      if !@selected_version.nil?
-        path = "#{Settings.oc_billtext_path}/#{@bill.session}/#{@bill.reverse_abbrev_lookup}/#{@bill.reverse_abbrev_lookup}#{@bill.number}#{@selected_version.version}.gen.html-oc"
-        @bill_text = File.open(path).read
-      end
-    rescue
-      return missing_text
-    end
   end
 
   def print_text

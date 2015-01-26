@@ -135,12 +135,16 @@ class Bill < ActiveRecord::Base
     "sres" => "sr"
   }
 
+
+  # This constant maps unitedstates XML tags to display HTML tags. This mapping
+  # may not be exhaustive so if one uses it then they should include a rescue
+  # or conditional to address this aspect.
   HTML_TO_XML_TAGS = {
     'article' => ['bill'],
     'p' => ['distribution-code','congress','session','legis-num','current-chamber', 'legis-type',
             'official-title', 'header', 'text', 'attestation-date', 'attestor', 'role'],
     'section' => ['paragraph', 'form','action','legis-body','quoted-block', 'subsection',
-                  'attestation', 'attestation-grou', 'subparagraph', 'section'],
+                  'attestation', 'attestation-group', 'subparagraph', 'section'],
     'span' => ['enum'],
     'hr' => ['pagebreak'],
     nil => ['dublinCore', 'metadata']
@@ -163,10 +167,10 @@ class Bill < ActiveRecord::Base
   scope :house_bills, where(:bill_type => (@@GOVTRACK_TYPE_LOOKUP.keys.keep_if{|k| k[0] == 'h'}))
 
   def reverse_abbrev_lookup
-    return @@GOVTRACK_TYPE_LOOKUP[self.bill_type]
+    @@GOVTRACK_TYPE_LOOKUP[self.bill_type]
   end
 
-#This can also be removed when we completely get rid of GovTrack
+  #This can also be removed when we completely get rid of GovTrack
   def Bill.get_types_ordered
     return @@TYPES_ORDERED
   end
@@ -1401,36 +1405,58 @@ class Bill < ActiveRecord::Base
     end
   end
 
+  def full_text_as_unitedstates_xml_path(version = nil)
+    "#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml"
+  end
+
   def full_text_as_unitedstates_xml(version = nil)
-    puts "#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml"
-    IO.read("#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml") rescue ''
+    puts full_text_as_unitedstates_xml_path(version)
+    IO.read(full_text_as_unitedstates_xml_path(version)) rescue ''
+  end
+
+  def full_text_as_unitedstates_html_path(version = nil)
+    "#{Settings.oc_billtext_path}/#{self.session}/#{self.reverse_abbrev_lookup}/#{self.reverse_abbrev_lookup}#{self.number}#{get_version(version).version}.gen.html-oc"
+  end
+
+  def full_text_as_unitedstates_html(version = nil)
+    puts full_text_as_unitedstates_html_path(version)
+    IO.read(full_text_as_unitedstates_html_path(version)) rescue ''
   end
 
   def full_text_as_govtrack_html(version = nil)
     IO.read("#{Settings.oc_billtext_path}/#{self.session}/#{self.reverse_abbrev_lookup}/#{self.reverse_abbrev_lookup}#{self.number}#{get_version(version).version}.gen.html-oc") rescue ''
   end
 
-  def full_text_as_unitedstates_html(version = nil)
+  # Convert unitedstates XML of full bill text into displayable HTML.
+  #
+  # @param version [String,nil] version of bill to get as HTML
+  # @return [String] HTML of bill
+  def generate_full_text_as_unitedstates_html(version = nil)
     doc = Nokogiri::XML(self.full_text_as_unitedstates_xml(version))
 
+    # create new Hash to convert one-to-many to many-to-one
+    map = {}
     HTML_TO_XML_TAGS.each do |key,value|
-      value.each do |tag|
-        doc.search(tag).each do |node|
-          if key.nil?
-            node.unlink
-          elsif not node.attributes.has_key?('class')
-            node.attributes.each do |k,v|
-              node["data-#{k}"] = v
-              node.remove_attribute(k)
-            end
-            node['id'] = "xml_#{node['id']}" if node.has_attribute?('id')
-            node['class'] = "xml_#{node.name}"
-            node.name = key
-          end
-        end
-      end
+      value.each {|v| map[v] = key }
     end
 
+    # traverse XML and convert tags appriopriately
+    doc.traverse do |node|
+      if map[node.name].nil?
+        node.unlink
+      elsif not node.attributes.has_key?('class')
+        node.attributes.each do |k,v|
+          node["data-#{k}"] = v
+          node.remove_attribute(k)
+        end
+        node['id'] = "xml_#{node['data-id']}" if node.has_attribute?('data-id')
+        node['class'] = "xml_#{node.name}"
+        node.name = map[node.name] rescue 'p'
+      end
+
+    end
+
+    # return HTML as a string
     doc.root.to_s
   end
 

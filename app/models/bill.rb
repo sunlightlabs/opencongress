@@ -1357,7 +1357,9 @@ class Bill < ActiveRecord::Base
     super(stylize_serialization(ops))
   end
 
-
+  def word_count_calculator(version = nil)
+    full_text(version).gsub(/<("[^"]*"|'[^']*'|[^'">])*>/,' ').gsub(/\t|\n|\.|,/,' ').gsub(/\s+/,' ').gsub(/\&.*\;/,'').strip.split(' ').count
+  end
 
   # Gets the text versions of a bill as an Array in the proper chained order, i.e.
   # the first entry will be the first bill version (usually as introduced), the second
@@ -1390,8 +1392,7 @@ class Bill < ActiveRecord::Base
   #
   # @param version [String, nil] nil for current, specified String otherwise
   # @param type [String] type of full text to return: html, xml, or text
-  # @return [String] HTML markup of bill text or empty string if file path can't be found
-  # @example opencongress/bill.text/113/h/h592rfs.gen.html-oc
+  # @return [String] HTML/XML markup of bill text, plaintext, or empty string a file path can't be found
   def full_text(version = nil, type = 'html')
     case type
       when 'html'

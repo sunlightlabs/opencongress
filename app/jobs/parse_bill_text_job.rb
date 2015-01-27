@@ -5,9 +5,17 @@ require 'yaml'
 require 'fileutils'
 require 'rexml/document'
 
-
 module ParseBillTextJob
-  def self.perform (options = Hash.new)
+
+  # Entry method for parsing bill text. If a :bill is in the options argument
+  # then only that bill is parsed. If no :bill option is provided then
+  # either the provided congress is parsed or, in case nothing is provided,
+  # the current congress.
+  #
+  # @param options [Hash] hash of option to pass
+  # @option options [Integer] :congress the congress
+  # @option options [Integer] :bill the ID for a bill
+  def self.perform(options = {})
     bill_id = options[:bill]
 
     if bill_id.nil?
@@ -17,45 +25,109 @@ module ParseBillTextJob
     end
   end
 
-  def self.for_congress (congress)
+  # Parse all bills for an input congress.
+  #
+  # @param congress [Integer] congress number
+  def self.for_congress(congress)
     Bill.get_types_ordered_new.each do |bill_type, bill_title_prefix|
       # We get the bill list from the database because even if we have a
       # text file for a bill, we won't ever display it unless it's also
       # in the database.
       bill_list = Bill.where(:bill_type => bill_type, :session => congress).order(:number).to_a
-
-      unless bill_list.empty?
-        # Keep a file listing around to avoid globing the directory for each file.
-
+      unless bill_list.empty? # Keep a file listing around to avoid globing the directory for each file.
         puts "Processing #{bill_list.length} bills of type #{bill_type}"
-        parse_bills(bill_list,
-                    build_text_file_lookup(congress, bill_type),
-                    build_version_file_lookup(congress, bill_type))
+        parse_bills(bill_list, congress, bill_type)
       end
     end
   end
 
-  def self.for_bill (bill_id)
+  # Parse bill for ID provided.
+  #
+  # @param bill_id [Integer] id of the bill to parse
+  def self.for_bill(bill_id)
     puts "Parsing text for #{bill_id}"
     bill_type, bill_number, congress = Bill.ident(bill_id)
     bill_list = Bill.where(:number => bill_number, :bill_type => bill_type, :session => congress).to_a
-    parse_bills(bill_list,
-                build_text_file_lookup(congress, bill_type),
-                build_version_file_lookup(congress, bill_type))
+    parse_bills(bill_list, congress, bill_type)
+  end
+
+  protected
+
+  # Splitter method for parsing different versions depending on the congress number
+  #
+  # @param bill_list [Array<Bill>] array of bill instances to parse
+  # @param congress [Integer] congress number
+  # @param bill_type [String] the type of the bill (govtrack types)
+  def self.parse_bills(bill_list, congress, bill_type)
+    if congress.to_i >= 114
+      parse_bills_114_onward(bill_list)
+    else
+      parse_bills_pre_114(bill_list,
+                          build_text_file_lookup(congress, bill_type),
+                          build_version_file_lookup(congress, bill_type))
+    end
+  end
+
+  # This method handles parsing bills from the 114th Congress onward as we're now sourcing
+  # bill data directly from unitedstates/congress scrapers.
+  #
+  # @param bill_list [Array<Bill>] array of bill instances to parse
+  def self.parse_bills_114_onward(bill_list)
+    bill_list.each_with_index do |bill, idx|
+      puts "Processing text files for #{bill.ident} (bill #{idx+1} of #{bill_list.length})"
+
+      # create ordered chain of bill versions
+      version_order = []
+      Dir["#{version_dir_114_onward(bill)}/*"].each {|version_dir| version_order << JSON.parse(File.read("#{version_dir}/data.json")) }
+      version_order.sort {|x,y| Date.parse(x['issued_on']) <=> Date.parse(y['issued_on']) }
+
+      # Insert version instances into the database and generate HTML.
+      previous = nil
+      version_order.each do |meta_data|
+
+        # fill data version instance with data
+        version = bill.bill_text_versions.find_or_create_by_version(meta_data['version_code'])
+        version.word_count = bill.word_count_calculator
+        version.previous_version = previous
+        version.difference_size_chars = nil
+        version.percent_change = nil
+        version.total_changes = nil
+        version.file_timestamp = File.mtime("#{version_dir_114_onward(bill)}/#{meta_data['version_code']}/document.xml")
+        version.save
+
+        # convert XML into HTML
+        html = bill.generate_full_text_as_unitedstates_html(meta_data['version_code'])
+
+        # create directories if they don't exist
+        FileUtils.mkdir_p_if_nonexistent(bill.full_text_as_unitedstates_html_path.split('/')[0..-2])
+
+        # write HTML to file
+        File.open(bill.full_text_as_unitedstates_html_path, 'w') {|file| file.write("<?xml version='1.0'?>\n" + html)}
+
+        # set previous variable for next iteration
+        previous = meta_data['version_code']
+
+        # finally save bill
+        bill.save
+      end
+
+    end
+
   end
 
 
-  protected
-  def self.parse_bills (bill_list, text_file_lookup, version_file_lookup)
+  def self.parse_bills_pre_114 (bill_list, text_file_lookup, version_file_lookup)
     bill_list.each_with_index do |bill, idx|
-      if bill_list.length > 1
-        puts "Processing text files for #{bill.ident} (bill #{idx+1} of #{bill_list.length})"
-      end
+      puts "Processing text files for #{bill.ident} (bill #{idx+1} of #{bill_list.length})"
       govtrack_bill_ident = "#{bill.reverse_abbrev_lookup}#{bill.number}-#{bill.session}"
       parse_files(bill,
                   text_file_lookup.fetch(govtrack_bill_ident, []),
                   version_file_lookup.fetch(govtrack_bill_ident, []))
     end
+  end
+
+  def self.version_dir_114_onward(bill)
+    "#{Settings.unitedstates_data_path}/#{bill.session}/bills/#{bill.bill_type}/#{bill.bill_type}#{bill.number}/text-versions"
   end
 
   def self.version_file_pattern (bill_type)
@@ -325,7 +397,5 @@ module ParseBillTextJob
       return word_count
     end
   end
+
 end
-
-
-

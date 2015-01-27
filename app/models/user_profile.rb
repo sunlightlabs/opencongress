@@ -77,23 +77,23 @@ class UserProfile < ActiveRecord::Base
     end
   end
 
-  ##
   # Getter for a concatenation of first and last name
   #
+  # @return [String] full name concatenated
   def full_name
     "#{first_name} #{last_name}"
   end
 
-  ##
   # Setter for first and last name using a sophisticated full name splitter
   #
+  # @param name [String] full name string
   def full_name=(name)
     self.first_name, self.last_name = FullNameSplitter.split name
   end
 
-  ##
   # Getter for location
   #
+  # @return [String] city and state, state, or city
   def location
     if city.present? && state.present?
       "#{city}, #{state}"
@@ -104,11 +104,9 @@ class UserProfile < ActiveRecord::Base
     end
   end
 
-  ##
   # Getter for mailing address by concatenating various address attributes
   #
-  # @return {String}  representing full mailing address
-  #
+  # @return [String] string representing full mailing address
   def mailing_address
     addr = ''
     if street_address.present?
@@ -130,11 +128,9 @@ class UserProfile < ActiveRecord::Base
     addr
   end
 
-  ##
   # Getter for mailing address by building a Hash
   #
-  # @return {Hash}  representing full mailing address
-  #
+  # @return [Hash] hash representing full mailing address
   def mailing_address_as_hash
     {
       :street_address => street_address,

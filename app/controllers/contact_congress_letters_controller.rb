@@ -76,6 +76,10 @@ class ContactCongressLettersController < ApplicationController
 
     @uncontactable = (@sens + @reps).reject{|eo| eo.contactable == true}
 
+    if current_user.user_profile.zip_four.blank?
+      ZipInferrenceService.new(@sender_user.user_profile)
+    end
+
     @formageddon_thread = Formageddon::FormageddonThread.new
     @formageddon_thread.prepare(:user => current_user, :subject => @subject, :message => message_start)
   end

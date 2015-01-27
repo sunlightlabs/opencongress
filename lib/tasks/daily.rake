@@ -129,6 +129,16 @@ namespace :update do
     end
   end
 
+  desc 'Parses full text(s) of a bill, creates versions in DB, and renders HTML + saves to file'
+  task :bill_full_text => :environment do
+    begin
+      ParseBillTextJob.perform
+    rescue Exception => e
+      Emailer.rake_error(e, "Error parsing bill full text!").deliver
+      throw e
+    end
+  end
+
   desc "Import committees"
   task :committees => :environment do
     begin
@@ -316,6 +326,7 @@ namespace :update do
     "images:all",
     "import:legislators:current", "import:bills:current",
     :amendments,
+    :bill_full_text,
     :roll_calls,
     :committees,
     :committee_reports, :committee_meetings,

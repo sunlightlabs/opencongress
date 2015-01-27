@@ -454,4 +454,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def default_url_options(options={})
+    if ENV["RAILS_ENV"] == "development"
+      options
+    else
+      options.merge({ :protocol => "https" })
+    end
+  end 
+
 end

@@ -1,7 +1,6 @@
 - login_action ||= nil
-- protocol = Rails.env == 'production' ? 'https' : 'http'
 
-= form_for :user, :url => url_for(controller: :account, action: :login, only_path: false, protocol: protocol) do |f|
+= form_for :user, :url => url_for(controller: :account, action: :login, only_path: false) do |f|
   %p
     %label{ :for => "user_login" } Login
     = f.text_field :login, :class => 'field', :size => 30

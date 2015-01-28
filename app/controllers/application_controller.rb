@@ -27,8 +27,30 @@ class ApplicationController < ActionController::Base
   before_filter :is_authorized?
   before_filter :set_simple_comments
   before_filter :last_updated
+  before_filter :set_meta_tags
   after_filter :cache_control
   after_filter :capture_cta
+
+  META_TAG_DEFAULTS = {
+    :facebook => {
+      :site_name => "OpenCongress",
+      :url => Settings.base_url,
+      :title => "OpenCongress",
+      :description => "OpenCongress is your primary resource for holding Washington accountable.",
+      :type => "website",
+      :image => "https://www.opencongress.org/images/fb-default.jpg" 
+    },
+    :twitter => {
+      :card => "summary",
+      :site => "@OpenCongress",
+      :title => "Track the latest out of Washington, DC",
+      :description => "OpenCongress is your primary resource for holding Washington accountable.",
+      :image => "https://www.opencongress.org/images/fb-default.jpg"
+    },
+    :search => {
+      :description => "OpenCongress is your primary resource for holding Washington accountable."
+    }    
+  }
 
   class InvalidByteSequenceErrorFromParams < Encoding::InvalidByteSequenceError
     # Empty
@@ -507,5 +529,66 @@ class ApplicationController < ActionController::Base
       method = Regexp.last_match[3]
       [file, line, method]
     end
+  end
+
+  # Set instance variables for facebook, twitter, and search meta tags.
+  # These instance variables are rendered in /meta/meta_tags_for_#{service}.
+  #
+  # @param options [Hash] hash of meta tag options
+  # @return
+  def set_meta_tags(options={})
+    set_meta_tags_for_facebook(options)
+    set_meta_tags_for_twitter(options)
+    set_meta_tags_for_search(options)
+  end
+
+  # Set instance variable for facebook meta tags, using META_TAG_DEFAULTS as a base (unless @meta_tags_for_facebook is already set)
+  # The instance variable is rendered in /meta/meta_tags_for_facebook.
+  # 
+  # @param options [Hash] hash of meta tag options
+  # @option options [String] :site_name the name of the current website
+  # @option options [String] :url the url of the page
+  # @option options [String] :title the title of your object as it should appear within the Open Graph
+  # @option options [String] :description a one to two sentence description of your object
+  # @option options [String] :type the object's Open Graph type
+  # @option options [String] :image an image url that should represent your object within the graph
+  # @return [Hash] hash of facebook meta tags
+  def set_meta_tags_for_facebook(options={})
+    @meta_tags_for_facebook ||= META_TAG_DEFAULTS[:facebook]
+    options = clean_meta_tags(options.merge({:service => :facebook}))
+    @meta_tags_for_facebook.merge!(options)
+  end
+
+  # Set instance variable for twitter meta tags, using META_TAG_DEFAULTS as a base (unless @meta_tags_for_twitter is already set)
+  # These instance variables are rendered in /meta/meta_tags_for_twitter.
+  #
+  # @param options [Hash] hash of meta tag options
+  # @option options [String] :card the name of the twitter card type
+  # @option options [String] :site the twitter @username the card should be attributed to
+  # @option options [String] :title concise title (will be truncated at 70 chars by twitter)
+  # @option options [String] :description concise summary of page content
+  # @option options [String] :image URL to a _unique_ image representing content of the page.
+  # @return [Hash] hash of twitter meta tags
+  def set_meta_tags_for_twitter(options={})
+    @meta_tags_for_twitter ||= META_TAG_DEFAULTS[:twitter]
+    options = clean_meta_tags(options.merge({:service => :twitter}))
+    @meta_tags_for_twitter.merge!(options)
+  end
+
+  # Set instance variable for search meta tags, using META_TAG_DEFAULTS as a base (unless @meta_tags_for_search is already set).
+  # These instance variables are rendered in /meta/meta_tags_for_search.
+  #
+  # @param options [Hash] hash of meta tag options
+  # @option options [String] :description a description that may be used in search engines' page snippets
+  # @return [Hash] hash of search meta tags
+  def set_meta_tags_for_search(options={})
+    @meta_tags_for_search ||= META_TAG_DEFAULTS[:search]
+    options = clean_meta_tags(options.merge({:service => :search}))
+    @meta_tags_for_search.merge!(options)
+  end
+
+  def clean_meta_tags(options={})
+    unwanted_keys = options.keys - META_TAG_DEFAULTS[options[:service]].keys
+    options.except(*unwanted_keys)
   end
 end

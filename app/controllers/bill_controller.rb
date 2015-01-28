@@ -397,6 +397,13 @@ class BillController < ApplicationController
   end
 
   def show
+    set_meta_tags({
+      :title => "don't override this title when setting specifics",
+      :description => "description"
+    })
+    set_meta_tags_for_facebook({
+      :description => "override description for facebook"
+    })
     #expires_in 20.minutes, :public => true
     respond_to do |format|
       format.html {

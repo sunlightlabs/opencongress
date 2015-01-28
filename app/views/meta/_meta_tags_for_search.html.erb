@@ -1,0 +1,8 @@
+<% @meta_tags_for_search.each do |name, content| %>
+  <%= render :partial => "meta/meta_tag_for_search", 
+      :locals => {
+        :name => name,
+        :content => content
+      }
+  %>
+<% end %>

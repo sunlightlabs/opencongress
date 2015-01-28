@@ -1,0 +1,8 @@
+<% @meta_tags_for_twitter.each do |name, content| %>
+  <%= render :partial => "meta/meta_tag_for_twitter", 
+      :locals => {
+        :name => name,
+        :content => content
+      }
+  %>
+<% end %>

@@ -13,9 +13,9 @@
     <%= stylesheet_link_tag "application" %>
 
     <!-- need to add sunlight branding bar -->
-    <%= meta_tags_for_search %>
-    <%= meta_tags_for_twitter %>
-    <%= meta_tags_for_facebook %>
+    <%= render :partial => "meta/meta_tags_for_facebook" %>
+    <%= render :partial => "meta/meta_tags_for_twitter" %>
+    <%= render :partial => "meta/meta_tags_for_search" %>
     <title><%= page_title %></title>
 </head>
 

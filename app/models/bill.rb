@@ -1443,7 +1443,7 @@ class Bill < ActiveRecord::Base
 
     # traverse XML and convert tags appriopriately
     doc.traverse do |node|
-      if map[node.name].nil?
+      if map.has_key?(node.name) and map[node.name].nil?
         node.unlink
       elsif not node.attributes.has_key?('class')
         node.attributes.each do |k,v|

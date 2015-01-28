@@ -1437,13 +1437,13 @@ class Bill < ActiveRecord::Base
 
     # create new Hash to convert one-to-many to many-to-one
     map = {}
-    HTML_TO_XML_TAGS.each do |key,value|
+    Bill::HTML_TO_XML_TAGS.each do |key,value|
       value.each {|v| map[v] = key }
     end
 
     # traverse XML and convert tags appriopriately
     doc.traverse do |node|
-      if map.has_key?(node.name) and map[node.name].nil?
+      if not node.respond_to?(:attributes) or (map.has_key?(node.name) and map[node.name].nil?) 
         node.unlink
       elsif not node.attributes.has_key?('class')
         node.attributes.each do |k,v|
@@ -1452,9 +1452,8 @@ class Bill < ActiveRecord::Base
         end
         node['id'] = "xml_#{node['data-id']}" if node.has_attribute?('data-id')
         node['class'] = "xml_#{node.name}"
-        node.name = map[node.name] rescue 'p'
+        node.name = map[node.name] || 'p'
       end
-
     end
 
     # return HTML as a string

@@ -99,7 +99,7 @@ module ParseBillTextJob
         html = bill.generate_full_text_as_unitedstates_html(meta_data['version_code'])
 
         # create directories if they don't exist
-        FileUtils.mkdir_p_if_nonexistent(bill.full_text_as_unitedstates_html_path.split('/')[0..-2])
+        FileUtils.mkdir_p_if_nonexistent(bill.full_text_as_unitedstates_html_path.split('/')[0..-2].join('/'))
 
         # write HTML to file
         File.open(bill.full_text_as_unitedstates_html_path, 'w') {|file| file.write("<?xml version='1.0'?>\n" + html)}

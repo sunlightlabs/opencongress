@@ -900,41 +900,4 @@ EOT
     end
   end
 
-
-  # Yields to :page_title content block or supplies a default
-  def page_title
-    if content_for?(:page_title)
-      content_for(:page_title)
-    else
-      "OpenCongress"
-    end
-  end
-
-  # Yields to :meta_tags_for_search content block or supplies a default
-  def meta_tags_for_search
-    if content_for?(:meta_tags_for_search)
-      content_for(:meta_tags_for_search)
-    else
-      render :partial => "meta/default_meta_tags_for_search"
-    end
-  end
-
-  # Yields to :meta_tags_for_twitter content block or supplies a default
-  def meta_tags_for_twitter
-    if content_for?(:meta_tags_for_twitter)
-      content_for(:meta_tags_for_twitter)
-    else
-      render :partial => "meta/default_meta_tags_for_twitter"
-    end
-  end
-
-  # Yields to :meta_tags_for_facebook content block or supplies a default
-  def meta_tags_for_facebook
-    if content_for?(:meta_tags_for_facebook)
-      content_for(:meta_tags_for_facebook)
-    else
-      render :partial => "meta/default_meta_tags_for_facebook"
-    end
-  end
-
 end

@@ -9,6 +9,7 @@ class BillController < ApplicationController
   before_filter :aavtabs, :only => [:actions, :amendments, :votes, :actions_votes]
   before_filter :get_range, :only => [:hot]
   before_filter :login_required, :only => [:bill_vote, :hot_bill_vote]
+  before_filter :set_meta_tag_defaults
 
   TITLE_MAX_LENGTH = 150
 
@@ -398,12 +399,14 @@ class BillController < ApplicationController
 
   def show
     set_meta_tags({
-      :title => "don't override this title when setting specifics",
-      :description => "description"
+      :description => "description",
+      :title => "title override"
     })
     set_meta_tags_for_facebook({
-      :description => "override description for facebook"
+      :description => "override description for facebook",
+      :title => "override title for facebook"
     })
+    
     #expires_in 20.minutes, :public => true
     respond_to do |format|
       format.html {
@@ -822,4 +825,11 @@ private
     @commented_nodes = []
     @version = nil
   end
+
+  def set_meta_tag_defaults
+    set_meta_tags({
+      :title => "default title for controller"
+    })
+  end
+
 end

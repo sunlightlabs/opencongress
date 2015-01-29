@@ -1,7 +1,3 @@
-<% content_for :page_title do %>
-  <%= "#{@bill.title_common} (#{@bill.typenumber})" %>
-<% end %> 
-
 <div class="main">
 
 <%= render :partial => 'shared/stats_box', :object => @sidebar_stats_object if @sidebar_stats_object %>

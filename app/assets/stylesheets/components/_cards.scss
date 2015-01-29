@@ -1,105 +1,155 @@
-.info-card {
-  margin-left: $base-spacing-unit;
+.card {
 
-  a {
-    font-size: $epsilon;
-    text-align: center;
-  }
-
-  @extend .base-margin-bottom;
+  @include make-row();
+  @extend .cf;
   border: 1px solid $dark-gray;
   padding: $base-spacing-unit;
-  padding-bottom: 0;
+  padding-bottom: $base-spacing-unit/2;
   background: $white;
+  margin-bottom: $base-spacing-unit;
+  
+  &--info {
 
-  &__title {
-    @extend .bold;
+    a {
+      font-size: $epsilon;
+      text-align: center;
+    }
+
+
+    &__title {
+      @extend .bold;
+    }
+
+    &__time {
+      @extend .micro-size;
+      color: $dark-gray;
+      padding-bottom: $base-spacing-unit;
+    }
+
+    &__footer {
+      border-top: 1px dashed #ccc;
+      padding-top: $base-spacing-unit/2;
+
+      &--no-border {
+        border: none;
+      }
+    }
+
+    &__button {
+      @extend .pull-right;
+      margin-left: 16px;
+      border: 1px solid $transparent;
+      @include button-variant(shade($dark-gray, 40%), $transparent, $yellow);
+      @include breakpoint(max-width $screen-sm){
+        float: none;
+        display: block;
+        width: 100%;
+      }
+    }
+
+
+    &__icon {
+      @include icon(50px);
+      margin-bottom: $base-spacing-unit/2;
+    }
+
+    &__count{
+      border-radius: 50%;
+      padding: 8px 15px;
+      display: inline-block;
+      margin-bottom: $base-spacing-unit/2;
+      border: 1px solid $yellow;
+    }
+
+    &__bill-ref {
+      padding: 0 $base-spacing-unit*2;
+      margin-bottom: $base-spacing-unit/2;
+      display: inline-block;
+    }
   }
 
-  &__time {
-    @extend .micro-size;
-    color: $dark-gray;
-    padding-bottom: $base-spacing-unit;
-  }
-
-  &__footer {
+  &--person {
+    
     @include make-row();
     @extend .cf;
-    border-top: 1px dashed #ccc;
-    padding-top: $base-spacing-unit/2;
-
-    &--no-border {
-      border: none;
+    
+    &__left-wrapper {
+      @include make-xs-column(12);
+      @include make-md-column(3); 
+      @include breakpoint(max-width $screen-md){
+        max-height: $base-spacing-unit;
+      }
     }
-  }
 
-  &__button {
-    @extend .pull-right;
-    margin-left: 16px;
-    border: 1px solid $transparent;
-    @include button-variant(shade($dark-gray, 40%), $transparent, $yellow);
-    @include breakpoint(max-width $screen-sm){
-      float: none;
+    &__right-wrapper {
+      @include make-xs-column(12);
+      @include make-md-column(9);
+    }
+
+    &__moc-icon {
+      margin: 0 auto;
+      @include icon(70px);
+      margin-bottom: $base-spacing-unit/2;
       display: block;
-      width: 100%;
+      @include breakpoint(max-width $screen-md){
+        display: inline;
+        position: relative;
+        float: left;
+        bottom: 47px;
+        left: 40%;
+        margin: 0;
+      }
     }
-  }
 
+    &__follow-button {
+      border: 1px solid $transparent;
+      @include button-variant(shade($dark-gray, 40%), $transparent, $yellow);
+      @include make-md-column(12);
+      @include make-xs-column(3);
+      @extend .pull-right;
+      
+    }
 
-  &__icon {
-    @include icon(50px);
-    margin-bottom: $base-spacing-unit/2;
-  }
+    &__name {
+      font-size: $gamma;
+      margin: $base-spacing-unit 0 $base-spacing-unit/4 0;
+    }
 
-  &__count{
-    border-radius: 50%;
-    padding: 8px 15px;
-    display: inline-block;
-    margin-bottom: $base-spacing-unit/2;
-    border: 1px solid $yellow;
-  }
+    &__position {
+      color: shade($dark-gray, 40%);
+      font-size: $nano-size;
+      font-style: italic;
+    }
 
-  &__bill-ref {
-    padding: 0 $base-spacing-unit*2;
-    margin-bottom: $base-spacing-unit/2;
-    display: inline-block;
-  }
-}
+    &__detail {
+      @extend .semibold;
+      color: shade($dark-gray, 40%);
+      font-size: $micro-size;
+      display: inline-block;
+      margin : $base-spacing-unit/4 0;
 
-.person-card {
+      &--bullet {
+        @extend .card--person__detail;
+        &:after { content: " \00b7 "; }
+        padding: 1px;
+      }
+    }
 
-  &__title {
-    @extend .bold;
-    border-bottom: 1px solid $yellow;
-  }
+    &__vote-detail {
+      color: shade($dark-gray, 40%);
+      
+      @include breakpoint(max-width $screen-md){
+        display: block;
+      }
 
-  &__icon {
-    @include icon(70px);
-    @extend .pull-left;
-    display: inline-block;
-    margin-right:$base-spacing-unit/1.5;
-  }
-
-  &__rep{
-    margin: $base-spacing-unit/2 0 0 0;
-  }
-
-  &__name {
-    font-size: $gamma;
-    margin-top: 0;
-    line-height: 1;
-  }
-
-  &__details {
-    color: shade($dark-gray, 40%);
-    float: left;
-    font-size: $nano-size;
-    margin: 0;
-    &--bullet {
-      @extend .person-card__details;
-      &:after { content: " \00b7 "; }
-      content: "\00b7";
-      padding: 1px;
+      &--bullet {
+        @extend .card--person__vote-detail;
+        padding: 1px;
+        &:after { content: " \00b7 "; }
+        @include breakpoint(max-width $screen-md){
+          &:after { content: ''; }
+        }
+      }
     }
   }
 }

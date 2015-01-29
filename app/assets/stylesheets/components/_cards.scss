@@ -6,7 +6,7 @@
   padding: $base-spacing-unit;
   padding-bottom: $base-spacing-unit/2;
   background: $white;
-  margin-bottom: $base-spacing-unit;
+  margin-bottom: $base-spacing-unit * 2;
   
   &--info {
 
@@ -96,19 +96,26 @@
         position: relative;
         float: left;
         bottom: 47px;
-        left: 40%;
+        left: 44%;
         margin: 0;
       }
     }
 
     &__follow-button {
-      border: 1px solid $transparent;
       @include button-variant(shade($dark-gray, 40%), $transparent, $yellow);
       @include make-md-column(12);
       @include make-xs-column(3);
-      @extend .pull-right;
-      
+      @extend .pull-right;  
+      border-width: 1px;
+      border-style: solid;
+      border-radius: $radius;
+
+      &--active {
+        @extend .card--person__follow-button;
+        @include button-variant($white, $yellow, $yellow);
+      }
     }
+    
 
     &__name {
       font-size: $gamma;

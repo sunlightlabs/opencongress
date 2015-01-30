@@ -32,6 +32,10 @@
 
     &__example {
         @include make-md-column(7);
+    
+        &--extend {
+            @include make-xs-column(12);
+        }
     }
 
     &__notes {
@@ -123,4 +127,10 @@
 .show-grid [class^=col-] div {
     background: #ccc;
     padding: 16px;
+}
+
+.layout{
+    div {
+        border: 1px solid #4E4E4E;
+    }
 }

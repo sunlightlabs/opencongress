@@ -49,10 +49,17 @@ module UnitedStates
       val
     end
 
-
     # Returns a contact steps hash from a file path
+    #
+    # @param path [String] path to YAML file
+    # @return [Hash,nil] Hash if successfully reading YAML file, nil otherwise
     def parse_contact_file(path)
-      decode_contact_hash(YAML.load(File.read(path)))
+      begin
+        decode_contact_hash(YAML.load(File.read(path)))
+      rescue
+        puts "No YAML file found at #{path}"
+        nil
+      end
     end
 
     # Returns a decoded contact steps hash, muxing a raw contact_file hash
@@ -84,15 +91,16 @@ module UnitedStates
       OCLogger.log("Updating steps for #{person.bioguideid}...")
       path = File.join(Settings.contact_congress_path, 'members', "#{person.bioguideid}.yaml") if path.nil?
       hsh = parse_contact_file(path)
+      return false if hsh.nil?
       current_step = nil  # formageddon steps can span multiple directives here, ex. 'fill_in', 'select' and 'click_on'. This acts as a cursor.
       person.formageddon_contact_steps.destroy_all
       steps = hsh['contact_form']['steps']
       steps.each do |step|
 
         step.each do |action, values|
-          next if action == 'find' # ignore find for now
+          next if ['find','wait'].include? action # ignore find for now
 
-          unless ['visit', 'wait'].include? action
+          unless ['visit'].include? action
 
             # Build a step if it doesn't already exist
             person.formageddon_contact_steps << (current_step = Formageddon::FormageddonContactStep.new(
@@ -116,7 +124,8 @@ module UnitedStates
               # Special case if this is a captcha field.
               if item['value'] == "$CAPTCHA_SOLUTION"
                 # Even more special is recaptcha. Recaptcha noscripts an iframe which must be separately fetched
-                # and stored as a separate browser.
+                # and stored as a separate browser. If this fails then sending by webform will fail. 
+                # Hopefully there is a fax number!
                 if item['name'] =~ /recaptcha/
                   generate_recaptcha_form(person, form, item)
                 end
@@ -180,14 +189,28 @@ module UnitedStates
       browser = Mechanize.new
       url = person.formageddon_contact_steps.select{|step| step.command =~ /^visit/ }.first.command.split('::').last
       browser.get(url)
-      captcha_url = browser.page.search("iframe[src*='google.com/recaptcha']").first.attr('src')
-      step = recaptcha_steps[1]['fill_in'][0]
-      form.formageddon_recaptcha_form = Formageddon::FormageddonRecaptchaForm.new(
-        :url => captcha_url,
-        :response_field_css_selector => step['selector'],
-        :image_css_selector => step['captcha_selector'],
-        :id_selector => step['captcha_id_selector']
-      )
+
+      # try multiple ways to obtain the recaptcha image
+      ["iframe[src*='google.com/recaptcha']", "img[src*='google.com/recaptcha']"].each do|target|
+        begin
+          captcha_url = browser.page.search(target).first.attr('src')
+        rescue
+          puts "Captcha can't be found with #{target}"
+        end
+        break if defined? captcha_url
+      end
+
+      # we need a captcha_url at this point ... if we don't then something went wrong (javascript >_<)
+      if defined? captcha_url
+        step = recaptcha_steps[1]['fill_in'][0]
+        form.formageddon_recaptcha_form = Formageddon::FormageddonRecaptchaForm.new(
+            :url => captcha_url,
+            :response_field_css_selector => step['selector'],
+            :image_css_selector => step['captcha_selector'],
+            :id_selector => step['captcha_id_selector']
+        )
+      end
+
     end
 
     def is_const?(str)
@@ -198,4 +221,5 @@ module UnitedStates
       !! (str =~ /\A\$[A-Z][A-Z0-9_]*\Z/i)
     end
   end
+  
 end

@@ -1301,6 +1301,7 @@ class Bill < ActiveRecord::Base
     fragments = []
 
     fragments << "bill_all_index"
+    fragments << "bill_all_index_#{Settings.default_congress}" # see views/bill/all.html.erb
 
     FragmentCacheSweeper::expire_fragments(fragments)
   end

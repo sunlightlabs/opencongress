@@ -1,77 +1,41 @@
-<!doctype html>
-<html lang="en" class="bb_wrapper">
-  <head>
-    <%= render :partial => 'shared/analytics_head' %>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <%= meta_description_tag %>
-    <%= meta_keywords_tag %>
-    <%= csrf_meta_tag %>
-
-    <% if @meta_keywords %>
-      <meta name="keywords" content="<%= @meta_keywords %>" />
-    <% end %>
-
-    <title>OpenCongress - <%= Settings.default_congress %>th Congress - Track bills, votes, senators, and representatives in the U.S. Congress</title>
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <%= bookmarking_image.html_safe %>
-    <%= open_graph_meta %>
-
-    <%= javascript_include_tag "application" %>
-    <script src="//use.typekit.net/cuo6nsj.js"></script>
-    <script>try{Typekit.load();}catch(e){}</script> 
-
-    <%= csrf_meta_tag %>
-    <%= remote_forgery_protection %>
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenCongress</title>
     <%= stylesheet_link_tag "application" %>
+    <%= javascript_include_tag "application" %>
+    <script src="http://use.typekit.net/cuo6nsj.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+</head>
 
-    <!--[if lt IE 7]><style type="text/css">@import url("/stylesheets/ie6.css");</style><![endif]-->
+<body>
+    <header class="masthead">
+        <div class="masthead__header">
+            <div class="masthead__brand">
+                <a href="/">
+                    <h1 class="sr-only">OpenCongress</h1>
+                    <img class="logo" alt="OpenCongress Logo" src="<%= image_path('opencongress_logo.svg') %>">
+                </a>
+            </div>
+            <div class="masthead__actions">
+                <button class="button__signup">Sign Up</button>
+                <button class="button__login">Log In</button>
+            </div>
+        </div>
+    </header>
 
-    <!--[if IE 7]><style type="text/css">@import url("/stylesheets/ie7.css");</style><![endif]-->
 
-    <%= stylesheet_link_tag 'https://sunlight-cdn.s3.amazonaws.com/sf-icons/0.2/css/sf-icons.css' %>
+    <main class="container">
+        <%= yield %>
+    </main>
 
-    <link rel="stylesheet" href="https://sunlight-cdn.s3.amazonaws.com/brandingbar/0.4/css/brandingbar.css">
+    <footer class="footer">
+        <div class="container">
+            OpenCongress is built by Sunlight Foundation and powered by open data. Learn more below.
+            <br>
+            <span class="glyphicon glyphicon-chevron-down"></span>
+        </div>
+    </footer>
 
-    <%= yield :stylesheets_extra %>
-
-    <%= yield :stylesheets %>
-  </head>
-
-  <body>
-    <%= render :partial => 'layouts/header' %>
-    <%= render :partial => 'shared/user_login'  %>
-    <%= render :partial => 'shared/notices' %>
-    <%= render :partial => 'layouts/global_nav' %>
-    <%= yield %>
-    <div class="clear">&nbsp;</div>
-    <%= render :partial => 'layouts/footer' %>
-    <%= render :partial => 'shared/analytics_foot' %>
-    <%= fb_connect_async_js %>
-
-    <%= javascript_include_tag "socialite/simple-socialite-pack.js" %>
-    <%= javascript_include_tag "simple-socialite-pack.js" %>
-    <%#= javascript_include_tag "https://s3.amazonaws.com/sunlight-cdn/brandingbar/0.2/js/brandingbar.min.js.gz" %>
-    <%= javascript_include_tag "branding_bar_temp" %>
-    <%= javascript_include_tag "socialite/socialite.opencongress.js" %>
-    <script>
-      Socialite.setup({
-        facebook: {
-            lang: 'en_US',
-            appId: <%= ApiKeys.facebook_app_id %>
-        },
-        twitter: {
-            lang: 'en'
-        },
-        googleplus: {
-            lang: 'en-US'
-        }
-      });
-      SimpleSocialite.ShareBar.registerButton({
-        name: 'opencongress-email',
-        displayName: 'Email'
-      });
-    </script>
-  </body>
+</body>
 </html>

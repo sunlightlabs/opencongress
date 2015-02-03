@@ -1,54 +1,71 @@
-.nav {
-  margin: 0;
-  list-style: none;
-  
-  @extend .cf;
-
-  a {
-    display: block;
-    font-size: $h3-size;
-    text-decoration: none;
-  }
-}
-
-// Stack the nav list left-to-right
-.nav-horizontal {
-
-  > li {
-      float: left;
-      
-      @include media-query('small'){
-        display: block;
-        width: 100%;
-      }
-
-    &.active {
-      font-weight: 600;
-    }
+.masthead {
+    @extend .container-fluid;
     
-    a {
-      color: $text-color;
+    &__header {
+        @include make-row();
+        padding: 20px 0;
     }
-  }
 }
 
-.nav-block {
-  background: $dark-blue;
-  padding: ($base-spacing-unit * 2) 0 15px 0;
-  > li {
-    line-height: 1.5;
-    width: 100%;
-    color: $white;
+.masthead__brand {
+    @include make-xs-column(6);
+    @include make-sm-column(6);
+    @include make-md-column(7);
+}
 
-    &.active {
-      color: $yellow;
+.masthead__actions {
+    @include make-xs-column(6);
+    @include make-sm-column(6);
+    @include make-md-column(5);
+    
+    margin-top: 7px;
+    @include breakpoint($screen-sm){
+        margin-top: 12px;
     }
-  }
 
-  a {
-    color: inherit;
-    font-size: 1.2em;
-    padding: $base-spacing-unit/4 50px;
-    font-weight: 100;
-  }
+    text-align: right;
+
+    .button__login {
+        @extend .button__primary;
+        font-size: 85%;
+
+        @include breakpoint($screen-xs){
+            font-size: 100%;
+        }
+    }
+
+    .button__signup {
+        @extend .button__secondary;
+        display: none;
+
+        @include breakpoint($screen-xs){
+            display: inline-block;
+            margin-right: 5px;
+        }
+    }
+}
+
+.logo {
+    width: 175px;
+    transition: width 150ms ease-out;
+
+    @include breakpoint($screen-xxs){
+        width: 200px;
+    }
+
+    @include breakpoint($screen-xs){
+        width: 250px;
+    }
+
+    @include breakpoint($screen-sm){
+        width: 300px;
+    }
+}
+
+
+.footer {
+    background: $white;
+    padding: 25px 0 10px;
+    border-bottom: 5px solid $yellow;
+    text-align: center;
 }

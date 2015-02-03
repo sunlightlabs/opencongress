@@ -1,8 +1,3 @@
-<% content_for :open_graph do %>
-  <%= open_graph_meta(:title => "#{@bill.typenumber} - #{@bill.title_common}, a bill on OpenCongress"
-                      ) %>
-<% end %>
-
 <div class="main">
 
 <%= render :partial => 'shared/stats_box', :object => @sidebar_stats_object if @sidebar_stats_object %>
@@ -214,7 +209,7 @@
 		<div class="related_bills_list" id="bill_list">
 		  <h2>Related Bills</h2>
 		  <ul class="lined_list">
-			  <%= bill_related_list.html_safe %>
+        <% # bill_related_list.html_safe %>
 		  </ul>
 		</div>
 	<% end %>

@@ -1,0 +1,8 @@
+<% @meta_tags_for_facebook.each do |property, content| %>
+  <%= render :partial => "meta/meta_tag_for_facebook", 
+      :locals => {
+        :property => property,
+        :content => content
+      }
+  %>
+<% end %>

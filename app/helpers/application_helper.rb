@@ -745,52 +745,6 @@ EOT
     return klasses.join(' ')
   end
 
-  def meta_description_tag
-    meta_tag = ""
-
-    # site text always takes precedence over controller-set meta_description
-    if @site_text_page && !@site_text_page.meta_description.blank?
-      meta_tag = "<meta name=\"description\" content=\"#{@site_text_page.meta_description}\" />"
-    elsif @meta_description
-      meta_tag = "<meta name=\"description\" content=\"#{truncate(strip_tags(@meta_description), :length => 256)}\" />"
-    end
-
-    meta_tag.html_safe
-  end
-
-  def meta_keywords_tag
-    meta_tag = ""
-
-    # site text always takes precedence over controller-set meta_keywords
-    if @site_text_page && !@site_text_page.meta_keywords.blank?
-      meta_tag = "<meta name=\"keywords\" content=\"#{@site_text_page.meta_keywords}\" />"
-    elsif @meta_keywords
-      meta_tag = "<meta name=\"keywords\" content=\"#{strip_tags(@meta_keywords)}\" />"
-    end
-
-    meta_tag.html_safe
-  end
-
-  def page_title
-    title = ""
-    unless @site_text_page.nil? || @site_text_page.title_tags.blank?
-      title += "#{@site_text_page.title_tags} - "
-    end
-    if @page_title
-      title += @page_title
-    end
-    if @head_title
-      title += ": #{@head_title}"
-    end
-    if @page_title_prefix
-      title += " - #{@page_title_prefix}"
-    end
-    stop = title.length > 113 ? (title.rindex(' ', 113)) : title.length
-    title = title.length > 113 ? (title[0...stop] + "... ") : (title + " - ")
-    title += "OpenCongress"
-    return title
-  end
-
   def info_box
     if @site_text_page && !@site_text_page.title_desc.blank?
       return "<div class=\"extra_description\">#{@site_text_page.title_desc}</div>".html_safe
@@ -919,35 +873,6 @@ EOT
     end
   end
 
-  def open_graph_meta(options = {})
-    defaults = {
-      :title => "OpenCongress - Track the latest out of Washington, DC",
-      :description => "OpenCongress is your primary resource for holding Washington accountable.",
-      :image => "#{Settings.base_url}images/fb-default.jpg",
-      :type => "website",
-      :twitter_type => "summary"
-    }
-    options = HashWithIndifferentAccess.new(defaults.merge(options))
-    tags = <<-EOT.strip_heredoc
-      <meta property="fb:app_id" content="#{ApiKeys.facebook_app_id}">
-      <meta property="og:site_name" content="OpenCongress">
-      <meta property="og:title" content="#{options[:title]}">
-      <meta property="og:description" content="#{options[:description]}">
-      <meta property="og:type" content="#{options[:type]}">
-      <meta property="og:image" content="#{options[:image]}">
-    EOT
-    if options[:twitter_type]
-      tags += <<-EOT.strip_heredoc
-        <meta name="twitter:card" content="#{options[:twitter_type]}">
-        <meta name="twitter:site" content="@OpenCongress">
-        <meta name="twitter:title" content="#{options[:title]}">
-        <meta name="twitter:description" content="#{options[:description]}">
-        <meta name="twitter:image" content="#{options[:image]}">
-      EOT
-    end
-    tags.html_safe
-  end
-
   def git_revision
     File.exist?('.revision') ? File.read('.revision').strip : 'no revision tag found'
   end
@@ -974,4 +899,5 @@ EOT
       false
     end
   end
+
 end

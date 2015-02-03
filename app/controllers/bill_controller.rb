@@ -399,12 +399,11 @@ class BillController < ApplicationController
 
   def show
     set_meta_tags({
-      :description => "description",
-      :title => "title override"
+      :description => "#{@bill.title_full_common}",
+      :title => "#{@bill.title_common} (#{@bill.typenumber})"
     })
-    set_meta_tags_for_facebook({
-      :description => "override description for facebook",
-      :title => "override title for facebook"
+    set_meta_tags_for_twitter({
+      :image => "twitter_image_url.png"
     })
     
     #expires_in 20.minutes, :public => true
@@ -828,7 +827,7 @@ private
 
   def set_meta_tag_defaults
     set_meta_tags({
-      :title => "default title for controller"
+      :title => "Bills"
     })
   end
 

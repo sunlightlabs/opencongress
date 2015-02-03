@@ -1,3 +1,71 @@
 // ------------------------------
 // Forms
 // ------------------------------
+.input-padding {
+  padding: $base-spacing-unit/4 $base-spacing-unit/2;
+}
+
+.form-button{
+    @extend .input-padding;
+    @include button-variant($white, $light-blue, $light-blue);
+    border: 2px solid $light-blue;
+    text-align: center;
+}
+
+.find {
+  @extend .base-margin-bottom;
+  font-size: 1em;
+
+  &__text-field {
+    @extend .input-padding;
+    float: left;
+    font-size: inherit;
+    border-width: 2px;
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  &__button{
+    @extend .input-padding;
+    @extend .form-button;
+    font-size: inherit;
+  }
+}
+
+.login-form {
+  @include make-md-column(4);
+  background: white;
+
+  &:before {
+    content: '';
+    @include triangle(36px, $white, up);
+    display: block;
+    margin: 0 auto;
+    margin-top: -15px;
+  }
+
+  &__header {
+
+    @extend .half-margin-bottom;
+    @extend .delta;
+    padding: $base-spacing-unit/2;
+    text-align: center;
+    color: $light-blue;
+  }
+
+  &__text-field {
+    @extend .input-padding;
+    display: block;
+    margin-bottom: $base-spacing-unit/2;
+    @extend .full-width;
+  }
+
+  &__button {
+    @extend .form-button;
+    @extend .full-width;
+    margin: $base-spacing-unit/2 0;
+    padding: $base-spacing-unit/2;
+    border: none;
+  }
+}

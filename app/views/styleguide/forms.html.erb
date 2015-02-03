@@ -1,6 +1,6 @@
 <h2>Forms</h2>
 
-<form>
+<form class="base-margin-bottom">
   <div class="form-group">
     <label for="exampleInputEmail1">Email address</label>
     <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
@@ -20,7 +20,18 @@
     </label>
   </div>
   <button type="submit" class="btn btn-default">Submit</button>
-</form
+</form>
+
+<form class="cf  base-margin-bottom">
+  <div class="login-form">
+    <div class="login-form__header">Log In</div>
+    <label for="email">Email address</label>
+    <input type="email" class="login-form__text-field" id="email" placeholder="Enter email">
+    <label for="password">Password</label>
+    <input type="password" class="login-form__text-field" id="password" placeholder="Password">
+    <button class="login-form__button">Sign In</button>
+  </div>
+</form>
 
 <div class="checkbox">
   <label>
@@ -54,6 +65,11 @@
   </label>
 </div>
 
+<form class="find">
+  <input type="text" class="find__text-field" placeholder="Zip Code">
+  <input type="submit" class="find__button" value="Find my rep">
+</form>
+
 <form class="form-horizontal">
   <div class="form-group has-success has-feedback">
     <label class="control-label col-sm-3" for="inputSuccess3">Input with success</label>
@@ -64,3 +80,7 @@
     </div>
   </div>
 </form>
+
+
+
+

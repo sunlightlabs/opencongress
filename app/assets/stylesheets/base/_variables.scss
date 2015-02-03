@@ -41,3 +41,10 @@ $round:                 50%;
 
 
 $base-spacing-unit:     $line-height-computed;
+
+// -------------------------------
+// Media Queries
+// -------------------------------
+
+$screen-xs:             $screen-xs;
+$screen-xxs:            320px !default;

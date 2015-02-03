@@ -110,9 +110,11 @@
     padding: 0;
 }
 
-.footer {
+.footer--styleguide {
+    @extend footer;
     background: #333;
     padding: 25px;
+    text-align: left;
     color: #eee;
 }
 

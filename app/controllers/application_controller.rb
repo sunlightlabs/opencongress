@@ -30,7 +30,8 @@ class ApplicationController < ActionController::Base
   before_filter :last_updated
   before_filter :set_meta_tags
 
-  before_render -> { send_if_method_exists("#{action_name}_meta_tags") }
+  # sets meta tags before render so full context is built
+  before_render -> { set_meta_tag_defaults and send_if_method_exists("#{action_name}_meta_tags") }
 
   after_filter :cache_control
   after_filter :capture_cta

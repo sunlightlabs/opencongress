@@ -49,13 +49,25 @@
 require 'spec_helper'
 
 describe Person do
+  before(:all) do
+    [:representative, :senator].each do |chamber|
+      ["Republican", "Democrat", "Independent"].each do |party|
+        FactoryGirl.create(chamber, {
+            :party => party,
+            :firstname => Faker::Name.first_name,
+            :lastname => Faker::Name.last_name, 
+            :state => "CO"
+          })
+      end
+    end
+  end
   describe "scopes" do
-    it "should filter for democrats, republicans, and independents" do
-      republicans = Person.republican.map(&:party).uniq
+    it "should filter by party" do
+      republicans = Person.party("Republican").map(&:party).uniq
       expect(republicans.first).to  eq("Republican")
-      democrats = Person.democrat.map(&:party).uniq
+      democrats =  Person.party("Democrat").map(&:party).uniq
       expect(democrats.first).to eq("Democrat")
-      independents = Person.independent.map(&:party).uniq
+      independents = Person.party("Independent").map(&:party).uniq
       expect(independents).not_to include("Democrat", "Republican")
     end
     it "should filter by states" do
@@ -75,7 +87,7 @@ describe Person do
   end
   describe "person identifiers" do
     before(:each) do
-      @person = people(:person_226043605)
+      @person = FactoryGirl.create(:representative)
       @person.person_identifiers.create(
         namespace: "fec",
         value: "originalfecid"
@@ -86,7 +98,8 @@ describe Person do
         expect(@person.fec_ids.class).to equal(Array)
       end
       it "should return an empty array if no fec ids" do
-        expect(people(:person_412493).fec_ids).to eq([])
+        new_person = FactoryGirl.create(:representative)
+        expect(new_person.fec_ids).to eq([])
       end
     end
     describe "fec_ids=" do
@@ -99,14 +112,14 @@ describe Person do
     end
     describe "add_fec_id" do
       it "should nondestructively add ids to existing array" do
-        person = people(:person_412493)
+        person = FactoryGirl.create(:representative)
         person.fec_ids = ["this_is_an_fec_id"]
         person.add_fec_id("this_too")
         expect(person.fec_ids).to include("this_is_an_fec_id")
         expect(person.fec_ids).to include("this_too")
       end
       it "should not add duplicate ids" do
-        person = people(:person_412330)
+        person = FactoryGirl.create(:representative)
         person.fec_ids = ["this_is_an_fec_id"]
         person.add_fec_id("this_is_an_fec_id")
         expect(person.fec_ids.count).to eq(1)
@@ -122,6 +135,7 @@ describe Person do
         @people.each {|person| expect(person.roles.first.role_type).to eq('rep')}
       end
       it "orders people by state by default" do 
+        FactoryGirl.create(:representative, {:state => 'AK'})
         @people = Person.list_chamber('rep', Settings.default_congress, '')
         expect(@people.first.state).to eq('AK')
       end

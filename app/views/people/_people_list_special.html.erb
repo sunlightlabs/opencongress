@@ -52,7 +52,7 @@
 				<% if person.person_approval_average.to_f > 0.0 %>
 				<li class="rating"><%= (person.person_approval_average.to_f * 10.0).round %>% User Approval</li>
 				<% else %>
-				<li class="no_rating">Rate this Senator</li>
+				<li class="no_rating">Rate this Member</li>
 				<% end %>
 				<li class="bill_count"><%= person.sponsored_bills_count.to_i %> Sponsored Bills</li>
 				<% if person.party_roll_call_votes.to_f > 0 %>

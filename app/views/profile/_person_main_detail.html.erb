@@ -54,7 +54,7 @@
   				<% if person.person_approvals.size > 0 %>
   				<li class="rating"><%= (person.person_approvals.average(:rating) * 10.0).round %>% User Approval</li>
   				<% else %>
-  				<li class="no_rating">Rate this Senator</li>
+  				<li class="no_rating">Rate this Member</li>
   				<% end %>
   				<li class="bill_count"><%= person.bills.size ? person.bills.size : "0" %> Sponsored Bills</li>
   				<% if person.belongs_to_major_party? %>

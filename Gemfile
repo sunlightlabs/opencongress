@@ -19,6 +19,9 @@ gem 'elasticsearch-rails'
 gem 'pg'
 # gem 'mysql2'
 
+# new filter action - only works for rails 4+
+gem 'before_render', :git => "git://github.com/lowjoel/before_render.git"
+
 # for string analysis
 gem 'text'
 

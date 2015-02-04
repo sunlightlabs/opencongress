@@ -398,13 +398,6 @@ class BillController < ApplicationController
   end
 
   def show
-    set_meta_tags({
-      :description => "#{@bill.title_full_common}",
-      :title => "#{@bill.title_common} (#{@bill.typenumber})"
-    })
-    set_meta_tags_for_twitter({
-      :image => "twitter_image_url.png"
-    })
     
     #expires_in 20.minutes, :public => true
     respond_to do |format|
@@ -828,6 +821,16 @@ private
   def set_meta_tag_defaults
     set_meta_tags({
       :title => "Bills"
+    })
+  end
+
+  def show_meta_tags
+    set_meta_tags({
+      :description => "#{@bill.title_full_common}",
+      :title => "#{@bill.title_common} (#{@bill.typenumber})"
+    })
+    set_meta_tags_for_twitter({
+      :image => "twitter_image_url.png"
     })
   end
 

@@ -12,6 +12,12 @@ GIT
       rash (~> 0.4)
 
 GIT
+  remote: git://github.com/lowjoel/before_render.git
+  revision: bce4678a6e00f11d8fb0851a0439dbea680c8422
+  specs:
+    before_render (0.1.0)
+
+GIT
   remote: git://github.com/martinciu/fuubar-cucumber.git
   revision: bf9c6afd870fdb284861837dd00368bb79fe4d75
   specs:
@@ -578,6 +584,7 @@ DEPENDENCIES
   awesome_print
   bcrypt
   beanstalk-client
+  before_render!
   bluecloth
   bootstrap-sass (~> 3.3.1)
   bourbon

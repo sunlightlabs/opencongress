@@ -2,6 +2,7 @@ require 'authenticated_system'
 require_dependency 'email_congress'
 
 class ApplicationController < ActionController::Base
+
   layout "new_application"
   protect_from_forgery :if => :logged_in?
 
@@ -28,6 +29,9 @@ class ApplicationController < ActionController::Base
   before_filter :set_simple_comments
   before_filter :last_updated
   before_filter :set_meta_tags
+
+  before_render -> { send_if_method_exists("#{action_name}_meta_tags") }
+
   after_filter :cache_control
   after_filter :capture_cta
 

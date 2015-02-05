@@ -196,6 +196,7 @@ group :test, :development do
   gem 'simplecov',            :require => false
   gem 'guard'
   gem 'guard-livereload'
+  gem 'faker'
   # gem 'rack-mini-profiler'
   gem 'rspec-rails'
   gem 'random_data'

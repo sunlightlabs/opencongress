@@ -1,8 +1,8 @@
 FactoryGirl.define do
   factory :person do
-    firstname "Curtis"
+    firstname { Faker::Name.first_name }
     middlename nil
-    lastname "Clawson"
+    lastname { Faker::Name.last_name }
     nickname "Curt"
     birthday "Mon 28 Sep 1959"
     gender "M"
@@ -10,11 +10,11 @@ FactoryGirl.define do
     url nil
     party "Republican"
     osid nil
-    bioguideid "C001102"
+    bioguideid {"lastname[0]#{'%06d' % rand(999999)}"} 
     title "Rep."
     state "FL"
     district "19"
-    name "Curtis Clawson"
+    name { "#{firstname} #{lastname}" }
     email nil
     fti_names "'clawson':2,4,7 'curt':5,6 'curti':1,3"
     user_approval 5.0
@@ -41,5 +41,63 @@ FactoryGirl.define do
     lis_id nil
     death_date nil
     twitter_id nil
+    factory :senator do 
+      after(:create) do |sen, evaluator|
+        create_list(:role, 1, {
+          :person => sen,
+          :state => sen.state,
+          :party => sen.party,
+          :district => sen.district,
+          :startdate => NthCongress.current.start_date,
+          :enddate => NthCongress.current.start_date + 6.years
+        })
+      end
+    end
+    factory :staggered_senator do 
+      after(:create) do |sen, evaluator|
+        create_list(:role, 1, {
+          :person => sen,
+          :state => sen.state,
+          :party => sen.party,
+          :district => sen.district,
+          :startdate => NthCongress.current.start_date - 2.years,
+          :enddate => NthCongress.current.start_date + 4.years
+        })
+      end
+    end
+    factory :representative do 
+      after(:create) do |rep, evaluator|
+        create_list(:role, 1, {
+          :person => rep,
+          :state => rep.state,
+          :party => rep.party,
+          :district => rep.district
+        })
+      end
+    end
+    factory :retired do
+      after(:create) do |retired, evaluator|
+        create_list(:role, 1, {
+          :person => retired,
+          :state => retired.state,
+          :party => retired.party,
+          :district => retired.district,
+          :startdate => Date.new(1915,1,3),
+          :enddate => Date.new(1917,1,3)
+        })
+      end
+    end
+    factory :just_retired do 
+      after(:create) do |just_retired, evaluator|
+        create_list(:role, 1, {
+          :person => just_retired,
+          :state => just_retired.state,
+          :party => just_retired.party,
+          :district => just_retired.district,
+          :startdate => NthCongress.current.previous_congress.start_date,
+          :enddate => NthCongress.current.previous_congress.end_date
+        })
+      end
+    end
   end
 end

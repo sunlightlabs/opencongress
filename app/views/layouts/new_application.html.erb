@@ -1,38 +1,40 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <%= render :partial => 'shared/analytics_head' %>
-    <%= csrf_meta_tag %>
-    <%= remote_forgery_protection %>
-    <%= javascript_include_tag "application" %>
-    <script src="http://use.typekit.net/cuo6nsj.js"></script>
-    <script>try{Typekit.load();}catch(e){}</script>
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <%= stylesheet_link_tag "application" %>
 
-    <!-- need to add sunlight branding bar -->
-    <%= render :partial => "meta/meta_tags_for_facebook" %>
-    <%= render :partial => "meta/meta_tags_for_twitter" %>
-    <%= render :partial => "meta/meta_tags_for_search" %>
-    <title><%= @page_title %></title>
-</head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <%= render :partial => 'shared/analytics_head' %>
+        <%= csrf_meta_tag %>
+        <%= remote_forgery_protection %>
+        <%= javascript_include_tag "application" %>
+        <script src="http://use.typekit.net/cuo6nsj.js"></script>
+        <script>try{Typekit.load();}catch(e){}</script>
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <%= stylesheet_link_tag "application" %>
 
-<body>
+        <!-- need to add sunlight branding bar -->
+        <%= render :partial => "meta/meta_tags_for_facebook" %>
+        <%= render :partial => "meta/meta_tags_for_twitter" %>
+        <%= render :partial => "meta/meta_tags_for_search" %>
+        <title><%= @page_title %></title>
+    </head>
 
-    <nav class="navbar navbar-default navbar-static-top">
-    </nav>
+    <body>
 
-    <main class="container">
-        <%= yield %>
-    </main>
+        <nav class="navbar navbar-default navbar-static-top">
+        </nav>
 
-    <footer class="footer">
-        <div class="container">
-            Footer
-        </div>
-    </footer>
-    <!-- add simplesocialite -->
-</body>
+        <main class="container">
+            <%= yield %>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                Footer
+            </div>
+        </footer>
+        <!-- add simplesocialite -->
+    </body>
+
 </html>

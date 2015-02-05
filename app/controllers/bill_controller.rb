@@ -831,7 +831,7 @@ class BillController < ApplicationController
 
   ### META TAGS ##
 
-  def set_meta_tag_defaults
+  def controller_meta_tags
     set_meta_tags({
       :title => "Bills"
     })

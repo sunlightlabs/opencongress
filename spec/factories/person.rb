@@ -48,8 +48,8 @@ FactoryGirl.define do
           :state => sen.state,
           :party => sen.party,
           :district => sen.district,
-          :startdate => NthCongress.current.start_date,
-          :enddate => NthCongress.current.start_date + 6.years
+          :startdate => NthCongress.start_datetime(Settings.default_congress),
+          :enddate => NthCongress.start_datetime(Settings.default_congress) + 6.years
         })
       end
     end
@@ -60,8 +60,8 @@ FactoryGirl.define do
           :state => sen.state,
           :party => sen.party,
           :district => sen.district,
-          :startdate => NthCongress.current.start_date - 2.years,
-          :enddate => NthCongress.current.start_date + 4.years
+          :startdate => NthCongress.start_datetime(Settings.default_congress) - 2.years,
+          :enddate => NthCongress.start_datetime(Settings.default_congress) + 4.years
         })
       end
     end
@@ -94,8 +94,8 @@ FactoryGirl.define do
           :state => just_retired.state,
           :party => just_retired.party,
           :district => just_retired.district,
-          :startdate => NthCongress.current.previous_congress.start_date,
-          :enddate => NthCongress.current.previous_congress.end_date
+          :startdate => NthCongress.start_datetime(Settings.default_congress - 1),
+          :enddate => NthCongress.end_datetime(Settings.default_congress - 1)
         })
       end
     end

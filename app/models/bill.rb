@@ -102,6 +102,16 @@ class Bill < Bookmarkable
       nil => ['dublinCore', 'metadata']
   }
 
+  BILL_TEXT_SOURCE = {
+      114 => 'unitedstates',
+      113 => 'govtrack',
+      112 => 'govtrack',
+      111 => 'govtrack',
+      110 => 'govtrack',
+      109 => 'govtrack'
+  }
+
+
   # Different formats to serialize bills as JSON
   SERIALIZATION_STYLES = {
     simple: {
@@ -963,6 +973,10 @@ class Bill < Bookmarkable
     "#{bill_type}#{number}-#{session}"
   end
 
+  def word_count_calculator(version = nil)
+    full_text(version).gsub(/<("[^"]*"|'[^']*'|[^'">])*>/,' ').gsub(/\t|\n|\.|,/,' ').gsub(/\s+/,' ').gsub(/\&.*\;/,'').strip.split(' ').count
+  end
+
   # Gets the text versions of a bill as an Array in the proper chained order, i.e.
   # the first entry will be the first bill version (usually as introduced), the second
   # entry will have the 'previous_version' attribute referring to the first entry, and
@@ -993,38 +1007,72 @@ class Bill < Bookmarkable
   # Retrieves the full text of bill with HTML markup.
   #
   # @param version [String, nil] nil for current, specified String otherwise
-  # @return [String] HTML markup of bill text or empty string if file path can't be found
-  def full_text(version = nil)
-    # example #=> opencongress/bill.text/113/h/h592rfs.gen.html-oc
+  # @param type [String] type of full text to return: html, xml, or text
+  # @return [String] HTML/XML markup of bill text, plaintext, or empty string a file path can't be found
+  def full_text(version = nil, type = 'html')
+    case type
+      when 'html'
+        send("full_text_as_#{BILL_TEXT_SOURCE[session]}_html", version)
+      when 'xml'
+        full_text_as_unitedstates_xml(version)
+      when 'text'
+        raise 'Not implemented yet'
+      else
+        raise 'Invalid full text type'
+    end
+  end
+
+  def full_text_as_unitedstates_xml_path(version = nil)
+    "#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml"
+  end
+
+  def full_text_as_unitedstates_xml(version = nil)
+    puts full_text_as_unitedstates_xml_path(version)
+    IO.read(full_text_as_unitedstates_xml_path(version)) rescue ''
+  end
+
+  def full_text_as_unitedstates_html_path(version = nil)
+    "#{Settings.oc_billtext_path}/#{self.session}/#{self.reverse_abbrev_lookup}/#{self.reverse_abbrev_lookup}#{self.number}#{get_version(version).version}.gen.html-oc"
+  end
+
+  def full_text_as_unitedstates_html(version = nil)
+    puts full_text_as_unitedstates_html_path(version)
+    IO.read(full_text_as_unitedstates_html_path(version)) rescue ''
+  end
+
+  def full_text_as_govtrack_html(version = nil)
     IO.read("#{Settings.oc_billtext_path}/#{self.session}/#{self.reverse_abbrev_lookup}/#{self.reverse_abbrev_lookup}#{self.number}#{get_version(version).version}.gen.html-oc") rescue ''
   end
 
-  def full_text_as_xml(version = nil)
-    puts "#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml"
-    IO.read("#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml") rescue ''
-  end
+  # Convert unitedstates XML of full bill text into displayable HTML.
+  #
+  # @param version [String,nil] version of bill to get as HTML
+  # @return [String] HTML of bill
+  def generate_full_text_as_unitedstates_html(version = nil)
+    doc = Nokogiri::XML(self.full_text_as_unitedstates_xml(version))
 
-  def full_text_as_html(version = nil)
-    doc = Nokogiri::XML(self.full_text_as_xml(version))
-
+    # create new Hash to convert one-to-many to many-to-one
+    map = {}
     HTML_TO_XML_TAGS.each do |key,value|
-      value.each do |tag|
-        doc.search(tag).each do |node|
-          if key.nil?
-            node.unlink
-          elsif not node.attributes.has_key?('class')
-            node.attributes.each do |k,v|
-              node["data-#{k}"] = v
-              node.remove_attribute(k)
-            end
-            node['id'] = "xml_#{node['id']}" if node.has_attribute?('id')
-            node['class'] = "xml_#{node.name}"
-            node.name = key
-          end
+      value.each {|v| map[v] = key }
+    end
+
+    # traverse XML and convert tags appriopriately
+    doc.traverse do |node|
+      if not node.respond_to?(:attributes) or (map.has_key?(node.name) and map[node.name].nil?)
+        node.unlink
+      elsif not node.attributes.has_key?('class')
+        node.attributes.each do |k,v|
+          node["data-#{k}"] = v
+          node.remove_attribute(k)
         end
+        node['id'] = "xml_#{node['data-id']}" if node.has_attribute?('data-id')
+        node['class'] = "xml_#{node.name}"
+        node.name = map[node.name] || 'p'
       end
     end
 
+    # return HTML as a string
     doc.root.to_s
   end
 

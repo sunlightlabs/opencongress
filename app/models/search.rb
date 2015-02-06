@@ -30,24 +30,10 @@ class Search < OpenCongressModel
 
   SEARCHABLE_INDICES = SEARCHABLE_INDICES_WITH_BOOSTS.collect{|k,v| k.to_s }
 
-  DEFAULT_SEARCH_SIZE = Settings.default_search_size rescue 25
+  DEFAULT_SEARCH_SIZE = Settings.default_search_size rescue 100
 
-  # The search filters that a user selects are stored in the database as a list of integers corresponding to
-  # the order by which they appear in this list. This is done to limit unnecessary space usage.
-  SEARCH_FILTERS = {
-    0 => :search_bills,
-    1 => :search_people,
-    2 => :search_committees,
-    3 => :search_industries,
-    4 => :search_issues,
-    5 => :search_news,
-    6 => :search_blogs,
-    7 => :search_commentary,
-    8 => :search_comments,
-    9 => :search_gossip_blog
-  }
-
-  SEARCH_FILTERS_INVERTED = SEARCH_FILTERS.invert
+  SEARCH_FILTERS = [:bills, :people, :committees, :industries, :issues, :news, :blogs,
+                    :commentary, :comments, :gossip_blog]
 
   #========== RELATIONS
 
@@ -67,6 +53,8 @@ class Search < OpenCongressModel
   validates :search_text, length: { minimum: 4, message: 'Your query must be longer than three characters!'}
   validates :search_text, length: { maximum: 255, message: 'Your query is too long (>255 characters)!'}
   validates :search_text, presence: {message: "You didn't enter anything meaningful into the search field!"}
+  validates :search_filters, array_member: { in: SEARCH_FILTERS }
+
 
   #========== SERIALIZERS
 
@@ -77,26 +65,27 @@ class Search < OpenCongressModel
 
   #----- CLASS
 
-  # Common access method for search filters which directs key to correct hash
+  # Prepends search filters with 'search_' to namespace
+  # them in other scopes.
   #
-  # @param kv [Integer, Symbol] integer for forward lookup, Symbol for reverse
-  # @return [Symbol, Integer]
-  def self.search_filter_map(kv)
-    begin
-      if kv.is_a? Integer
-        SEARCH_FILTERS[kv]
-      elsif kv.is_a? Symbol
-        SEARCH_FILTERS_INVERTED[kv]
-      else
-        nil
-      end
-    rescue KeyError
-      nil
-    end
+  # @param filters [Array<Symbol>] defaults to constant defined in Search
+  # @param to_sym [Boolean] true to also convert to symbols, false otherwise
+  # @return [Array<String>, Array<Symbol>] array of filters prepended by 'search_'
+  def self.search_filter_prepend(filters = SEARCH_FILTERS, to_sym = false)
+    filters.map {|f| eval("f.to_s.prepend('search_')#{'.to_sym' if to_sym}") }
+  end
+
+  # Adds the namespacing 'search_' to filter list
+  #
+  # @param filters [Array<String>]
+  # @param to_sym [Boolean] true to also convert to symbols, false otherwise
+  # @return [Array<String>, Array<Symbol>] array of filters with namespace 'search_' removed
+  def self.search_filter_trim(filters, to_sym = false)
+    filters.map {|f| eval("f.gsub('search_', '')#{'.to_sym' if to_sym}") }
   end
 
   def self.search_filter_list
-    SEARCH_FILTERS_INVERTED.keys
+    search_filter_prepend(SEARCH_FILTERS)
   end
 
   # Drops all indices from elasticsearch and creates them again.
@@ -222,10 +211,12 @@ class Search < OpenCongressModel
     self.search_congresses
   end
 
+  # Prepare search text for submission as a query to search.
   def get_query_stripped
     prepare_tsearch_query(self.search_text.to_s)
   end
 
+  # Initiate a search
   def initiate_search
     Search.search(self.search_text)
   end
@@ -237,7 +228,7 @@ class Search < OpenCongressModel
   def doctor_data_for_save
     self.page = 1 if (self.page.nil? || self.page < 1)
     self.search_text = truncate(self.search_text, :length => 255)
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = Search.search_filter_map(v.to_sym) if v.is_a? String  }
+    self.search_filters = self.class.search_filter_trim(self.search_filters, to_sym = true)
     self.search_congresses = ["#{Settings.default_congress}"] unless self.search_congresses.is_a? Array
   end
 
@@ -246,7 +237,7 @@ class Search < OpenCongressModel
   # representation for each search filter.
   #
   def doctor_data_for_load
-    self.search_filters.each_with_index {|v,i| self.search_filters[i] = Search.search_filter_map(v) } rescue false
+    self.search_filters = self.class.search_filter_prepend(self.search_filters)
   end
 
 end

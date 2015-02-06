@@ -67,6 +67,50 @@
 
 <section class="section">
 
+    <h2 class="section__header">Subnavigation</h2>
+
+    <ul class="panel-overview__subnav">
+        <li role="presentation">
+            <a class="is-active" href="#"> Activity</a>
+        </li>
+        <li role="presentation">
+            <a href="#">Committees</a>
+        </li>
+        <li role="presentation">
+            <a href="#">Members</a>
+        </li>
+    </ul>
+
+    <div class="codeblock">
+        <div class="codeblock__example">
+            <%= example_code do %>
+            <ul class="panel-overview__subnav">
+                <li role="presentation">
+                    <a class="is-active" href="#">Activity</a>
+                </li>
+                <li role="presentation">
+                    <a href="#">Committees</a>
+                </li>
+                <li role="presentation">
+                    <a href="#">Members</a>
+                </li>
+            </ul>
+            <% end %>
+        </div>
+
+        <div class="codeblock__notes">
+            <h4>Notes</h4>
+            <p>The subnavigation tab-like component should used in conjuction with an overview panel. It lives immediately beneath an overview panel and is used to break up information about a subject into separate sections.</p>
+            <p>This component should be used when anywhere between 2&ndash;4 subsections are available.</p>
+            <p>The <code>is-active</code> class should be used to indicate the current section.</p>
+            <p><strong>Copy:</strong> Labels should be limited to a single short word if possible to prevent crowding of text.</p>
+        </div>
+    </div>
+
+</section>
+
+<section class="section">
+
     <h2 class="section__header">Footer</h2>
 
     <footer class="footer">

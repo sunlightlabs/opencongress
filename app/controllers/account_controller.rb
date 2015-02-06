@@ -271,7 +271,7 @@ class AccountController < ApplicationController
 
     @user.accepted_tos_at = Time.now if @user.accept_tos
 
-    if @user.save_with_captcha() && @user.reload()
+    if @user.save && @user.reload()
 
       # check for an invitation
       if session[:invite]

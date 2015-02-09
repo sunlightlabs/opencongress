@@ -96,7 +96,7 @@ describe Person do
       congress_num = Settings.default_congress
 
       left_mid_congress = FactoryGirl.create(:left_mid_congress)
-      @people = expect(Person.for_congress(114).map(&:bioguideid)).to include(left_mid_congress.bioguideid)
+      @people = expect(Person.for_congress(Settings.default_congress).map(&:bioguideid)).to include(left_mid_congress.bioguideid)
     end
   end
   describe "roll call votes" do

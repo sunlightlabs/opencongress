@@ -142,17 +142,18 @@ class Person < Bookmarkable
 
   #========== SCOPES
 
-  scope :republican, -> { where(party: 'Republican') }
-  scope :democrat, -> { where(party: 'Democrat') }
-  scope :independent, -> { where("party != 'Republican' AND party != 'Democrat'") }
+  scope :party, ->(party) { where("people.party LIKE ?", party.capitalize) }
   scope :in_state, ->(state) { where(state: state.upcase) }
 
   scope :sen, -> { includes(:roles).where(["roles.role_type='sen' AND roles.enddate > ?", Date.today]).references(:roles) }
   scope :rep, -> { includes(:roles).where(["roles.role_type='rep' AND roles.enddate > ?", Date.today]).references(:roles) }
-  scope :legislator, -> { includes(:roles).where(["(roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]) }
+  
+  scope :for_congress, ->(congress_number) { includes(:roles).where(["(roles.enddate >= ? AND roles.startdate <= ?) OR (roles.startdate > ? AND roles.startdate < ?) OR ((roles.startdate <= ?) AND ((roles.enddate < ?) AND (roles.enddate > ?)))", NthCongress.end_datetime(congress_number), NthCongress.start_datetime(congress_number), NthCongress.start_datetime(congress_number), NthCongress.end_datetime(congress_number), NthCongress.start_datetime(congress_number), NthCongress.end_datetime(congress_number), NthCongress.start_datetime(congress_number)]).references(:roles)}
   
   scope :on_date, ->(date) { includes(:roles).where('roles.startdate <= ? and roles.enddate >= ?',date.to_s, date.to_s).references(:roles) }
 
+  scope :legislator, -> { includes(:roles).where(["(roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]).references(:roles) }
+  
   #========== ALIASES
 
   alias :blog :blogs
@@ -270,64 +271,6 @@ class Person < Bookmarkable
     random_item = nil
     if p then random_item = type == 'news' ? p.idsorted_news.find(:first) : p.idsorted_blogs.find(:first) end
     return random_item ? [p,random_item] : [nil,nil]
-  end
-
- # ** REWROTE THIS METHOD USING ACTIVERECORD BELOW ** 
- # 
- #  def self.list_chamber(chamber, congress, order, limit = nil)
- #    def_count_days = Settings.default_count_time.to_i / 24 / 60 / 60
- #    lim = limit.nil? ? '' : "LIMIT #{limit}"
-
- #    Person.find_by_sql(["SELECT people.*,
- #       COALESCE(person_approvals.person_approval_avg, 0) as person_approval_average,
- #       COALESCE(bills_sponsored.sponsored_bills_count, 0) as sponsored_bills_count,
- #       COALESCE(people.total_session_votes, 0) as total_roll_call_votes,
- #       CASE WHEN people.party = 'Democrat' THEN COALESCE(people.votes_democratic_position, 0)
- #            WHEN people.party = 'Republican' THEN COALESCE(people.votes_republican_position, 0)
- #            ELSE 0
- #       END as party_roll_call_votes,
- #       COALESCE(aggregates.view_count, 0) as view_count,
- #       COALESCE(aggregates.blog_count, 0) as blog_count,
- #       COALESCE(aggregates.news_count, 0) as news_count
- #    FROM people
- #    LEFT OUTER JOIN roles on roles.person_id=people.id
- #    LEFT OUTER JOIN (select person_approvals.person_id as person_approval_id,
- #                     count(person_approvals.id) as person_approval_count,
- #                     avg(person_approvals.rating) as person_approval_avg
- #                    FROM person_approvals
- #                    GROUP BY person_approval_id) person_approvals
- #      ON person_approval_id = people.id
-
- #    LEFT OUTER JOIN (select sponsor_id, count(id) as sponsored_bills_count
- #                    FROM bills
- #                    WHERE bills.session = #{congress}
- #                    GROUP BY sponsor_id) bills_sponsored
- #      ON bills_sponsored.sponsor_id = people.id
- #     LEFT OUTER JOIN (SELECT object_aggregates.aggregatable_id,
- #                                    sum(object_aggregates.page_views_count) as view_count,
- #                                    sum(object_aggregates.blog_articles_count) as blog_count,
- #                                    sum(object_aggregates.news_articles_count) as news_count
- #                             FROM object_aggregates
- #                             WHERE object_aggregates.date >= current_timestamp - interval '#{def_count_days} days' AND
- #                                   object_aggregates.aggregatable_type = 'Person'
- #                             GROUP BY object_aggregates.aggregatable_id
- #                             ORDER BY view_count DESC) aggregates
- #                            ON people.id=aggregates.aggregatable_id
- #    WHERE roles.role_type = ?
- #      AND (roles.startdate <= ?
- #            AND roles.enddate >= ?)
- # ORDER BY #{order_by_string(order)} #{lim};",
- #                        chamber, Date.today, Date.today])
- #  end
-
-  def self.list_chamber(chamber, congress, order, filter = '', limit = nil)
-    select("people.*, count(bills.id) as bills_count")
-    .joins(:bills)
-    .where('bills.session = ? AND bills.sponsor_id = people.id', congress)
-    .group("people.id")
-    .joins('LEFT OUTER JOIN roles on roles.person_id=people.id')
-    .where("roles.role_type = ? AND roles.startdate <= ? AND roles.enddate >= ? #{additional_filters(filter)}", chamber, Date.today, Date.today)
-    .order(order_by_string(order)).limit(limit)
   end
 
   ##
@@ -1709,7 +1652,6 @@ class Person < Bookmarkable
     end
     save! unless self.id.nil? 
   end
-
 
   private
 

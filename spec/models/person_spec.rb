@@ -50,19 +50,24 @@ require 'spec_helper'
 
 describe Person do
   before(:all) do
-    [:representative, :senator].each do |chamber|
-      ["Republican", "Democrat", "Independent"].each do |party|
+    # make sample legislators
+    ["Republican", "Democrat", "Independent"].each do |party|
+      #in office
+      [:representative, :senator].each do |chamber|
         FactoryGirl.create(chamber, {
             :party => party,
-            :firstname => Faker::Name.first_name,
-            :lastname => Faker::Name.last_name, 
             :state => "CO"
           })
       end
+      # retired 
+      FactoryGirl.create(:retired, {
+        :firstname => "retiredperson",
+        :party => party
+      })
     end
   end
   describe "scopes" do
-    it "should filter by party" do
+    it "#party should filter by party" do
       republicans = Person.party("Republican").map(&:party).uniq
       expect(republicans.first).to  eq("Republican")
       democrats =  Person.party("Democrat").map(&:party).uniq
@@ -70,9 +75,28 @@ describe Person do
       independents = Person.party("Independent").map(&:party).uniq
       expect(independents).not_to include("Democrat", "Republican")
     end
-    it "should filter by states" do
+    it "#in_state should filter by states" do
       colorado_people = Person.in_state('CO')
       expect(colorado_people.map(&:state).uniq).to eq(["CO"])
+    end
+    it "#for_congress should return all members associated with a Congress" do
+      #create nth_congress so we can check for session
+      FactoryGirl.create(:nth_congress, {number: Settings.default_congress})
+      congress_num = Settings.default_congress
+
+      @people = Person.for_congress(congress_num)
+      member_status = @people.each.map do |p|
+        expect(p.roles.first.member_of_congress?(congress_num)).to eq(true)
+      end
+    end
+
+    it "#for_congress should return members that retired mid_congress" do
+      #create nth_congress so we can check for session
+      FactoryGirl.create(:nth_congress, {number: Settings.default_congress})
+      congress_num = Settings.default_congress
+
+      left_mid_congress = FactoryGirl.create(:left_mid_congress)
+      @people = expect(Person.for_congress(114).map(&:bioguideid)).to include(left_mid_congress.bioguideid)
     end
   end
   describe "roll call votes" do
@@ -123,29 +147,6 @@ describe Person do
         person.fec_ids = ["this_is_an_fec_id"]
         person.add_fec_id("this_is_an_fec_id")
         expect(person.fec_ids.count).to eq(1)
-      end
-    end
-    describe "#list_chamber" do
-      it "returns senators" do
-        @people = Person.list_chamber('sen', Settings.default_congress, '')
-        @people.each {|person| expect(person.roles.first.role_type).to eq('sen')}
-      end
-      it "returns representatives" do
-        @people = Person.list_chamber('rep', Settings.default_congress, '')
-        @people.each {|person| expect(person.roles.first.role_type).to eq('rep')}
-      end
-      it "orders people by state by default" do 
-        FactoryGirl.create(:representative, {:state => 'AK'})
-        @people = Person.list_chamber('rep', Settings.default_congress, '')
-        expect(@people.first.state).to eq('AK')
-      end
-      it "can order by last name" do 
-        @people = Person.list_chamber('rep', Settings.default_congress, :name)
-        expect(@people.first.lastname.split('').first).to eq('A')
-      end
-      it "limits the list" do
-        @people = Person.list_chamber('rep', Settings.default_congress, '', 1)
-        expect(@people.length).to eq(1)
       end
     end
   end

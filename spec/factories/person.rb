@@ -10,7 +10,7 @@ FactoryGirl.define do
     url nil
     party "Republican"
     osid nil
-    bioguideid {"lastname[0]#{'%06d' % rand(999999)}"} 
+    bioguideid {"#{lastname[0]}#{'%06d' % rand(999999)}"} 
     title "Rep."
     state "FL"
     district "19"
@@ -98,6 +98,18 @@ FactoryGirl.define do
           :enddate => NthCongress.end_datetime(Settings.default_congress - 1)
         })
       end
+    end
+    factory :left_mid_congress do
+      after(:create) do |left, evaluator|
+        create_list(:role, 1, {
+          :person => left,
+          :state => left.state,
+          :party => left.party,
+          :district => left.district,
+          :startdate => NthCongress.start_datetime(Settings.default_congress),
+          :enddate => NthCongress.start_datetime(Settings.default_congress) + 1.year
+        })
+      end    
     end
   end
 end

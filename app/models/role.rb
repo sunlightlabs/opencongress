@@ -68,7 +68,8 @@ class Role < OpenCongressModel
     target_congress = NthCongress.find(congress)
     elected_normally = self.enddate >= target_congress.end_date && self.startdate <= target_congress.start_date 
     elected_midsession = self.startdate > target_congress.start_date && self.startdate < target_congress.end_date
-    elected_normally || elected_midsession
+    retired_midsession = self.startdate <= target_congress.start_date && (self.enddate < target_congress.end_date && self.enddate > target_congress.start_date)
+    elected_normally || elected_midsession || retired_midsession
   end
 
 end

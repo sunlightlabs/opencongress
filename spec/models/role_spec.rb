@@ -37,4 +37,13 @@ describe Role do
       })
     expect(mid_congress_election.member_of_congress?).to eq(true)
   end
+
+  it "should return true for people that resign midway through a congress" do
+    mid_congress_retirement = FactoryGirl.create(:role, {
+      :role_type => "rep",
+      :startdate => NthCongress.current.start_date,
+      :enddate => NthCongress.current.start_date + 1.year 
+    })
+    expect(mid_congress_retirement.member_of_congress?).to eq(true)
+  end
 end

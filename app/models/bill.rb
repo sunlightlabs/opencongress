@@ -52,7 +52,7 @@ class Bill < Bookmarkable
   # elasticsearch configuration
   settings ELASTICSEARCH_SETTINGS do
     mappings ELASTICSEARCH_MAPPINGS do
-      [:summary, :plain_language_summary, :billtext_txt].each do |index|
+      [:summary, :plain_language_summary, :chain_full_text].each do |index|
         indexes index, ELASTICSEARCH_INDEX_OPTIONS
       end
     end
@@ -283,7 +283,7 @@ class Bill < Bookmarkable
               {
                 fuzzy_like_this: {
                   like_text: query,
-                  fields: %w(summary get_manual_title^10 get_nickname_title^100),
+                  fields: %w(summary get_nickname_title chain_full_text),
                   analyzer: 'english'
                 }
               },
@@ -292,15 +292,17 @@ class Bill < Bookmarkable
                   'top_subject.term' => {
                     query: query,
                     analyzer: 'english',
-                    boost: ELASTICSEARCH_BOOSTS[:small],
+                    boost: SearchableObject::ELASTICSEARCH_BOOSTS[:small],
+                    operator: 'or'
                   }
                 }
               },
               {
                 match: {
                   :number => {
-                    query: query.strip_all_except_numbers.to_i,
-                    boost: ELASTICSEARCH_BOOSTS[:extreme]
+                    query: query.strip_all_except_numbers,
+                    boost: SearchableObject::ELASTICSEARCH_BOOSTS[:extreme],
+                    operator: 'or'
                   }
                 }
               },
@@ -308,7 +310,8 @@ class Bill < Bookmarkable
                 match: {
                   :bill_type => {
                     query: query,
-                    boost: ELASTICSEARCH_BOOSTS[:medium]
+                    boost: SearchableObject::ELASTICSEARCH_BOOSTS[:medium],
+                    operator: 'or'
                   }
                 }
               },
@@ -316,7 +319,7 @@ class Bill < Bookmarkable
                 fuzzy: {
                   'bill_titles.title' => {
                     value: query,
-                    boost: ELASTICSEARCH_BOOSTS[:small]
+                    boost: SearchableObject::ELASTICSEARCH_BOOSTS[:small]
                   }
                 }
               }
@@ -594,10 +597,11 @@ class Bill < Bookmarkable
     while versions.present? do
       (these_versions, versions) = versions.partition{ |v| current_versions.include?(v.previous_version) }
       if these_versions.empty? and versions.present?
-        raise Exception.new('Incomplete bill text version chain.')
+        # raise Exception.new('Incomplete bill text version chain.')
+        return []
       end
       chain.push(*these_versions)
-      current_versions = these_versions.map{ |v| v.version }
+      current_versions = these_versions.map{|v| v.version }
     end
     return chain
   end

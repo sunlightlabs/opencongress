@@ -5,8 +5,8 @@ describe PrivacyObject do
   describe '#can_show_to?' do
 
     before(:each) do
-      @user12 = User.find(12)
-      @user13 = User.find(13)
+      @user12 = FactoryGirl.create(:user)
+      @user13 = FactoryGirl.create(:user)
     end
 
     describe 'User' do

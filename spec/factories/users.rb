@@ -42,6 +42,15 @@ FactoryGirl.define do
     accepted_tos_at Time.new(2014, 01, 01)
   end
 
+  factory :user do
+    login { "#{Faker::Name.first_name}123" }
+    email { "#{login}@example.com" }
+    state "AL"
+    district 1
+    accepted_tos_at Time.new(2014, 01, 01)
+    password "password" 
+  end
+
   factory :user_1, class: User do
     salt 'd3bc4851d15d3be6a489f35ff5733d35c0811263'
     activated_at Time.new(2008, 01, 14)

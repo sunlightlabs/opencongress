@@ -107,7 +107,7 @@ FactoryGirl.define do
           :party => left.party,
           :district => left.district,
           :startdate => NthCongress.start_datetime(Settings.default_congress),
-          :enddate => NthCongress.start_datetime(Settings.default_congress) + 1.year
+          :enddate => NthCongress.start_datetime(Settings.default_congress) + 1.day
         })
       end    
     end

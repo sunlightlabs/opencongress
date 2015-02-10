@@ -87,6 +87,14 @@ class OpenCongressModel < ActiveRecord::Base
     super(stylize_serialization(ops))
   end
 
+  # Returns SQL-safe value for order
+  # 
+  # @params order [String] potentially malicious order string
+  # @return [String] "ASC" or "DESC"
+  def self.safe_order(order)
+    order.upcase[0] == "A" ? "ASC" : "DESC"
+  end
+
   private
 
   def stylize_serialization(ops)

@@ -57,6 +57,7 @@ class Person < Bookmarkable
 
   include ViewableObject
   include SearchableObject
+  include Filterable
 
   #========== CONFIGURATIONS
 
@@ -145,6 +146,10 @@ class Person < Bookmarkable
   scope :party, ->(party) { where("people.party LIKE ?", party.capitalize) }
   scope :in_state, ->(state) { where(state: state.upcase) }
 
+  scope :state_order, ->(direction) { includes(:roles).order("roles.state #{self.safe_order(direction)}").references(:roles) }
+  scope :alphabetical_order, ->(direction) { order("lastname #{self.safe_order(direction)}") }
+  scope :party_order, ->(direction) { includes(:roles).order("roles.party #{self.safe_order(direction)}").references(:roles) }
+ 
   scope :sen, -> { includes(:roles).where(["roles.role_type='sen' AND roles.enddate > ?", Date.today]).references(:roles) }
   scope :rep, -> { includes(:roles).where(["roles.role_type='rep' AND roles.enddate > ?", Date.today]).references(:roles) }
   
@@ -153,7 +158,9 @@ class Person < Bookmarkable
   scope :on_date, ->(date) { includes(:roles).where('roles.startdate <= ? and roles.enddate >= ?',date.to_s, date.to_s).references(:roles) }
 
   scope :legislator, -> { includes(:roles).where(["(roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]).references(:roles) }
-  
+
+  scope :committee, ->(cmte_thomas_id) { includes(:committee_people, :committees).where("committees.thomas_id = ?", cmte_thomas_id).references(:committees) }
+ 
   #========== ALIASES
 
   alias :blog :blogs
@@ -1410,6 +1417,9 @@ class Person < Bookmarkable
                          ORDER BY v_count DESC", self.id, OpenCongress::Application::CONGRESS_START_DATES[Settings.default_congress]])
   end
 
+  # Returns whether or not a person currently holds office
+  # 
+  # @return [Boolean] whether or not person currently holds office
   def is_sitting?
     !latest_role.nil? && latest_role.enddate >= Date.today
   end
@@ -1654,6 +1664,24 @@ class Person < Bookmarkable
   end
 
   private
+
+  # Whitelists basic and advanced fields for the filterable concern in filterable.rb. Also provides defaults for these.
+  # 
+  # @return [Hash] symbols and default filtering values for filterable attributes on the Person model; filtering currently requires those attributes to be scopes.
+  def self.filterable_fields
+    HashWithIndifferentAccess.new({
+      :basic => {
+        :party => nil,
+        :congress => nil,
+        :committee => nil,
+        :on_date => Date.today(),
+        :state_order => nil,
+        :alphabetical_order => nil,
+        :party_order => nil
+      },
+      :advanced => {}
+    })
+  end
 
   # Determines if a person with title is in certain congress
   #

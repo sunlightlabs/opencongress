@@ -39,6 +39,7 @@ FactoryGirl.define do
     login "jdoe"
     state "AL"
     district 1
+    activated_at Time.now
     accepted_tos_at Time.new(2014, 01, 01)
     password "password"
   end
@@ -49,7 +50,8 @@ FactoryGirl.define do
     state "AL"
     district 1
     accepted_tos_at Time.new(2014, 01, 01)
-    password "password" 
+    password "password"
+    status 1
   end
 
   factory :user_1, class: User do

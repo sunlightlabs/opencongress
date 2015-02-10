@@ -86,7 +86,7 @@ module ParseBillTextJob
       version_order.each do |meta_data|
 
         # fill data version instance with data
-        version = bill.bill_text_versions.find_or_create_by_version(meta_data['version_code'])
+        version = bill.bill_text_versions.where(version:meta_data['version_code']).first_or_create
         version.word_count = bill.word_count_calculator
         version.previous_version = previous
         version.difference_size_chars = nil

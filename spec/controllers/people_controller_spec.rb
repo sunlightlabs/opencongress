@@ -67,6 +67,17 @@ describe PeopleController, type: :controller do
         end
       end
     end
+    context 'when user filters via params[:chamber]' do
+      it "should only return current members of that chamber" do
+        get :index, {
+          :chamber => "rep"
+        }
+        assigns(:people).each do |person|
+          expect(person.roles.first.member_of_congress?).to eq(true)
+          expect(person.roles.first.role_type).to eq("rep")
+        end
+      end
+    end
     context 'when user sorts via params[:party_order]' do
       it 'should arrange people by party' do
         get :index, {

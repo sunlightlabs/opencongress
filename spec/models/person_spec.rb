@@ -98,6 +98,16 @@ describe Person do
       left_mid_congress = FactoryGirl.create(:left_mid_congress)
       @people = expect(Person.for_congress(Settings.default_congress).map(&:bioguideid)).to include(left_mid_congress.bioguideid)
     end
+
+    it "#chamber should return all members that have served in a chamber" do
+      retired = FactoryGirl.create(:retired)
+      senator = FactoryGirl.create(:senator)
+      rep = FactoryGirl.create(:representative)
+      all_house_ever = Person.chamber("rep").map(&:bioguideid)
+      expect(all_house_ever).to include(retired.bioguideid)
+      expect(all_house_ever).to include(rep.bioguideid)      
+      expect(all_house_ever).not_to include(senator.bioguideid) 
+    end
     
     it "#committee should return members that are on a specific committee" do
       ["CMT1", "CMT2"].each do |committee_id|

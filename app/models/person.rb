@@ -145,6 +145,7 @@ class Person < Bookmarkable
 
   scope :party, ->(party) { where("people.party LIKE ?", party.capitalize) }
   scope :in_state, ->(state) { where(state: state.upcase) }
+  scope :chamber, ->(chamber) { includes(:roles).where("roles.role_type = ?", chamber).references(:roles) }
 
   scope :state_order, ->(direction) { includes(:roles).order("roles.state #{self.safe_order(direction)}").references(:roles) }
   scope :alphabetical_order, ->(direction) { order("lastname #{self.safe_order(direction)}") }
@@ -1674,6 +1675,7 @@ class Person < Bookmarkable
         :party => nil,
         :congress => nil,
         :committee => nil,
+        :chamber => nil,
         :on_date => Date.today(),
         :state_order => nil,
         :alphabetical_order => nil,

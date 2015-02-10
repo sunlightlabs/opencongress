@@ -127,8 +127,8 @@ class Bill < Bookmarkable
     },
     elasticsearch: {
       except:  [:rolls, :hot_bill_category_id, :news_article_count, :sponsor_id, :last_vote_date, :topresident_date, :top_subject_id],
-      include: [:bill_fulltext, :top_subject, :bill_titles],
-      methods: [:summary, :bookmark_count, :plain_language_summary, :billtext_txt]
+      include: [:top_subject, :bill_titles],
+      methods: [:summary, :bookmark_count, :plain_language_summary, :chain_full_text]
     }
   }
 
@@ -973,8 +973,21 @@ class Bill < Bookmarkable
     "#{bill_type}#{number}-#{session}"
   end
 
+  # Removes the markup from the full text of bill so as to get
+  # just the plaintext. Useful if no plaintext alternative is avilable.
+  #
+  # @param version [String] version of the bill to get the stripped down full text
+  # @return [String] stripped down markup text (p)laintext) of the specified bill version
+  def strip_markup_from_full_text(version = nil)
+    full_text(version, type = 'html').gsub(/<("[^"]*"|'[^']*'|[^'">])*>/,' ').gsub(/\t|\n|\.|,/,' ').gsub(/\s+/,' ').gsub(/\&.*\;/,'').strip
+  end
+
+  # Calculates the number of words in a bill
+  #
+  # @param version [String] bill text version
+  # @return [Integer] number of words in a bill (strings delimited by spaces)
   def word_count_calculator(version = nil)
-    full_text(version).gsub(/<("[^"]*"|'[^']*'|[^'">])*>/,' ').gsub(/\t|\n|\.|,/,' ').gsub(/\s+/,' ').gsub(/\&.*\;/,'').strip.split(' ').count
+    full_text(version, type = 'html').strip.split(' ').count
   end
 
   # Gets the text versions of a bill as an Array in the proper chained order, i.e.
@@ -987,12 +1000,23 @@ class Bill < Bookmarkable
     Bill.chain_text_versions(self.bill_text_versions.all)
   end
 
-  # Gets the specified version of the bill
+  # Gets the full text of all versions as one string. Inefficient because version chain
+  # gets rebuilt every time.
+  #
+  # @param type [String] type to string together
+  # @return [String] all bill text versions strung together in proper order
+  def chain_full_text(type = 'text')
+    all_text = ''
+    chain_text_versions.each {|version| all_text += full_text(version.version, type) }
+    all_text
+  end
+
+  # Gets the specified version of the bill. If specified version is not available
+  # then the latest version is returned.
   #
   # @param version [String, nil] nil for current, specified String otherwise
   # @return [BillTextVersion] version of bill
   def get_version(version = nil)
-
     begin
       versions = self.chain_text_versions
       return nil if versions.empty?
@@ -1016,30 +1040,56 @@ class Bill < Bookmarkable
       when 'xml'
         full_text_as_unitedstates_xml(version)
       when 'text'
-        raise 'Not implemented yet'
+        begin
+          send("full_text_as_#{BILL_TEXT_SOURCE[session]}_plaintext", version)
+        rescue NoMethodError
+          strip_markup_from_full_text(version)
+        end
       else
-        raise 'Invalid full text type'
+        raise "Invalid full text type provided: #{type}."
     end
   end
 
+  # Retrieves the path to the unitedstates full text xml file for specified version of bill
+  #
+  # @param version [String] version of the bill
+  # @return [String] path to file for xml of full text
   def full_text_as_unitedstates_xml_path(version = nil)
     "#{Settings.unitedstates_data_path}/#{self.session}/bills/#{self.bill_type}/#{self.bill_type}#{self.number}/text-versions/#{get_version(version).version}/document.xml"
   end
 
+  # Loads the unitedstates full text XML markup.
+  #
+  # @param version [String] version of the bill
+  # @return [String] full text as XML markup
   def full_text_as_unitedstates_xml(version = nil)
     puts full_text_as_unitedstates_xml_path(version)
     IO.read(full_text_as_unitedstates_xml_path(version)) rescue ''
   end
 
+  # Retrieves the path to our converted unitedstates XML -> HTML full text
+  #
+  # @param version [String] version of the bill
+  # @return [String] path to file for html of full text
   def full_text_as_unitedstates_html_path(version = nil)
     "#{Settings.oc_billtext_path}/#{self.session}/#{self.reverse_abbrev_lookup}/#{self.reverse_abbrev_lookup}#{self.number}#{get_version(version).version}.gen.html-oc"
   end
 
+  # Loads the unitedstates full text as HTML markup.
+  # USED FOR 114th CONGRESS ONWARD
+  #
+  # @param version [String] version of the bill
+  # @return [String] full text as HTML markup
   def full_text_as_unitedstates_html(version = nil)
     puts full_text_as_unitedstates_html_path(version)
     IO.read(full_text_as_unitedstates_html_path(version)) rescue ''
   end
 
+  # Loads the govtrack diff HTML for a bill
+  # USED FOR 113th CONGRESS AND BEFORE
+  #
+  # @param version [String] version of the bill
+  # @return [String] full text as HTML markup
   def full_text_as_govtrack_html(version = nil)
     IO.read("#{Settings.oc_billtext_path}/#{self.session}/#{self.reverse_abbrev_lookup}/#{self.reverse_abbrev_lookup}#{self.number}#{get_version(version).version}.gen.html-oc") rescue ''
   end
@@ -1057,7 +1107,7 @@ class Bill < Bookmarkable
       value.each {|v| map[v] = key }
     end
 
-    # traverse XML and convert tags appriopriately
+    # traverse XML and convert tags to HTML appropriately
     doc.traverse do |node|
       if not node.respond_to?(:attributes) or (map.has_key?(node.name) and map[node.name].nil?)
         node.unlink

@@ -71,6 +71,10 @@ class BillController < ApplicationController
     end
   end
 
+  def test
+    @bills = Bill.recently_acted.limit(10)
+  end
+
   def all
     @congress = params[:congress] ? params[:congress] : Settings.default_congress
 

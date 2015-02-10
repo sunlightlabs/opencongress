@@ -110,6 +110,8 @@ gem 'full-name-splitter'
 # And determine their gender
 gem 'sexmachine'
 
+gem 'react-rails', '~> 1.0.0.pre', github: 'reactjs/react-rails'
+
 # OpenID
 gem 'ruby-openid'
 gem 'rack-openid'

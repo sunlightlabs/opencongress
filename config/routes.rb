@@ -77,7 +77,7 @@ OpenCongress::Application.routes.draw do
       for action in %w{ all pending popular major hot readthebill compare compare_by_issues atom_top20 }
         f.match action, :action => action, :as => 'bill_' + action
       end
-
+      f.match '/test', :action => 'test'
       f.match 'most/:type', :action => 'most_commentary', :as => :bill_most_commentary
       f.match 'most/viewed', :action => 'popular'
       f.match 'atom/most/viewed', :action => 'atom_top20'

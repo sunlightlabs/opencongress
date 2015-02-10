@@ -31,6 +31,7 @@ FactoryGirl.define do
     date "1238644800"
     id "190904"
     action_type "introduced"
+    type "BillAction"
     datetime Time.new(2009, 04, 02, 00, 00, 00)
   end
 
@@ -40,7 +41,7 @@ FactoryGirl.define do
     date "1238644800" 
     type 'BillAction'
     id "190905"
-    action_type 'action' 
+    action_type 'action'
     datetime Time.new(2009, 04, 02, 00, 00, 00)
   end
 end

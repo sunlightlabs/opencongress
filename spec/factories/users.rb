@@ -40,6 +40,7 @@ FactoryGirl.define do
     state "AL"
     district 1
     accepted_tos_at Time.new(2014, 01, 01)
+    password "password"
   end
 
   factory :user do
@@ -52,11 +53,9 @@ FactoryGirl.define do
   end
 
   factory :user_1, class: User do
-    salt 'd3bc4851d15d3be6a489f35ff5733d35c0811263'
     activated_at Time.new(2008, 01, 14)
     created_at Time.new(2008, 01, 13)
     last_login Time.new(2010, 04, 02)
-    crypted_password 'e9df7394fdecfe1d3c354ef7818ba93ba9c67578'
     updated_at Time.new(2010, 04, 02)
     previous_login_date Time.new(2010, 03, 26, 14, 41, 25.196049)
     id 12
@@ -67,14 +66,13 @@ FactoryGirl.define do
     login 'donnyshaw'
     district 1
     email 'donnydonnyzxcasdqwe@gmail.com'
+    password "password"
   end
 
   factory :user_2, class: User do
-    salt '8b74ca288d0e05c7ede7723b8990d43cc506421d'
     activated_at Time.new(2010, 01, 13, 16, 50, 45.022104)
     created_at Time.new(2010, 01, 13, 10, 48, 47.772348)
     last_login Time.new(2010, 04, 06, 14, 26, 56.149317)
-    crypted_password "0789967153cdd211bc1d07852a4eb26c0530c0d4"
     updated_at Time.new(2010, 04, 06, 14, 26, 56.151032)
     previous_login_date Time.new(2010, 04, 05, 11, 34, 47.54711)
     id 100442
@@ -86,6 +84,7 @@ FactoryGirl.define do
     login 'enaing'
     district 0
     email 'enaing@gmail.com'
+    password "password"
   end
 
   factory :user_3, class: User do
@@ -97,5 +96,6 @@ FactoryGirl.define do
     district 8
     accepted_tos_at 10.minutes.ago
     activated_at 10.minutes.ago
+    password "password"
   end
 end

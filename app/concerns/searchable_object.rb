@@ -39,7 +39,7 @@ module SearchableObject
 
   ELASTICSEARCH_INDEX_OPTIONS = {
     index_options: 'offsets',
-    analyzer: 'default'
+    analyzer: 'edge_ngram'
   }
 
   ELASTICSEARCH_BOOSTS = {

@@ -4,9 +4,11 @@ describe Authable do
 
   describe '.authenticate' do
     before :each do
-      @user = FactoryGirl.create(:user, {
-        :password => "therightpassword"
-      })
+      VCR.use_cassette("create_user") do
+        @user = FactoryGirl.create(:user, {
+          :password => "therightpassword"
+        })
+      end
     end
 
     it 'should return a user object' do

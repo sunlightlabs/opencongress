@@ -117,10 +117,12 @@ describe NotificationAggregate do
     it 'should not associate with existing NotificationAggregate because that instance is stale' do
 
       # create setting for user and activity option with an aggregate timeframe of 0 (immediately stale aggregates)
-      UserNotificationOptionItem.create(aggregate_timeframe:0,
-                                        user_notification_option_id: @user.id,
-                                        bookmark_id: @bookmark.id,
-                                        activity_option_id: @activity_option.id ) # '3 -> bill_action.create'
+      FactoryGirl.create(:user_notification_option_item, {
+        aggregate_timeframe: 0,
+        user_notification_option_id: @user.user_notification_options.id,
+        bookmark_id: @bookmark.id,
+        activity_option_id: @activity_option.id 
+      })
 
       # generate activity
       activity = PublicActivity::Activity.create(trackable_id: 686252,

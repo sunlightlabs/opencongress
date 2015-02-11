@@ -1297,11 +1297,12 @@ class Bill < ActiveRecord::Base
     FragmentCacheSweeper::expire_fragments(fragments)
   end
 
+  # Expires application cache for gathering all bills for use in views/bill/all.html.erb
   def self.expire_meta_govtrack_fragments
     fragments = []
 
     fragments << "bill_all_index"
-    fragments << "bill_all_index_#{Settings.default_congress}" # see views/bill/all.html.erb
+    ['all', 'senate', 'house'].each {|type| fragments << "bill_#{type}_index_#{Settings.default_congress}" }
 
     FragmentCacheSweeper::expire_fragments(fragments)
   end

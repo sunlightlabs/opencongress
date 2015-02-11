@@ -52,6 +52,8 @@ FactoryGirl.define do
     accepted_tos_at Time.new(2014, 01, 01)
     password "password"
     status 1
+    district_needs_update false
+    association :user_profile, :strategy => :build
   end
 
   factory :user_1, class: User do

@@ -34,7 +34,7 @@ FactoryGirl.define do
     votes_democratic_position nil
     votes_republican_position nil
     govtrack_id 412604
-    fec_id nil
+    fec_id "fec_id_val"
     thomas_id "02200"
     cspan_id 75516
     lis_id nil

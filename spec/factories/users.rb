@@ -54,6 +54,7 @@ FactoryGirl.define do
     status 1
     district_needs_update false
     association :user_profile, :strategy => :build
+    user_notification_options
   end
 
   factory :user_1, class: User do

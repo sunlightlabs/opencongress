@@ -1,6 +1,5 @@
 var BillCards = React.createClass({
   render: function(){
-
     var billNode = this.props.bills.map(function(bill, iteration){
       return <BillCard bill={bill} key={iteration} />;
     });

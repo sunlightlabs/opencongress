@@ -72,7 +72,9 @@ class BillController < ApplicationController
   end
 
   def test
-    @bills = Bill.recently_acted.limit(10)
+    @bills = params[:sponsor_id] ? Bill.where(sponsor_id: params[:sponsor_id]) : Bill.recently_acted.limit(10)
+    @url = request.fullpath
+    render :json => {bills: @bills, url: @url} if request.xhr?
   end
 
   def all

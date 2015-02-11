@@ -2,8 +2,4 @@
   <%= javascript_include_tag('components') %>
 <% end %>
 
-<div class="contents">
-  <%= react_component('BillCards', { bills: @bills }, {prerender: true}) %>
-  <div class="contents__side">
-  </div>
-</div>
+<%= react_component('BillBox', {bills: @bills, url: @url}, {prerender: true})  %>

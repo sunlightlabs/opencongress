@@ -11,7 +11,7 @@ class PeopleController < ApplicationController
   skip_before_filter :protect_from_forgery, :only => :zipcodelookup
 
   def index
-    @page_title = 'Senators and Representatives'
+    @people = Person.filter(filtering_params(filtering_defaults))
   end
 
   ##
@@ -687,7 +687,6 @@ class PeopleController < ApplicationController
 
   end
 
-
   def can_text
     if !(logged_in? && current_user.user_role.can_manage_text)
       redirect_to admin_url
@@ -707,6 +706,12 @@ class PeopleController < ApplicationController
         end
       end
     end
+  end
+
+  def filtering_defaults
+    defaults = Person.filterable_fields[:basic].reject{ |k,v| v.nil? }
+    defaults.delete(:on_date) unless params[:for_congress].nil?
+    defaults
   end
 
 end

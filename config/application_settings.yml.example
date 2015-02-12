@@ -28,6 +28,7 @@ defaults: &defaults
   default_count_time: <%= 7.days %>
   # Searchable congress sessions
   available_congresses:
+    - 114
     - 113
     - 112
     - 111
@@ -43,8 +44,8 @@ defaults: &defaults
   # Some data importers (those which have no session data attached) will use default_congress as an assignment value
   # where foo_congress is undefined, and foo is the underscored name of the entity being imported.
   # Likewise, some importers will turn no-op after default_import_until, where foo_import_until is undefined.
-  default_congress: 113
-  default_import_until: 2015-01-03
+  default_congress: 114
+  default_import_until: 2017-01-03
 
   ## DATA IMPORTER PARAMS
   scraper_useragent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.1) Gecko/20060111 Firefox/1.5.0.1

@@ -153,9 +153,9 @@ class Person < Bookmarkable
  
   scope :sen, -> { includes(:roles).where(["roles.role_type='sen' AND roles.enddate > ?", Date.today]).references(:roles) }
   scope :rep, -> { includes(:roles).where(["roles.role_type='rep' AND roles.enddate > ?", Date.today]).references(:roles) }
-  
+
   scope :for_congress, ->(congress_number) { includes(:roles).where(["(roles.enddate >= ? AND roles.startdate <= ?) OR (roles.startdate > ? AND roles.startdate < ?) OR ((roles.startdate <= ?) AND ((roles.enddate < ?) AND (roles.enddate > ?)))", NthCongress.end_datetime(congress_number), NthCongress.start_datetime(congress_number), NthCongress.start_datetime(congress_number), NthCongress.end_datetime(congress_number), NthCongress.start_datetime(congress_number), NthCongress.end_datetime(congress_number), NthCongress.start_datetime(congress_number)]).references(:roles)}
-  
+
   scope :on_date, ->(date) { includes(:roles).where('roles.startdate <= ? and roles.enddate >= ?',date.to_s, date.to_s).references(:roles) }
 
   scope :legislator, -> { includes(:roles).where(["(roles.role_type='sen' OR roles.role_type='rep') AND roles.enddate > ?", Date.today]).references(:roles) }
@@ -988,6 +988,15 @@ class Person < Bookmarkable
   # @return [Boolean] true if person does, false otherwise
   def has_contact_webform?
     (!self.contact_webform.blank? && (self.contact_webform =~ /^http:\/\//))
+  end
+
+  # Creates and associates a PersonStat instance with this person
+  # and calculates/updates the stats
+  #
+  # return [Boolean] true if successful, error otherwise
+  def calculate_stats
+    build_person_stats if person_stats.nil?
+    person_stats.update_calculations
   end
 
   # This method retrieves metadata of replies sent from

@@ -1,0 +1,17 @@
+common: &common
+  adapter: postgresql
+  username: opencongress
+  host: localhost
+
+development: &dev
+  <<: *common
+  database: opencongress_development
+
+test:
+  adapter: postgresql
+  database: travis_ci_test
+  username: postgres
+
+production:
+  <<: *dev
+  database: opencongress_production

@@ -1,9 +1,10 @@
 language: ruby
-cache: bundler
 rvm:
   - 2.1.2
 services:
   - redis-server
+cache: bundler
+sudo: false
 before_script:
   - "cp config/database.travis.yml config/database.yml"
   - "cp config/application_settings.yml.example config/application_settings.yml"

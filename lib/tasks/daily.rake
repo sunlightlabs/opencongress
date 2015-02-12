@@ -266,7 +266,7 @@ namespace :update do
   desc 'Associates bill nicknames with popular bills so searching for them is easier'
   task :bill_nicknames => :environment do
     begin
-      clone_path = File.join(Settings.unitedstates_data_path, 'bill-nicknames')
+      clone_path = File.join(Settings.data_path, 'bill-nicknames')
       repo_url = 'git://github.com/unitedstates/bill-nicknames.git'
       clone_or_update repo_url, clone_path
       require File.expand_path 'bin/daily/bill_nicknames', Rails.root
@@ -411,7 +411,7 @@ namespace :update do
     :roll_calls,
     :committees, :committee_memberships,
     :committee_reports, :committee_meetings,
-    :person_voting_similarities, :sponsored_bill_stats,
+    :sponsored_bill_stats, :person_voting_similarities,
     :bill_nicknames,
     #:search_stats, add back in soon
     #:comment_sentiment_analysis, add back in soon

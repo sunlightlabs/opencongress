@@ -64,7 +64,7 @@ module UnitedStates
 
       leg_person.govtrack_id = leg_hash['id']['govtrack']
       leg_person.thomas_id = leg_hash['id']['thomas']
-      leg_person.fec_id = leg_hash['id']['fec']
+      # leg_person.fec_id = leg_hash['id']['fec'] - no longer a serialized Hash
       unless leg_hash['id']['fec'].nil?
         leg_hash['id']['fec'].each{|id| leg_person.add_fec_id(id)}
       end

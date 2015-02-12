@@ -1,0 +1,143 @@
+defaults: &defaults
+  ## RAILS SECRET TOKEN
+  secret_token: xxx
+
+  ## SITE URLS
+  # URLs that we serve the site from; These get used for link generation, etc.
+  base_url: http://www.example.com/
+  api_host: api.example.com
+  api_base_url: http://api.example.com/
+
+  wiki_host: wiki.example.com
+  wiki_base_url: http://wiki.example.com/
+
+  ## FACEBOOK LOGIN
+  facebook_callback_url: http://example.com/facebook
+
+  ## USER IP BANNING
+  # IP addrs can be banned at the proxy level. see banned_users_test.txt for formats
+  ban_file: <%= Rails.root %>/config/banned_users.txt
+  ban_format: :nginx # or :apache
+
+  ## DATA FRESHNESS PARAMS
+  # Update this when OpenSecrets updates its data
+  current_opensecrets_cycle: '2012'
+  # Results per page for search pages
+  default_search_page_size: 10
+  # Timing window for 'most popular x' displays
+  default_count_time: <%= 7.days %>
+  # Searchable congress sessions
+  available_congresses:
+    - 113
+    - 112
+    - 111
+    - 110
+    - 109
+
+  # Beanstalk can be used as an event source for importing from the
+  # unitedstates scraper data. See the import:worker rake task.
+  beanstalk_servers:
+    - 127.0.0.1:11300
+
+  # default_congress is used for display purposes as well as to control data imports
+  # Some data importers (those which have no session data attached) will use default_congress as an assignment value
+  # where foo_congress is undefined, and foo is the underscored name of the entity being imported.
+  # Likewise, some importers will turn no-op after default_import_until, where foo_import_until is undefined.
+  default_congress: 113
+  default_import_until: 2015-01-03
+
+  ## DATA IMPORTER PARAMS
+  scraper_useragent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.1) Gecko/20060111 Firefox/1.5.0.1
+  # The data path is the root of the location that scrapers and importers write to
+  data_path: <%= Rails.root %>/tmp/data
+  # Govtrack data gets downloaded here
+  govtrack_data_path: <%= Rails.root %>/tmp/data/govtrack
+  # Govtrack bill text gets downloaded here
+  govtrack_billtext_path: <%= Rails.root %>/tmp/data/govtrack/bills.text
+  # Govtrack bill text versioning information gets downloaded here
+  govtrack_billtext_diff_path: <%= Rails.root %>/tmp/data/govtrack/bills.text.cmp
+  # Parsed/transformed bill text gets read from here
+  oc_billtext_path: <%= Rails.root %>/tmp/data/opencongress/bills.text
+  # Committee reports get downloaded here
+  committee_reports_path: <%= Rails.root %>/tmp/data/committee_reports
+  # US Project data gets downloaded here
+  unitedstates_legislators_clone_path: <%= Rails.root %>/tmp/data/unitedstates/legislators
+  unitedstates_data_path: <%= Rails.root %>/tmp/data/unitedstates
+  # This is the name of the beanstalk queue that you've configured the scrapers to push to.
+  unitedstates_import_queue: unitedstates_imports_<%= Rails.env %>
+  # From and to where should maxmind's geolite IP database be downloaded?
+  geoip_zip_url: http://geolite.maxmind.com/download/geoip/database/GeoLiteCity_CSV/GeoLiteCity-latest.zip
+  geoip_zip_path: <%= Rails.root %>/tmp/data/maxmind
+
+  ## IMAGE PATHS
+  # Location to write/read group and notebook images (user-uploaded)
+  group_images_path: <%= Rails.root %>/public/system/group_images
+  group_images_url: /system/group_images
+  notebook_files_path: <%= Rails.root %>/public/system/notebook_files
+  notebook_files_url: /system/notebook_files
+
+
+  ## EMAIL SETTINGS
+  # Digests come from this address
+  mini_mailer_from: alerts@example.com
+  # To whom should contact form submissions be delivered?
+  contact_emails:
+    - admin@example.com
+  # What email address should we reference as the site's contact email?
+  contact_us_email: contact@example.com
+  # What email address does the site send from by default?
+  email_from_address: noreply@example.com
+
+  ## FORMAGEDDON SETTINGS
+  # Some settings for contacting congress
+  formageddon_reply_domain: example.com
+  formageddon_server: pop.gmail.com
+  formageddon_username: formageddon@example.com
+  # force_fax_recipient should be set if all formageddon faxes should be sent to a single number
+  # This is useful for testing, not much else
+  force_fax_recipient: "555-555-5555"
+  # This points to an instance of https://github.com/drinks/select-solver, for choosing subject dropdown values based on message content.
+  formageddon_select_box_delegate_url: http://solver.example.com/choose.json
+
+  # These settings are for EmailCongress, which is the email interface to ContactCongress.
+  # This is the part of email addresses after the @ symbol.
+  email_congress_domain: opencongress.org
+  # The number of days after a seed has been updated before discarding it. This
+  # applies to both confirmed and unconfirmed seeds.
+  email_congress_seed_expiration: 90
+  # Determines the maximum length of the confirmation codes. Greater values
+  # provide greater security. Divide by 5.17 to approximate the number of
+  # characters. A value in the range 100-256 should be good for production.
+  email_congress_confirmation_code_bits: 256
+  # Postmark Inbound adds a BCC header with an address generated from your API
+  # key. You should set this to that address in production to avoid
+  # surreptitious spam.
+  email_congress_inbound_address:
+
+  ## EMAIL SUBSCRIPTION SETTINGS
+  # The vendor signup form urls that email subscriptions post to. The way this works is Sunlight-specific.
+  email_subscription_url: http://subscribe.example.com/opencongress
+  affiliate_email_subscription_url: http://subscribe.example.com/affiliate
+  # Likewise, unsubscribes are handled via Blue State's API. This is Sunlight-specific as well.
+  bsd_perform_updates: false   # Should be true in production, probably false everywhere else
+  bsd_api_root: http://subscribe.example.com/page/api
+  bsd_api_id: example
+  bsd_group_id: 555  # OpenCongress Updates
+  bsd_affiliate_group_id: 556  # OpenCongress Partner Opt-In
+  
+  ## DEFAULT GROUP OWNER
+  # This is the username of whomever should be assigned as the owner of auto-created groups.
+  # Make sure this user exists when you set it!
+  default_group_owner_login: ''
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+
+production:
+  <<: *defaults

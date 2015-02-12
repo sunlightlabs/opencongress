@@ -3,6 +3,7 @@ rvm:
   - 2.1.2
 before_script:
   - "cp config/database.travis.yml config/database.yml"
+  - "cp config/application_settings.travis.yml config/application_settings.yml"
   - "psql -c 'create database travis_ci_test;' -U postgres"
   - "bundle exec rake db:migrate db:test:prepare"
 script: "echo 'no tests for now'"

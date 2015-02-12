@@ -1,6 +1,6 @@
 defaults: &defaults
   ## RAILS SECRET TOKEN
-  secret_token: xxx
+  secret_token: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
   ## SITE URLS
   # URLs that we serve the site from; These get used for link generation, etc.

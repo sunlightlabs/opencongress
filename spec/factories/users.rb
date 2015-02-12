@@ -46,7 +46,7 @@ FactoryGirl.define do
 
   factory :user do
     login { "#{Faker::Name.first_name}123".gsub(/[^a-zA-Z]/,'') }
-    email { "#{login}@example.com".gsub(/[^a-zA-Z]/,'') }
+    email { "#{login.gsub(/[^a-zA-Z]/,'')}@example.com" }
     state "AL"
     district 1
     accepted_tos_at Time.new(2014, 01, 01)

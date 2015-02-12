@@ -235,7 +235,6 @@
     @extend .nav;
     @extend .nav-tabs;
     @extend .nav-justified;
-
     background: #F2F9F9;
     
     > li > a,
@@ -287,6 +286,113 @@
 
         > li > a:last-child {
             border-bottom: 0;
+        }
+    }
+}
+
+
+.filter {
+    @include make-md-column(4);
+
+    &__section {
+        background: #d8efee;
+        margin-bottom: 1px;
+        padding: 25px;
+    }
+
+    &__section--connected {
+        @extend .filter__section;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    &__search-input {
+        @extend .form-control;
+        border-right: 0;
+        box-shadow: none;
+        
+        &:focus {
+            box-shadow: none;
+            outline: none;
+        }
+    }
+
+    &__search-button {
+        @extend .btn;
+        @extend .btn-default;
+        background: $white;
+        height: 38px;
+
+        &:hover,
+        &:active,
+        &:focus,
+        &:active:focus {
+            background: $white;
+            border: 1px solid #ccc;
+            border-left: 0;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .glyphicon {
+            color: $gray-light;
+            transition: color ease-in-out 100ms;
+        }
+
+        &:hover .glyphicon,
+        &:active .glyphicon,
+        &:focus .glyphicon,
+        &:active:focus .glyphicon {
+            color: $gray-dark;
+        }
+    }
+
+    &__label {
+        @extend .nano-size;
+        color: $gray-light;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    &__checkbox {
+        @extend .checkbox;
+    }
+
+    &__radio {
+        @extend .radio;
+    }
+
+    &__checkbox,
+    &__radio {
+        font-size: 16px;
+        margin-bottom: 12px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        input[type=checkbox],
+        input[type=radio] {
+            opacity: 0;
+            transition: opacity ease-in-out 100ms;
+        }
+        
+        input[type=checkbox]:checked,
+        input[type=radio]:checked {
+            opacity: 1;
+        }
+
+        .filter__option {
+            background: transparent;
+            color: $gray;
+            padding: 3px 12px 2px 10px;
+            transition: background ease-in-out 100ms;
+        }
+
+        input[type=checkbox]:checked + .filter__option,
+        input[type=radio]:checked + .filter__option {
+            background: $yellow;
+            color: $gray-darker;
         }
     }
 }

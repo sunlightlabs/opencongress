@@ -47,6 +47,7 @@
 
 </section>
 
+
 <section class="section">
 
     <h2 class="section__header">Main Navigation</h2>
@@ -118,6 +119,7 @@
 
 </section>
 
+
 <section class="section">
 
     <h2 class="section__header">Subnavigation</h2>
@@ -161,6 +163,145 @@
     </div>
 
 </section>
+
+
+<section class="section">
+
+    <h2 class="section__header">Filter</h2>
+<!--  -->
+    <div class="row">
+        <aside class="filter">
+            <form class="filter__search" role="search">
+                <div class="filter__section">
+
+                    <div class="input-group">
+                        <input type="text" class="filter__search-input" placeholder="Search Activity Feed">
+                        <span class="input-group-btn">
+                            <button class="filter__search-button"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="filter__section--connected">
+                    <label class="filter__label">Filter by Type</label>
+                        
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">All Activity</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Bills</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Hearings</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Floor Updates</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Votes</span></label>
+                    </div>
+                </div>
+                
+                <div class="filter__section">
+                    <span class="filter__label">Filter by Time</span>
+
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">All Time</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Upcoming or Scheduled</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Recent Only</span></label>
+                    </div>
+                </div>
+
+                <div class="filter__section">
+                    <span class="filter__label">Sort by</span>
+                    <div class="filter__radio">
+                        <label><input type="radio" name="radio"><span class="filter__option">Newest</span></label>
+                    </div>
+                    <div class="filter__radio">
+                        <label><input type="radio" name="radio"><span class="filter__option">Oldest</span></label>
+                    </div>
+                </div>
+            </form>
+        </aside>
+    </div>
+
+    <div class="codeblock">
+        <div class="codeblock__example">
+            <%= example_code do %>
+                <aside class="filter">
+                    <form class="filter__search" role="search">
+                        <div class="filter__section">
+
+                            <div class="input-group">
+                                <input type="text" class="filter__search-input" placeholder="Search Activity Feed">
+                                <span class="input-group-btn">
+                                    <button class="filter__search-button"><span class="glyphicon glyphicon-search"></span></button>
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="filter__section--connected">
+                            <label class="filter__label">Filter by Type</label>
+                                
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">All Activity</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Bills</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Hearings</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Floor Updates</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Votes</span></label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter__section">
+                            <span class="filter__label">Filter by Time</span>
+
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">All Time</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Upcoming or Scheduled</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Recent Only</span></label>
+                            </div>
+                        </div>
+
+                        <div class="filter__section">
+                            <span class="filter__label">Sort by</span>
+                            <div class="filter__radio">
+                                <label><input type="radio" name="radio"><span class="filter__option">Newest</span></label>
+                            </div>
+                            <div class="filter__radio">
+                                <label><input type="radio" name="radio"><span class="filter__option">Oldest</span></label>
+                            </div>
+                        </div>
+                    </form>
+                </aside>
+            <% end %>
+        </div>
+
+        <div class="codeblock__notes">
+            <h4>Notes</h4>
+            <p></p>
+        </div>
+    </div>
+
+</section>
+
 
 <section class="section">
 

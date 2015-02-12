@@ -12,6 +12,7 @@ db/cucumber_structure.sql
 db/development_structure.sql
 db/schema.rb
 db/structure.sql
+app/assets/images/users/*
 public/dev-assets/*
 public/assets/*
 public/system/*

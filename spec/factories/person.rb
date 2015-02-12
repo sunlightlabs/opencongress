@@ -7,7 +7,6 @@ FactoryGirl.define do
     birthday "Mon 28 Sep 1959"
     gender "M"
     religion nil
-    url nil
     party "Republican"
     osid nil
     bioguideid {"#{lastname[0]}#{'%06d' % rand(999999)}"} 
@@ -22,7 +21,7 @@ FactoryGirl.define do
     unaccented_name "Curt Clawson"
     metavid_id nil
     youtube_id nil
-    website nil
+    url { "https://#{lastname.downcase}.house.gov" }
     congress_office nil
     phone nil
     fax nil
@@ -35,13 +34,15 @@ FactoryGirl.define do
     votes_democratic_position nil
     votes_republican_position nil
     govtrack_id 412604
-    fec_id nil
+    fec_id "fec_id_val"
     thomas_id "02200"
     cspan_id 75516
     lis_id nil
     death_date nil
     twitter_id nil
-    factory :senator do 
+    contactable true
+    factory :senator do
+      url { "https://#{lastname.downcase}.senate.gov" }
       after(:create) do |sen, evaluator|
         create_list(:role, 1, {
           :person => sen,
@@ -50,11 +51,13 @@ FactoryGirl.define do
           :district => sen.district,
           :role_type => "sen",
           :startdate => NthCongress.start_datetime(Settings.default_congress),
-          :enddate => NthCongress.start_datetime(Settings.default_congress) + 6.years
+          :enddate => NthCongress.start_datetime(Settings.default_congress) + 6.years,
+          :url => sen.url
         })
       end
     end
     factory :staggered_senator do 
+      url { "https://#{lastname.downcase}.senate.gov" }
       after(:create) do |sen, evaluator|
         create_list(:role, 1, {
           :person => sen,
@@ -63,7 +66,8 @@ FactoryGirl.define do
           :district => sen.district,
           :role_type => "sen",
           :startdate => NthCongress.start_datetime(Settings.default_congress) - 2.years,
-          :enddate => NthCongress.start_datetime(Settings.default_congress) + 4.years
+          :enddate => NthCongress.start_datetime(Settings.default_congress) + 4.years,
+          :url => sen.url
         })
       end
     end
@@ -73,7 +77,8 @@ FactoryGirl.define do
           :person => rep,
           :state => rep.state,
           :party => rep.party,
-          :district => rep.district
+          :district => rep.district,
+          :url => rep.url
         })
       end
     end

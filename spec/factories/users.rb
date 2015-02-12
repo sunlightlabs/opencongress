@@ -39,17 +39,22 @@ FactoryGirl.define do
     login "jdoe"
     state "AL"
     district 1
+    activated_at Time.now
     accepted_tos_at Time.new(2014, 01, 01)
     password "password"
   end
 
   factory :user do
-    login { "#{Faker::Name.first_name}123" }
-    email { "#{login}@example.com" }
+    login { "#{Faker::Name.first_name}123".gsub(/[^a-zA-Z]/,'') }
+    email { "#{login.gsub(/[^a-zA-Z]/,'')}@example.com" }
     state "AL"
     district 1
     accepted_tos_at Time.new(2014, 01, 01)
-    password "password" 
+    password "password"
+    status 1
+    district_needs_update false
+    association :user_profile, :strategy => :build
+    user_notification_options
   end
 
   factory :user_1, class: User do

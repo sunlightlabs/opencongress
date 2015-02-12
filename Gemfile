@@ -4,6 +4,7 @@ gem 'activemodel', '~> 4.1.0'
 
 gem 'rails', '~> 4.1.0'
 gem 'rake', '~> 0.9.1'
+gem 'psych', "2.0.12"
 
 gem 'railties'
 gem 'thin'

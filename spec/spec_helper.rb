@@ -13,7 +13,7 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 include ActionDispatch::TestProcess
 
 VCR.configure do |config|
-  config.cassette_library_dir = 'test/vcr_cassettes'
+  config.cassette_library_dir = 'spec/vcr_cassettes'
   config.hook_into :webmock
   config.configure_rspec_metadata!
   config.default_cassette_options = { :record => :new_episodes }
@@ -48,7 +48,7 @@ VCR.configure do |config|
 end
 
 RSpec.configure do |config|
-  config.fixture_path = "test/fixtures"
+  config.fixture_path = "spec/fixtures"
   config.global_fixtures = :all
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false

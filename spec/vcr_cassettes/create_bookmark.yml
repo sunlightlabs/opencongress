@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://congress.api.sunlightfoundation.com/districts/locate?zip=22204
+    uri: https://congress.api.sunlightfoundation.com/districts/locate?zip=36560
     body:
       encoding: US-ASCII
       string: ''
@@ -23,7 +23,7 @@ http_interactions:
       Server:
       - nginx/1.1.19
       Date:
-      - Tue, 07 Oct 2014 15:54:31 GMT
+      - Wed, 11 Feb 2015 22:16:01 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -36,7 +36,7 @@ http_interactions:
       - 200 OK
     body:
       encoding: UTF-8
-      string: '{"results":[{"state":"VA","district":8}],"count":1}'
+      string: '{"results":[{"state":"AL","district":1}],"count":1}'
     http_version: 
-  recorded_at: Tue, 07 Oct 2014 15:54:31 GMT
-recorded_with: VCR 2.9.2
+  recorded_at: Wed, 11 Feb 2015 22:16:01 GMT
+recorded_with: VCR 2.9.3

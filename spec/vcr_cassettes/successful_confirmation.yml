@@ -84,4 +84,45 @@ http_interactions:
       string: '{"results":[{"state":"AL","district":1}],"count":1}'
     http_version: 
   recorded_at: Fri, 05 Sep 2014 21:17:17 GMT
-recorded_with: VCR 2.9.2
+- request:
+    method: get
+    uri: http://api.smartystreets.com/street-address?auth-id=<SMARTY_STREETS_ID>&auth-token=<SMARTY_STREETS_TOKEN>&street=123%20Fake%20Street,Mount%20Vernon,%20AL%2036560
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Access-Control-Allow-Headers:
+      - Accept, Content-Type, Content-Length, Referer, Origin, Host, x-include-invalid,
+        x-standardize-only
+      Access-Control-Allow-Methods:
+      - GET, PUT, POST
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Type:
+      - application/json
+      X-Account-Header:
+      - 307cf606-0000-0000-0000-000000000000
+      X-Server-Name:
+      - streetapi-002-ashburn
+      Date:
+      - Wed, 11 Feb 2015 14:19:17 GMT
+      Content-Length:
+      - '3'
+    body:
+      encoding: UTF-8
+      string: |
+        []
+    http_version: 
+  recorded_at: Wed, 11 Feb 2015 14:15:38 GMT
+recorded_with: VCR 2.9.3

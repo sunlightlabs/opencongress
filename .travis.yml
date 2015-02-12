@@ -8,3 +8,5 @@ script: "bundle exec rake spec"
 notifications:
   email:
     - hsandler@sunlightfoundation.com
+    - spaceman@sunlightfoundation.com
+    - beef.salad@sunlightfoundation.com

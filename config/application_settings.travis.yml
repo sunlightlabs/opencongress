@@ -124,6 +124,10 @@ defaults: &defaults
   bsd_api_id: example
   bsd_group_id: 555  # OpenCongress Updates
   bsd_affiliate_group_id: 556  # OpenCongress Partner Opt-In
+
+  elasticsearch_host: http://localhost:9200/
+  house_size: 430
+  senate_size: 100
   
   ## DEFAULT GROUP OWNER
   # This is the username of whomever should be assigned as the owner of auto-created groups.

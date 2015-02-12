@@ -130,6 +130,10 @@ defaults: &defaults
   # Make sure this user exists when you set it!
   default_group_owner_login: ''
 
+  elasticsearch_host: http://localhost:9200/
+  house_size: 430
+  senate_size: 100
+
 development:
   <<: *defaults
 

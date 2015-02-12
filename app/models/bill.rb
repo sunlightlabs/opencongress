@@ -709,10 +709,12 @@ class Bill < Bookmarkable
     /((\d+-[hs][rjc]?\d+)|((hconres|hjres|hres|hr|sconres|sjres|sres|s)\d+-\d+))/
   end
 
+  # Expires application cache for gathering all bills for use in views/bill/all.html.erb
   def self.expire_meta_govtrack_fragments
     fragments = []
 
     fragments << "bill_all_index"
+    ['all', 'senate', 'house'].each {|type| fragments << "bill_#{type}_index_#{NthCongress.current.number}" }
 
     FragmentCacheSweeper::expire_fragments(fragments)
   end

@@ -16,7 +16,7 @@ class NthCongress < OpenCongressModel
 
   #========== CONSTANTS
 
-  CURRENT_CONGRESS = self.last
+  CURRENT_CONGRESS = NthCongress.find(Settings.default_congress) rescue self.last
 
   #========== METHODS
 

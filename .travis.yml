@@ -7,6 +7,4 @@ before_script:
 script: "bundle exec rake spec"
 notifications:
   email:
-    - ddrinkard@sunlightfoundation.com
-    - kdevine@sunlightfoundation.com
-    - dvogel@sunlightfoundation.com
+    - hsandler@sunlightfoundation.com

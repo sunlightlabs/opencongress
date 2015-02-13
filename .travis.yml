@@ -1,12 +1,19 @@
 language: ruby
 rvm:
-  - 1.9.3
+  - 2.1.2
+services:
+  - redis-server
+cache: bundler
+sudo: false
 before_script:
-  - "psql -c 'create database opencongress_test;' -U postgres"
+  - "cp config/database.travis.yml config/database.yml"
+  - "cp config/application_settings.yml.example config/application_settings.yml"
+  - "cp config/api_keys.yml.example config/api_keys.yml"  
+  - "psql -c 'create database travis_ci_test;' -U postgres"
   - "bundle exec rake db:migrate db:test:prepare"
-script: "bundle exec rake spec"
+script: "bundle exec rspec spec"
 notifications:
   email:
-    - ddrinkard@sunlightfoundation.com
-    - kdevine@sunlightfoundation.com
-    - dvogel@sunlightfoundation.com
+    - hsandler@sunlightfoundation.com
+    - spaceman@sunlightfoundation.com
+    - beef.salad@sunlightfoundation.com

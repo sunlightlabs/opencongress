@@ -15,9 +15,11 @@ require 'spec_helper'
 describe Subject do
   describe "bookmarks" do
     it "should connect model to correct bookmark object" do
-      user = users(:jdoe)
+      VCR.use_cassette "create_user" do
+        @user = FactoryGirl.create(:user)
+      end
       subject = Subject.new
-      bookmark = Bookmark.new(:user => user)
+      bookmark = Bookmark.new(:user => @user)
       subject.bookmarks << bookmark
       expect(subject.bookmarks).to include(bookmark)
     end

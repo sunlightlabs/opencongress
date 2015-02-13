@@ -40,7 +40,9 @@ require 'spec_helper'
 
 describe NotebookItem do
   before :each do
-    @item = notebook_items(:notebook_item_1)
+    VCR.use_cassette "notebook_item" do
+      @item = FactoryGirl.create(:notebook_item)
+    end
     @item.data = {:key => "value"}
   end
   describe "serialized data column" do

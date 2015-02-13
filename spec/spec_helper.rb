@@ -2,8 +2,8 @@
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
-# require 'database_cleaner'
 require 'webmock/rspec'
+require 'factory_girl_rails'
 require 'vcr'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
@@ -13,7 +13,7 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 include ActionDispatch::TestProcess
 
 VCR.configure do |config|
-  config.cassette_library_dir = 'test/vcr_cassettes'
+  config.cassette_library_dir = 'spec/vcr_cassettes'
   config.hook_into :webmock
   config.configure_rspec_metadata!
   config.default_cassette_options = { :record => :new_episodes }
@@ -48,7 +48,7 @@ VCR.configure do |config|
 end
 
 RSpec.configure do |config|
-  config.fixture_path = "test/fixtures"
+  config.fixture_path = "spec/fixtures"
   config.global_fixtures = :all
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
@@ -63,15 +63,13 @@ RSpec.configure do |config|
   config.include ApplicationHelper
 
   config.before(:suite) do
-    DatabaseCleaner.clean_with :truncation
-  end
-
-  config.before(:each) do
     DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.start
+    DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.after(:each) do
-    DatabaseCleaner.clean
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 end

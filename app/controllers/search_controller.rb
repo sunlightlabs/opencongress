@@ -13,8 +13,8 @@ class SearchController < ApplicationController
 
     @search = Search.create(:search_text => params[:q],
                             :page => params[:page],
-                            :user => current_user == :false ? nil : current_user,
-                            :search_filters => params.select {|p,v| Search.search_filter_list.include?(p.to_sym) && v.to_i == 1 }.keys,
+                            :user => logged_in? ? current_user : nil,
+                            :search_filters => params.select {|p,v| v.to_i == 1 }.keys,
                             :search_congresses => params[:search_congress] ? params[:search_congress].keys : ["#{Settings.default_congress}"])
 
     if @search.valid? && @search.reload

@@ -2,8 +2,7 @@ require 'authenticated_system'
 require_dependency 'email_congress'
 
 class ApplicationController < ActionController::Base
-
-  layout "new_application"
+  layout "application"
   protect_from_forgery :if => :logged_in?
 
   include AuthenticatedSystem
@@ -570,6 +569,16 @@ class ApplicationController < ActionController::Base
     @meta_tags_for_search ||= meta_tag_defaults[:search]
     options = clean_meta_tags(options.merge({:service => :search}))
     @meta_tags_for_search.merge!(options)
+  end
+
+  def filtering_defaults
+    model = controller_name.classify.constantize
+    model.filterable_fields[:basic].reject{ |k,v| v.nil? }
+  end
+
+  def filtering_params(filter_defaults=filtering_defaults)
+    model = controller_name.classify.constantize
+    filter_defaults.merge(params).slice(*model.filterable_fields[:basic].keys)
   end
 
   # Set instance variable for page title, defaulting to "OpenCongress"

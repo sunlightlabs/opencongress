@@ -15,8 +15,7 @@ require 'spec_helper'
 
 describe PersonIdentifier do
   before(:each) do 
-    @person = people(:person_226043605)
-    @person = Person.first
+    @person = FactoryGirl.create(:representative)
     @person.person_identifiers.create(
       namespace: "fec",
       value: "fecID12345"

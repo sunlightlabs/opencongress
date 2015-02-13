@@ -14,12 +14,23 @@ class NthCongress < OpenCongressModel
   self.table_name = 'congresses'
   self.primary_key = 'number'
 
+  #========== CONSTANTS
+
   #========== METHODS
 
   #----- CLASS
 
+  # Returns the current congress. Should always be the last entry in the database.
+  # If it doesn't then you must create the correct entry manually.
+  #
+  # @return [NthCongress] instance representing the current congress
   def self.current
-    self.last
+    latest = find(Settings.default_congress) rescue self.last
+    if latest.end_date < Date.today
+      OCLogger.log "WARNING: the #{latest.number.ordinalize} Congress in database ended on #{latest.end_date}."
+      raise "Latest congress in NthCongress model ended prior to today's date."
+    end
+    latest
   end
 
   # e.g. 2009 & 2010 -> 111th congress, 2011 & 2012 -> 112th congress

@@ -138,7 +138,6 @@ body,
 
         .wrap.is-active & {
             height: 100%;
-            transform: translate3d(-300px, 0, 0);
             transition: opacity 0.5s;
             opacity: 1;
             width: 100%;

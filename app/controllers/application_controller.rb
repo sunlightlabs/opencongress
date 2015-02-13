@@ -2,8 +2,7 @@ require 'authenticated_system'
 require_dependency 'email_congress'
 
 class ApplicationController < ActionController::Base
-
-  layout "new_application"
+  layout "application"
   protect_from_forgery :if => :logged_in?
 
   include AuthenticatedSystem

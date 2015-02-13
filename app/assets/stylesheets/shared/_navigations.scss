@@ -1,71 +1,592 @@
-.masthead {
-    @extend .container-fluid;
-    
-    &__header {
-        @include make-row();
-        padding: 20px 0;
-    }
-}
-
-.masthead__brand {
-    @include make-xs-column(6);
-    @include make-sm-column(6);
-    @include make-md-column(7);
-}
-
-.masthead__actions {
-    @include make-xs-column(6);
-    @include make-sm-column(6);
-    @include make-md-column(5);
-    
-    margin-top: 7px;
-    @include breakpoint($screen-sm){
-        margin-top: 12px;
-    }
-
-    text-align: right;
-
-    .button__login {
-        @extend .button__primary;
-        font-size: 85%;
-
-        @include breakpoint($screen-xs){
-            font-size: 100%;
-        }
-    }
-
-    .button__signup {
-        @extend .button__secondary;
-        display: none;
-
-        @include breakpoint($screen-xs){
-            display: inline-block;
-            margin-right: 5px;
-        }
-    }
-}
+// Logo 
 
 .logo {
-    width: 175px;
+    margin-left: 9px; 
+    margin-top: 9px;
+    position: absolute;
     transition: width 150ms ease-out;
+    width: 175px;
 
     @include breakpoint($screen-xxs){
-        width: 200px;
+        margin-left: 15px; 
+        margin-top: 4px;
+        width: 210px;
     }
 
     @include breakpoint($screen-xs){
-        width: 250px;
+        margin-top: 2px;
+        width: 235px;
     }
 
     @include breakpoint($screen-sm){
+        margin-top: 0;
+        padding-left: 0;
         width: 300px;
     }
 }
 
 
+// Masthead Header component
+
+.masthead {
+    @extend .container-fluid;
+    
+    &__header {
+        @include make-row();
+        display: none;
+        padding: 20px 0;
+
+        @include breakpoint($screen-sm){
+            display: block;
+        }
+
+
+        &--sm {
+            @include breakpoint($screen-sm){
+                display: none;
+            }
+        }
+    }
+
+    &__brand {
+        @include make-xs-column(6);
+        @include make-sm-column(6);
+        @include make-md-column(7);  
+    }
+
+    &__actions {
+        @include make-xs-column(6);
+        @include make-sm-column(6);
+        @include make-md-column(5);
+        
+        margin-top: 7px;
+        text-align: right;
+        
+        @include breakpoint($screen-sm){
+            margin-top: 12px;
+        }
+
+        .button__login {
+            @extend .button__primary;
+            font-size: 85%;
+
+            @include breakpoint($screen-xs){
+                font-size: 100%;
+            }
+        }
+
+        .button__signup {
+            @extend .button__secondary;
+            display: none;
+
+            @include breakpoint($screen-xs){
+                display: inline-block;
+                margin-right: 5px;
+            }
+        }
+    }
+}
+
+
+// Setup for Flyout Navigation
+
+html,
+body,
+.wrap,
+.wrapper-push,
+.wrapper-content {
+    height: 100%;
+}
+
+.wrap {
+    overflow: hidden;
+    perspective: 1500px;
+    perspective-origin: 0% 50%;
+    position: relative;
+}
+
+.wrapper-push {
+    height: 100%;
+    left: 0;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.4s;
+    z-index: 99;
+    
+    .wrap.is-active & {
+        transform: translate3d(-300px, 0, 0);
+        
+        @include breakpoint($screen-sm) {
+            transform: none;
+        }
+    }
+    
+    &:after {
+        background: rgba(0,0,0,0.2);
+        content: '';
+        height: 0;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
+        width: 0;
+        
+        @include breakpoint($screen-sm) {
+            display: none;
+        }
+
+        .wrap.is-active & {
+            height: 100%;
+            transition: opacity 0.5s;
+            opacity: 1;
+            width: 100%;
+            
+            @include breakpoint($screen-sm) {
+                display: none;
+            } 
+        }
+    }
+}
+
+.wrapper-content {
+    background: #f5f5f5;
+    overflow-y: scroll;
+    position: relative;
+
+}
+
+.wrapper-content-inner {
+    position: relative;
+}
+
+
+// Main Navigation component
+
+.navigation {
+    @extend .navbar;
+    @extend .navbar-static-top;
+    
+    background: #F5F5F5;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    border-radius: none;
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    @include breakpoint($screen-sm){
+        background: $yellow;
+        border-bottom: 0;
+    }
+
+    &__bar {
+        @extend .collapse;
+        @extend .navbar-collapse;
+    }
+
+    &__links {
+        @extend .nav;
+        @extend .navbar-nav;
+        margin: 0;
+
+        > li > a {
+            color: $white;
+            padding-left: 1.1em;
+            padding-right: 1.1em;
+            transition: padding ease-out 200ms,
+                        border ease-in-out 150ms,
+                        background ease-in-out 150ms;
+        
+            @include breakpoint($screen-md){
+                padding-left: 1.25em;
+                padding-right: 1.25em;
+            }
+
+            @include breakpoint($screen-lg){
+                padding-left: 1.5em;
+                padding-right: 1.5em;
+            }
+
+            .navigation--flyout & {
+                border-bottom: 1px solid tint($dark-blue, 15%);
+            }
+        }
+
+        > li > a:hover,
+        > li > a:focus {
+            background: shade($yellow, 5%);
+
+            .navigation--flyout & {
+                border-bottom: 1px solid shade($yellow, 5%);
+            }
+        }
+
+        > li.is-active > a {
+            background: $white;
+            color: $gray-dark;
+
+            .navigation--flyout & {
+                background: $yellow;
+                border-bottom: 1px solid shade($yellow, 5%);
+            }
+        }
+    }
+
+    &__search {
+        @extend .navbar-right;
+        margin-right: 0;
+
+        &-input {
+            @extend .form-control;
+            border: 0;
+            border-radius: 0;
+            border-bottom: 1px solid #ccc;
+            display: block;
+            font-size: 18px;
+            height: 50px;
+            letter-spacing: 1px;
+            margin: 0;
+            padding: 15px;
+            text-transform: uppercase;
+            transition: width ease-out 200ms;
+            vertical-align: middle;
+            width: 80px;
+
+            .navigation--flyout & {
+                background: $dark-blue;
+                color: $gray-lighter;
+                width: 250px;
+            }
+
+            &:focus {
+                box-shadow: none;
+            }
+            
+            @include breakpoint($screen-sm){
+                width: 80px;
+            }
+
+            @include breakpoint($screen-md){
+                width: 300px;
+            }
+
+            @include breakpoint($screen-lg){
+                width: 400px;
+            }
+        }
+
+        &-button {
+            background: $white;
+            border: 0;
+            border-bottom: 1px solid #ccc;
+            display: block;
+            height: 50px;
+            line-height: 48px;
+            position: absolute;
+            right: 0;
+            text-align: center;
+            top: 0;
+            width: 80px;
+            z-index: 2;
+
+            .navigation--flyout & {
+                background: $dark-blue;
+                width: 50px;
+            }
+
+            &:focus {
+                outline: none;
+            }
+
+            @include breakpoint($screen-md){
+                background: transparent;
+                width: 50px;
+            }
+
+            > .glyphicon {
+                color: $yellow;
+                transition: color ease-in-out 100ms;
+
+                &:hover,
+                &:active,
+                &:focus {
+                    color: shade($yellow, 8%);
+                }
+            }
+        }
+    }
+
+    &__icon {
+        @extend .navbar-toggle;
+        background: $yellow;
+        border: 0;
+        border-radius: 0;
+        float: right;
+        height: 50px;
+        margin: 0;
+        width: 50px;
+        transition: all 400ms ease;
+    }
+
+    .navicon {
+        transition: all 400ms ease;
+        
+        &__bar {
+            @extend .icon-bar;
+            background: $white;
+            margin: auto;
+            transition: all 400ms ease;
+            width: 25px;
+        }
+
+        &.is-active {
+            transform: rotate(-45deg);
+
+            .navicon__bar:first-child {
+                transform: rotate(0deg) translateY(6px);
+            }
+            .navicon__bar:nth-child(2) {
+                opacity: 0;
+            }
+            .navicon__bar:last-child {
+                transform: rotate(-90deg) translateX(5px);
+            }
+        }
+    }
+
+    &--flyout {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 100;
+        visibility: hidden;
+        width: 300px;
+        height: 100%;
+        background: $dark-blue;
+        transition: all 0.4s;
+        font-size: 16px;
+        letter-spacing: 1px;
+        transform: translate3d(100%, 0, 0) rotateY(90deg);
+        transform-origin: 0% 50%;
+        transform-style: preserve-3d;
+
+        @include breakpoint($screen-sm) {
+            display: none;
+        }
+
+        &:after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            content: '';
+            opacity: 1;
+            transition: opacity 0.4s;
+            
+            @include breakpoint($screen-sm) {
+                display: none;
+            }
+
+            .is-active & {
+                width: 0;
+                height: 0;
+                opacity: 0;
+                transition: opacity 0.4s, width 0.1s 0.4s, height 0.1s 0.4s;
+                
+                @include breakpoint($screen-sm) {
+                    display: none;
+                }
+            }
+        }
+
+        .wrap.is-active & {
+            visibility: visible;
+            transition: transform 0.5s;
+            transform: translate3d(100%, 0, 0) rotateY(0deg);
+        }
+    }
+}
+
+
+// Subnavigation component for Overview Panels
+
+.panel-overview__subnav {
+    @extend .nav;
+    @extend .nav-tabs;
+    @extend .nav-justified;
+    background: #F2F9F9;
+    
+    > li > a,
+    > li > a:hover {
+        border: 0;
+        border-top: 1px solid #ccc;
+        border-radius: 0;
+        color: #808080;
+        font-size: 16px;
+        margin: 0;
+    }
+    
+    > li > a.is-active {
+        background: #D8EFEE;
+        border-top: 1px solid #ccc;
+        position: relative;
+    }
+  
+    > li > a:last-child {
+        border-bottom: 1px solid #ccc;
+    }
+
+    @include breakpoint($screen-xxs){
+        > li {
+            display: table-cell;
+            position: relative;
+            width: 1%;
+        }
+
+        > li > a.is-active:after {
+            border: solid transparent;
+            border-color: rgba(136, 183, 213, 0);
+            border-top-color: #D8EFEE;
+            border-width: 10px;
+            content: " ";
+            height: 0;
+            left: 50%;
+            margin-left: -10px;
+            pointer-events: none;
+            position: absolute;
+            top: 100%;
+            width: 0;
+        }
+        
+        > li + li > a:hover,
+        > li + li > a {
+            border-left: 1px solid #ccc;
+        }
+
+        > li > a:last-child {
+            border-bottom: 0;
+        }
+    }
+}
+
+
+// Filter component for sidebar
+
+.filter {
+    @include make-md-column(4);
+
+    &__section {
+        background: #d8efee;
+        margin-bottom: 1px;
+        padding: 25px;
+    }
+
+    &__section--alt {
+        @extend .filter__section;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    &__search-input {
+        @extend .form-control;
+        border-right: 0;
+        box-shadow: none;
+        
+        &:focus {
+            box-shadow: none;
+            outline: none;
+        }
+    }
+
+    &__search-button {
+        @extend .btn;
+        @extend .btn-default;
+        background: $white;
+        height: 38px;
+
+        &:hover,
+        &:active,
+        &:focus,
+        &:active:focus {
+            background: $white;
+            border: 1px solid #ccc;
+            border-left: 0;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .glyphicon {
+            color: $gray-light;
+            transition: color ease-in-out 100ms;
+        }
+
+        &:hover .glyphicon,
+        &:active .glyphicon,
+        &:focus .glyphicon,
+        &:active:focus .glyphicon {
+            color: $gray-dark;
+        }
+    }
+
+    &__label {
+        @extend .nano-size;
+        color: $gray-light;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    &__checkbox {
+        @extend .checkbox;
+    }
+
+    &__radio {
+        @extend .radio;
+    }
+
+    &__checkbox,
+    &__radio {
+        font-size: 16px;
+        margin-bottom: 12px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        input[type=checkbox],
+        input[type=radio] {
+            opacity: 0;
+            transition: opacity ease-in-out 100ms;
+        }
+        
+        input[type=checkbox]:checked,
+        input[type=radio]:checked {
+            opacity: 1;
+        }
+
+        .filter__option {
+            background: transparent;
+            color: $gray;
+            padding: 3px 12px 2px 10px;
+            transition: background ease-in-out 100ms;
+        }
+
+        input[type=checkbox]:checked + .filter__option,
+        input[type=radio]:checked + .filter__option {
+            background: $yellow;
+            color: $gray-darker;
+        }
+    }
+}
+
+
+// Footer
+
 .footer {
     background: $white;
-    padding: 25px 0 10px;
     border-bottom: 5px solid $yellow;
+    padding: 25px 0 10px;
     text-align: center;
 }

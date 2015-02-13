@@ -1,6 +1,6 @@
 <section class="section">
 
-    <h2 class="section__header">Masthead: Header</h2>
+    <h2 class="section__header">Masthead</h2>
 
     <header class="masthead">
         <div class="masthead__header">
@@ -39,31 +39,271 @@
 
         <div class="codeblock__notes">
             <h4>Notes</h4>
-            <p>The masthead header consists of two parts: the brand logo, and header actions. It is to be always used in conjuction with the masthead navigation.</p>
+            <p>The masthead header consists of two parts: the brand logo, and header actions. It is to be always used in conjuction with the Main Navigation component.</p>
+            <p>On small screens, this component collapses entirely and is dependent upon the Main Navigation component to display the brand logo.</p>
         </div>
 
     </div>
 
 </section>
 
+
 <section class="section">
 
-    <h2 class="section__header">Masthead: Navigation</h2>
+    <h2 class="section__header">Main Navigation</h2>
+
+    <nav class="navigation">
+            <div class="masthead__header--sm">
+                <img class="logo" alt="OpenCongress Logo" src="<%= image_path('opencongress_logo.svg') %>">
+                <button type="button" class="navigation__icon">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+        
+            <div class="navigation__bar">
+                <ul class="navigation__links">
+                    <li><a href="/issues">Issues</a></li>
+                    <li><a href="/bills">Bills</a></li>
+                    <li class="is-active"><a href="/house">House</a></li>
+                    <li><a href="/senate">Senate</a></li>
+                    <li><a href="/committee">Committees</a></li>
+                </ul>
+                <form class="navigation__search" role="search">
+                    <input type="text" class="navigation__search-input" placeholder="Search">
+                    <button class="navigation__search-button"><span class="glyphicon glyphicon-search"></span></button>
+                </form>
+            </div>
+    </nav>
 
     <div class="codeblock">
         <div class="codeblock__example">
             <%= example_code do %>
-
+                <nav class="navigation">
+                        <div class="masthead__header--sm">
+                            <img class="logo" alt="OpenCongress Logo" src="<%= image_path('opencongress_logo.svg') %>">
+                            <button type="button" class="navigation__icon">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                        </div>
+                    
+                        <div class="navigation__bar">
+                            <ul class="navigation__links">
+                                <li><a href="/issues">Issues</a></li>
+                                <li><a href="/bills">Bills</a></li>
+                                <li class="is-active"><a href="/house">House</a></li>
+                                <li><a href="/senate">Senate</a></li>
+                                <li><a href="/committee">Committees</a></li>
+                            </ul>
+                            <form class="navigation__search" role="search">
+                                <input type="text" class="navigation__search-input" placeholder="Search">
+                                <button class="navigation__search-button"><span class="glyphicon glyphicon-search"></span></button>
+                            </form>
+                        </div>
+                </nav>
             <% end %>
         </div>
 
         <div class="codeblock__notes">
             <h4>Notes</h4>
-            <p></p>
+            <p>The main navigation consists of a set of links to top level sections of OpenCongress and the global search form, and is to be always used in conjuction with the masthead header.
+            <p>On small screens, this component serves as both masthead and navigation.</p>
+            <p>The <code>is-active</code> class should be used to indicate the current top level section.</p>
         </div>
     </div>
 
 </section>
+
+
+<section class="section">
+
+    <h2 class="section__header">Subnavigation</h2>
+
+    <ul class="panel-overview__subnav">
+        <li role="presentation">
+            <a class="is-active" href="#"> Activity</a>
+        </li>
+        <li role="presentation">
+            <a href="#">Committees</a>
+        </li>
+        <li role="presentation">
+            <a href="#">Members</a>
+        </li>
+    </ul>
+
+    <div class="codeblock">
+        <div class="codeblock__example">
+            <%= example_code do %>
+            <ul class="panel-overview__subnav">
+                <li role="presentation">
+                    <a class="is-active" href="#">Activity</a>
+                </li>
+                <li role="presentation">
+                    <a href="#">Committees</a>
+                </li>
+                <li role="presentation">
+                    <a href="#">Members</a>
+                </li>
+            </ul>
+            <% end %>
+        </div>
+
+        <div class="codeblock__notes">
+            <h4>Notes</h4>
+            <p>The subnavigation tab-like component should used in conjuction with an overview panel. It lives immediately beneath an overview panel and is used to break up information about a subject into separate sections.</p>
+            <p>This component should be used when anywhere between 2&ndash;4 subsections are available.</p>
+            <p>The <code>is-active</code> class should be used to indicate the current section.</p>
+            <p><strong>Copy:</strong> Labels should be limited to a single short word if possible to prevent crowding of text.</p>
+        </div>
+    </div>
+
+</section>
+
+
+<section class="section">
+
+    <h2 class="section__header">Filter</h2>
+<!--  -->
+    <div class="row">
+        <aside class="filter">
+            <form class="filter__search" role="search">
+                <div class="filter__section">
+
+                    <div class="input-group">
+                        <input type="text" class="filter__search-input" placeholder="Search Activity Feed">
+                        <span class="input-group-btn">
+                            <button class="filter__search-button"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="filter__section--alt">
+                    <label class="filter__label">Filter by Type</label>
+                        
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">All Activity</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Bills</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Hearings</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Floor Updates</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Votes</span></label>
+                    </div>
+                </div>
+                
+                <div class="filter__section">
+                    <span class="filter__label">Filter by Time</span>
+
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">All Time</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Upcoming or Scheduled</span></label>
+                    </div>
+                    <div class="filter__checkbox">
+                        <label><input type="checkbox"><span class="filter__option">Recent Only</span></label>
+                    </div>
+                </div>
+
+                <div class="filter__section">
+                    <span class="filter__label">Sort by</span>
+                    <div class="filter__radio">
+                        <label><input type="radio" name="radio"><span class="filter__option">Newest</span></label>
+                    </div>
+                    <div class="filter__radio">
+                        <label><input type="radio" name="radio"><span class="filter__option">Oldest</span></label>
+                    </div>
+                </div>
+            </form>
+        </aside>
+    </div>
+
+    <div class="codeblock">
+        <div class="codeblock__example">
+            <%= example_code do %>
+                <aside class="filter">
+                    <form class="filter__search" role="search">
+                        <div class="filter__section">
+
+                            <div class="input-group">
+                                <input type="text" class="filter__search-input" placeholder="Search Activity Feed">
+                                <span class="input-group-btn">
+                                    <button class="filter__search-button"><span class="glyphicon glyphicon-search"></span></button>
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="filter__section--alt">
+                            <label class="filter__label">Filter by Type</label>
+                                
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">All Activity</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Bills</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Hearings</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Floor Updates</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Votes</span></label>
+                            </div>
+                        </div>
+                        
+                        <div class="filter__section">
+                            <span class="filter__label">Filter by Time</span>
+
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">All Time</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Upcoming or Scheduled</span></label>
+                            </div>
+                            <div class="filter__checkbox">
+                                <label><input type="checkbox"><span class="filter__option">Recent Only</span></label>
+                            </div>
+                        </div>
+
+                        <div class="filter__section">
+                            <span class="filter__label">Sort by</span>
+                            <div class="filter__radio">
+                                <label><input type="radio" name="radio"><span class="filter__option">Newest</span></label>
+                            </div>
+                            <div class="filter__radio">
+                                <label><input type="radio" name="radio"><span class="filter__option">Oldest</span></label>
+                            </div>
+                        </div>
+                    </form>
+                </aside>
+            <% end %>
+        </div>
+
+        <div class="codeblock__notes">
+            <h4>Notes</h4>
+            <p>The filter component is used to help filter data or results (often in the form of cards) and typically lives in the sidebar on large screens.</p>
+            <p>Use the <code>filter__section</code> class to create a new section within the component. In this example it is used to visually distinguish search, filter and sorting functions.</p>
+            <p>For sections that should look more visually related to the next section, use the <code>filter__section--alt</code> class instead. In this example, the two "Filter By" functions are visually related, but are in separate sections.</p>
+        </div>
+    </div>
+
+</section>
+
 
 <section class="section">
 

@@ -30,6 +30,8 @@
 .codeblock {
     @extend .section--sub;
 
+    margin-top: 25px;
+
     &__example {
         @include make-md-column(7);
     
@@ -41,6 +43,10 @@
     &__notes {
         @include make-md-column(5);
         font-size: $micro-size;
+
+        h4 {
+            font-weight: 600;
+        }
     }
 }
 
@@ -96,14 +102,24 @@
 }
 
 
+.styleguide-header {
+    @extend .navbar;
+    @extend .navbar-default;
+    @extend .navbar-static-top;
+
+    background: $white;
+    padding: 10px;
+
+    // font-size: 18px;
+    text-transform: normal;
+    letter-spacing: 0px;
+    border: none;
+    border-radius: none;
+}
 
 .logo {
     width: 290px;
     height: 50px;
-}
-
-.navbar {
-    padding: 10px;
 }
 
 .navbar-brand {

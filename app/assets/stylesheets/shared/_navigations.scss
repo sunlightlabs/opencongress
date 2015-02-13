@@ -1,3 +1,5 @@
+// Logo 
+
 .logo {
     margin-left: 9px; 
     margin-top: 9px;
@@ -23,6 +25,8 @@
     }
 }
 
+
+// Masthead Header component
 
 .masthead {
     @extend .container-fluid;
@@ -84,6 +88,82 @@
 }
 
 
+// Setup for Flyout Navigation
+
+html,
+body,
+.wrap,
+.wrapper-push,
+.wrapper-content {
+    height: 100%;
+}
+
+.wrap {
+    overflow: hidden;
+    perspective: 1500px;
+    perspective-origin: 0% 50%;
+    position: relative;
+}
+
+.wrapper-push {
+    height: 100%;
+    left: 0;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.4s;
+    z-index: 99;
+    
+    .wrap.is-active & {
+        transform: translate3d(-300px, 0, 0);
+        
+        @include breakpoint($screen-sm) {
+            transform: none;
+        }
+    }
+    
+    &:after {
+        background: rgba(0,0,0,0.2);
+        content: '';
+        height: 0;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transition: opacity 0.5s, width 0.1s 0.5s, height 0.1s 0.5s;
+        width: 0;
+        
+        @include breakpoint($screen-sm) {
+            display: none;
+        }
+
+        .wrap.is-active & {
+            height: 100%;
+            transform: translate3d(-300px, 0, 0);
+            transition: opacity 0.5s;
+            opacity: 1;
+            width: 100%;
+            
+            @include breakpoint($screen-sm) {
+                display: none;
+            } 
+        }
+    }
+}
+
+.wrapper-content {
+    background: #f5f5f5;
+    overflow-y: scroll;
+    position: relative;
+
+}
+
+.wrapper-content-inner {
+    position: relative;
+}
+
+
+// Main Navigation component
+
 .navigation {
     @extend .navbar;
     @extend .navbar-static-top;
@@ -109,12 +189,14 @@
     &__links {
         @extend .nav;
         @extend .navbar-nav;
+        margin: 0;
 
         > li > a {
             color: $white;
             padding-left: 1.1em;
             padding-right: 1.1em;
             transition: padding ease-out 200ms,
+                        border ease-in-out 150ms,
                         background ease-in-out 150ms;
         
             @include breakpoint($screen-md){
@@ -126,16 +208,29 @@
                 padding-left: 1.5em;
                 padding-right: 1.5em;
             }
+
+            .navigation--flyout & {
+                border-bottom: 1px solid tint($dark-blue, 15%);
+            }
         }
 
         > li > a:hover,
         > li > a:focus {
             background: shade($yellow, 5%);
+
+            .navigation--flyout & {
+                border-bottom: 1px solid shade($yellow, 5%);
+            }
         }
 
         > li.is-active > a {
             background: $white;
             color: $gray-dark;
+
+            .navigation--flyout & {
+                background: $yellow;
+                border-bottom: 1px solid shade($yellow, 5%);
+            }
         }
     }
 
@@ -158,6 +253,12 @@
             transition: width ease-out 200ms;
             vertical-align: middle;
             width: 80px;
+
+            .navigation--flyout & {
+                background: $dark-blue;
+                color: $gray-lighter;
+                width: 250px;
+            }
 
             &:focus {
                 box-shadow: none;
@@ -190,6 +291,11 @@
             width: 80px;
             z-index: 2;
 
+            .navigation--flyout & {
+                background: $dark-blue;
+                width: 50px;
+            }
+
             &:focus {
                 outline: none;
             }
@@ -221,15 +327,92 @@
         height: 50px;
         margin: 0;
         width: 50px;
+        transition: all 400ms ease;
+    }
 
-        .icon-bar {
+    .navicon {
+        transition: all 400ms ease;
+        
+        &__bar {
+            @extend .icon-bar;
             background: $white;
             margin: auto;
+            transition: all 400ms ease;
             width: 25px;
+        }
+
+        &.is-active {
+            transform: rotate(-45deg);
+
+            .navicon__bar:first-child {
+                transform: rotate(0deg) translateY(6px);
+            }
+            .navicon__bar:nth-child(2) {
+                opacity: 0;
+            }
+            .navicon__bar:last-child {
+                transform: rotate(-90deg) translateX(5px);
+            }
+        }
+    }
+
+    &--flyout {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 100;
+        visibility: hidden;
+        width: 300px;
+        height: 100%;
+        background: $dark-blue;
+        transition: all 0.4s;
+        font-size: 16px;
+        letter-spacing: 1px;
+        transform: translate3d(100%, 0, 0) rotateY(90deg);
+        transform-origin: 0% 50%;
+        transform-style: preserve-3d;
+
+        @include breakpoint($screen-sm) {
+            display: none;
+        }
+
+        &:after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            content: '';
+            opacity: 1;
+            transition: opacity 0.4s;
+            
+            @include breakpoint($screen-sm) {
+                display: none;
+            }
+
+            .is-active & {
+                width: 0;
+                height: 0;
+                opacity: 0;
+                transition: opacity 0.4s, width 0.1s 0.4s, height 0.1s 0.4s;
+                
+                @include breakpoint($screen-sm) {
+                    display: none;
+                }
+            }
+        }
+
+        .wrap.is-active & {
+            visibility: visible;
+            transition: transform 0.5s;
+            transform: translate3d(100%, 0, 0) rotateY(0deg);
         }
     }
 }
 
+
+// Subnavigation component for Overview Panels
 
 .panel-overview__subnav {
     @extend .nav;
@@ -290,6 +473,8 @@
     }
 }
 
+
+// Filter component for sidebar
 
 .filter {
     @include make-md-column(4);
@@ -397,6 +582,8 @@
     }
 }
 
+
+// Footer
 
 .footer {
     background: $white;

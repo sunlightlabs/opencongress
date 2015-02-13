@@ -16,8 +16,6 @@ class NthCongress < OpenCongressModel
 
   #========== CONSTANTS
 
-  CURRENT_CONGRESS = NthCongress.find(Settings.default_congress) rescue self.last
-
   #========== METHODS
 
   #----- CLASS
@@ -27,7 +25,7 @@ class NthCongress < OpenCongressModel
   #
   # @return [NthCongress] instance representing the current congress
   def self.current
-    latest = CURRENT_CONGRESS
+    latest = find(Settings.default_congress) rescue self.last
     if latest.end_date < Date.today
       OCLogger.log "WARNING: the #{latest.number.ordinalize} Congress in database ended on #{latest.end_date}."
       raise "Latest congress in NthCongress model ended prior to today's date."

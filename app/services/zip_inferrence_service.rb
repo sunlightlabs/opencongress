@@ -14,7 +14,7 @@ class ZipInferrenceService
       # try to resolve zip first with address using USPS server
       if user_profile.street_address.present? and user_profile.city.present? and user_profile.user.state.present?
         # grab data as 2 item array
-        zip5_zip4 = usps_zip_lookup(user_profile.street_address, user_profile.city, user_profile.user.state)
+        zip5_zip4 = self.class.usps_zip_lookup(user_profile.street_address, user_profile.city, user_profile.user.state)
 
         # validation for zip5 and set
         if zip5_zip4[0].valid_zip5?
@@ -29,7 +29,7 @@ class ZipInferrenceService
 
       # fall back to geocoder if USPS method fails
       if user_profile.zipcode.blank? or user_profile.zip_four.blank?
-        result = geocoder_zip_lookup(user_profile.mailing_address)
+        result = self.class.geocoder_zip_lookup(user_profile.mailing_address)
 
         unless result.nil? or result.postal_code.blank?
           user_profile.zipcode = result.postal_code

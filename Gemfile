@@ -201,7 +201,7 @@ group :test, :development do
   # gem 'rack-mini-profiler'
   gem 'rspec-rails'
   gem 'random_data'
-  gem 'factory_girl_rails'
+  gem 'factory_girl_rails', :require => false
 end
 
 group :test do

@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :person do
     firstname { Faker::Name.first_name }
     middlename nil
-    lastname { Faker::Name.last_name }
+    lastname { Faker::Name.last_name.gsub(/[^a-zA-Z]/,'') }
     nickname "Curt"
     birthday "Mon 28 Sep 1959"
     gender "M"

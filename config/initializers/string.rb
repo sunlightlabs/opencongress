@@ -17,6 +17,7 @@ class ::String
   # Downcases first letter of String
   #
   # @return [String] first letter downcased
+
   def uncapitalize
     self[0, 1].downcase + self[1..-1]
   end
@@ -24,6 +25,7 @@ class ::String
   # Strips the last period of String if period exists
   #
   # @return [String]
+
   def strip_period
     self.chomp!('.')
   end
@@ -47,6 +49,10 @@ class ::String
   # @return [Boolean] true if Integer, false otherwise
   def is_int?
     !!(str =~ /^[-+]?[1-9]([0-9]*)?$/)
+  end
+
+  def strip_newline_and_tabs
+    self.gsub(/(\n)+/,'').gsub(/(\t)+/,'')
   end
 
 end

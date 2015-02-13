@@ -4,6 +4,7 @@ gem 'activemodel', '~> 4.1.0'
 
 gem 'rails', '~> 4.1.0'
 gem 'rake', '~> 0.9.1'
+gem 'psych', "2.0.12"
 
 gem 'railties'
 gem 'thin'
@@ -18,6 +19,9 @@ gem 'elasticsearch-rails'
 # database gems -- need both pg and mysql for app and wiki
 gem 'pg'
 # gem 'mysql2'
+
+# new filter action - only works for rails 4+
+gem 'before_render', :git => "git://github.com/lowjoel/before_render.git"
 
 # for string analysis
 gem 'text'
@@ -193,6 +197,7 @@ group :test, :development do
   gem 'simplecov',            :require => false
   gem 'guard'
   gem 'guard-livereload'
+  gem 'faker'
   # gem 'rack-mini-profiler'
   gem 'rspec-rails'
   gem 'random_data'

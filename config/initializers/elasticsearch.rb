@@ -1,4 +1,4 @@
-# configuration options for elasticsearch
+# Configuration options for elasticsearch
 CONFIG = {
   host: Settings.elasticsearch_host || 'http://localhost:9200/',
   retry_on_failure: true,
@@ -17,3 +17,10 @@ end
 
 # configure elasticsearch client for all models with settings defined above
 Elasticsearch::Model.client = Elasticsearch::Client.new(CONFIG)
+
+# Useful commands to monitor elasticsearch
+#
+# Monitor state of different indices
+# curl '<host>:<port>/_cat/indices?v'
+#
+#

@@ -12,6 +12,12 @@ GIT
       rash (~> 0.4)
 
 GIT
+  remote: git://github.com/lowjoel/before_render.git
+  revision: bce4678a6e00f11d8fb0851a0439dbea680c8422
+  specs:
+    before_render (0.1.0)
+
+GIT
   remote: git://github.com/martinciu/fuubar-cucumber.git
   revision: bf9c6afd870fdb284861837dd00368bb79fe4d75
   specs:
@@ -214,6 +220,8 @@ GEM
     factory_girl_rails (4.4.1)
       factory_girl (~> 4.4.0)
       railties (>= 3.0.0)
+    faker (1.4.3)
+      i18n (~> 0.5)
     faraday (0.8.9)
       multipart-post (~> 1.2.0)
     faraday_middleware (0.9.1)
@@ -394,6 +402,7 @@ GEM
     pry-stack_explorer (0.4.9.1)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
+    psych (2.0.12)
     public_activity (1.4.2)
       actionpack (>= 3.0.0)
       activerecord (>= 3.0)
@@ -578,6 +587,7 @@ DEPENDENCIES
   awesome_print
   bcrypt
   beanstalk-client
+  before_render!
   bluecloth
   bootstrap-sass (~> 3.3.1)
   bourbon
@@ -601,6 +611,7 @@ DEPENDENCIES
   elasticsearch-rails
   facebooker2
   factory_girl_rails
+  faker
   fog
   formageddon (~> 0.0.2)!
   full-name-splitter
@@ -637,6 +648,7 @@ DEPENDENCIES
   pry-nav
   pry-rescue
   pry-stack_explorer
+  psych (= 2.0.12)
   public_activity
   rabl
   rack-contrib

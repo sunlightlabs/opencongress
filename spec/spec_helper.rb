@@ -13,7 +13,7 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 include ActionDispatch::TestProcess
 
 VCR.configure do |config|
-  config.cassette_library_dir = 'test/vcr_cassettes'
+  config.cassette_library_dir = 'spec/vcr_cassettes'
   config.hook_into :webmock
   config.configure_rspec_metadata!
   config.default_cassette_options = { :record => :new_episodes }
@@ -48,7 +48,7 @@ VCR.configure do |config|
 end
 
 RSpec.configure do |config|
-  config.fixture_path = "test/fixtures"
+  config.fixture_path = "spec/fixtures"
   config.global_fixtures = :all
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
@@ -62,16 +62,14 @@ RSpec.configure do |config|
 
   config.include ApplicationHelper
 
-  # config.before(:suite) do
-  #   DatabaseCleaner.clean_with :truncation #:truncation is slow
-  #   DatabaseCleaner.strategy = :truncation
-  # end
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
 
-  # config.before(:each) do
-  #   DatabaseCleaner.start
-  # end
-
-  # config.after(:each) do
-  #   DatabaseCleaner.clean
-  # end
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
+  end
 end

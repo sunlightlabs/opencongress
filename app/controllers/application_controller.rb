@@ -28,6 +28,10 @@ class ApplicationController < ActionController::Base
   before_filter :set_simple_comments
   before_filter :last_updated
   before_filter :set_meta_tags
+
+  # sets meta tags before render so full context is built
+  before_render -> { send_if_method_exists('controller_meta_tags') and send_if_method_exists("#{action_name}_meta_tags") }
+
   after_filter :cache_control
   after_filter :capture_cta
 
@@ -565,6 +569,16 @@ class ApplicationController < ActionController::Base
     @meta_tags_for_search ||= meta_tag_defaults[:search]
     options = clean_meta_tags(options.merge({:service => :search}))
     @meta_tags_for_search.merge!(options)
+  end
+
+  def filtering_defaults
+    model = controller_name.classify.constantize
+    model.filterable_fields[:basic].reject{ |k,v| v.nil? }
+  end
+
+  def filtering_params(filter_defaults=filtering_defaults)
+    model = controller_name.classify.constantize
+    filter_defaults.merge(params).slice(*model.filterable_fields[:basic].keys)
   end
 
   # Set instance variable for page title, defaulting to "OpenCongress"

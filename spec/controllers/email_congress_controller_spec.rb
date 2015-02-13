@@ -10,7 +10,23 @@ describe EmailCongressController, type: :controller do
   describe 'Known user' do
 
     before(:each) do
-      @user = users(:jdoe)
+      VCR.use_cassette("create_user") do
+        @user = FactoryGirl.create(:user, {
+          :district => 1,
+          :state => 'AL'
+        })
+      end
+      @senator = FactoryGirl.create(:senator, {
+        :contactable => true,
+        :state => 'AL'
+      })
+      @rep = FactoryGirl.create(:representative, {
+        :state => 'AL', 
+        :district => 1
+      })
+      @out_of_state_senator = FactoryGirl.create(:senator, {
+        :state => "NY" 
+      })
     end
 
     it 'should bounce for illegitimate recipient' do
@@ -30,11 +46,9 @@ describe EmailCongressController, type: :controller do
     end
 
     it 'should not be able to send to reps outside their district' do
-    	# pending "Cannot make sense of this test. When I try to email an out-of-district
+    	# "Cannot make sense of this test. When I try to email an out-of-district
     	# rep on live (as logged in user), I get the response from no_recipient_bounce"
-	    other_state = State::ABBREVIATIONS.values.reject{ |st| st == @user.state }.first
-	    other_sen = Person.sen.where(:state => other_state).first
-	    rcpt_addr = EmailCongress.email_address_for_person(other_sen)
+	    rcpt_addr = EmailCongress.email_address_for_person(@out_of_state_senator)
 	    seed = incoming_seed({
 	      "To" => rcpt_addr,
 	      "ToFull" => [ { "Email" => rcpt_addr, "Name" => "" } ]
@@ -58,7 +72,7 @@ describe EmailCongressController, type: :controller do
       assert_response :success
 
 	    message = ActionMailer::Base.deliveries.last
-      expect(message.subject).to include("Please confirm your message to Congress:")
+      expect(message.subject).to match(/Please confirm your message to Congress:/)
     end
 
     it 'successful_confirmation' do
@@ -100,7 +114,6 @@ describe EmailCongressController, type: :controller do
 	    delivery_count_after = ActionMailer::Base.deliveries.length
 	    assert_response :success
       expect(delivery_count_before).not_to eq(delivery_count_after)
-
 	    message = ActionMailer::Base.deliveries.last
       expect(message.subject).not_to include('Could not deliver message')
     end

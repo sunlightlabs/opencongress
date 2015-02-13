@@ -16,9 +16,20 @@ require 'spec_helper'
 describe District do
   describe "from_address" do
     it "returns 42223 state overlap" do
+      k_district = FactoryGirl.create(:district, {
+        :center_lat => 36.5300483333,
+        :center_lng => -89.5289233333
+      })
+      state = FactoryGirl.create(:state, {
+        :name => "Kentucky",
+        :abbreviation => "KY"
+      })
+      k_district.state = state
+      k_district.save!
       VCR.use_cassette "42223 district" do 
         @dsts = District.from_address('42223')
       end
+
       expect(@dsts.length).to eq(1)
       states = @dsts.map{ |d| d.state.abbreviation }.uniq.sort
       expect(states.length).to eq(1)

@@ -39,11 +39,11 @@
 
 FactoryGirl.define do
   factory :bill do 
-    session 113 
+    session { Settings.default_congress } 
     bill_type "hr" 
-    number 45 
+    number { rand(1..2000) }
     introduced 1231218000
-    sponsor_id 400350 
+    sponsor_id 400350
     lastaction 1234155600 
     rolls nil 
     last_vote_date nil 
@@ -65,9 +65,9 @@ FactoryGirl.define do
     key_vote_category_id nil 
     is_major nil 
     top_subject_id 8580 
-    get_short_title nil
-    get_popular_title nil
-    get_official_title nil
+    short_title { "The bill's short title #{number}" }
+    popular_title nil
+    official_title nil
     manual_title nil
   end
 end

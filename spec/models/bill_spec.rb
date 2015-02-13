@@ -45,9 +45,7 @@ describe Bill do
     let(:bill) { Bill.new }
 
     before(:each) do
-      @article = Article.create!
-      @article.tag_list = 'foo,bar,baz'
-      @article.save!
+      @article = FactoryGirl.create(:article)
     end
 
     it "finds related articles" do
@@ -81,10 +79,13 @@ describe Bill do
     describe 'sets order specified by option hash or 20 by default' do
       before(:each) do
         @iteration_count = 10
+        VCR.use_cassette("create_user") do
+          @voter = FactoryGirl.create(:user)
+        end
         @iteration_count.times do |first_iteration|
           bill = FactoryGirl.create(:bill, id: first_iteration + 1)
           first_iteration.times do |second_iteration|
-            bill.bill_votes.create(support: 0, user_id: 1)
+            bill.bill_votes.create(support: 0, user_id: @voter.id)
           end
         end
       end
@@ -116,7 +117,10 @@ describe Bill do
 
     it 'defauls the range to 30 days if not specified' do
       @bill = FactoryGirl.create(:bill)
-      @bill_vote = @bill.bill_votes.create(user:User.find(13))
+      VCR.use_cassette("create_user") do
+        @user = FactoryGirl.create(:user)
+      end
+      @bill_vote = @bill.bill_votes.create(user: @user)
 
       response  = Bill.find_all_by_most_user_votes_for_range(nil, {})
       expect(response).to include(@bill)

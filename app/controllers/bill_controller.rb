@@ -1,7 +1,12 @@
 class BillController < ApplicationController
-  include ActionView::Helpers::NumberHelper
 
+  #========== INCLUDES
+
+  include ActionView::Helpers::NumberHelper
   helper :roll_call
+
+  #========== CALLBACKS
+
   before_filter :page_view, :only => [:show, :text]
   before_filter :get_params, :only => [:index, :all, :popular, :pending, :hot, :most_commentary, :readthebill]
   before_filter :bill_profile_shared, :only => [:show, :comments, :votes, :actions, :amendments, :text, :actions_votes, :videos, :topnews, :topblogs, :letters]
@@ -9,16 +14,22 @@ class BillController < ApplicationController
   before_filter :aavtabs, :only => [:actions, :amendments, :votes, :actions_votes]
   before_filter :get_range, :only => [:hot]
   before_filter :login_required, :only => [:bill_vote, :hot_bill_vote]
-  before_filter :set_meta_tag_defaults
+
+  #========== CONSTANTS
 
   TITLE_MAX_LENGTH = 150
+
+  #========== METHODS
+
+  #----- INSTANCE
+
+  public
 
   def roll_calls
     @roll_calls = RollCall.where(bill_id:params[:id])
     render :partial => 'roll_call/roll_calls_summary', :locals => { :rolls => @rolls }
   end
 
-  ##
   # Sends an email to the (co-)sponsors of the specified bill if
   # those (co-)sponsors have a known email address. As of commit
   # c09f9c9e on 2013-08-28 no such email addresses are avialable.
@@ -398,13 +409,6 @@ class BillController < ApplicationController
   end
 
   def show
-    set_meta_tags({
-      :description => "#{@bill.title_full_common}",
-      :title => "#{@bill.title_common} (#{@bill.typenumber})"
-    })
-    set_meta_tags_for_twitter({
-      :image => "twitter_image_url.png"
-    })
     
     #expires_in 20.minutes, :public => true
     respond_to do |format|
@@ -683,7 +687,7 @@ class BillController < ApplicationController
     end
   end
 
-private
+  private
 
   def get_params
     case params[:types]
@@ -825,9 +829,21 @@ private
     @version = nil
   end
 
-  def set_meta_tag_defaults
+  ### META TAGS ##
+
+  def controller_meta_tags
     set_meta_tags({
       :title => "Bills"
+    })
+  end
+
+  def show_meta_tags
+    set_meta_tags({
+      :description => "#{@bill.title_full_common}",
+      :title => "#{@bill.title_common} (#{@bill.typenumber})"
+    })
+    set_meta_tags_for_twitter({
+      :image => "twitter_image_url.png"
     })
   end
 

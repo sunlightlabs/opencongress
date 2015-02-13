@@ -35,6 +35,7 @@ module OpenCongress
                                 #{config.root}/app/concerns
                                 #{config.root}/app/jobs
                                 #{config.root}/app/services
+                                #{config.root}/app/validators
                                 )
 
     config.after_initialize do

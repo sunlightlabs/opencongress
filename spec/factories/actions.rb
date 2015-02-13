@@ -26,11 +26,22 @@
 # Read about factories at https://github.com/thoughtbot/factory_girl
 
 FactoryGirl.define do
+  factory :action do
+    action_type 'referral'
+    date { Date.today.to_time.to_i }
+    datetime { Date.today }
+    type 'BillAction'
+    text 'Referred to the House Committee on Natural Resources.'
+    created_at { DateTime.now - 1.day }
+    ordinal_position 0
+    bill
+  end
   factory :first_action , class: Action do
     bill_id "56724"
     date "1238644800"
     id "190904"
     action_type "introduced"
+    type "BillAction"
     datetime Time.new(2009, 04, 02, 00, 00, 00)
   end
 
@@ -40,7 +51,7 @@ FactoryGirl.define do
     date "1238644800" 
     type 'BillAction'
     id "190905"
-    action_type 'action' 
+    action_type 'action'
     datetime Time.new(2009, 04, 02, 00, 00, 00)
   end
 end

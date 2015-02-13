@@ -64,8 +64,12 @@ class Role < OpenCongressModel
   #
   # @param congress [Integer] congress number
   # @return [Boolean] true if member, false otherwise
-  def member_of_congress?(congress)
-    NthCongress.where('number = ? AND (start_date >= ? OR end_date >= ?)', congress.nil? ? NthCongress.current : NthCongress.find(congress), self.startdate, self.enddate).any?
+  def member_of_congress?(congress=Settings.default_congress)
+    target_congress = NthCongress.find(congress)
+    elected_normally = self.enddate >= target_congress.end_date && self.startdate <= target_congress.start_date 
+    elected_midsession = self.startdate > target_congress.start_date && self.startdate < target_congress.end_date
+    retired_midsession = self.startdate <= target_congress.start_date && (self.enddate < target_congress.end_date && self.enddate > target_congress.start_date)
+    elected_normally || elected_midsession || retired_midsession
   end
 
 end

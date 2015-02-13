@@ -7,4 +7,5 @@ files, which will get concatenated and served.
 //= require jquery_ujs
 //= require react
 //= require react_ujs
+//= require ./beta/beta.js
 //= require ./libraries/swfobject.js

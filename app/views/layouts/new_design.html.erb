@@ -1,52 +1,104 @@
-<!DOCTYPE html>
-<html>
+
 <head>
-    <title>Design | OpenCongress</title>
-    <%= stylesheet_link_tag "styleguide" %>
-    <%= javascript_include_tag "application" %>
-    <%= javascript_include_tag "styleguide" %>
+    <title><%= @page_title %></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <%= render :partial => 'shared/analytics_head' %>
+    <%= csrf_meta_tag %>
+    <%= remote_forgery_protection %>
+
+    <%= render :partial => "meta/meta_tags_for_facebook" %>
+    <%= render :partial => "meta/meta_tags_for_twitter" %>
+    <%= render :partial => "meta/meta_tags_for_search" %>
+
+    <%= stylesheet_link_tag "application" %>
     <script src="http://use.typekit.net/cuo6nsj.js"></script>
     <script>try{Typekit.load();}catch(e){}</script>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
 </head>
 
-<body>
+<body class="wrap js-wrap">
+    <div class="wrapper-push">
 
-    <nav class="styleguide-header">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">
-                    <h1 class="sr-only">OpenCongress</h1>
-                    <img class="logo" alt="OpenCongress" src="<%= image_path('opencongress_logo.svg') %>">
-                </a>
-            </div>
+        <nav class="navigation--flyout">
+            <form class="navigation__search" role="search">
+                <input type="text" class="navigation__search-input" placeholder="Search">
+                <button class="navigation__search-button"><span class="glyphicon glyphicon-search"></span></button>
+            </form>
+            <ul class="navigation__links">
+                <li><a href="/issues">Issues</a></li>
+                <li><a href="/bills">Bills</a></li>
+                <li class="is-active"><a href="/house">House</a></li>
+                <li><a href="/senate">Senate</a></li>
+                <li><a href="/committee">Committees</a></li>
+            </ul>
+        </nav>
 
-            <div class="collapse navbar-collapse" id="main-navigation">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/globals">Globals</a></li>
-                    <li><a href="/forms">Forms</a></li>
-                    <li><a href="/navigation">Navigation</a></li>
-                    <li><a href="/cards">Cards</a></li>
-                    <li><a href="/layout">Layout</a></li>
-                </ul>
-            </div>
+        <div class="wrapper-content">
+        <div class="wrapper-content-inner"><!-- extra div for emulating position:fixed of the menu -->
+
+            <header class="masthead">
+                <div class="masthead__header">
+                    <div class="masthead__brand">
+                        <a href="/">
+                            <h1 class="sr-only">OpenCongress</h1>
+                            <img class="logo" alt="OpenCongress Logo" src="<%= image_path('opencongress_logo.svg') %>">
+                        </a>
+                    </div>
+                    <div class="masthead__actions">
+                        <button class="button__signup">Sign Up</button>
+                        <button class="button__login">Log In</button>
+                    </div>
+                </div>
+            </header>
+
+            <nav class="navigation">
+                    <div class="masthead__header--sm">
+                        <a href="/">
+                            <img class="logo" alt="OpenCongress Logo" src="<%= image_path('opencongress_logo.svg') %>">
+                        </a>
+                        <button type="button" class="navigation__icon js-nav-toggle">
+                            <span class="sr-only">Toggle navigation</span>
+                            <div class="navicon">
+                                <span class="navicon__bar"></span>
+                                <span class="navicon__bar"></span>
+                                <span class="navicon__bar"></span>
+                            </div>
+                        </button>
+                    </div>
+                
+                    <div class="navigation__bar">
+                        <ul class="navigation__links">
+                            <li><a href="/issues">Issues</a></li>
+                            <li><a href="/bills">Bills</a></li>
+                            <li class="is-active"><a href="/house">House</a></li>
+                            <li><a href="/senate">Senate</a></li>
+                            <li><a href="/committee">Committees</a></li>
+                        </ul>
+                        <form class="navigation__search" role="search">
+                            <input type="text" class="navigation__search-input" placeholder="Search">
+                            <button class="navigation__search-button"><span class="glyphicon glyphicon-search"></span></button>
+                        </form>
+                    </div>
+            </nav>
+
+            <main class="container">
+                <%= yield %>
+            </main>
+
+            <footer class="footer">
+                <div class="container">
+                    OpenCongress is built by Sunlight Foundation and powered by open data. Learn more below.
+                    <br>
+                    <span class="glyphicon glyphicon-chevron-down"></span>
+                </div>
+            </footer>
+
         </div>
-    </nav>
-
-    <main class="container">
-        <%= yield %>
-    </main>
-
-    <footer class="footer--styleguide">
-        <div class="container">
-            Footer
         </div>
-    </footer>
-
+    </div>
+    
+    <%= javascript_include_tag "application" %>
 </body>
-</html>

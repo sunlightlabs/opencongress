@@ -12,24 +12,24 @@ module SearchableObject
 
   # http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/analysis.html
   ELASTICSEARCH_SETTINGS = {
-    index: { number_of_shards: 1 },
-    analysis: {
-      filter: {
-        edge_ngram: {
-          type: 'edge_ngram',
-          min_gram:2,
-          max_gram:20,
-          token_chars: %w(letter digit punctuation symbol)
-        }
-      },
-      analyzer: {
-        edge_ngram: {
-          type: 'custom',
-          tokenizer: 'standard',
-          filter: %w(standard edge_ngram)
-        }
-      }
-    },
+    index: { number_of_shards: 1 }
+    #analysis: {
+    #  filter: {
+    #    edge_ngram: {
+    #      type: 'edge_ngram',
+    #      min_gram:2,
+    #      max_gram:20,
+    #      token_chars: %w(letter digit punctuation symbol)
+    #    }
+    #  },
+    #  analyzer: {
+    #    edge_ngram: {
+    #      type: 'custom',
+    #      tokenizer: 'standard',
+    #      filter: %w(standard edge_ngram)
+    #    }
+    #  }
+    #},
   }
 
   # http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping.html
@@ -39,7 +39,7 @@ module SearchableObject
 
   ELASTICSEARCH_INDEX_OPTIONS = {
     index_options: 'offsets',
-    analyzer: 'edge_ngram'
+    analyzer: 'standard'
   }
 
   ELASTICSEARCH_BOOSTS = {
@@ -71,7 +71,7 @@ module SearchableObject
     # Entry method for bulk importing of models for elasticsearch indexing.
     # USE THIS TO IMPORT DATA
     def import_bulk
-      self.includes(self::SERIALIZATION_STYLES[:elasticsearch][:include]).find_in_batches do |record|
+      self.includes(self::SERIALIZATION_STYLES[:elasticsearch][:include]).find_in_batches(batch_size: 1000) do |record|
         bulk_index(record)
       end
     end

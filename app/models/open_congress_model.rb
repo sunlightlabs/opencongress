@@ -6,7 +6,7 @@ class OpenCongressModel < ActiveRecord::Base
 
   class_attribute :action_view
 
-  # This block allows for models to use methods such as "render" from controllers
+  # This block allows for models to use methods such as "render" typically used in controllers
   begin
     self.action_view = ActionView::Base.new(Rails.configuration.paths['app/views'])
     self.action_view.class_eval do

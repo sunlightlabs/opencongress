@@ -85,6 +85,25 @@ class PersonStats < OpenCongressModel
     end
   end
 
+  def self.export_as_csv(file_path = 'stats.csv', attr = 'party_votes_percentage', chamber = nil, party = nil)
+    begin
+      people = Person.legislator
+      people = people.send(chamber) unless chamber.nil?
+      people = people.send(party) unless party.nil?
+      people = people.includes(:person_stats)
+      people.to_a.sort!{|a,b| b.person_stats.send(attr) <=> a.person_stats.send(attr)}
+      CSV.open(file_path, 'w') do |csv|
+        csv << ['title','firstname','lastname','state','district', attr]
+        people.each do |person|
+          csv << [person.title, person.firstname, person.lastname, person.state, person.district, person.person_stats.send(attr)]
+        end
+      end
+    rescue => e
+      p 'Unable to export to CSV!'
+      e.backtrace
+    end
+  end
+
   #----- INSTANCE
 
   public

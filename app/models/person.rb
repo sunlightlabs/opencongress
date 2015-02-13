@@ -177,21 +177,23 @@ class Person < Bookmarkable
       indices: {
         index: 'people',
         query: {
-          dis_max: {
-            queries: [
+          bool: {
+            should: [
               {
-                multi_match: {
-                  type: 'most_fields',
-                  fields: %w(firstname lastname),
-                  query: query,
-                  minimum_should_match: '80%'
-                }
+                  multi_match: {
+                      query: query,
+                      type: "cross_fields",
+                      fields: ['firstname^10', 'lastname^100'],
+                      minimum_should_match: '50%',
+                      boost: SearchableObject::ELASTICSEARCH_BOOSTS[:high]
+                  }
+
               },
               {
                 fuzzy: {
                   lastname: {
                     value: query,
-                    boost: ELASTICSEARCH_BOOSTS[:medium]
+                    boost: SearchableObject::ELASTICSEARCH_BOOSTS[:medium],
                   }
                 }
               },
@@ -199,7 +201,7 @@ class Person < Bookmarkable
                 fuzzy: {
                   firstname: {
                     value: query,
-                    boost: ELASTICSEARCH_BOOSTS[:low]
+                    boost: SearchableObject::ELASTICSEARCH_BOOSTS[:low],
                   }
                 }
               }
@@ -232,23 +234,21 @@ class Person < Bookmarkable
                   }
                 }
               },
-            ],
-            must: [
               {
-                multi_match: {
-                  query: query,
-                  type: 'best_fields',
-                  fields: %w(_all),
-                  analyzer: 'english'
-                }
+                  multi_match: {
+                      query: query,
+                      type: 'best_fields',
+                      fields: %w(_all),
+                      analyzer: 'english'
+                  }
               },
               {
-                fuzzy_like_this: {
-                  like_text: query,
-                  analyzer: 'english',
-                  fuzziness: 0.25,
-                  ignore_tf: true
-                }
+                  fuzzy_like_this: {
+                      like_text: query,
+                      analyzer: 'english',
+                      fuzziness: 0.25,
+                      ignore_tf: true
+                  }
               }
             ]
           }

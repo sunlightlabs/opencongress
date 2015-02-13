@@ -274,6 +274,7 @@ class Bill < Bookmarkable
   end
 
   def self.search_query(query)
+    numbers = query.strip_all_except_numbers
     {
       indices: {
         index: 'bills',
@@ -300,7 +301,7 @@ class Bill < Bookmarkable
               {
                 match: {
                   :number => {
-                    query: query.strip_all_except_numbers,
+                    query: numbers.present? ? numbers : 0,
                     boost: SearchableObject::ELASTICSEARCH_BOOSTS[:extreme],
                     operator: 'or'
                   }
@@ -1013,7 +1014,7 @@ class Bill < Bookmarkable
   # @return [String] all bill text versions strung together in proper order
   def chain_full_text(type = 'text')
     all_text = ''
-    chain_text_versions.each {|version| all_text += full_text(version.version, type) }
+    chain_text_versions.each {|version| all_text += ' ' + full_text(version.version, type) }
     all_text
   end
 

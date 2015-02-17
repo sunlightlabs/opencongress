@@ -5,7 +5,7 @@ var BillBox = React.createClass({
 
   handleSearch: function(formData, action){
     $.get(action, formData, function(data){
-        this.setState( data );
+      this.setState( data );
     }.bind(this));
   },
 

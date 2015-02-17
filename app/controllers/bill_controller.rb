@@ -72,8 +72,13 @@ class BillController < ApplicationController
   end
 
   def test
-    @bills = params[:sponsor_id] ? Bill.where(sponsor_id: params[:sponsor_id]) : Bill.recently_acted.limit(10)
-    @url = request.fullpath
+    if params[:sponsor_id]
+      @person = Person.find(params[:sponsor_id])
+      @bills = find_bills.empty? ? @person.bills : find_bills.flatten
+    else
+      @bills = Bill.recently_acted.limit(10)
+    end
+    @url = request.fullpath.split('?').first
     render :json => {bills: @bills, url: @url} if request.xhr?
   end
 
@@ -694,6 +699,13 @@ class BillController < ApplicationController
   end
 
   private
+
+  def find_bills
+    bills = []
+    bills << @person.bills if params[:bills]
+    bills << @person.bills_cosponsored if params[:bills_cosponsored]
+    bills
+  end
 
   def get_params
     case params[:types]

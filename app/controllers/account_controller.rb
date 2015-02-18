@@ -264,8 +264,8 @@ class AccountController < ApplicationController
   def signup
     @page_title = 'Create a New Account'
 
-    if params.has_key?(:user) and params.has_key?('g-recaptcha-response')
-      params[:user][:g_recaptcha_response] = params['g-recaptcha-response']
+    if params.has_key?(:user)
+      params[:user][:g_recaptcha_response] = params['g-recaptcha-response'] if params.has_key?('g-recaptcha-response')
       params[:user][:remoteip] = request.remote_ip
     end
 

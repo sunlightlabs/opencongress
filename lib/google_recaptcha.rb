@@ -1,6 +1,7 @@
 module GoogleRecaptcha
 
   def self.verified?(response, remoteip, secret = ApiKeys.google_recaptcha_secret_key)
+    return true if Rails.env.test?
     # create URI
     uri = URI.parse('https://www.google.com/recaptcha/api/siteverify')
     params = { :secret => secret, :response => response, :remoteip => remoteip }

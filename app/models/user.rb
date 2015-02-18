@@ -69,6 +69,7 @@ class User < ActiveRecord::Base
   validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true
+  validate :verify_google_recaptcha, :on => :create, :if => 'remoteip.present?'
 
   # This filter merges the validation errors in user_profile with user so that input forms using attributes
   # from user_profile spit have the validation messages as they appear in user_profile. Otherwise, the message
@@ -191,7 +192,8 @@ class User < ActiveRecord::Base
                   :user_options_attributes, :user_profile_attributes, :zipcode, :street_address,
                   :street_address_2, :city, :district_needs_update, :website
 
-  attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email
+  attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email,
+                :g_recaptcha_response, :remoteip
 
   #========== SERIALIZERS
 
@@ -320,6 +322,13 @@ class User < ActiveRecord::Base
 
   #========== PUBLIC METHODS
   public
+
+
+  def verify_google_recaptcha
+    unless GoogleRecaptcha.verified?(g_recaptcha_response, remoteip)
+      errors.add(:recaptcha, 'could not be verified. Please try again')
+    end
+  end
 
   def is_admin?
     return user_role.can_administer_users

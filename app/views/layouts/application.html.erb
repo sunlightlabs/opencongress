@@ -14,10 +14,10 @@
     <%= render :partial => "meta/meta_tags_for_search" %>
 
     <%= stylesheet_link_tag "application" %>
-    <script src="http://use.typekit.net/cuo6nsj.js"></script>
-    <script>try{Typekit.load();}catch(e){}</script>
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <%= javascript_include_tag "application" %>
+    <%= render :partial => 'layouts/javascript' %>
 </head>
 
 <body class="wrap js-wrap">
@@ -102,6 +102,6 @@
     </div>
     
     <%= javascript_include_tag "application" %>
-    <%= yield :load_js  %>
+    <%= content_for :load_js  %>
 </body>
 </html>

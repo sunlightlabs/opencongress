@@ -42,7 +42,6 @@ class User < OpenCongressModel
   include Authable
   include EmailListable
   include PrivacyObject
-  apply_simple_captcha
 
   #========== CONFIGURATIONS
 
@@ -70,6 +69,8 @@ class User < OpenCongressModel
   validates_uniqueness_of     :login,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :email,        :case_sensitive => false, :allow_nil => true
   validates_uniqueness_of     :identity_url, :case_sensitive => false, :allow_nil => true, :allow_blank => true
+  validate :verify_google_recaptcha, :on => :create, :if => 'remoteip.present?'
+
 
   #========== CALLBACKS
 
@@ -210,7 +211,8 @@ class User < OpenCongressModel
   # Note that some attrs are defined in authable_model
   # accept_tos and email_confirmation are unpersisted accessors for validation only
 
-  attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email
+  attr_accessor :accept_tos, :email_confirmation, :suppress_activation_email,
+                :g_recaptcha_response, :remoteip
 
   #========== SERIALIZERS
 
@@ -371,6 +373,12 @@ class User < OpenCongressModel
 
   public
 
+  def verify_google_recaptcha
+    unless GoogleRecaptcha.verified?(g_recaptcha_response, remoteip)
+      errors.add(:recaptcha, 'could not be verified. Please try again')
+    end
+  end
+
   # Retrieves recent activity for the current user for a given timeframe
   #
   # @param limit [Integer] limit number of returned results
@@ -387,9 +395,16 @@ class User < OpenCongressModel
   # Update user metadate to include last login time and log their IP
   #
   # @param ip_addr [String] string representation of IP address
-  def update_login_metadate(ip_addr)
+  def update_login_metadata(ip_addr)
     update_attribute(:previous_login_date, last_login ? last_login : Time.now)
     update_attribute(:last_login, Time.now)
+    user_ip_addresses.where(addr:UserIpAddress.int_form(ip_addr)).first_or_create
+  end
+
+  # Associates new IP address to the user if it doesn't exist.
+  #
+  # @param ip_addr [String] string representation of the IP address
+  def update_ip_metadata(ip_addr)
     user_ip_addresses.where(addr:UserIpAddress.int_form(ip_addr)).first_or_create
   end
 

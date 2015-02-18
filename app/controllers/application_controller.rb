@@ -34,6 +34,7 @@ class ApplicationController < ActionController::Base
 
   after_filter :cache_control
   after_filter :capture_cta
+  after_filter :capture_ip_addr
 
   class InvalidByteSequenceErrorFromParams < Encoding::InvalidByteSequenceError
     # Empty
@@ -282,8 +283,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Captures a call to action from a user.
   def capture_cta
 
+    # use cta_session if the user isn't logged in so we can track anonymous users
     if not logged_in? and not cookies.has_key?(:cta_session)
       cookies[:cta_session] = session[:session_id]
       session[:cta_session] = session[:session_id]
@@ -306,6 +309,14 @@ class ApplicationController < ActionController::Base
                           controller: params[:controller],
                           method: params[:action],
                           params: params)
+  end
+
+  # Captures the IP address of the user if they're logged in. This allows
+  # us to track whether a user changes IP mid-login.
+  def capture_ip_addr
+    if logged_in?
+      current_user.update_ip_metadata(request.remote_ip)
+    end
   end
 
   def is_authorized?

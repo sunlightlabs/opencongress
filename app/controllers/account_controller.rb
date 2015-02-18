@@ -1,5 +1,6 @@
 require_dependency 'multi_geocoder'
 require_dependency 'location_changed_service'
+require_dependency 'google_recaptcha'
 
 class AccountController < ApplicationController
 
@@ -267,14 +268,16 @@ class AccountController < ApplicationController
 
   def signup
     @page_title = 'Create a New Account'
-    @user = User.new(user_params) unless params[:user].nil?
-    @user.email = session[:invite].invitee_email unless session[:invite].nil? or request.post?
+
+    if params[:user].present?
+      @user = User.new(user_params)
+      @user.email = session[:invite].invitee_email unless session[:invite].nil? or request.post?
+    end
 
     return unless request.post?
 
     @user.accepted_tos_at = Time.now if @user.accept_tos
-
-    if @user.save_with_captcha and @user.reload #and #&& @user.reload
+    if @user.save and @user.reload
 
       # check for an invitation
       if session[:invite]
@@ -632,7 +635,7 @@ class AccountController < ApplicationController
 
   def process_login_actions
 
-    current_user.update_login_metadate(request.remote_ip)
+    current_user.update_login_metadata(request.remote_ip)
 
     if session[:login_action] && session[:login_action][:url]
       if ['support_bill', 'oppose_bill'].include?(session[:login_action][:action])
@@ -694,19 +697,22 @@ class AccountController < ApplicationController
   end
 
   def user_params
+    params[:user][:remoteip] = request.remote_ip
+    params[:user][:g_recaptcha_response] = params['g-recaptcha-response']
     params.require(:user).permit(
       :login,
       :password,
       :password_confirmation,
       :email,
       :zipcode,
-      :captcha,
-      :captcha_key,
       :accept_tos,
+      :remoteip,
+      :g_recaptcha_response,
       :user_options_attributes => [
         :opencongress_mail,
         :partner_mail
       ]
     )
   end
+
 end

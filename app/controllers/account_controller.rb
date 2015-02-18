@@ -698,7 +698,7 @@ class AccountController < ApplicationController
 
   def user_params
     params[:user][:remoteip] = request.remote_ip
-    params[:user][:g_recaptcha_response] = params['g-recaptcha-response']
+    params[:user][:g_recaptcha_response] = params['g-recaptcha-response'] if params.has_key?('g-recaptcha-response')
     params.require(:user).permit(
       :login,
       :password,

@@ -7,6 +7,8 @@
     <%= meta_keywords_tag %>
     <%= csrf_meta_tag %>
 
+    <%= render 'layouts/javascript' %>
+
     <% if @meta_keywords %>
       <meta name="keywords" content="<%= @meta_keywords %>" />
     <% end %>

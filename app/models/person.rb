@@ -183,9 +183,11 @@ class Person < Bookmarkable
                   multi_match: {
                       query: query,
                       type: "cross_fields",
+                      use_dis_max: false,
                       fields: ['firstname^10', 'lastname^100'],
-                      minimum_should_match: '50%',
-                      boost: SearchableObject::ELASTICSEARCH_BOOSTS[:high]
+                      analyzer: 'standard',
+                      operator: 'or',
+                      boost: SearchableObject::ELASTICSEARCH_BOOSTS[:medium]
                   }
 
               },

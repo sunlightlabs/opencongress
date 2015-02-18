@@ -6,9 +6,11 @@
         <%= render :partial => 'shared/analytics_head' %>
         <%= csrf_meta_tag %>
         <%= remote_forgery_protection %>
+
         <%= javascript_include_tag "application" %>
-        <script src="http://use.typekit.net/cuo6nsj.js"></script>
-        <script>try{Typekit.load();}catch(e){}</script>
+        <!-- Include CDN javascript files and other initializations-->
+        <%= render :partial => 'layouts/javascript' %>
+
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" href="/favicon.png" />
         <%= stylesheet_link_tag "application" %>
@@ -34,6 +36,10 @@
                 Footer
             </div>
         </footer>
+
+        <div id="javascript-files">
+          <%= content_for :javascript %>
+        </div>
         <!-- add simplesocialite -->
     </body>
 

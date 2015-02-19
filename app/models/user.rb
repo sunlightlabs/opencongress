@@ -35,6 +35,7 @@ require_dependency 'authable'
 require_dependency 'email_listable'
 require_dependency 'multi_geocoder'
 require_dependency 'visible_by_privacy_option_query'
+require_dependency 'google_recaptcha'
 
 # this model expects a certain database layout and its based on the name/login pattern.
 class User < ActiveRecord::Base
@@ -233,6 +234,15 @@ class User < ActiveRecord::Base
   end
 
   #========== STATIC METHODS
+
+  # Used during signup in account controller
+  def self.new_for_signup(params, g_recaptcha_response, remoteip)
+    user = User.new(params)
+    user.g_recaptcha_response = g_recaptcha_response
+    user.remoteip = remoteip
+    user
+  end
+
   class << self
 
     def random_password

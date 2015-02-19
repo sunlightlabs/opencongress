@@ -139,7 +139,6 @@ class Search < OpenCongressModel
     search_queries = indices.collect{|i| i.singularize.camelize.constantize.search_query(query)}
     query = {body: elasticsearch_body(search_queries, limit)}
     query[:index] = indices if indices.any?
-    ap query
     Elasticsearch::Model.client.search(query)
   end
 

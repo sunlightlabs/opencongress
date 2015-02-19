@@ -86,7 +86,7 @@ class Person < Bookmarkable
           include: [:recent_news, :recent_blogs].freeze
       },
       elasticsearch: {
-          methods: [:oc_user_comments, :bookmark_count],
+          methods: [:oc_user_comments, :bookmark_count, :full_name],
           include: [:person_identifiers, :roles]
       }
   }
@@ -180,16 +180,12 @@ class Person < Bookmarkable
           bool: {
             should: [
               {
-                  multi_match: {
-                      query: query,
-                      type: "cross_fields",
-                      use_dis_max: false,
-                      fields: ['firstname^10', 'lastname^100'],
-                      analyzer: 'standard',
-                      operator: 'or',
-                      boost: SearchableObject::ELASTICSEARCH_BOOSTS[:medium]
+                fuzzy: {
+                  full_name: {
+                    value: query,
+                    boost: SearchableObject::ELASTICSEARCH_BOOSTS[:high],
                   }
-
+                }
               },
               {
                 fuzzy: {

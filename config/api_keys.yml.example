@@ -51,6 +51,7 @@ defaults: &defaults
   # Cloudfront
   aws_access_key_id: xxx
   aws_secret_access_key: xxx
+  texas_am_api_key: xxx
 
 development:
   <<: *defaults

@@ -89,7 +89,12 @@ module UnitedStates
             OCLogger.log "Bill data contains a co-sponsor id (#{cosponsor_id}) that does not exist in our database."
           else
             if not bill.co_sponsors.exists?(cosponsor)
-              bill.co_sponsors << cosponsor
+              BillCosponsor.create(person:cosponsor,
+                                   bill:bill,
+                                   date_added: cosponsor_hash['sponsored_at'],
+                                   date_withdrawn: cosponsor_hash['withdrawn_at']
+              )
+              # bill.co_sponsors << cosponsor
             end
           end
         end

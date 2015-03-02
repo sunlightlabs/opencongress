@@ -264,14 +264,14 @@ class AccountController < ApplicationController
   def signup
     @page_title = 'Create a New Account'
 
-    @user = User.new(params[:user])
+    @user = User.new_for_signup(params[:user], params.has_key?('g-recaptcha-response') ? params['g-recaptcha-response'] : nil, request.remote_ip)
     @user.email = session[:invite].invitee_email unless session[:invite].nil? or request.post?
 
     return unless request.post?
 
     @user.accepted_tos_at = Time.now if @user.accept_tos
 
-    if @user.save_with_captcha() && @user.reload()
+    if @user.save && @user.reload()
 
       # check for an invitation
       if session[:invite]

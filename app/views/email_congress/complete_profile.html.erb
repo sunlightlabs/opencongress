@@ -42,7 +42,7 @@
         <%= f.input :city %>
         <%= f.input :state, :collection => State::ABBREVIATIONS %>
         <%= f.input :zipcode, :maxlength => 5, :size => 5 %>
-        <%= f.input :mobile_phone %>
+        <%= f.input :mobile_phone, label: 'Phone number'%>
 
       <% if !@sender_user || !@sender_user.accepted_tos? %>
           <%= f.input :accept_tos, :as => :boolean, inline_label: 'I accept the terms of service and privacy policy', label: false %>

@@ -23,6 +23,7 @@ class EmailCongressController < ApplicationController
   before_filter :find_user, :only => [:message_to_members, :confirm, :complete_profile, :recipients_for_profile, :discard]
   before_filter :logout_if_necessary, :only => [:confirm, :complete_profile]
   before_filter :lookup_recipients, :only => [:message_to_members, :confirm, :complete_profile, :recipients_for_profile, :confirmed]
+  before_filter :override_recipients, :only => [:complete_profile]
 
   def debug
     puts "=================="
@@ -280,6 +281,17 @@ class EmailCongressController < ApplicationController
     @recipients = cleaned.map(&:second)
     @uncontactable_recipients = @recipients.select{|r| r.contactable == false}
     @recipients = @recipients - @uncontactable_recipients
+  end
+
+  def override_recipients
+    # In the event that someone has sent an email to an official that does not directly represent them and subsequently elects to email all of their representatives, params[:recipient_override]  comes in as true. We make the change to the letter seed's ToFull field.
+    if params[:recipient_override] == "true"
+      @email_obj["ToFull"] = {"Email" => "myreps@opencongress.org"}
+      @email_obj["CcFull"] = []
+      @email_obj["BccFull"] = []
+      @seed.raw_source = JSON.dump(@email_obj)
+      @seed.save!
+    end
   end
 
   def find_by_confirmation_code

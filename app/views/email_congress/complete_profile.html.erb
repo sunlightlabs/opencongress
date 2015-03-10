@@ -43,6 +43,7 @@
         <%= f.input :state, :collection => State::ABBREVIATIONS %>
         <%= f.input :zipcode, :maxlength => 5, :size => 5 %>
         <%= f.input :mobile_phone, label: 'Phone number'%>
+        <%= hidden_field_tag :recipient_override, false %>
 
       <% if !@sender_user || !@sender_user.accepted_tos? %>
           <%= f.input :accept_tos, :as => :boolean, inline_label: 'I accept the terms of service and privacy policy', label: false %>
@@ -159,12 +160,22 @@
         var para = dialog.find('.recipients');
         window.recipients = recipients;
         window.j = $;
+        toggleRecipientOverride();
         para.html($(recipients).pluck('full_name').toArray().join(', '));
         dialog.show()
               .parent().find('.controls').hide();
 
       }
+      function toggleRecipientOverride(){
+        console.log
+        if ($("#recipient_override").val() === "false") {
+          $("#recipient_override").val("true")
+        } else {
+          $("#recipient_override").val("false")
+        }
+      }
       $('#change_warning').find('.btn-close').click(function(){
+        toggleRecipientOverride();
         $(this).parents('#change_warning').hide().parents('.control-group').find('.controls').show().find('.btn').prop('disabled', false);
       });
       $('#profile_submit').click(function(e){

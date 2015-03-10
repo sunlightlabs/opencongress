@@ -117,7 +117,7 @@ describe EmailCongressController do
       })
       request.env['RAW_POST_DATA'] = JSON.dump(email)
       post(:message_to_members)
-      message = ActionMailer::Base.deliveries[-2]
+      message = ActionMailer::Base.deliveries.last
       assert_match(/^Sorry! OpenCongress could not send your message to every recipient/, message.subject)
     end
   end

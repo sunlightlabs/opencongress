@@ -62,7 +62,7 @@
                     <div class="input-append">
                         <input class="search-query" id="main_search" type="text" name="q" placeholder="<%= @popular_legislators.first.full_name rescue "Sheila Jackson-Lee" %>, <%= @popular_bills.first.typenumber rescue "H.R.3261" %>">
                         <button class="search"></button>
-                        <input type="hidden" name="search_congress[113]" value="113">
+                        <input type="hidden" name="search_congress[<%= Settings.default_congress %>]" value="<%= Settings.default_congress %>">
                         <input type="hidden" name="search_bills" value="1">
                         <input type="hidden" name="search_people" value="1">
                         <input type="hidden" name="search_committees" value="1">

@@ -16,13 +16,6 @@
     <%= bookmarking_image.html_safe %>
     <%= open_graph_meta %>
 
-    <%= include_javascripts :defaults, :common  %>
-    <script>
-      var $j = jQuery.noConflict();
-    </script>
-    <script type="text/javascript" src="//use.typekit.net/xev8qlf.js"></script>
-    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-    <%= include_javascripts :frontpage  %>
     <%= csrf_meta_tag %>
     <%= remote_forgery_protection %>
 
@@ -42,11 +35,9 @@
     
     <%= yield :stylesheets %>
 
-    <script type="text/javascript">
-     // Disable and pause carousel autoscrolling
-     function mycarousel_initCallback(a){a.buttonNext.bind("click",function(){a.startAuto(0)});a.buttonPrev.bind("click",
-     function(){a.startAuto(0)});a.clip.hover(function(){a.stopAuto()},function(){a.startAuto()})}$j(document).ready(function(){$j("#why_carousel").jcarousel({auto:5,wrap:"last",initCallback:mycarousel_initCallback})});
-    </script>
+    <script type="text/javascript" src="//use.typekit.net/xev8qlf.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
   </head>
 
   <body id="home">
@@ -68,6 +59,8 @@
 
     </div> <!-- // wrapper -->
     <div class="clear">&nbsp;</div>
+    <%= javascript_include_tag "https://s3.amazonaws.com/sunlight-cdn/brandingbar/0.4/js/brandingbar.js" %>
+    <%= include_javascripts :defaults, :common  %>
     <%= render :partial => 'layouts/footer' %>
     <%= render :partial => 'shared/analytics_foot' %>
     <%# This must go ahead of socialite %>
@@ -91,7 +84,16 @@
       displayName: 'Email'
     });
     </script>
-    <%= javascript_include_tag "branding_bar_temp" %>
+    <%#= javascript_include_tag "branding_bar_temp" %>
+    <script>
+      var $j = jQuery.noConflict();
+    </script>
+    <%= include_javascripts :frontpage  %>
+    <script type="text/javascript">
+     // Disable and pause carousel autoscrolling
+     function mycarousel_initCallback(a){a.buttonNext.bind("click",function(){a.startAuto(0)});a.buttonPrev.bind("click",
+     function(){a.startAuto(0)});a.clip.hover(function(){a.stopAuto()},function(){a.startAuto()})}$j(document).ready(function(){$j("#why_carousel").jcarousel({auto:5,wrap:"last",initCallback:mycarousel_initCallback})});
+    </script>
     <%= yield :javascripts %>
   </body>
 </html>

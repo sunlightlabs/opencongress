@@ -10,11 +10,13 @@
       <div><%= flash[:error_nojs] %></div>
     </div>
   <% end %>
-  <script type="text/javascript">
-    jQuery('.flash.note').slideDown('fast')
-      .find('a.close').click(function(e){
-        e.preventDefault();
-        jQuery(this).parents('.note').slideUp('fast');
-      });
-  </script>
+  <% content_for :javascripts do %>
+    <script type="text/javascript">
+      jQuery('.flash.note').slideDown('fast')
+        .find('a.close').click(function(e){
+          e.preventDefault();
+          jQuery(this).parents('.note').slideUp('fast');
+        });
+    </script>
+  <% end %> %>
 <% end %>

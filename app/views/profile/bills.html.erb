@@ -26,11 +26,11 @@
 	    Blogs: <%= link_to image_tag('feed.jpg', {:alt => "Subscribe", :style => "border:0;vertical-align:middle;"}),
 	              :controller => 'bill', :action => 'atom_blogs', :id => bill.ident %>	    
 	    </td>
-	            <td><%= bill.status %></td>
-	            <td><%= bill.last_action.formatted_date %></td>
-	            <td style="text-align:center;"><%= link_to bill.bookmarks.length, :controller => 'friends', :action => 'tracking_bill', :id => bill.ident %></td>
-              <%= user_bill_vote_string(bill) %>
-      <td><%= button_to("Remove", {:controller => "profile", :action => 'remove_bill_bookmark', :login => current_user.login, :id => b.bookmarkable_id}) if current_user == @user %></td>
+        <td><%= bill.status %></td>
+        <td><%= bill.last_action.formatted_date %></td>
+        <td style="text-align:center;"><%= link_to bill.bookmarks.length, :controller => 'friends', :action => 'tracking_bill', :id => bill.ident %></td>
+        <%= user_bill_vote_string(bill) %>
+        <td><%= button_to("Remove", {:controller => "profile", :action => 'remove_bill_bookmark', :login => current_user.login, :id => b.bookmarkable_id}) if current_user == @user %></td>
 	</tr>
 	   <tr>
 	    <td style="border-bottom:none;" colspan="4"><p id="vote_message_<%= bill.id.to_s %>" style="display:none;"></p>

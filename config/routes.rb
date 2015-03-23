@@ -2,13 +2,7 @@ OpenCongress::Application.routes.draw do
   # API
   constraints :subdomain => 'api' do
     match '/' => redirect(Settings.base_url + 'api')
-    match '/bill/text_summary/:id' => 'bill#status_text'
-    match '/roll_call/text_summary/:id' => 'roll_call#summary_text'
-    with_options :format => [:json, :xml] do |f|
-      f.match '/groups(.:format)' => 'groups#index'
-      f.match '/groups(/:id(.:format))' => 'groups#show'
-    end
-    match '/:action(/:id)', :controller => 'api'
+    match '/:action(/:id)', :controller => 'api', to: proc { [410, {}, ['']] }
   end
 
   resources :mailing_list_items
@@ -271,9 +265,6 @@ OpenCongress::Application.routes.draw do
   match '/widgets/group' => 'widgets#group', :as => 'group_widget'
 
   match 'api' => 'api#index'
-  match 'api/bill/text_summary/:id' => 'bill#status_text'
-  match 'api/roll_call/text_summary/:id' => 'roll_call#summary_text'
-  match 'api(/:action(/:id)(.:format))', :controller => 'api'
 
   # Temporary routes for health care legislation
   match 'baucus_bill_health_care.html' => 'index#s1796_redirect'

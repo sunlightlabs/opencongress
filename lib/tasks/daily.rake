@@ -46,8 +46,7 @@ namespace :update do
         OCLogger.log "Skipping rsync due to missing unitedstates_rsync_source configuration"
       end
     rescue Exception => e
-      Emailer.rake_error(e, "Error rsyncing unitedstates data!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -63,8 +62,7 @@ namespace :update do
       system "sh #{Rails.root}/bin/daily/govtrack-rsync.sh #{Settings.data_path}"
       OCLogger.log "rsync with govtrack finished.\n\n"
     rescue Exception => e
-      Emailer.rake_error(e, "Error rsyncing govtrack data!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -74,7 +72,7 @@ namespace :update do
       require File.expand_path 'bin/daily/daily_parse_bioguide', Rails.root
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error updating from bioguide!").deliver
+        Raven.capture_exception(e)
       else
         puts "Error updating from bioguide!"
       end
@@ -87,7 +85,7 @@ namespace :update do
       require File.expand_path 'bin/daily/daily_parse_video', Rails.root
     rescue Exception => e
       if (['production', 'staging'].include?(Rails.env))
-        Emailer.rake_error(e, "Error getting video data!").deliver
+        Raven.capture_exception(e)
       else
         puts "Error getting video data!"
       end
@@ -113,8 +111,7 @@ namespace :update do
     begin
       require File.expand_path 'bin/daily/daily_gpo_billtext_timestamps', Rails.root
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing GPO timestamps!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -124,8 +121,7 @@ namespace :update do
         require File.expand_path 'bin/import_amendments', Rails.root
       }
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing amendments!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -134,8 +130,7 @@ namespace :update do
     begin
       ParseBillTextJob.perform
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing bill full text!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -146,8 +141,7 @@ namespace :update do
         require File.expand_path 'bin/import_committees', Rails.root
       }
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing committees!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -158,8 +152,7 @@ namespace :update do
         require File.expand_path 'bin/import_committee_memberships', Rails.root
       }
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing committee memberships!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -170,8 +163,7 @@ namespace :update do
         require File.expand_path 'bin/import_committee_reports', Rails.root
       }
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing committee reports!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -182,8 +174,7 @@ namespace :update do
         require File.expand_path 'bin/import_committee_meetings', Rails.root
       }
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing committee schedule!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -193,8 +184,7 @@ namespace :update do
         require File.expand_path 'bin/parse_today_in_congress', Rails.root
       }
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing today in Congress!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -203,8 +193,7 @@ namespace :update do
     begin
       require File.expand_path 'bin/import_roll_calls', Rails.root
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing roll calls!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -212,8 +201,7 @@ namespace :update do
     begin
       require File.expand_path 'bin/daily/person_voting_similarities', Rails.root
     rescue Exception => e
-      Emailer.rake_error(e, "Error compiling voting similarities!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -221,8 +209,7 @@ namespace :update do
     begin
       require File.expand_path 'bin/daily/sponsored_bill_stats', Rails.root # new file for United States data
     rescue Exception => e
-      Emailer.rake_error(e, "Error compiling sponsored bill stats!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -230,8 +217,7 @@ namespace :update do
     begin
       require File.expand_path 'bin/daily/project_vote_smart', Rails.root
     rescue Exception => e
-      Emailer.rake_error(e, "Error parsing PVS data!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -253,8 +239,7 @@ namespace :update do
         end
       }
     rescue Exception => e
-      Emailer.rake_error(e, "Error running gossip!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -271,8 +256,7 @@ namespace :update do
         b.send :expire_govtrack_fragments
       end
     rescue Exception => e
-      Emailer.rake_error(e, "Error expiring cached bill fragments!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -287,8 +271,7 @@ namespace :update do
         p.send :expire_govtrack_fragments
       end
     rescue Exception => e
-      Emailer.rake_error(e, "Error expiring cached person fragments!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -297,8 +280,7 @@ namespace :update do
     begin
       require File.expand_path 'bin/crp/parse_interest_groups', Rails.root
     rescue Exception => e
-      #Emailer.rake_error(e, "Error compiling voting similarities!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -306,8 +288,7 @@ namespace :update do
     begin
       require File.expand_path 'bin/crp/maplight_bill_positions', Rails.root
     rescue Exception => e
-      #Emailer.rake_error(e, "Error compiling voting similarities!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 
@@ -315,8 +296,7 @@ namespace :update do
     begin
       require File.expand_path 'bin/crp/partytime_fundraisers', Rails.root
     rescue Exception => e
-      #Emailer.rake_error(e, "Error compiling voting similarities!").deliver
-      throw e
+      Raven.capture_exception(e)
     end
   end
 

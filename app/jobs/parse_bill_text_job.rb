@@ -84,7 +84,12 @@ module ParseBillTextJob
       # Insert version instances into the database and generate HTML.
       previous = nil
       version_order.each do |meta_data|
-
+        
+        if !File.exists?("#{version_dir_114_onward(bill)}/#{meta_data['version_code']}/document.xml")
+          Raven.capture_message("missing bill text document for #{meta_data["bill_version_id"]}")
+          next
+        end
+        
         # fill data version instance with data
         version = bill.bill_text_versions.find_or_create_by_version(meta_data['version_code'])
         version.word_count = bill.word_count_calculator

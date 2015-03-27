@@ -86,7 +86,7 @@ module ParseBillTextJob
       version_order.each do |meta_data|
         
         if !File.exists?("#{version_dir_114_onward(bill)}/#{meta_data['version_code']}/document.xml")
-          Raven.capture_message("missing bill text document for #{meta_data.bill_version_id}")
+          Raven.capture_message("missing bill text document for #{meta_data["bill_version_id"]}")
           next
         end
         

@@ -2,6 +2,8 @@
 
 require 'csv'
 require File.expand_path('../../config/environment', __FILE__)
+require 'fileutils'
+
 ENV["RAILS_ENV"] ||= "development"
 
 
@@ -16,7 +18,7 @@ def to_csv(notebook)
 end
 
 def name_csv(notebook)
-  notebook.group_id ? "group-#{notebook.group_id}.csv" : "user-#{notebook.user_id}.csv"
+  notebook.group_id ? "groups/group-#{notebook.group_id}.csv" : "users/user-#{notebook.user_id}.csv"
 end
 
 
@@ -31,6 +33,9 @@ def get_group_notebooks
   PoliticalNotebook.includes(:notebook_items)
   .where("notebook_items.political_notebook_id IS NOT null AND group_id IS NOT null")
 end
+
+FileUtils.mkdir_p('./data/groups')
+FileUtils.mkdir_p('./data/users')
 
 [get_user_notebooks, get_group_notebooks].each do |notebook_parent|
   notebook_parent.each { |notebook| to_csv(notebook) }

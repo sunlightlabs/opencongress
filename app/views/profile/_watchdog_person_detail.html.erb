@@ -25,32 +25,6 @@
 	-->
 	<br/><br/>
 
-  <h3>Comments on <%= s.title_full_name %></h3>
-    Mine: <%= s.comments.count(:id, :conditions => ["user_id = ?", @user.id]) %> |
-    <% if @user.friends.count > 0 %>
-      My Friends: <%= s.comments.uncensored.find_all_by_user_id(@user.friends.collect{|p| p.friend_id}).length %> <%= toggler("#{s.id}-my_friends", "(show)", "(hide)") unless s.comments.uncensored.find_all_by_user_id(@user.friends.collect{|p| p.friend_id}).length == 0 %> |
-    <% end %>
-    <!-- OC Users' in <%= @my_state.abbreviation %>:  <%# s.comments_from_state_count(@my_state.abbreviation) %> | -->
-    <%= toggler("#{s.id}-most_useful", "Show Most Useful", "Hide Most Useful") %>
-
-    <br/>
-    <div id="<%= s.id %>-most_useful" style="display:none;">
-        Top 3 most useful comments:<br/>
-        <% s.comments.uncensored.most_useful.each do |c| %>
-          <%= render :partial => "shared/comments_comment", :locals => {:comment => c, :object => s, :myscores => @user.comment_scores} %>
-         <% end %>
-    </div>
-    <% if @user.friends.count > 0 %>
-
-    <div id="<%= s.id %>-my_friends" style="display:none;">
-      My friends' comments on this Senator:
-      <% s.comments.uncensored.find_all_by_user_id(@user.friends.collect{|p| p.friend_id}).each do |fc| %>
-        <%= render :partial => "shared/comments_comment", :locals => {:comment => fc, :object => s, :myscores => @user.comment_scores} %>
-      <% end %>
-      <br/>
-    </div>
-    <% end %>
-  <br/>
   <% @no_show_name = Person.find_changes_since_for_senators_tracked(@user).select {|g| g == s} %>
   <% unless @no_show_name.empty? %>
     <h3>Changes since my last visit</h3>

@@ -1,4 +1,3 @@
-<%= render :partial => 'shared/comments', :locals => {:object => @comments} %>
 <% if params[:comment_id] %>
    <% javascript_tag :defer => 'defer' do -%>
     new Effect.ScrollTo('com<%= params[:comment_id] %>');

@@ -8,17 +8,34 @@ ENV["RAILS_ENV"] ||= "development"
 
 
 def to_csv(notebook)
-  CSV.open("./data/#{name_csv(notebook)}", 'wb') do |csv|
-    csv << ['type', 'title', 'url', 'date', 'description']
+  attrs = group_and_user_attr(notebook)
+  CSV.open("./data/#{attrs[:name]}", 'wb', write_headers: true, headers: attrs[:headers]) do |csv|
     notebook.notebook_items.each do |item|
-      puts notebook.id
-      csv << [(item.type.gsub('Notebook', '') if item.type), item.title, item.url, item.date, item.description]
+      if notebook.group_id
+        csv << [notebook.group.name, (item.type.gsub('Notebook', '') if item.type), item.title, item.url, item.date, item.description]
+      else
+        csv << [(item.type.gsub('Notebook', '') if item.type), item.title, item.url, item.date, item.description]
+      end
     end
   end
 end
 
 def name_csv(notebook)
   notebook.group_id ? "groups/group-#{notebook.group_id}.csv" : "users/user-#{notebook.user_id}.csv"
+end
+
+def group_and_user_attr(notebook)
+  if notebook.group_id
+    {
+      name: "groups/group-#{notebook.group_id}.csv", 
+      headers: ['name', 'type', 'title', 'url', 'date', 'description']
+    }
+  else
+    {
+      name: "users/user-#{notebook.user_id}.csv",
+      headers: ['type', 'title', 'url', 'date', 'description']
+    }
+  end
 end
 
 

@@ -73,10 +73,6 @@
         .subject= l.subject
         .body= body_as_paragraphs(l.message_no_pii)
     
-
-
-  #letter_comments
-    = render :partial => 'shared/comments', :locals => { :object => @contact_congress_letter }
     
   .padding.floatleft
     %p.small

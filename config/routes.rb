@@ -88,7 +88,6 @@ OpenCongress::Application.routes.draw do
     match ':person_type/atom/most/:type', :action => 'atom_top_commentary'
     match 'atom/featured', :action => 'atom_featured'
     match 'wiki/:id', :action => 'wiki'
-    match 'comments/:id', :action => 'comments'
     match 'news/:id(/:page)', :action => 'news', :as => :news_person
     match 'blogs/:id(/:page)', :action => 'blogs', :as => :blogs_person
     match 'votes_with_party/:chamber/:party', :action => 'votes_with_party'

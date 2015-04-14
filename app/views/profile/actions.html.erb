@@ -30,19 +30,6 @@
     <h3 class="dark"><%= user_name("My", &:possessive) %> Letters to Congress</h3>
     <%= render :partial => 'contact_congress_letters/letters_list', :object => @user.contact_congress_letters.reorder('created_at DESC') %>
 
-    <h3 class="dark"><%= user_name("My", &:possessive) %> Comments</h3>
-    <p style="text-align:center;clear:both;"><%= will_paginate(@my_comments) %></p>
-      <% if @my_comments.empty? %>
-        <p style="clear:both;">No comments yet.
-          <% if @user == current_user %>
-            You can add a comment on pages for bills, public groups, bill text, and more. If you're looking to share your comments and votes with other users of the site, they can easily track your actions on OpenCongress by subscribing to your personal RSS feed above.
-          <% end %>
-        </p>
-      <% end %>
-      <% logged_in? ? myscores = current_user.comment_scores.find(:all) : myscores = Array.new %>
-      <% @my_comments.each do |com| %>
-        <%= render :partial => 'shared/comments_comment', :locals => {:object => com.commentable, :comment => com, :myscores => myscores } %>
-      <% end %>
     <br />
 
     <table style="width:250px;">

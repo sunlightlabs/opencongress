@@ -24,14 +24,6 @@
     
      <%= link_to '<span>Read Full Article</span>'.html_safe, article_url(summary), :class => 'full_article' %>
     
-    <% if summary.comments.count > 0 %>
-      <%= link_to  "<span>Comments (#{summary.comments.count.to_s})</span>".html_safe, 
-                                  article_url(summary, :anchor => 'comments'),
-                                    :class => 'comments_link' %>
-    <% else %>
-      <%= link_to '<span>Submit a Comment</span>'.html_safe, article_url(summary, :anchor => 'add'), :class => 'comments_link' %>
-    <% end %>
-    
     <% if summary.tags.size > 0 %>
     <div class="article_tags">
   	  <% summary.tags.each do |tag| %>

@@ -9,12 +9,6 @@
 
 <script type='text/javascript'>
   Event.observe(window, 'load', function() {
-    <% @commented_nodes.each do |n| %>
-      <% if n.comments.size > 0 %>
-        BillText.setCommentsForNode(<%= @selected_version.id %>, '<%= n.nid %>', <%= n.comments.size %>)
-      <% end %>
-    <% end %>
-    
     $('bill_text_loading').hide();
     $('bill_text').show();
     

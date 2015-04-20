@@ -8,6 +8,7 @@ ENV["RAILS_ENV"] ||= "development"
 
 
 def to_csv(notebook)
+  p "exporting notebook #{notebook.id}"
   attrs = group_and_user_attr(notebook)
   CSV.open("./data/#{attrs[:name]}", 'wb', write_headers: true, headers: attrs[:headers]) do |csv|
     notebook.notebook_items.each do |item|

@@ -691,6 +691,13 @@ class User < ActiveRecord::Base
     !facebook_connect_user? && !suppress_activation_email
   end
 
+  def tracked_items_export
+    [:legislator_bookmarks, :issue_bookmarks, :bill_bookmarks, :committee_bookmarks].each do |bookmark|
+      self.send(bookmark).each do |item|
+        [item.bookmarkable_type, item.bookmarkable.full_name] unless item.empty?
+      end
+    end
+  end
   #========== PRIVATE METHODS
   private
 

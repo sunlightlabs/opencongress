@@ -113,6 +113,10 @@ class ProfileController < ApplicationController
      @bill_items_tracked = Bill.find_changes_since_for_bills_tracked(@user) if @bills.length > 0
      @user.representative_bookmarks.length > 0 ? @rep_items_tracked = Person.find_changes_since_for_representatives_tracked(@user) : @rep_items_tracked = []
      @user.senator_bookmarks.length > 0 ? @sen_items_tracked = Person.find_changes_since_for_senators_tracked(@user) : @sen_items_tracked = []
+     respond_to do |format| 
+       format.html
+       format.csv { render text: to_csv(@user)}
+     end
   end
 
   def tracked_bill_status
@@ -548,6 +552,14 @@ class ProfileController < ApplicationController
   end
 
   private
+
+  def to_csv(user)
+    CSV.generate(headers: true) do |csv|
+      csv << ['Type', 'Name']
+      user.tracked_items_export.each { |i| csv << i } 
+    end
+  end
+
   def can_view_tab
     @user = User.find_by_login(params[:login])
     if params[:action] == "actions" && @user.can_view(:actions, current_user)

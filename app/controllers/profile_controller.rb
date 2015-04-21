@@ -555,7 +555,7 @@ class ProfileController < ApplicationController
 
   def to_csv(user)
     CSV.generate(headers: true) do |csv|
-      csv << ['Type', 'Name']
+      csv << ['Type', 'Name', 'Bioguide_id', 'Chamber']
       user.tracked_items_export.each { |i| csv << i } 
     end
   end

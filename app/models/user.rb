@@ -692,14 +692,28 @@ class User < ActiveRecord::Base
   end
 
   def tracked_items_export
+    bookmarks = []
     [:legislator_bookmarks, :issue_bookmarks, :bill_bookmarks, :committee_bookmarks].each do |bookmark|
-      self.send(bookmark).each do |item|
-        [item.bookmarkable_type, item.bookmarkable.full_name] unless item.empty?
-      end
+      self.send(bookmark).each {|item| bookmarks << format_tracked_item(item)} unless self.send(bookmark).empty?
     end
+    bookmarks
   end
+
   #========== PRIVATE METHODS
   private
+  
+  def format_tracked_item(item)
+    case item.bookmarkable_type
+    when "Person" #legislator 
+      ["Person", item.bookmarkable.full_name, item.bookmarkable.bioguideid, item.bookmarkable.title]
+    when "Subject" #Issues
+      ["Issus", item.bookmarkable.term]
+    when "Committee" #Committee
+      ["Committee", item.bookmarkable.name, '', item.bookmarkable.chamber]
+    when "Bill" #Bill
+      ["Bills", item.bookmarkable.title_short, '', item.bookmarkable.chamber]
+    end
+  end
 
   def destroy_comments!
     comments.destroy_all

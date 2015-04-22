@@ -132,6 +132,7 @@ private
   private
   
   def to_csv(items)
+    session[:notebook_banner] = true
     CSV.generate do |csv|
       csv << ['type', 'title', 'url', 'date', 'description']
       items.each do |item|

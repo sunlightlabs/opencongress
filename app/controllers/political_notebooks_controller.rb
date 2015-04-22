@@ -15,6 +15,7 @@ class PoliticalNotebooksController < ApplicationController
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @political_notebook }
+      format.csv { render text: to_csv(@items)}
     end
   end
 
@@ -126,5 +127,16 @@ private
       end
     end
     embed
+  end
+
+  private
+  
+  def to_csv(items)
+    CSV.generate do |csv|
+      csv << ['type', 'title', 'url', 'date', 'description']
+      items.each do |item|
+        csv << [item.type.gsub('Notebook', ''), item.title, item.url, item.date, item.description]
+      end
+    end
   end
 end

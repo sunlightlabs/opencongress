@@ -357,8 +357,18 @@ Notice = {
     $(document).on('click', '.close_add_notebook', function(){
       NotebookForm.hideAllForms();
     });
+
     $(document).on('click', '.new_data .close', function(){
       Notice.dismiss();
     });
+
+    $(".top-banner .close").on("click", function(e){
+      e.preventDefault();
+      var url = $(this).attr('href');
+      $.get(url, function(){});
+      $(this).parent().slideUp();
+    });
+    
   });
+
 })(jQuery);

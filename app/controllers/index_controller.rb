@@ -121,6 +121,11 @@ class IndexController < ApplicationController
     render :layout => 'application'
   end
 
+  def close_banner
+    session[:banner_cookie] = true
+    redirect_to request.env["HTTP_REFERER"]
+  end
+
   protected
 
   def render_popular(type)

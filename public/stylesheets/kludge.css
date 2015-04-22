@@ -1,6 +1,7 @@
 /* This file exists because we haven't deployed rails 3.2 yet */
 
 /* Banner ad */
+
 .top-banner {
     font-size: 16px;
     color: #333;
@@ -47,7 +48,7 @@
     vertical-align: top;
 }
 .top-banner--ppf p {
-    width: 375px;
+    width: 55%;
     margin-left: 25px;
 }
 
@@ -61,6 +62,11 @@
     font-size: 12px;
     text-shadow: none;
     color: #fff;
+    width: 30%;
+}
+
+.alert.btn.no-margin{
+    margin: 0;
 }
 
 .top-banner--ppf .btn:hover,
@@ -97,4 +103,3 @@
     box-shadow: none;
     text-shadow: none;
 }
-

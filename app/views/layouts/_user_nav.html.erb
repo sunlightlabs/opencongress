@@ -1,5 +1,6 @@
 <% if logged_in? %>
-  <%= render partial: 'shared/banner_ad' unless current_user.notebook_items.empty? || session[:banner_cookie] %>
+  <%= render partial: 'shared/notebook_banner_ad' unless current_user.notebook_items.empty? || session[:notebook_banner] %>
+  <%= render partial: 'shared/tracked_item_banner' unless current_user.bookmarks.empty? || session[:track_item_banner] %>
   <ul class="user_nav">
     <h3>My OpenCongress</h3>
     <li class="profile_link"><%= link_to "<span>My Profile</span>".html_safe, user_profile_path(current_user.login) %></li>

@@ -4,7 +4,6 @@
 <div class="container_12">
 <div class="space">&nbsp;</div>
 <div class="grid_12">
-
 <div id="the-items">
   <div style="padding-bottom:30px;">
     <% if @user == current_user %>
@@ -16,6 +15,7 @@
     <!-- <p>Just getting started with MyOC? Our special pages of <a href="/bill/major">Major Bills by Issue Area</a> or <a href="/bill/hot">Hot Bills on OC</a> offer easy ways to find bills and add them to your Tracked Items. For next steps, including ways you can use the social networking on "My OpenCongress" to organize your community, see our <a href="/profile/howtouse">how-to guide</a>.</p> -->
   </div>
 
+<%= link_to 'Download your tracked items', user_items_tracked_path(current_user.login, format: :csv), class: 'no-margin alert btn' %>
   <div class="what-line"></div>
   <br />
   <div style="float:right;">

@@ -122,7 +122,7 @@ class IndexController < ApplicationController
   end
 
   def close_banner
-    session[:banner_cookie] = true
+    session[params[:cookie].to_sym] = true
     redirect_to request.env["HTTP_REFERER"]
   end
 

@@ -711,7 +711,7 @@ class User < ActiveRecord::Base
     when "Committee" #Committee
       ["Committee", item.bookmarkable.name, '', '', item.bookmarkable.chamber]
     when "Bill" #Bill
-      ["Bills", item.bookmarkable.title_short, '', item.bookmarkable.typenumber, item.bookmarkable.chamber]
+      ["Bill", item.bookmarkable.title_short, '', item.bookmarkable.typenumber, item.bookmarkable.chamber]
     end
   end
 

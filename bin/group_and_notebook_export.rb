@@ -1,4 +1,4 @@
-re 'csv'
+require 'csv'
 require File.expand_path('../../config/environment', __FILE__)
 require 'fileutils'
 

@@ -705,13 +705,13 @@ class User < ActiveRecord::Base
   def format_tracked_item(item)
     case item.bookmarkable_type
     when "Person" #legislator 
-      ["Person", item.bookmarkable.full_name, item.bookmarkable.bioguideid, item.bookmarkable.title]
+      ["Person", item.bookmarkable.full_name, item.bookmarkable.bioguideid, '', item.bookmarkable.title]
     when "Subject" #Issues
       ["Issus", item.bookmarkable.term]
     when "Committee" #Committee
-      ["Committee", item.bookmarkable.name, '', item.bookmarkable.chamber]
+      ["Committee", item.bookmarkable.name, '', '', item.bookmarkable.chamber]
     when "Bill" #Bill
-      ["Bills", item.bookmarkable.title_short, '', item.bookmarkable.chamber]
+      ["Bills", item.bookmarkable.title_short, '', item.bookmarkable.typenumber, item.bookmarkable.chamber]
     end
   end
 

@@ -556,7 +556,7 @@ class ProfileController < ApplicationController
   def to_csv(user)
     session[:track_item_banner] = true
     CSV.generate(headers: true) do |csv|
-      csv << ['Type', 'Name', 'Bioguide_id', 'Chamber']
+      csv << ['Type', 'Name', 'Bioguide_id', 'Type Number', 'Chamber']
       user.tracked_items_export.each { |i| csv << i } 
     end
   end

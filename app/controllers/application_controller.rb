@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_content_disposition
-    if ['pdf','csv'].include?(params[:format])
+    if ['csv'].include?(params[:format])
       response.headers['Content-Disposition'] = 'attachment'
     end
   end

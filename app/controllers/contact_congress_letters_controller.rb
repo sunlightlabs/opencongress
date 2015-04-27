@@ -92,8 +92,10 @@ class ContactCongressLettersController < ApplicationController
       @issue = Subject.find_by_id(params[:issue])
     end
 
-    if params[:address].present?
-      @sens, @reps = Person.find_current_congresspeople_by_address(params[:address])
+    addr_params = [:street_address, :city, :state, :zipcode]
+    if addr_params.any? {|k| params.key?(k)}
+      addr = Hash[addr_params.collect { |v| [v, params[v]] }]
+      @sens, @reps = Person.find_current_congresspeople_by_address(addr)
     else
       @sens = []
       @reps = []

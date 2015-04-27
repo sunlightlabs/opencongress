@@ -252,31 +252,16 @@
     var zip5 = $j("#formageddon_formageddon_thread_sender_zip5").val().toString();
     var zip4 = $j("#formageddon_formageddon_thread_sender_zip4").val().toString();
     var address = "";
-    if (street.length > 0) {
-      address = street;
-    }
-    if (city.length > 0) {
-      if (address.length == 0) {
-        address = city;
-      } else {
-        address = address + ", " + city;
-      }
-    }
-    if (state.length > 0) {
-      if (address.length == 0) {
-        address = state;
-      } else {
-        address = address + ", " + state;
-      }
-    }
-    if (zip5.length == 5) {
-      if (address.length == 0) {
-        address = zip5;
-      } else {
-        address = address + ", " + zip5;
-      }
-    }
-    return address;
+
+    //var address= 'street=' + street + '&city=' + city + '&state=' + state + '&zip5=' + zip5
+
+    addr = {};
+    addr['street'] = escape(street);
+    addr['city'] = escape(city);
+    addr['state'] = escape(state);
+    addr['zipcode'] = escape(zip5);
+    return addr;
+
   };
 
   // Look up reps when address-related fields change
@@ -290,11 +275,11 @@
     if(geocode_request_timeout) clearTimeout(geocode_request_timeout);
     geocode_request_timeout = setTimeout(function(){
       geocode_request_timeout = null;
-      var address = escape(assemble_address()),
+      var address = assemble_address(),
       zip5 = $j("#formageddon_formageddon_thread_sender_zip5").val().toString();
       $j('#sen_0, #sen_1, #rep').html("<img src='/images/spinner-ovals.gif' />");
       $j.ajax({
-        url: '/contact_congress_letters/get_recipients.js?bill=#{@bill.nil? ? '' : @bill.ident}&issue=#{@issue.nil? ? '' : @issue.id}&address=' + address
+        url: '/contact_congress_letters/get_recipients.js?bill=#{@bill.nil? ? '' : @bill.ident}&issue=#{@issue.nil? ? '' : @issue.id}&street_address=' + address["street"] + '&city=' + address["city"] + '&state=' + address["state"] + '&zipcode=' + address["zipcode"]
       });
     }, 500);
   });

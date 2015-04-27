@@ -5,6 +5,9 @@ OpenCongress::Application.routes.draw do
     match '/:action(/:id)', :controller => 'api', to: proc { [410, {}, ['']] }
   end
 
+  # to redirect all atoms if we choose to go down that route
+  # match '/*atom'  => redirect(Settings.base_url), constraints: { atom: %r{.*atom.*} } #,to: proc { [410, {}, ['']] }
+
   resources :mailing_list_items
   resources :watch_dogs
 

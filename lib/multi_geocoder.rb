@@ -90,9 +90,9 @@ module MultiGeocoder
   def self.prepare(query, opts=nil)
     opts ||= {}
 
-    if query.is_a?(Hash)
+    if query.is_a?(Hash) # this should be the only case we hit as of 4/27/2015 - crdunwel
       opts[:lookup] ||= :texas_am
-      query = query[:street_address].to_s() + ',' + query[:city].to_s() + ',' + query[:state].to_s() + ',' + query[:zipcode].to_s()
+      query = query[:street_address].to_s + ',' + query[:city].to_s + ',' + query[:state].to_s + ',' + query[:zipcode].to_s
       return [query,opts]
     else
       # Awful kludge to remove country from query
@@ -102,23 +102,10 @@ module MultiGeocoder
                    .chomp(',')
 
       type = query_type(query)
+
       if type == :zip5
         opts[:lookup] ||= :texas_am
         query = ",,,#{query}"
-      end
-
-      # For all of the cases where smartystreets fails,
-      # use ESRI instead. The latter will not return a zip4.
-      if [:zip9, :city_state, :street_only].include? type
-        opts[:lookup] ||= :esri
-        query = "#{query} USA"
-      end
-
-      # Geocoder.ca does a better job with city/state/zip than ESRI,
-      # Solves The Clarksville / Fort Campbell problem.
-      if type == :city_state_zip
-        opts[:lookup] ||= :geocoder_ca
-        query = "#{query} USA"
       end
 
       # TODO: Code for Texas A&M goes here. Possibly loop through possible lookup services.

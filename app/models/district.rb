@@ -278,7 +278,7 @@ class District < ActiveRecord::Base
         if address[:zipcode].present?
           dsts = Congress.districts_locate(address[:zipcode]).results
         end
-        if (address[:street_address].present? and address[:city].present?) or dsts.length != 1
+        if address[:street_address].present? and address[:city].present? and dsts.length != 1
           dsts = Congress.districts_locate(*MultiGeocoder.coordinates(address)).results
         end
       else

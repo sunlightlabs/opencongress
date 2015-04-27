@@ -115,7 +115,7 @@ class ProfileController < ApplicationController
      @user.senator_bookmarks.length > 0 ? @sen_items_tracked = Person.find_changes_since_for_senators_tracked(@user) : @sen_items_tracked = []
      respond_to do |format| 
        format.html
-       format.csv { render text: to_csv(@user)}
+       format.csv { render text: to_csv(@user) }
      end
   end
 
@@ -556,7 +556,7 @@ class ProfileController < ApplicationController
   def to_csv(user)
     session[:track_item_banner] = true
     CSV.generate(headers: true) do |csv|
-      csv << ['Type', 'Name', 'Bioguide_id', 'Chamber']
+      csv << ['Type', 'Name', 'Bioguide_id', 'Type Number', 'Chamber']
       user.tracked_items_export.each { |i| csv << i } 
     end
   end

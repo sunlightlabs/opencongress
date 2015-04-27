@@ -3,6 +3,7 @@ require 'csv'
 require_dependency 'email_congress'
 
 class ApplicationController < ActionController::Base
+  before_filter :set_content_disposition
   protect_from_forgery :if => :logged_in?
 
   include AuthenticatedSystem
@@ -31,6 +32,11 @@ class ApplicationController < ActionController::Base
     # Empty
   end
 
+  def set_content_disposition
+    if ['csv'].include?(params[:format])
+      response.headers['Content-Disposition'] = 'attachment'
+    end
+  end
   def force_utf8_params
     traverse = lambda do |object, block|
       if object.kind_of?(Hash)

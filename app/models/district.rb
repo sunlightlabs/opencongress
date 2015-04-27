@@ -273,15 +273,12 @@ class District < ActiveRecord::Base
   def self.from_address (address)
 
     begin
-      if address.is_a? Hash
-        dsts = []
-        if address[:zipcode].present?
-          dsts = Congress.districts_locate(address[:zipcode]).results
-        end
+      if address.is_a? Hash and address.has_key?(:zipcode) and address[:zipcode] =~ MultiGeocoder::ZIP_PATTERN
+        dsts = Congress.districts_locate(address[:zipcode]).results
         if address[:street_address].present? and address[:city].present? and dsts.length != 1
           dsts = Congress.districts_locate(*MultiGeocoder.coordinates(address)).results
         end
-      else
+      elsif address.is_a? String
         query_info = MultiGeocoder.explain(address)
         if query_info.is_zip5?
           # Skip the geocode if this is a zip5
@@ -296,6 +293,8 @@ class District < ActiveRecord::Base
           # get this one wrong :/
           dsts = Congress.districts_locate(*MultiGeocoder.coordinates(address)).results
         end
+      else
+        dsts = []
       end
     rescue ArgumentError , Faraday::Error::ClientError => error
       puts error.message

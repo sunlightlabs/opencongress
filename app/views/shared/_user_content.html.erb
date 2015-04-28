@@ -191,12 +191,6 @@
     </li>
     <!-- My Political Notebook -->
     <%= render :partial => 'notebook_items/add_to_mypn', :object => object %>
-    <!-- Bill Widget -->
-    <% if @bill %>
-    <li>
-      <a href="/resources/bill_status?bill_id=<%= @bill.ident %>" class="bill_widget">Make A Bill Widget</a>
-    </li>
-    <% end %>
     <!-- Email Feedback -->
     <li>
       <!-- TODO: Feedback form -->

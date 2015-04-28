@@ -54,10 +54,6 @@
 		</li>
 
 	</ul>
-		
-	<% if @atom %>
-	  <a href="<%= @atom['link'] %>" class="rss floatright"><%= image_tag 'rss.png' %></a>
-	<% end %>
 
 	<%= render :partial => 'shared/timeframe_select' if @days %>
 

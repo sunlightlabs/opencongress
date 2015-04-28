@@ -66,9 +66,6 @@
 
   <%= yield(:header) %>
 
-  <% if @atom %>
-    <link rel="alternate" type="application/atom+xml" title="<%= @atom['title'] %> actions" href="<%= @atom['link'] %>" />
-  <% end %>
 </head>
 
 <body <%= id_class.html_safe %>>

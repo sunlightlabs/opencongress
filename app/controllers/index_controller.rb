@@ -8,9 +8,16 @@ class IndexController < ApplicationController
   include ActionView::Helpers::TextHelper
 
   before_filter :require_type_param, :only => [:hp_recent, :hp_popular]
+  before_filter :wiki_deprecated, :only => [:index]
 
   def require_type_param
     render_404 and return if not params[:type]
+  end
+
+  def wiki_deprecated
+    if params.has_key?(:wikiredirect)
+      flash.now[:new_data] = 'We are no longer supporting the OpenCongress wiki. You can find a snapshot from the Internet Archive <a href="https://web.archive.org/web/20150320103609/https://www.opencongress.org/wiki/Wiki_Home">here</a>.'.html_safe
+    end
   end
 
   def index

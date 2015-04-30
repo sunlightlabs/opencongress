@@ -16,7 +16,7 @@ class IndexController < ApplicationController
 
   def wiki_deprecated
     if params.has_key?(:wikiredirect)
-      flash.now[:new_data] = 'We are no longer supporting the OpenCongress wiki. You can find a snapshot from the Internet Archive <a href="https://web.archive.org/web/20150320103609/https://www.opencongress.org/wiki/Wiki_Home">here</a>.'.html_safe
+      flash.now[:new_data] = "We've discontinued the OpenCongress Wiki. An <a href='https://web.archive.org/web/20150320103609/https://www.opencongress.org/wiki/Wiki_Home'>archive</a> is available on the Wayback Machine.".html_safe
     end
   end
 

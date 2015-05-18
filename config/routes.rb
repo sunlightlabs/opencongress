@@ -168,11 +168,13 @@ OpenCongress::Application.routes.draw do
   scope 'contact_congress_letters', :controller => 'contact_congress_letters' do
     post ':id', :action => :update
   end
+
   resources :contact_congress_letters, :only => [:index, :show, :new, :update] do
     get 'create_from_formageddon', :on => :collection # create uses POST and we'll be redirecting to create
     get 'get_recipients', :on => :collection
     get 'delayed_send', :on => :collection
     get 'get_replies', :on => :collection
+    get 'all_congress_letters', :on => :collection
   end
 
   scope :controller => 'account' do
@@ -229,7 +231,7 @@ OpenCongress::Application.routes.draw do
 
       # /users/:login/profile/:action
       scope :controller => 'profile' do
-        for action in %w{ actions items_tracked tracked_bill_status tracked_votes watchdog edit_profile bills_supported tracked_rss user_actions_rss bills_opposed my_votes bills comments issues committees groups upload_pic
+        for action in %w{ actions downloads_index items_tracked tracked_bill_status tracked_votes watchdog edit_profile bills_supported tracked_rss user_actions_rss bills_opposed my_votes bills comments issues committees groups upload_pic
                           disconnect_facebook_account remove_bill_bookmark remove_person_bookmark tracked_commentary_news tracked_commentary_blogs } do
           match action, :action => action, :as => 'user_' + action
         end

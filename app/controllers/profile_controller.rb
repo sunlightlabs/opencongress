@@ -3,7 +3,7 @@ require 'net/http'
 class ProfileController < ApplicationController
   include ProfileHelper
 
-  before_filter :can_view_tab, :only => [:actions, :items_tracked, :bills, :my_votes, :comments, :person, :issues, :watchdog]
+  before_filter :can_view_tab, :only => [:actions, :items_tracked, :downloads_index, :bills, :my_votes, :comments, :person, :issues, :watchdog]
   before_filter :login_required, :only => [:edit, :update, :destroy, :upload_pic, :delete_images, :disconnect_facebook_account]
   skip_before_filter :verify_authenticity_token, :only => :edit_profile
   skip_before_filter :must_reaccept_tos?, :only => [:show, :edit, :update, :destroy, :upload_pic, :delete_images]
@@ -92,6 +92,21 @@ class ProfileController < ApplicationController
     @title_class = "tab-nav"
     @atom = {'link' => url_for(:only_path => false, :controller => 'user_feeds', :login => @user.login, :action => 'actions', :key => logged_in? ? current_user.feed_key : nil), 'title' => "#{@user.login.possessive} Actions"}
     @my_comments = Comment.paginate(:conditions => ["user_id = ?", @user.id], :order => "created_at DESC", :page => params[:page])
+  end
+
+  def downloads_index
+    @page_title = "#{@user.login.possessive} Profile"
+    @user = User.find_by_login(params[:login], :include => [:bookmarks]) # => [:bill, {:person => :roles}]}])
+    @profile_nav = @user
+    @title_class = "tab-nav"
+
+    respond_to do |format|
+      format.html
+      if params.has_key? 'items_tracked'
+        format.csv { render text: to_csv(@user) }
+      end
+    end
+
   end
 
   def items_tracked

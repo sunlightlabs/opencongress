@@ -116,11 +116,13 @@ class ContactCongressLettersController < ApplicationController
   end
 
   def show
+
     @contact_congress_letter = ContactCongressLetter.find(params[:id])
 
     unless @contact_congress_letter.can_be_read_by(current_user)
       redirect_to '/', :notice => "You do not have permission to read that letter. Please #{view_context.link_to('login', login_path)} to your account to view your letters.".html_safe
       return
+
     end
 
     @additional_letters = @contact_congress_letter.get_additional_letters
@@ -301,6 +303,14 @@ class ContactCongressLettersController < ApplicationController
     respond_to do |format|
       format.png {send_file status_image_url(img), :type => 'image/png', :disposition => 'inline'}
       format.text {render :text => last_status}
+    end
+  end
+
+  def all_congress_letters
+    if current_user
+      respond_to do |format|
+        format.csv { render text: ContactCongressLetter.to_csv(current_user)}
+      end
     end
   end
 

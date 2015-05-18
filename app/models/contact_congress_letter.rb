@@ -33,7 +33,38 @@ class ContactCongressLetter < ActiveRecord::Base
   #========== CONSTANTS
 
 
-  #========== PUBLIC METHODS
+
+
+  #========== METHODS
+
+
+  def self.to_csv(user)
+
+    CSV.generate(headers: true) do |csv|
+
+      csv << ['Thread ID', 'To', 'About', 'Direction', 'Subject', 'Message', 'Sent At']
+      ContactCongressLetter.where(user_id: user.id).each do |ccl|
+        bill = ccl.contactable
+        i = 1
+        ccl.formageddon_threads.each do |ft|
+          recipient = ft.formageddon_recipient.present? ? ft.formageddon_recipient.title_full_name : nil
+          ft.formageddon_letters.sort{|a,b| a.created_at <=> b.created_at }.each do |letter|
+            to_add = [i]
+            to_add << recipient
+            to_add << bill.bill_type + bill.number.to_s + '-' + bill.session.to_s
+            [:direction, :subject, :message, :created_at].each do |field|
+              to_add << letter.send(field)
+            end
+            csv << to_add
+          end
+          i+=1
+        end
+      end
+    end
+
+  end
+
+
   public
 
   def ident
@@ -95,6 +126,8 @@ class ContactCongressLetter < ActiveRecord::Base
       return true
     end
   end
+
+
 
   ##
   # Returns the the letter message and stripping away any PII using a regexp.

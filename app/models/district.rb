@@ -252,7 +252,7 @@ class District < ActiveRecord::Base
   end
 
   def rep
-    Person.rep.where(:state => self.state.abbreviation, :district => district_number.to_s)
+    Person.rep.where(:state => state.abbreviation, :district => district_number.to_s).first
   end
 
   def sens

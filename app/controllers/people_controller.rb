@@ -623,10 +623,10 @@ class PeopleController < ApplicationController
     address = params[:address].to_s
 
     if address.blank? && params[:zip5].present?
-      @senators, @reps = Person.find_current_congresspeople_by_zipcode(params[:zip5], params[:zip4])
+      @senators, @reps = Person.find_current_congresspeople_by_zipcode(params[:zip5])
     elsif address.present?
       if params[:zip5].present?
-        address = "#{address}, #{@display_zip}"
+        address = {:street_address => address.gsub(',',' '), :zipcode => params[:zip5]}
       end
       @senators, @reps = Person.find_current_congresspeople_by_address(address)
     end

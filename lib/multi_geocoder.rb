@@ -108,6 +108,11 @@ module MultiGeocoder
         query = ",,,#{query}"
       end
 
+      if type == :zip9
+        opts[:lookup] ||= :texas_am
+        query = ",,,#{query.split('-')[0]}"
+      end
+
       # TODO: Code for Texas A&M goes here. Possibly loop through possible lookup services.
       return [query, opts]
     end

@@ -252,7 +252,7 @@ class District < ActiveRecord::Base
   end
 
   def rep
-    Person.rep.find_by_state_and_district(self.state.abbreviation, district_number.to_s)
+    Person.rep.where(:state => self.state.abbreviation, :district => district_number.to_s)
   end
 
   def sens
@@ -275,7 +275,7 @@ class District < ActiveRecord::Base
     begin
       if address.is_a? Hash and address.has_key?(:zipcode) and address[:zipcode] =~ MultiGeocoder::ZIP_PATTERN
         dsts = Congress.districts_locate(address[:zipcode]).results
-        if address[:street_address].present? and address[:city].present? and dsts.length != 1
+        if address[:street_address].present? and dsts.length != 1
           dsts = Congress.districts_locate(*MultiGeocoder.coordinates(address)).results
         end
       elsif address.is_a? String

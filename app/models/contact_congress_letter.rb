@@ -51,7 +51,7 @@ class ContactCongressLetter < ActiveRecord::Base
           ft.formageddon_letters.sort{|a,b| a.created_at <=> b.created_at }.each do |letter|
             to_add = [i]
             to_add << recipient
-            to_add << bill.bill_type + bill.number.to_s + '-' + bill.session.to_s
+            to_add << (bill.present? ? bill.bill_type + bill.number.to_s + '-' + bill.session.to_s : '')
             [:direction, :subject, :message, :created_at].each do |field|
               to_add << letter.send(field)
             end

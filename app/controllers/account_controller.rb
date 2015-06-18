@@ -115,7 +115,7 @@ class AccountController < ApplicationController
       end
       redirect_back_or_default(user_profile_url(current_user.login), :uncacheable => true)
     else
-      flash.now[:warning] = "Login failed"
+      flash[:error] = 'Login failed. Username and/or password are incorrect.'
     end
   end
 

@@ -1,6 +1,6 @@
 <% if flash.any? %>
   <% flash.map do |type, message| %>
-  <div class="flash note <%=h type %>" style="display: none">
+  <div class="flash note <%=h type %>">
     <a class="close" href="#">close</a>
     <div><%= message %></div>
   </div>
@@ -12,8 +12,7 @@
   <% end %>
   <% content_for :javascripts do %>
     <script type="text/javascript">
-      jQuery('.flash.note').slideDown('fast')
-        .find('a.close').click(function(e){
+      jQuery('.flash.note').find('a.close').click(function(e){
           e.preventDefault();
           jQuery(this).parents('.note').slideUp('fast');
         });

@@ -188,7 +188,14 @@ class EmailCongressController < ApplicationController
     if @sender_user
       profile = profile.merge(@sender_user.user_profile)
     end
-    lat, lng = MultiGeocoder.coordinates(profile.mailing_address)
+    data = {
+      :street_address => profile.street_address,
+      :city => profile.city,
+      :zipcode => profile.zipcode,
+      :state => profile.state
+    }
+
+    lat, lng = MultiGeocoder.coordinates(data)
     dsts = Congress.districts_locate(lat, lng).results rescue []
     rcpts = dsts.flat_map do |d|
       # district = District.includes(:state).where(:state => { :abbreviation => d[:state] },

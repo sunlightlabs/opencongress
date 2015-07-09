@@ -114,7 +114,7 @@ module PeopleHelper
       output += '<ul class="votes_percent">'
 
       if stats.party_votes_percentage
-        output += %Q{<li class="pie_votes"><a href='/people/votes_with_party/#{@person.chamber}/#{@person.party.downcase}'>#{verb.capitalize} with party #{@person.person_stats.party_votes_percentage.round}%</a></li>}
+        output += %Q{<li class="pie_votes"><a>#{verb.capitalize} with party #{@person.person_stats.party_votes_percentage.round}%</a></li>}
       end
 
       if stats.abstains_percentage

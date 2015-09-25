@@ -65,6 +65,7 @@
     <%# This must go ahead of socialite %>
     <%= fb_connect_async_js %>
     <%= javascript_include_tag "simple-socialite-pack.js" %>
+    <%= javascript_include_tag "https://s3.amazonaws.com/sunlight-cdn/brandingbar/0.4/js/brandingbar.min.js.gz" %>
     <script>
       Socialite.setup({
         facebook: {
@@ -83,7 +84,6 @@
       displayName: 'Email'
     });
     </script>
-    <%#= javascript_include_tag "branding_bar_temp" %>
     <script>
       var $j = jQuery.noConflict();
     </script>

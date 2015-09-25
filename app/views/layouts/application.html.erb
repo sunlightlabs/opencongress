@@ -17,8 +17,9 @@
 
   <%= bookmarking_image.html_safe %>
 
+  <%= javascript_include_tag "https://s3.amazonaws.com/sunlight-cdn/brandingbar/0.4/js/brandingbar.min.js.gz" %>
+
   <% unless content_for?(:javascripts) %>
-      <%= javascript_include_tag "https://s3.amazonaws.com/sunlight-cdn/brandingbar/0.4/js/brandingbar.min.js.gz" %>
       <%= include_javascripts :defaults, :common  %>
     <script>
       var $j = jQuery.noConflict();

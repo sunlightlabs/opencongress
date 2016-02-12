@@ -455,10 +455,7 @@ class ApplicationController < ActionController::Base
   end
 
   def data_notice
-    unless cookies[:oc_adn] == "true"
-      cookies[:oc_adn] = false
-      flash.now[:new_data] = "114th Congress: We're updating with new data as it becomes available."
-    end
+    flash.now[:new_data] = "OpenCongress will be shutting down on March 1st. But don't worry: We're doing so for <a href="https://sunlightfoundation.com/blog/2016/02/12/farewell-opencongress-hello-govtrack/">a number of good reasons</a>. From then on, we'll be redirecting users to the excellent <a href="https://www.govtrack.us/">GovTrack</a>, where you can continue to monitor Congress.".html_safe
   end
 
   def default_url_options(options={})

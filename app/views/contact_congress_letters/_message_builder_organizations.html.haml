@@ -1,5 +1,0 @@
-%ul
-  - orgs.each do |o|
-    %li.message_builder_clickable
-      = o.name
-      = render 'will_add_text_box', :text => "I know that the organization #{o.name} #{disposition}s #{@bill.typenumber}"

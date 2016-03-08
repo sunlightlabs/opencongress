@@ -1,9 +1,0 @@
-<% @related = article.related %>
-
-<% if @related.size > 0 %>
-	<h1> Related Articles </h1>
-	<% article.related.each do |ar| %>
-		<%= image_tag ar.icon %>
-		<%= link_to ar.title, article_url(ar) %><br/>
-	<% end rescue nil %>
-<% end %>

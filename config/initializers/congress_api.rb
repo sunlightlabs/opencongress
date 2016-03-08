@@ -1,1 +1,0 @@
-Congress.key = ApiKeys.sunlightlabs_key
